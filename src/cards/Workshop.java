@@ -36,7 +36,7 @@ public class Workshop extends Card {
 			game.messageOpponents(player, "... gaining nothing");
 			return;
 		} else {
-			toGain = game.promptChooseFromSupply(player, gainable, "Workshop: Choose a card to gain");
+			toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain");
 		}
 		// gain card
 		game.gain(player, toGain);

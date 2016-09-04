@@ -19,7 +19,11 @@ public class Bot extends Player {
 		username = "<span class=\"botName\">BigMoney[Bot]</span>";
 	}
 
-	public Card chooseFromSupply(Set<Card> choiceSet) {
+	public Card chooseBuy(Set<Card> choiceSet) {
+		return chooseGainFromSupply(choiceSet, false);
+	}
+
+	public Card chooseGainFromSupply(Set<Card> choiceSet, boolean isMandatory) {
 		if (choiceSet.contains(Card.PROVINCE)) {
 			return Card.PROVINCE;
 		} else if (choiceSet.contains(Card.DUCHY) && game.supply.get(Card.PROVINCE) <= 2) {
@@ -30,6 +34,14 @@ public class Bot extends Player {
 			return Card.SILVER;
 		} else if (choiceSet.contains(Card.COPPER)) {
 			return Card.COPPER;
+		} else {
+			return choiceSet.iterator().next();
+		}
+	}
+
+	public Card chooseOpponentGainFromSupply(Set<Card> choiceSet) {
+		if (choiceSet.contains(Card.CURSE)) {
+			return Card.CURSE;
 		} else {
 			return choiceSet.iterator().next();
 		}

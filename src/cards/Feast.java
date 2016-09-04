@@ -41,7 +41,7 @@ public class Feast extends Card {
 			game.messageOpponents(player, "... gaining nothing");
 			return;
 		} else {
-			Card choice = game.promptChooseFromSupply(player, gainable, "Feast: Choose a card to gain");
+			Card choice = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain");
 			if (choice != null) {
 				toGain = choice;
 			} else {

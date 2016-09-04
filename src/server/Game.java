@@ -117,6 +117,131 @@ public class Game implements Runnable {
 		}
 	}
 
+	private void takeTurn(Player player) {
+		if (cardCostReduction > 0) {
+			setCardCostReduction(0);
+		}
+		actionsPlayedThisTurn = 0;
+		message(player, "------ Your turn ------");
+		messageOpponents(player, "------ " + player.username + "'s turn ------");
+		player.sendActions();
+		player.sendBuys();
+		while (player.getActions() > 0 && player.hasPlayableAction()) {
+			// action phase
+			Set<Card> choices = playableActions(player);
+			Card choice = promptChooseFromHand(player, choices, "Action Phase: Choose an action to play", false, "No Action");
+			if (choice == null) {
+				break;
+			}
+			// put action card in play
+			player.putFromHandIntoPlay(choice);
+			player.addActions(-1);
+			// play action
+			playAction(player, choice);
+		}
+		clearActions(player);
+		boolean givenBuyPrompt = false;
+		while (player.getBuys() > 0 && canBuyCard(player)) {
+			// buy phase
+			Set<Card> choices = buyableCards(player);
+			givenBuyPrompt = true;
+			Card choice = promptChooseBuy(player, choices);
+			if (choice == null) {
+				break;
+			}
+			// gain purchased card
+			gain(player, choice);
+			message(player, "You purchase " + choice.htmlName());
+			messageOpponents(player, player.username + " purchases " + choice.htmlName());
+			// update player status
+			player.addBuys(-1);
+			player.addExtraCoins(-choice.cost(this));
+		}
+		clearBuys(player);
+		coppersmithsPlayedThisTurn = 0;
+		// if the player couldn't buy anything, notify them that their turn is over
+		if (!givenBuyPrompt) {
+			promptMultipleChoice(player, "There are no cards that you can buy this turn", new String[] {"End Turn"});
+		}
+		// cleanup and redraw
+		player.cleanup();
+		for (Player eachPlayer : players) {
+			message(eachPlayer, "...");
+		}
+		player.turns++;
+	}
+
+	public void playAction(Player player, Card action) {
+		actionsPlayedThisTurn++;
+		message(player, "You play " + action.htmlName());
+		messageOpponents(player, player.username + " plays " + action.htmlName());
+		if (action.isAttack) {
+			// attack reactions
+			List<Player> targets = new ArrayList<Player>();
+			for (Player opponent : getOpponents(player)) {
+				boolean unaffected = reactToAttack(opponent);
+				if (!unaffected) {
+					targets.add(opponent);
+				}
+			}
+			action.onAttack(player, this, targets);
+		} else {
+			action.onPlay(player, this);
+		}
+	}
+
+	private boolean reactToAttack(Player player) {
+		boolean unaffected = false;
+		Set<Card> reactions = getAttackReactions(player);
+		if (reactions.size() > 0) {
+			do {
+				Card choice = promptChooseFromHand(player, reactions, "Choose a reaction", "reactionPrompt", false, "No Reaction");
+				if (choice != null) {
+					message(player, ".. (You reveal " + choice.htmlName() + ")");
+					messageOpponents(player, "... (" + player.username + " reveals " + choice.htmlName() + ")");
+					unaffected |= choice.onAttackReaction(player, this);
+					// update possible reactions
+					reactions = getAttackReactions(player);
+					// don't allow the same reaction to be played twice in a row
+					// (they are designed so that playing them twice in a row gives no new benefit)
+					reactions.remove(choice);
+				} else {
+					break;
+				}
+			} while (reactions.size() > 0);
+		}
+		return unaffected;
+	}
+
+	private Set<Card> getAttackReactions(Player player) {
+		Set<Card> reactions = new HashSet<>();
+		for (Card card : player.getHand()) {
+			if (card.isAttackReaction) {
+				reactions.add(card);
+			}
+		}
+		return reactions;
+	}
+
+	private boolean gameOverConditionMet() {
+		// check if game has been forfeited
+		if (isGameOver) {
+			return true;
+		}
+		// check if province pile is empty
+		if (supply.get(Card.PROVINCE) == 0) {
+			return true;
+		}
+		// check if three supply piles are empty
+		int emptyPiles = 0;
+		for (Integer count : supply.values()) {
+			if (count == 0) {
+				emptyPiles++;
+			}
+		}
+		return emptyPiles >= 3;
+	}
+
 	private void announceWinner() {
 		boolean tieBroken = false;
 		Map<Player, VictoryReportCard> reportCards = new HashMap<Player, VictoryReportCard>();
@@ -206,79 +331,6 @@ public class Game implements Runnable {
 		}
 	}
 
-	private void takeTurn(Player player) {
-		if (cardCostReduction > 0) {
-			setCardCostReduction(0);
-		}
-		actionsPlayedThisTurn = 0;
-		message(player, "------ Your turn ------");
-		messageOpponents(player, "------ " + player.username + "'s turn ------");
-		player.sendActions();
-		player.sendBuys();
-		while (player.getActions() > 0 && player.hasPlayableAction()) {
-			// action phase
-			Set<Card> choices = playableActions(player);
-			Card choice = promptChooseFromHand(player, choices, "Action Phase: Choose an action to play", false, "No Action");
-			if (choice == null) {
-				break;
-			}
-			// put action card in play
-			player.putFromHandIntoPlay(choice);
-			player.addActions(-1);
-			// play action
-			playAction(player, choice);
-		}
-		clearActions(player);
-		boolean givenBuyPrompt = false;
-		while (player.getBuys() > 0 && canBuyCard(player)) {
-			// buy phase
-			Set<Card> choices = buyableCards(player);
-			givenBuyPrompt = true;
-			Card choice = promptChooseFromSupply(player, choices, "Buy Phase: Choose a card to purchase", "buyPrompt", false, "End Turn");
-			if (choice == null) {
-				break;
-			}
-			// gain purchased card
-			gain(player, choice);
-			message(player, "You purchase " + choice.htmlName());
-			messageOpponents(player, player.username + " purchases " + choice.htmlName());
-			// update player status
-			player.addBuys(-1);
-			player.addExtraCoins(-choice.cost(this));
-		}
-		clearBuys(player);
-		coppersmithsPlayedThisTurn = 0;
-		// if the player couldn't buy anything, notify them that their turn is over
-		if (!givenBuyPrompt) {
-			promptMultipleChoice(player, "There are no cards that you can buy this turn", new String[] {"End Turn"});
-		}
-		// cleanup and redraw
-		player.cleanup();
-		for (Player eachPlayer : players) {
-			message(eachPlayer, "...");
-		}
-		player.turns++;
-	}
-
-	public void playAction(Player player, Card action) {
-		actionsPlayedThisTurn++;
-		message(player, "You play " + action.htmlName());
-		messageOpponents(player, player.username + " plays " + action.htmlName());
-		if (action.isAttack) {
-			// attack reactions
-			List<Player> targets = new ArrayList<Player>();
-			for (Player opponent : getOpponents(player)) {
-				boolean unaffected = reactToAttack(opponent);
-				if (!unaffected) {
-					targets.add(opponent);
-				}
-			}
-			action.onAttack(player, this, targets);
-		} else {
-			action.onPlay(player, this);
-		}
-	}
-
 	public List<Player> getOpponents(Player player) {
 		List<Player> opponents = new ArrayList<Player>();
 		for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
@@ -292,39 +344,6 @@ public class Game implements Runnable {
 			}
 		}
 		throw new IllegalArgumentException();
-	}
-
-	private boolean reactToAttack(Player player) {
-		boolean unaffected = false;
-		Set<Card> reactions = getAttackReactions(player);
-		if (reactions.size() > 0) {
-			do {
-				Card choice = promptChooseFromHand(player, reactions, "Choose a reaction", "reactionPrompt", false, "No Reaction");
-				if (choice != null) {
-					message(player, ".. (You reveal " + choice.htmlName() + ")");
-					messageOpponents(player, "... (" + player.username + " reveals " + choice.htmlName() + ")");
-					unaffected |= choice.onAttackReaction(player, this);
-					// update possible reactions
-					reactions = getAttackReactions(player);
-					// don't allow the same reaction to be played twice in a row
-					// (they are designed so that playing them twice in a row gives no new benefit)
-					reactions.remove(choice);
-				} else {
-					break;
-				}
-			} while (reactions.size() > 0);
-		}
-		return unaffected;
-	}
-
-	private Set<Card> getAttackReactions(Player player) {
-		Set<Card> reactions = new HashSet<>();
-		for (Card card : player.getHand()) {
-			if (card.isAttackReaction) {
-				reactions.add(card);
-			}
-		}
-		return reactions;
 	}
 
 	public void takeFromSupply(Card card) {
@@ -400,25 +419,6 @@ public class Game implements Runnable {
 			}
 		}
 		return actions;
-	}
-
-	private boolean gameOverConditionMet() {
-		// check if game has been forfeited
-		if (isGameOver) {
-			return true;
-		}
-		// check if province pile is empty
-		if (supply.get(Card.PROVINCE) == 0) {
-			return true;
-		}
-		// check if three supply piles are empty
-		int emptyPiles = 0;
-		for (Integer count : supply.values()) {
-			if (count == 0) {
-				emptyPiles++;
-			}
-		}
-		return emptyPiles >= 3;
 	}
 
 	public void addCardCostReduction(int toAdd) {
@@ -627,24 +627,79 @@ public class Game implements Runnable {
 		}
 	}
 
-	public Card promptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage) {
-		return promptChooseFromSupply(player, choiceSet, promptMessage, true, "");
+	/**
+	 * Returns a card that the player has chosen to buy, or null if they do not
+	 * choose to buy anything.
+	 */
+	public Card promptChooseBuy(Player player, Set<Card> choiceSet) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseBuy(choiceSet);
+			// check that the bot is making a valid choice
+			if (card != null && !choiceSet.contains(card)) {
+				throw new IllegalStateException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromSupply(player, choiceSet, "Buy Phase: Choose a card to purchase", "buyPrompt", false, "End Turn");
 	}
 
-	public Card promptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
-		return promptChooseFromSupply(player, choiceSet, promptMessage, "actionPrompt", isMandatory, noneMessage);
+	/**
+	 * Returns a card that the player has chosen to gain.
+	 * This choice is mandatory.
+	 * This choice is the "actionPrompt" type.
+	 */
+	public Card promptChooseGainFromSupply(Player player, Set<Card> choiceSet, String promptMessage) {
+		return promptChooseGainFromSupply(player, choiceSet, promptMessage, true, "");
+	}
+
+	/**
+	 * Returns a card that the player has chosen to gain, or null if the choice
+	 * is not mandatory and they do not choose to gain anything.
+	 * This choice is the "actionPrompt" type.
+	 */
+	public Card promptChooseGainFromSupply(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
+		return promptChooseGainFromSupply(player, choiceSet, promptMessage, "actionPrompt", isMandatory, noneMessage);
+	}
+
+	/**
+	 * Returns a card that the player has chosen to gain, or null if the choice
+	 * is not mandatory and they do not choose to gain anything.
+	 */
+	public Card promptChooseGainFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseGainFromSupply(choiceSet, isMandatory);
+			// check that the bot is making a valid choice
+			if (isMandatory) {
+				if (!choiceSet.contains(card)) {
+					throw new IllegalStateException();
+				}
+			} else {
+				if (card != null && !choiceSet.contains(card)) {
+					throw new IllegalStateException();
+				}
+			}
+			return card;
+		}
+		return sendPromptChooseFromSupply(player, choiceSet, promptMessage, promptType, isMandatory, noneMessage);
+	}
+	
+	public Card promptChooseOpponentGainFromSupply(Player player, Set<Card> choiceSet, String promptMessage) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseOpponentGainFromSupply(choiceSet);
+			// check that the bot is making a valid choice
+			if (!choiceSet.contains(card)) {
+				throw new IllegalStateException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromSupply(player, choiceSet, promptMessage, "actionPrompt", true, "");
 	}
 
 	@SuppressWarnings("unchecked")
-	public Card promptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
-		if (player instanceof Bot) {
-			Bot bot = (Bot) player;
-			Card response = bot.chooseFromSupply(choiceSet);
-			if (!choiceSet.contains(response)) {
-				throw new IllegalStateException();
-			}
-			return response;
-		}
+	private Card sendPromptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
 		// construct JSON message
 		JSONObject prompt = new JSONObject();
 		prompt.put("command", "promptChooseFromSupply");

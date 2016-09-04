@@ -68,7 +68,7 @@ public class Mine extends Card {
 			return;
 		} else {
 			// at least one gainable card
-			Card choice = game.promptChooseFromSupply(player, gainable, "Mine: Choose a treasure to gain");
+			Card choice = game.promptChooseGainFromSupply(player, gainable, "Mine: Choose a treasure to gain");
 			if (choice != null) {
 				toGain = choice;
 			} else {

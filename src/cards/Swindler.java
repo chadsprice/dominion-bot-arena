@@ -36,7 +36,7 @@ public class Swindler extends Card {
 				int cost = toTrash.cost(game);
 				Set<Card> gainable = game.cardsCostingExactly(cost);
 				if (gainable.size() > 0) {
-					Card toGain = game.promptChooseFromSupply(player, gainable, "Swindler: " + target.username + " reveals and trashes " + toTrash.htmlName() + ". Choose a card for " + target.username + " to gain");
+					Card toGain = game.promptChooseOpponentGainFromSupply(player, gainable, "Swindler: " + target.username + " reveals and trashes " + toTrash.htmlName() + ". Choose a card for " + target.username + " to gain");
 					game.gain(target, toGain);
 					game.message(target, "... You gain " + toGain.htmlName());
 					game.messageOpponents(target, "... " + target.username + " gains " + toGain.htmlName());

@@ -59,7 +59,7 @@ public class Remodel extends Card {
 			game.messageOpponents(player, "... gaining nothing");
 			return;
 		} else {
-			Card choice = game.promptChooseFromSupply(player, gainable, "Remodel: Choose a card to gain");
+			Card choice = game.promptChooseGainFromSupply(player, gainable, "Remodel: Choose a card to gain");
 			if (choice != null) {
 				toGain = choice;
 			} else {

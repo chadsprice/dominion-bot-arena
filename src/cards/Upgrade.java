@@ -37,7 +37,7 @@ public class Upgrade extends Card {
 			Set<Card> gainable = game.cardsCostingExactly(toTrash.cost(game) + 1);
 			// if there are cards that can be gained
 			if (gainable.size() > 0) {
-				Card toGain = game.promptChooseFromSupply(player, gainable, "Upgrade: Choose a card to gain");
+				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Upgrade: Choose a card to gain");
 				game.gain(player, toGain);
 				game.message(player, "... You gain " + toGain.htmlName());
 				game.messageOpponents(player, "... gaining " + toGain.htmlName());
