@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="main.css">
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="bcrypt.js"></script>
+  </head>
+  <body>
+    <div id="loginContainer" class="aligner">
+      <div id="login" class="dropShadow actionPrompt">
+        <p id="newLogin">New user</p>
+        <label>Username</label>
+        <input id="username" type="username" name="username" />
+        <label>Password <span class="optional">(Optional)</span></label>
+        <input id="password" type="password" name="password" />
+        <div id="loginButtons">
+          <button id="loginButton">Play</button>
+        </div>
+      </div>
+    </div>
+    <div id="lobby">
+      <div>
+        <div id="lobbyUsername">
+          <p>Welcome,</p>
+          <h1 id="lobbyUsernameText"></h1>
+        </div>
+        <div class="lobbySection">
+          <h1>Automatch</h1>
+          <div class="lobbyContent">
+            <p>Automatically create games with other players using automatch.</p>
+            <div class="lobbyControl">
+              <input type="checkbox" id="automatchCheckbox"><label>Automatch On</label>
+            </div>
+            <label># Players</label>
+            <div class="lobbyControl">
+              <input type="checkbox" id="automatch2Checkbox"><label>2</label>
+              <input type="checkbox" id="automatch3Checkbox"><label>3</label>
+              <input type="checkbox" id="automatch4Checkbox"><label>4</label>
+            </div>
+          </div>
+        </div>
+        <div class="lobbySection" id="customGameSection">
+          <h1>Create Custom Game</h1>
+          <div class="lobbyContent">
+            <label>Name <span class="optional">(Optional)</span></label>
+            <div class="lobbyControl">
+              <input id="customGameName" type="text"></input>
+            </div>
+            <label># Players</label>
+            <div class="lobbyControl">
+              <select id="numPlayersSelect">
+                <option value="2" selected>2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+            <label>Sets</label>
+            <div class="lobbyControl">
+              <input type="checkbox" id="baseCheckbox"><label>Base</label><br>
+              <input type="checkbox" id="intrigueCheckbox"><label>Intrigue</label>
+            </div>
+            <label>Cards <span class="optional">(Optional)</span></label>
+            <div class="lobbyControl">
+              <p>e.g. "Library, Witch, !Smithy"</p>
+              <input id="customGameCards" type="text"></input>
+            </div>
+            <label>Bots</label>
+            <div class="lobbyControl">
+              <div id="botList">
+              </div>
+              <button id="addBotButton">Add Bot</button>
+            </div>
+            <div class="lobbyControl">
+              <button id="createCustomGameButton">Create</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="lobbySection" id="gamesSection">
+        <h1>Custom Games</h1>
+        <div class="lobbyContent">
+          <button id="removeClosedButton">Remove Closed</button>
+          <div id="gameList">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="gameLobby">
+      <h1 id="gameLobbyName"></h1>
+      <div id="gameLobbySets"></div>
+      <div id="gameLobbyCards"></div>
+      <div class="lobbySection">
+        <button id="gameLobbyReadyButton"></button>
+        <button id="gameLobbyLeaveButton">Leave</button><br>
+        <div id="gameLobbyPlayerList">
+        </div>
+      </div>
+    </div>
+    <div id="game">
+      <div id="table">
+        <div id="cardPopupContainer">
+          <div id="cardPopup">
+            <div>
+              <div id="popupName"></div>
+              <div id="popupDescription"></div>
+            </div>
+            <div id="popupType"><div id="popupCost"></div></div>
+          </div>
+        </div>
+        <div id="supply">
+          <div id="kingdom">
+          </div>
+          <div id="basic">
+          </div>
+        </div>
+      </div>
+      <div id="play">
+        <div id="log">
+        </div>
+        <div id="waitingOn">
+          <p id="waitingOnText"></p><button id="hurryUpButton">Hurry up!</button>
+        </div>
+        <div id="prompt">
+        </div>
+        <div id="more">
+          <button id="moreButton">More</button>
+          <button id="forfeitButton">Forfeit</button>
+        </div>
+        <div id="playerStatus">
+          <div id="turnStatus">
+            <div id="turnStatusTags">
+              <p>actions:</p>
+              <p>buys:</p>
+              <p>coins:</p>
+            </div>
+            <div id="turnStatusValues">
+              <p id="numActions"></p>
+              <p id="numBuys"></p>
+              <p id="numCoins"></p>
+            </div>
+          </div>
+          <div id="deckStatus">
+            <div id="deckStatusTags">
+              <p>draw:</p>
+              <p>discard:</p>
+            </div>
+            <div id="deckStatusValues">
+              <div id="drawStatus"></div>
+              <div id="discardStatus"></div>
+            </div>
+          </div>
+        </div>
+        <div id="hand">
+        </div>
+        <div id="chatDisplay">
+        </div>
+        <div id="chatControl">
+          <input type="text" id="chatInput"><button id="chatSendButton">Send</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
