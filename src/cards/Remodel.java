@@ -29,7 +29,7 @@ public class Remodel extends Card {
 			game.messageOpponents(player, "... trashing nothing");
 			return;
 		} else {
-			Card choice = game.promptChooseFromHand(player, trashable, "Remodel: Choose a card to trash");
+			Card choice = game.promptChooseTrashFromHand(player, trashable, "Remodel: Choose a card to trash");
 			if (choice != null) {
 				toTrash = choice;
 			} else {

@@ -33,7 +33,7 @@ public class Masquerade extends Card {
 		for (Player eachPlayer : passOrder) {
 			if (eachPlayer.getHand().size() > 0) {
 				Player playerOnLeft = passOrder.get((i + 1) % passOrder.size());
-				Card toPass = game.promptChooseFromHand(eachPlayer, new HashSet<Card>(eachPlayer.getHand()), "Masquerade: Pass a card from your hand to " + playerOnLeft.username, "attackPrompt");
+				Card toPass = game.promptChoosePassToOpponent(eachPlayer, new HashSet<Card>(eachPlayer.getHand()), "Masquerade: Pass a card from your hand to " + playerOnLeft.username, "attackPrompt");
 				cardsToPass.add(toPass);
 			} else {
 				cardsToPass.add(null);
@@ -66,7 +66,7 @@ public class Masquerade extends Card {
 		if (player.getHand().size() > 0){
 			int choice = game.promptMultipleChoice(player, "Masquerade: Trash a card from your hand?", new String[] {"Yes", "No"});
 			if (choice == 0) {
-				Card toTrash = game.promptChooseFromHand(player, new HashSet<Card>(player.getHand()), "Masquerade: Trash a card from your hand");
+				Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Masquerade: Trash a card from your hand");
 				player.removeFromHand(toTrash);
 				game.trash.add(toTrash);
 				game.message(player, "... You trash " + toTrash.htmlName());

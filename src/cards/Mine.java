@@ -36,7 +36,7 @@ public class Mine extends Card {
 			return;
 		} else {
 			// at least one trashable card
-			Card choice = game.promptChooseFromHand(player, trashable, "Mine: Choose a treasure to trash");
+			Card choice = game.promptChooseTrashFromHand(player, trashable, "Mine: Choose a treasure to trash");
 			if (choice != null) {
 				toTrash = choice;
 			} else {

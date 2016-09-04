@@ -47,6 +47,38 @@ public class Bot extends Player {
 		}
 	}
 
+	public Card choosePlay(Set<Card> choiceSet, boolean isMandatory) {
+		return choiceSet.iterator().next();
+	}
+
+	public Card chooseTrashFromHand(Set<Card> choiceSet) {
+		if (choiceSet.contains(Card.CURSE)) {
+			return Card.CURSE;
+		} else if (choiceSet.contains(Card.ESTATE)) {
+			return Card.ESTATE;
+		} else if (choiceSet.contains(Card.COPPER)) {
+			return Card.COPPER;
+		} else {
+			return choiceSet.iterator().next();
+		}
+	}
+
+	public Card choosePutOnDeck(Set<Card> choiceSet) {
+		return choiceSet.iterator().next();
+	}
+
+	public Card choosePassToOpponent(Set<Card> choiceSet) {
+		return chooseTrashFromHand(choiceSet);
+	}
+
+	public Card chooseRevealAttackReaction(Set<Card> choiceSet) {
+		if (choiceSet.contains(Card.MOAT)) {
+			return Card.MOAT;
+		} else {
+			return null;
+		}
+	}
+
 	public Card chooseFromHand(Set<Card> choiceSet) {
 		return choiceSet.iterator().next();
 	}

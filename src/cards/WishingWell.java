@@ -32,6 +32,7 @@ public class WishingWell extends Card {
 		// Name a card
 		drawn = player.takeFromDraw(1);
 		if (drawn.size() == 1) {
+			// TODO add a nameACard method to Game.java
 			Card namedCard = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Wishing Well: Name a card", false, "Name a card that is not in the supply");
 			if (namedCard == null) {
 				// find all cards not in the supply

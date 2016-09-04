@@ -33,7 +33,7 @@ public class Bureaucrat extends Card {
 		for (Player target : targets) {
 			Set<Card> choices = victoryCardsInHand(target);
 			if (choices.size() > 0) {
-				Card choice = game.promptChooseFromHand(target, choices, "Bureaucrat: Choose a victory card to reveal and put on top of your deck", "attackPrompt");
+				Card choice = game.promptChoosePutOnDeck(target, choices, "Bureaucrat: Choose a victory card to reveal and put on top of your deck", "attackPrompt");
 				if (choice == null) {
 					choice = choices.iterator().next();
 				}

@@ -28,7 +28,7 @@ public class Courtyard extends Card {
 		// put a card from hand back on deck
 		if (player.getHand().size() > 0) {
 			Set<Card> choiceSet = new HashSet<Card>(player.getHand());
-			Card choice = game.promptChooseFromHand(player, choiceSet, "Courtyard: Choose a card from your hand to put on top of your deck");
+			Card choice = game.promptChoosePutOnDeck(player, choiceSet, "Courtyard: Choose a card from your hand to put on top of your deck");
 			player.removeFromHand(choice);
 			player.putOnDraw(choice);
 			game.message(player, "... You put " + choice.htmlName() + " on top of your deck");

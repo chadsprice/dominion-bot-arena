@@ -29,7 +29,7 @@ public class Upgrade extends Card {
 		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
 		// trash a card from your hand
 		if (player.getHand().size() > 0) {
-			Card toTrash = game.promptChooseFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand");
 			player.removeFromHand(toTrash);
 			game.trash.add(toTrash);
 			game.message(player, "... You trash " + toTrash.htmlName());

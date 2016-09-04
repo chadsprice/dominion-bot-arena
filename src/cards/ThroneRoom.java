@@ -21,7 +21,7 @@ public class ThroneRoom extends Card {
 	public void onPlay(Player player, Game game) {
 		Set<Card> actions = game.playableActions(player);
 		if (actions.size() > 0) {
-			Card toPlay = game.promptChooseFromHand(player, actions, "Throne Room: Choose an action to play twice");
+			Card toPlay = game.promptChoosePlay(player, actions, "Throne Room: Choose an action to play twice");
 			if (toPlay == null) {
 				toPlay = actions.iterator().next();
 			}

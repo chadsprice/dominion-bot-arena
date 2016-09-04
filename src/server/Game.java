@@ -59,7 +59,7 @@ public class Game implements Runnable {
 	};
 
 	private GameServer server;
-	
+
 	private int playerIndex;
 	public List<Player> players;
 
@@ -129,7 +129,7 @@ public class Game implements Runnable {
 		while (player.getActions() > 0 && player.hasPlayableAction()) {
 			// action phase
 			Set<Card> choices = playableActions(player);
-			Card choice = promptChooseFromHand(player, choices, "Action Phase: Choose an action to play", false, "No Action");
+			Card choice = promptChoosePlay(player, choices, "Action Phase: Choose an action to play", false, "No Action");
 			if (choice == null) {
 				break;
 			}
@@ -195,7 +195,7 @@ public class Game implements Runnable {
 		Set<Card> reactions = getAttackReactions(player);
 		if (reactions.size() > 0) {
 			do {
-				Card choice = promptChooseFromHand(player, reactions, "Choose a reaction", "reactionPrompt", false, "No Reaction");
+				Card choice = promptChooseRevealAttackReaction(player, reactions);
 				if (choice != null) {
 					message(player, ".. (You reveal " + choice.htmlName() + ")");
 					messageOpponents(player, "... (" + player.username + " reveals " + choice.htmlName() + ")");
@@ -684,7 +684,11 @@ public class Game implements Runnable {
 		}
 		return sendPromptChooseFromSupply(player, choiceSet, promptMessage, promptType, isMandatory, noneMessage);
 	}
-	
+
+	/**
+	 * Returns a card that the player has chosen for an opponent to gain.
+	 * This choice is mandatory.
+	 */
 	public Card promptChooseOpponentGainFromSupply(Player player, Set<Card> choiceSet, String promptMessage) {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
@@ -698,6 +702,9 @@ public class Game implements Runnable {
 		return sendPromptChooseFromSupply(player, choiceSet, promptMessage, "actionPrompt", true, "");
 	}
 
+	/**
+	 * Prompt a human player to choose a card from the supply.
+	 */
 	@SuppressWarnings("unchecked")
 	private Card sendPromptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
 		// construct JSON message
@@ -734,20 +741,118 @@ public class Game implements Runnable {
 		}
 	}
 
-	public Card promptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage) {
-		return promptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", true, "");
+	/**
+	 * Returns a card that the player has chosen to play.
+	 * This choice is mandatory.
+	 */
+	public Card promptChoosePlay(Player player, Set<Card> choiceSet, String promptMessage) {
+		return promptChoosePlay(player, choiceSet, promptMessage, true, "");
 	}
 
-	public Card promptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, String promptType) {
-		return promptChooseFromHand(player, choiceSet, promptMessage, promptType, true, "");
+	/**
+	 * Returns a card that the player has chosen to play, or null if they
+	 * choose not to play any action.
+	 */
+	public Card promptChoosePlay(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.choosePlay(choiceSet, isMandatory);
+			// check that the bot is making a valid choice
+			if (isMandatory) {
+				if (!choiceSet.contains(card)) {
+					throw new IllegalStateException();
+				}
+			} else {
+				if (card != null && !choiceSet.contains(card)) {
+					throw new IllegalStateException();
+				}
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", isMandatory, noneMessage);
 	}
 
-	public Card promptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
-		return promptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", isMandatory, noneMessage);
+	/**
+	 * Returns a card that the player has chosen to trash from their hand.
+	 * This choice is mandatory.
+	 */
+	public Card promptChooseTrashFromHand(Player player, Set<Card> choiceSet, String promptMessage) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseTrashFromHand(choiceSet);
+			// check that the bot is making a valid choice
+			if (!choiceSet.contains(card)) {
+				throw new IllegalArgumentException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", true, "");
 	}
 
+	/**
+	 * Returns a card that the player has chosen to put on top of their deck.
+	 * This choice is the "actionPrompt" type.
+	 */
+	public Card promptChoosePutOnDeck(Player player, Set<Card> choiceSet, String promptMessage) {
+		return promptChoosePutOnDeck(player, choiceSet, promptMessage, "actionPrompt");
+	}
+
+	/**
+	 * Returns a card that the player has chosen to put on top of their deck.
+	 * This choice is mandatory.
+	 */
+	public Card promptChoosePutOnDeck(Player player, Set<Card> choiceSet, String promptMessage, String promptType) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.choosePutOnDeck(choiceSet);
+			// check that the bot is making a valid choice
+			if (!choiceSet.contains(card)) {
+				throw new IllegalArgumentException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, promptType, true, "");
+	}
+
+	/**
+	 * Returns a card that the player has chosen to pass to an opponent.
+	 * This choice is mandatory.
+	 */
+	public Card promptChoosePassToOpponent(Player player, Set<Card> choiceSet, String promptMessage, String promptType) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.choosePassToOpponent(choiceSet);
+			// check that the bot is making a valid choice
+			if (!choiceSet.contains(card)) {
+				throw new IllegalArgumentException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, promptType, true, "");
+	}
+
+	/**
+	 * Returns a card that the player has chosen to reveal as an attack
+	 * reaction, or null if they choose to reveal no reaction.
+	 */
+	public Card promptChooseRevealAttackReaction(Player player, Set<Card> choiceSet) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseRevealAttackReaction(choiceSet);
+			// check that the bot is making a valid choice
+			if (card != null && !choiceSet.contains(card)) {
+				throw new IllegalArgumentException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, "Choose a reaction", "reactionPrompt", false, "No Reaction");
+	}
+
+	/**
+	 * Prompt a human player to choose a card from their hand.
+	 */
 	@SuppressWarnings("unchecked")
-	public Card promptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
+	private Card sendPromptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
 			Card response = bot.chooseFromHand(choiceSet);
