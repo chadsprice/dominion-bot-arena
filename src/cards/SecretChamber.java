@@ -22,7 +22,7 @@ public class SecretChamber extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// discard any number of cards
-		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Secret Chamber", "discard");
+		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Secret Chamber");
 		player.putFromHandIntoDiscard(discarded);
 		// +$1 per card discarded
 		player.addExtraCoins(discarded.size());
@@ -40,7 +40,7 @@ public class SecretChamber extends Card {
 		List<Card> discarded;
 		if (player.getHand().size() > 0) {
 			int numToDiscard = player.getHand().size() == 1 ? 1 : 2;
-			discarded = game.promptDiscardNumber(player, numToDiscard, true, "Secret Chamber", "draw");
+			discarded = game.promptPutNumberOnDeck(player, numToDiscard, "Secret Chamber");
 			player.removeFromHand(discarded);
 			player.putOnDraw(discarded);
 		} else {

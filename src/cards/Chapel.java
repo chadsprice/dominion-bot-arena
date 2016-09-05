@@ -20,7 +20,7 @@ public class Chapel extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// trash up to 4 cards from hand
-		List<Card> trashed = game.promptDiscardNumber(player, 4, false, "Chapel", "trash");
+		List<Card> trashed = game.promptTrashNumber(player, 4, false, "Chapel");
 		player.removeFromHand(trashed);
 		game.trash.addAll(trashed);
 		game.message(player, "... You trash " + Card.htmlList(trashed));

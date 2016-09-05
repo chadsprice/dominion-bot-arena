@@ -1,6 +1,8 @@
 package server;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +10,14 @@ import org.json.simple.JSONObject;
 
 public class Bot extends Player {
 
+	private static final Comparator<Card> COST_ORDER_COMPARATOR = new Comparator<Card>() {
+		@Override
+		public int compare(Card c1, Card c2) {
+			// order by highest cost
+			return c2.cost() - c1.cost();
+		}
+	};
+	
 	@Override
 	protected void sendCommand(JSONObject command, boolean autoIssue) {}
 
@@ -79,11 +89,40 @@ public class Bot extends Player {
 		}
 	}
 
-	public Card chooseFromHand(Set<Card> choiceSet) {
-		return choiceSet.iterator().next();
+	public List<Card> discardNumber(int number, boolean isMandatory) {
+		List<Card> toDiscard = new ArrayList<Card>();
+		List<Card> handCopy = new ArrayList<Card>(getHand());
+		// discard some cards willingly
+		while (toDiscard.size() < number && wantToDiscard(handCopy) != null) {
+			Card card = wantToDiscard(handCopy);
+			handCopy.remove(card);
+			toDiscard.add(card);
+		}
+		// only discard more if it's mandatory
+		if (isMandatory) {
+			Collections.sort(handCopy, COST_ORDER_COMPARATOR);
+			Collections.reverse(handCopy);
+			toDiscard.addAll(handCopy.subList(0, number - toDiscard.size()));
+		}
+		return toDiscard;		
 	}
 
-	public List<Card> discardNumber(int number) {
+	public Card wantToDiscard(List<Card> cards) {
+		for (Card card : cards) {
+			if (card == Card.CURSE || card.isVictory) {
+				return card;
+			}
+		}
+		return null;
+	}
+
+	public List<Card> trashNumber(int number, boolean isMandatory) {
+		// TODO use trashFromHand as a helper
+		return new ArrayList<Card>(getHand().subList(0, Math.min(number, getHand().size())));
+	}
+
+	public List<Card> putNumberOnDeck(int number) {
+		// TODO doesn't really have a clear strategy yet
 		return new ArrayList<Card>(getHand().subList(0, Math.min(number, getHand().size())));
 	}
 

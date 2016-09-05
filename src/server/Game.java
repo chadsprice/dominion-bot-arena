@@ -703,10 +703,13 @@ public class Game implements Runnable {
 	}
 
 	/**
-	 * Prompt a human player to choose a card from the supply.
+	 * Prompts a human player to choose a card from the supply.
 	 */
 	@SuppressWarnings("unchecked")
 	private Card sendPromptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
+		if (player instanceof Bot) {
+			throw new IllegalStateException();
+		}
 		// construct JSON message
 		JSONObject prompt = new JSONObject();
 		prompt.put("command", "promptChooseFromSupply");
@@ -849,17 +852,12 @@ public class Game implements Runnable {
 	}
 
 	/**
-	 * Prompt a human player to choose a card from their hand.
+	 * Prompts a human player to choose a card from their hand.
 	 */
 	@SuppressWarnings("unchecked")
 	private Card sendPromptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
 		if (player instanceof Bot) {
-			Bot bot = (Bot) player;
-			Card response = bot.chooseFromHand(choiceSet);
-			if (!choiceSet.contains(response)) {
-				throw new IllegalStateException();
-			}
-			return response;
+			throw new IllegalStateException();
 		}
 		// construct JSON message
 		JSONObject prompt = new JSONObject();
@@ -891,33 +889,129 @@ public class Game implements Runnable {
 		}
 	}
 
-	public List<Card> discardNumber(Player player, int number, String cause, String promptType) {
-		// if the player has that many cards or fewer
-		if (player.getHand().size() <= number) {
-			// discard entire hand
-			return player.getHand();
-		} else {
-			// otherwise prompt player
-			return promptDiscardNumber(player, number, true, cause, promptType, "discard");
+	/**
+	 * Returns a list of cards that the player has chosen to discard.
+	 * This prompt is mandatory.
+	 */
+	public List<Card> promptDiscardNumber(Player player, int number, String cause, String promptType) {
+		return promptDiscardNumber(player, number, true, cause, promptType);
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to discard.
+	 * This prompt is the "actionPrompt" type.
+	 */
+	public List<Card> promptDiscardNumber(Player player, int number, boolean isMandatory, String cause) {
+		return promptDiscardNumber(player, number, isMandatory, cause, "actionPrompt");
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to discard.
+	 */
+	public List<Card> promptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String promptType) {
+		if (player.getHand().size() < number) {
+			number = player.getHand().size();
 		}
-	}
-
-	public List<Card> promptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String destination) {
-		return promptDiscardNumber(player, number, isMandatory, cause, "actionPrompt", destination);
-	}
-
-	@SuppressWarnings("unchecked")
-	public List<Card> promptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String promptType, String destination) {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
-			List<Card> response = bot.discardNumber(number);
+			List<Card> toDiscard = bot.discardNumber(number, isMandatory);
+			// check that the bot's choice is valid
+			if (isMandatory && toDiscard.size() != number) {
+				throw new IllegalStateException();
+			}
 			List<Card> handCopy = new ArrayList<Card>(bot.getHand());
-			for (Card card : response) {
+			for (Card card : toDiscard) {
 				if (!handCopy.remove(card)) {
 					throw new IllegalStateException();
 				}
 			}
-			return response;
+			return toDiscard;
+		}
+		return sendPromptDiscardNumber(player, number, isMandatory, cause, promptType, "discard");
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to trash.
+	 * This choice is mandatory.
+	 * This choice is the "actionPrompt" type.
+	 */
+	public List<Card> promptTrashNumber(Player player, int number, String cause) {
+		return promptTrashNumber(player, number, true, cause, "actionPrompt");
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to trash.
+	 * This choice is the "actionPrompt" type.
+	 */
+	public List<Card> promptTrashNumber(Player player, int number, boolean isMandatory, String cause) {
+		return promptTrashNumber(player, number, isMandatory, cause, "actionPrompt");
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to trash.
+	 */
+	public List<Card> promptTrashNumber(Player player, int number, boolean isMandatory, String cause, String promptType) {
+		if (player.getHand().size() < number) {
+			number = player.getHand().size();
+		}
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			List<Card> toTrash = bot.trashNumber(number, isMandatory);
+			// check that the bot's choice is valid
+			if (isMandatory && toTrash.size() != number) {
+				throw new IllegalStateException();
+			}
+			List<Card> handCopy = new ArrayList<Card>(bot.getHand());
+			for (Card card : toTrash) {
+				if (!handCopy.remove(card)) {
+					throw new IllegalStateException();
+				}
+			}
+			return toTrash;
+		}
+		return sendPromptDiscardNumber(player, number, isMandatory, cause, promptType, "trash");
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to put from their
+	 * hand on top of their deck.
+	 * This prompt is mandatory.
+	 * This prompt is the "actionPrompt" type.
+	 */
+	public List<Card> promptPutNumberOnDeck(Player player, int number, String cause) {
+		if (player.getHand().size() < number) {
+			number = player.getHand().size();
+		}
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			List<Card> toPutOnDeck = bot.putNumberOnDeck(number);
+			// check that the bot's choice is valid
+			if (toPutOnDeck.size() != number) {
+				throw new IllegalStateException();
+			}
+			List<Card> handCopy = new ArrayList<Card>(bot.getHand());
+			for (Card card : toPutOnDeck) {
+				if (!handCopy.remove(card)) {
+					throw new IllegalStateException();
+				}
+			}
+			return toPutOnDeck;
+		}
+		return sendPromptDiscardNumber(player, number, true, cause, "actionPrompt", "draw");
+	}
+
+	/**
+	 * Prompts a human player for a number of cards to discard, trash, or put
+	 * on top of their deck, all from their hand.
+	 * destination determines which of these three the prompt is.
+	 * "discard" -> discard
+	 * "trash" -> trash
+	 * "draw" -> put on top of deck
+	 */
+	@SuppressWarnings("unchecked")
+	public List<Card> sendPromptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String promptType, String destination) {
+		if (player instanceof Bot) {
+			throw new IllegalStateException();
 		}
 		// prompt
 		JSONObject prompt = new JSONObject();

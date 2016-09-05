@@ -24,7 +24,7 @@ public class Cellar extends Card {
 		game.message(player, "... You get +1 action");
 		game.messageOpponents(player, "... getting +1 action");
 		// discard any number of cards
-		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Cellar", "discard");
+		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Cellar");
 		player.putFromHandIntoDiscard(discarded);
 		// draw the same number of cards
 		List<Card> drawn = player.drawIntoHand(discarded.size());

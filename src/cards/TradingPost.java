@@ -20,7 +20,7 @@ public class TradingPost extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		if (player.getHand().size() >= 2) {
-			List<Card> toTrash = game.promptDiscardNumber(player, 2, true, "Trading Post", "trash");
+			List<Card> toTrash = game.promptTrashNumber(player, 2, "Trading Post");
 			player.removeFromHand(toTrash);
 			game.trash.addAll(toTrash);
 			if (game.supply.get(Card.SILVER) > 0) {
