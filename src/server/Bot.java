@@ -3,6 +3,7 @@ package server;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -17,7 +18,7 @@ public class Bot extends Player {
 			return c2.cost() - c1.cost();
 		}
 	};
-	
+
 	@Override
 	protected void sendCommand(JSONObject command, boolean autoIssue) {}
 
@@ -62,15 +63,16 @@ public class Bot extends Player {
 	}
 
 	public Card chooseTrashFromHand(Set<Card> choiceSet) {
-		if (choiceSet.contains(Card.CURSE)) {
-			return Card.CURSE;
-		} else if (choiceSet.contains(Card.ESTATE)) {
-			return Card.ESTATE;
-		} else if (choiceSet.contains(Card.COPPER)) {
-			return Card.COPPER;
-		} else {
-			return choiceSet.iterator().next();
+		// trash a card willingly
+		Card card = wantToTrash(choiceSet);
+		if (card != null) {
+			return card;
 		}
+		// trash the cheapest card
+		List<Card> choiceList = new ArrayList<Card>(choiceSet);
+		Collections.sort(choiceList, COST_ORDER_COMPARATOR);
+		Collections.reverse(choiceList);
+		return choiceList.get(0);
 	}
 
 	public Card choosePutOnDeck(Set<Card> choiceSet) {
@@ -100,11 +102,12 @@ public class Bot extends Player {
 		}
 		// only discard more if it's mandatory
 		if (isMandatory) {
+			// discard the cheapest card
 			Collections.sort(handCopy, COST_ORDER_COMPARATOR);
 			Collections.reverse(handCopy);
 			toDiscard.addAll(handCopy.subList(0, number - toDiscard.size()));
 		}
-		return toDiscard;		
+		return toDiscard;
 	}
 
 	public Card wantToDiscard(List<Card> cards) {
@@ -117,8 +120,34 @@ public class Bot extends Player {
 	}
 
 	public List<Card> trashNumber(int number, boolean isMandatory) {
-		// TODO use trashFromHand as a helper
-		return new ArrayList<Card>(getHand().subList(0, Math.min(number, getHand().size())));
+		List<Card> toTrash = new ArrayList<Card>();
+		List<Card> handCopy = new ArrayList<Card>(getHand());
+		// trash some cards willingly
+		while (toTrash.size() < number && wantToTrash(new HashSet<Card>(handCopy)) != null) {
+			Card card = wantToTrash(new HashSet<Card>(handCopy));
+			handCopy.remove(card);
+			toTrash.add(card);
+		}
+		// only trash more if it's mandatory
+		if (isMandatory) {
+			// trash the cheapest card
+			Collections.sort(handCopy, COST_ORDER_COMPARATOR);
+			Collections.reverse(handCopy);
+			toTrash.addAll(handCopy.subList(0, number - toTrash.size()));
+		}
+		return toTrash;
+	}
+
+	public Card wantToTrash(Set<Card> choiceSet) {
+		if (choiceSet.contains(Card.CURSE)) {
+			return Card.CURSE;
+		} else if (choiceSet.contains(Card.ESTATE)) {
+			return Card.ESTATE;
+		} else if (choiceSet.contains(Card.COPPER)) {
+			return Card.COPPER;
+		} else {
+			return null;
+		}
 	}
 
 	public List<Card> putNumberOnDeck(int number) {
