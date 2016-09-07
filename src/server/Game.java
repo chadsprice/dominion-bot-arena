@@ -137,7 +137,7 @@ public class Game implements Runnable {
 			player.putFromHandIntoPlay(choice);
 			player.addActions(-1);
 			// play action
-			playAction(player, choice);
+			playAction(player, choice, false);
 		}
 		clearActions(player);
 		boolean givenBuyPrompt = false;
@@ -171,7 +171,7 @@ public class Game implements Runnable {
 		player.turns++;
 	}
 
-	public void playAction(Player player, Card action) {
+	public boolean playAction(Player player, Card action, boolean hasTrashedSelf) {
 		actionsPlayedThisTurn++;
 		message(player, "You play " + action.htmlName());
 		messageOpponents(player, player.username + " plays " + action.htmlName());
@@ -185,8 +185,9 @@ public class Game implements Runnable {
 				}
 			}
 			action.onAttack(player, this, targets);
+			return false;
 		} else {
-			action.onPlay(player, this);
+			return action.onPlayWithSelfTrashing(player, this, hasTrashedSelf);
 		}
 	}
 
@@ -885,7 +886,11 @@ public class Game implements Runnable {
 		if (choiceSet.contains(chosen)) {
 			return chosen;
 		} else {
-			return null;
+			if (isMandatory) {
+				return choiceSet.iterator().next();
+			} else {
+				return null;
+			}
 		}
 	}
 

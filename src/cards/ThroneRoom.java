@@ -22,33 +22,13 @@ public class ThroneRoom extends Card {
 		Set<Card> actions = game.playableActions(player);
 		if (actions.size() > 0) {
 			Card toPlay = game.promptChoosePlay(player, actions, "Throne Room: Choose an action to play twice");
-			if (toPlay == null) {
-				toPlay = actions.iterator().next();
-			}
 			// put the chosen card into play
 			player.putFromHandIntoPlay(toPlay);
 			game.message(player, "... You play " + toPlay.htmlName() + " twice");
 			game.messageOpponents(player, "...  playing " + toPlay.htmlName() + " twice");
 			// this may not be a sufficient check to ensure that one-shots cannot be throne room'd
-			int initialCount = 0;
-			for (Card card : player.getPlay()) {
-				if (card == toPlay) {
-					initialCount++;
-				}
-			}
-			game.playAction(player, toPlay);
-			int finalCount = 0;
-			for (Card card : player.getPlay()) {
-				if (card == toPlay) {
-					finalCount++;
-				}
-			}
-			if (initialCount <= finalCount) {
-				game.playAction(player, toPlay);
-			} else {
-				game.message(player, toPlay.htmlNameRaw() + " cannot be played again because it has been trashed");
-				game.messageOpponents(player, toPlay.htmlNameRaw() + " cannot be played again because it has been trashed");
-			}
+			boolean hasTrashedSelf = game.playAction(player, toPlay, false);
+			game.playAction(player, toPlay, hasTrashedSelf);
 		} else {
 			game.message(player, "... You have no actions to play twice");
 			game.messageOpponents(player, " ... having no actions to play twice");

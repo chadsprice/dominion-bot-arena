@@ -20,12 +20,16 @@ public class Feast extends Card {
 	}
 
 	@Override
-	public void onPlay(Player player, Game game) {
-		// trash this
-		player.removeFromPlay(this);
-		game.trash.add(this);
-		game.message(player, "... You trash the " + this.htmlNameRaw());
-		game.messageOpponents(player, "... trashing the " + this.htmlNameRaw());
+	public boolean onPlayWithSelfTrashing(Player player, Game game, boolean hasTrashedSelf) {
+		boolean trashesSelf = false;
+		if (!hasTrashedSelf) {
+			// trash this
+			player.removeFromPlay(this);
+			game.trash.add(this);
+			game.message(player, "... You trash the " + this.htmlNameRaw());
+			game.messageOpponents(player, "... trashing the " + this.htmlNameRaw());
+			trashesSelf = true;
+		}
 		// gain a card costing up to $5
 		Set<Card> gainable = new HashSet<Card>();
 		Card toGain = null;
@@ -39,7 +43,7 @@ public class Feast extends Card {
 		if (gainable.size() == 0) {
 			game.message(player, "... You gain nothing");
 			game.messageOpponents(player, "... gaining nothing");
-			return;
+			return trashesSelf;
 		} else {
 			Card choice = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain");
 			if (choice != null) {
@@ -52,6 +56,7 @@ public class Feast extends Card {
 		game.gain(player, toGain);
 		game.message(player, "... You gain " + toGain.htmlName());
 		game.messageOpponents(player, "... gaining " + toGain.htmlName());
+		return trashesSelf;
 	}
 
 	@Override

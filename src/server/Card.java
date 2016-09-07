@@ -219,6 +219,11 @@ public class Card {
 	public void onPlay(Player player, Game game) {
 		throw new UnsupportedOperationException();
 	}
+	public boolean onPlayWithSelfTrashing(Player player, Game game, boolean hasTrashedSelf) {
+		onPlay(player, game);
+		return false;
+	}
+	
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		throw new UnsupportedOperationException();
 	}

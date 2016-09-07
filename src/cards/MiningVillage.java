@@ -18,22 +18,26 @@ public class MiningVillage extends Card {
 	}
 
 	@Override
-	public void onPlay(Player player, Game game) {
+	public boolean onPlayWithSelfTrashing(Player player, Game game, boolean hasTrashedSelf) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
 		// +2 actions
 		player.addActions(2);
 		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +2 actions");
 		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +2 actions");
-		// you may trash this card for +$2
-		int choice = game.promptMultipleChoice(player, "Mining Village: Trash the " + this.htmlName() + " for +$2?", new String[] {"Trash", "Keep"});
-		if (choice == 0) {
-			player.removeFromPlay(this);
-			game.trash.add(this);
-			player.addExtraCoins(2);
-			game.message(player, "... You trash the " + this.htmlNameRaw() + " and get +$2");
-			game.messageOpponents(player, "... trashing the " + this.htmlNameRaw() + " and getting +$2");
+		if (!hasTrashedSelf) {
+			// you may trash this card for +$2
+			int choice = game.promptMultipleChoice(player, "Mining Village: Trash the " + this.htmlName() + " for +$2?", new String[] {"Trash", "Keep"});
+			if (choice == 0) {
+				player.removeFromPlay(this);
+				game.trash.add(this);
+				player.addExtraCoins(2);
+				game.message(player, "... You trash the " + this.htmlNameRaw() + " and get +$2");
+				game.messageOpponents(player, "... trashing the " + this.htmlNameRaw() + " and getting +$2");
+				return true;
+			}
 		}
+		return false;
 	}
 
 	@Override
