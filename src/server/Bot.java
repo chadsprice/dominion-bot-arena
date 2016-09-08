@@ -59,7 +59,82 @@ public class Bot extends Player {
 	}
 
 	public Card choosePlay(Set<Card> choiceSet, boolean isMandatory) {
-		return choiceSet.iterator().next();
+		// play "free" cantrips first (cards that always give at least +1 card, +1 action)
+		Card freeCantrip = firstFreeCantrip(choiceSet);
+		if (freeCantrip != null) {
+			return freeCantrip;
+		}
+		// play any card that might have some benefit
+		for (Card card : choiceSet) {
+			if (!hasNoBenefit(card)) {
+				return card;
+			}
+		}
+		// if mandatory, return something
+		if (isMandatory) {
+			return choiceSet.iterator().next();
+		} else {
+			// otherwise, do nothing
+			return null;
+		}
+	}
+
+	public Card firstFreeCantrip(Set<Card> choiceSet) {
+		for (Card card : choiceSet) {
+			if (isFreeCantrip(card)) {
+				return card;
+			}
+		}
+		return null;
+	}
+
+	private boolean isFreeCantrip(Card card) {
+		Card[] freeCantrips = new Card[] {Card.VILLAGE, Card.SPY, Card.FESTIVAL, Card.LABORATORY, Card.MARKET, Card.GREAT_HALL, Card.WISHING_WELL, Card.MINING_VILLAGE};
+		for (Card freeCantrip : freeCantrips) {
+			if (card == freeCantrip) {
+				return true;
+			}
+		}
+		// conspirator is a free cantrip if it will be the third action played (or more)
+		if (card == Card.CONSPIRATOR && this.game.actionsPlayedThisTurn >= 2) {
+			return true;
+		}
+		return false;
+	}
+
+	private boolean hasNoBenefit(Card card) {
+		// if playing this card will get conspirator to become a cantrip, then that is a benefit
+		if (getActions() - this.game.actionsPlayedThisTurn >= 3 && getHand().contains(Card.CONSPIRATOR)) {
+			return false;
+		}
+		if (card == Card.CELLAR) {
+			// Cellar has no benefit if you do not want to discard anything
+			return wantToDiscard(getHand()) == null;
+		} else if (card == Card.CHAPEL) {
+			// Chapel has no benefit if you do not want to trash anything
+			return wantToTrash(new HashSet<Card>(getHand())) == null;
+		} else if (card == Card.MONEYLENDER) {
+			// Moneylender has no benefit if you have no copper
+			return !getHand().contains(Card.COPPER);
+		} else if (card == Card.LIBRARY) {
+			// Library has no benefit if you already have more than 7 cards in hand
+			return getHand().size() > 7;
+		} else if (card == Card.MINE) {
+			// Mine has no benefit if you have no treasure cards in hand
+			for (Card cardInHand : getHand()) {
+				if (cardInHand.isTreasure) {
+					return false;
+				}
+			}
+			return true;
+		} else if (card == Card.COPPERSMITH) {
+			// Coppersmith has no benefit if you have no Copper in hand
+			return !getHand().contains(Card.COPPER);
+		} else if (card == Card.TRADING_POST) {
+			// Trading Post has no benefit if you cannot trash two cards from your hand (after playing it)
+			return getHand().size() < 3;
+		}
+		return false;
 	}
 
 	public Card chooseTrashFromHand(Set<Card> choiceSet) {
