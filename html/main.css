@@ -180,12 +180,6 @@ body {
   margin: 0;
 }
 
-/*
-#waitingOn, #prompt, #more, #playerStatus, #hand {
-  flex-shrink: 0;
-}
-*/
-
 #log {
   margin-left: 2em;
   margin-bottom: 2em;
@@ -387,6 +381,10 @@ body {
 
 #chatDisplay {
   word-wrap: break-word;
+}
+
+.chatUsername {
+  font-weight: bold;
 }
 
 #chatControl {

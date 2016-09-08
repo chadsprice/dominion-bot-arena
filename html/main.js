@@ -1190,7 +1190,7 @@ Appends a received chat message to chatDisplay.
 */
 function receiveChat(username, message) {
   var p = document.createElement('p');
-  p.innerHTML = username + ': ' + message;
+  p.innerHTML = '<span class="chatUsername">' + username + ':</span> ' + message;
   document.getElementById('chatDisplay').appendChild(p);
 }
 
