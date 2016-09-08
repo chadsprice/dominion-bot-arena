@@ -129,8 +129,6 @@ function log(message) {
   var p = document.createElement('p');
   p.innerHTML = message;
   log.appendChild(p);
-  // automatically scroll to the bottom of the log
-  scrollToBottom('log');
 }
 
 /*
@@ -468,7 +466,6 @@ function setWaitingOn(player) {
   } else {
     waitingOn.style.display = 'none';
   }
-  scrollToBottom('log');
 }
 
 /*
@@ -505,7 +502,6 @@ function addPromptButton(buttonText) {
 
 function displayPrompt() {
   document.getElementById('prompt').style.display = 'block';
-  scrollToBottom('log');
 }
 
 function sendResponseOnMouseDown(elem, response) {
@@ -1196,7 +1192,6 @@ function receiveChat(username, message) {
   var p = document.createElement('p');
   p.innerHTML = username + ': ' + message;
   document.getElementById('chatDisplay').appendChild(p);
-  scrollToBottom('chatDisplay');
 }
 
 /*
@@ -1232,7 +1227,6 @@ function endGame() {
     socket.send(JSON.stringify({'type':'returnToLobby'}));
   };
   document.getElementById('log').appendChild(button);
-  scrollToBottom('log');
 }
 
 function executeCommand(command) {
@@ -1336,6 +1330,9 @@ function receiveServerCommands(text) {
   commands = JSON.parse(text);
   for (var i = 0; i < commands.length; i++) {
     executeCommand(commands[i]);
+  }
+  if (document.getElementById('game').style.display == 'flex') {
+    window.scrollTo(0, document.getElementById('game').clientHeight);
   }
 }
 

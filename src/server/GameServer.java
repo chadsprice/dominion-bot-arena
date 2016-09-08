@@ -865,14 +865,6 @@ public class GameServer {
 	private Map<Set<Card>, List<Card>> winningStrategies;
 
 	public void recordWinningStrategy(Set<Card> kingdom, List<Card> gainStrategy) {
-		System.out.println("Kingdom:");
-		for (Card card : kingdom) {
-			System.out.println(card.toString());
-		}
-		System.out.println("Gain Strategy");
-		for (Card card : gainStrategy) {
-			System.out.println(card.toString());
-		}
 		winningStrategies.put(kingdom, gainStrategy);
 	}
 

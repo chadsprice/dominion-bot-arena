@@ -48,10 +48,19 @@ body {
 }
 
 #game {
-  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-height: 100%;
+  overflow-y: scroll;
+}
+
+#gameColumns {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  width: 100%;
+  justify-content: space-between;
   align-items: stretch;
 }
 
@@ -172,9 +181,11 @@ body {
   margin: 0;
 }
 
+/*
 #waitingOn, #prompt, #more, #playerStatus, #hand {
   flex-shrink: 0;
 }
+*/
 
 #log {
   margin-left: 2em;
@@ -190,10 +201,6 @@ body {
 #playerStatus {
   margin-left: 2em;
   margin-bottom: 1em;
-}
-
-#log {
-  overflow-y: scroll;
 }
 
 .forfeit, .hurryUp {
@@ -372,21 +379,19 @@ body {
 }
 
 /* Chat */
-#chatDisplay, #chatControl {
-  flex-shrink: 0;
+#chat {
+  width: 20em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 }
 
 #chatDisplay {
-  height: 6em;
-  overflow-y: scroll;
+  word-wrap: break-word;
 }
 
 #chatControl {
   margin-bottom: 1em;
-}
-
-#chatInput {
-  width: 25em;
 }
 
 #chatSendButton {
