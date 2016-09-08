@@ -1326,12 +1326,21 @@ function executeCommand(command) {
 Receives a string from the server, executing it as a list of commands.
 */
 function receiveServerCommands(text) {
+  // print all commands for debugging
   console.log(text);
   commands = JSON.parse(text);
+  // remember if the user was scrolled to the bottom of the game screen
+  var lockToBottomOfGame = false;
+  var gameDiv = document.getElementById('game');
+  if (gameDiv.style.display == 'flex' && gameDiv.clientHeight - window.innerHeight == window.pageYOffset) {
+    lockToBottomOfGame = true;
+  }
+  // execute commands
   for (var i = 0; i < commands.length; i++) {
     executeCommand(commands[i]);
   }
-  if (document.getElementById('game').style.display == 'flex') {
+  // if the user was scrolled to the bottom of the game screen, scroll there again
+  if (lockToBottomOfGame && gameDiv.style.display == 'flex') {
     window.scrollTo(0, document.getElementById('game').clientHeight);
   }
 }
