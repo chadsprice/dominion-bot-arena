@@ -115,6 +115,8 @@ public class Game implements Runnable {
 			clearActions(player);
 			clearBuys(player);
 		}
+		// start recording gain strategies
+		initRecords();
 	}
 
 	private void takeTurn(Player player) {
@@ -285,6 +287,7 @@ public class Game implements Runnable {
 			// if this player won
 			if (reportCards.get(player).points == winningPoints && player.turns == winningTurns) {
 				message(player, "You win!");
+				recordPlayerWin(player);
 			}
 			// otherwise, announce all winning opponents
 			for (Player opponent : getOpponents(player)) {
@@ -642,7 +645,9 @@ public class Game implements Runnable {
 			}
 			return card;
 		}
-		return sendPromptChooseFromSupply(player, choiceSet, "Buy Phase: Choose a card to purchase", "buyPrompt", false, "End Turn");
+		Card toBuy = sendPromptChooseFromSupply(player, choiceSet, "Buy Phase: Choose a card to purchase", "buyPrompt", false, "End Turn");
+		recordPlayerGained(player, toBuy);
+		return toBuy;
 	}
 
 	/**
@@ -683,7 +688,9 @@ public class Game implements Runnable {
 			}
 			return card;
 		}
-		return sendPromptChooseFromSupply(player, choiceSet, promptMessage, promptType, isMandatory, noneMessage);
+		Card toGain = sendPromptChooseFromSupply(player, choiceSet, promptMessage, promptType, isMandatory, noneMessage);
+		recordPlayerGained(player, toGain);
+		return toGain;
 	}
 
 	/**
@@ -1172,6 +1179,29 @@ public class Game implements Runnable {
 
 		}
 		return list;
+	}
+
+	// record player choices for later data mining
+	Map<Player, List<Card>> gainRecords;
+
+	private void initRecords() {
+		gainRecords = new HashMap<Player, List<Card>>();
+		for (Player player : players) {
+			gainRecords.put(player, new ArrayList<Card>());
+		}
+	}
+
+	private void recordPlayerGained(Player player, Card card) {
+		if (card != null) {
+			gainRecords.get(player).add(card);
+		}
+	}
+
+	private void recordPlayerWin(Player player) {
+		List<Card> gainRecord = gainRecords.get(player);
+		if (!gainRecord.isEmpty()) {
+			server.recordWinningStrategy(new HashSet<Card>(this.kingdomCards), gainRecord);
+		}
 	}
 
 }

@@ -68,6 +68,7 @@ public class GameServer {
 		validLogins = new HashMap<String, String>();
 		loadLogins();
 		gameLobbies = new HashMap<String, GameLobby>();
+		winningStrategies = new HashMap<Set<Card>, List<Card>>();
 		startHttpServer();
 		startWebSocketServer();
 	}
@@ -324,8 +325,12 @@ public class GameServer {
 			return;
 		}
 		List<Player> bots = new ArrayList<Player>();
-		for (@SuppressWarnings("unused") String botName : botNames) {
-			bots.add(new Bot());
+		for (String botName : botNames) {
+			if ("Mimic".equals(botName)) {
+				bots.add(new MimicBot());
+			} else {
+				bots.add(new Bot());
+			}
 		}
 		// create the lobby
 		GameLobby lobby = new GameLobby(name, numPlayers, sets, requiredCards, forbiddenCards, bots);
@@ -667,6 +672,7 @@ public class GameServer {
 		// send all available bots
 		JSONArray availableBots = new JSONArray();
 		availableBots.add("BigMoney");
+		availableBots.add("Mimic");
 		// send command to enter lobby
 		JSONObject command = new JSONObject();
 		command.put("command", "enterLobby");
@@ -738,7 +744,34 @@ public class GameServer {
 		}
 	}
 
+	public synchronized void forfeit(Player forfeitPlayer) {
+		// if the player is not in a game, ignore the request
+		if (forfeitPlayer.game == null) {
+			return;
+		}
+		// tell the game that the player has forfeited
+		forfeitPlayer.game.forfeit(forfeitPlayer, false);
+		// reassign the connection to a new player object
+		PlayerWebSocketHandler conn = forfeitPlayer.conn;
+		forfeitPlayer.conn = null;
+		Player newPlayer = new Player(conn);
+		players.remove(conn);
+		players.put(conn, newPlayer);
+		// transfer the user's login to the new player object
+		loggedInPlayers.remove(forfeitPlayer.username);
+		loggedInPlayers.put(forfeitPlayer.username, newPlayer);
+		newPlayer.username = forfeitPlayer.username;
+		// send the player back to the lobby
+		sendToLobby(newPlayer);
+	}
+
 	private void setupGame(Game game, Set<Set<Card>> sets, Set<Card> required, Set<Card> forbidden, Set<Player> players) {
+		if (containsMimicBot(players)) {
+			boolean successful = setupGameWithMimicBot(game, players);
+			if (successful) {
+				return;
+			}
+		}
 		// start with the required cards
 		Set<Card> chosen = required;
 		if (chosen.size() > 10) {
@@ -781,25 +814,66 @@ public class GameServer {
 		game.init(this, players, chosen, basicSet);
 	}
 
-	public synchronized void forfeit(Player forfeitPlayer) {
-		// if the player is not in a game, ignore the request
-		if (forfeitPlayer.game == null) {
-			return;
+	private boolean setupGameWithMimicBot(Game game, Set<Player> players) {
+		// if there are no strategies to mimic, replace all of the mimic bots with big money
+		if (winningStrategies.keySet().isEmpty()) {
+			int numToReplace = 0;
+			for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
+				if (iter.next() instanceof MimicBot) {
+					iter.remove();
+					numToReplace++;
+				}
+			}
+			for (int n = 0; n < numToReplace; n++) {
+				Bot bot = new Bot();
+				bot.game = game;
+				players.add(bot);
+			}
+			return false;
 		}
-		// tell the game that the player has forfeited
-		forfeitPlayer.game.forfeit(forfeitPlayer, false);
-		// reassign the connection to a new player object
-		PlayerWebSocketHandler conn = forfeitPlayer.conn;
-		forfeitPlayer.conn = null;
-		Player newPlayer = new Player(conn);
-		players.remove(conn);
-		players.put(conn, newPlayer);
-		// transfer the user's login to the new player object
-		loggedInPlayers.remove(forfeitPlayer.username);
-		loggedInPlayers.put(forfeitPlayer.username, newPlayer);
-		newPlayer.username = forfeitPlayer.username;
-		// send the player back to the lobby
-		sendToLobby(newPlayer);
+		Set<Card> kingdomSet = winningStrategies.keySet().iterator().next();
+		for (Player player : players) {
+			if (player instanceof MimicBot) {
+				MimicBot mimicBot = (MimicBot) player;
+				mimicBot.setStrategy(winningStrategies.get(kingdomSet));
+			}
+		}
+		// basic cards
+		Set<Card> basicSet = new HashSet<Card>();
+		basicSet.add(Card.PROVINCE);
+		basicSet.add(Card.DUCHY);
+		basicSet.add(Card.ESTATE);
+		basicSet.add(Card.GOLD);
+		basicSet.add(Card.SILVER);
+		basicSet.add(Card.COPPER);
+		basicSet.add(Card.CURSE);
+		// initialize the the necessary kingdom and basic set
+		game.init(this, players, kingdomSet, basicSet);
+		return true;
+	}
+
+	private boolean containsMimicBot(Set<Player> players) {
+		for (Player player : players) {
+			if (player instanceof MimicBot) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// record successful strategies that can be used by MimicBot
+	private Map<Set<Card>, List<Card>> winningStrategies;
+
+	public void recordWinningStrategy(Set<Card> kingdom, List<Card> gainStrategy) {
+		System.out.println("Kingdom:");
+		for (Card card : kingdom) {
+			System.out.println(card.toString());
+		}
+		System.out.println("Gain Strategy");
+		for (Card card : gainStrategy) {
+			System.out.println(card.toString());
+		}
+		winningStrategies.put(kingdom, gainStrategy);
 	}
 
 	public static void main(String[] args) {

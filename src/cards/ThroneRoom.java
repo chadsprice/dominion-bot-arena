@@ -26,7 +26,8 @@ public class ThroneRoom extends Card {
 			player.putFromHandIntoPlay(toPlay);
 			game.message(player, "... You play " + toPlay.htmlName() + " twice");
 			game.messageOpponents(player, "...  playing " + toPlay.htmlName() + " twice");
-			// this may not be a sufficient check to ensure that one-shots cannot be throne room'd
+			// remember if the card trashes itself on the first play
+			// necessary for cards like mining village
 			boolean hasTrashedSelf = game.playAction(player, toPlay, false);
 			game.playAction(player, toPlay, hasTrashedSelf);
 		} else {
