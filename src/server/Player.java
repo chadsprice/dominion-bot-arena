@@ -129,43 +129,6 @@ public class Player {
 		nativeVillageMat = new ArrayList<Card>();
 	}
 
-	public List<Card> takeFromDraw(int n) {
-		List<Card> drawn = new ArrayList<Card>();
-		// if draw pile is too small, take all of it and replace it with shuffled discard pile
-		if (draw.size() < n) {
-			drawn.addAll(draw);
-			draw.clear();
-			n -= drawn.size();
-			Collections.shuffle(discard);
-			draw.addAll(discard);
-			discard.clear();
-			if (draw.size() > 0) {
-				// announce that this player shuffled
-				game.message(this, "(you shuffle)");
-				game.messageOpponents(this, "(" + username + " shuffles)");
-			}
-			sendDiscardSize();
-		}
-		// if draw pile is still to small, take as much of draw pile as possible
-		if (draw.size() < n) {
-			drawn.addAll(draw);
-			draw.clear();
-		} else {
-			// otherwise, just take the remaining number
-			drawn.addAll(draw.subList(0, n));
-			draw = draw.subList(n, draw.size());
-		}
-		sendDrawSize();
-		return drawn;
-	}
-
-	public List<Card> drawIntoHand(int n) {
-		List<Card> drawn = takeFromDraw(n);
-		hand.addAll(drawn);
-		sendHand();
-		return drawn;
-	}
-
 	public void startGame() {
 		draw.clear();
 		hand.clear();
@@ -409,6 +372,64 @@ public class Player {
 	public void putOnDraw(List<Card> cards) {
 		draw.addAll(0, cards);
 		sendDrawSize();
+	}
+
+	public List<Card> takeFromDraw(int n) {
+		List<Card> drawn = new ArrayList<Card>();
+		// if draw pile is too small, take all of it and replace it with shuffled discard pile
+		if (draw.size() < n) {
+			drawn.addAll(draw);
+			draw.clear();
+			n -= drawn.size();
+			replaceDrawWithShuffledDiscard();
+		}
+		// if draw pile is still to small, take as much of draw pile as possible
+		if (draw.size() < n) {
+			drawn.addAll(draw);
+			draw.clear();
+		} else {
+			// otherwise, just take the remaining number
+			drawn.addAll(draw.subList(0, n));
+			draw = draw.subList(n, draw.size());
+		}
+		sendDrawSize();
+		return drawn;
+	}
+
+	private void replaceDrawWithShuffledDiscard() {
+		Collections.shuffle(discard);
+		draw.addAll(discard);
+		discard.clear();
+		if (draw.size() > 0) {
+			// announce that this player shuffled
+			game.message(this, "(you shuffle)");
+			game.messageOpponents(this, "(" + username + " shuffles)");
+			sendDiscardSize();
+		}
+	}
+
+	public List<Card> drawIntoHand(int n) {
+		List<Card> drawn = takeFromDraw(n);
+		hand.addAll(drawn);
+		sendHand();
+		return drawn;
+	}
+
+	public Card bottomOfDeck() {
+		if (draw.isEmpty()) {
+			replaceDrawWithShuffledDiscard();
+		}
+		if (!draw.isEmpty()) {
+			return draw.get(draw.size() - 1);
+		} else {
+			return null;
+		}
+	}
+
+	public Card takeFromBottomOfDeck() {
+		Card card = draw.remove(draw.size() - 1);
+		sendDrawSize();
+		return card;
 	}
 
 	public List<Card> getPlay() {

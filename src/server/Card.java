@@ -79,6 +79,7 @@ public class Card {
 	// seaside expansion
 	public static final Card EMBARGO = new Embargo();
 	public static final Card NATIVE_VILLAGE = new NativeVillage();
+	public static final Card PEARL_DIVER = new PearlDiver();
 
 	public static Map<String, Card> cardsByName;
 	
@@ -177,6 +178,7 @@ public class Card {
 		// seaside expansion
 		include(EMBARGO, SEASIDE_SET);
 		include(NATIVE_VILLAGE, SEASIDE_SET);
+		include(PEARL_DIVER, SEASIDE_SET);
 	}
 	
 	public static void include(Card card, Set<Card> kingdomSet) {
