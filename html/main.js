@@ -437,6 +437,16 @@ function setDeckSize(size, elemId) {
   }
 }
 
+function setNativeVillageMat(contents) {
+  var nativeVillageMat = document.getElementById('nativeVillageMat');
+  removeAllChildNodes(nativeVillageMat);
+  if (contents) {
+    var nativeVillageParagraph = document.createElement('p');
+    nativeVillageParagraph.innerHTML = 'Native Village: ' + contents;
+    nativeVillageMat.appendChild(nativeVillageParagraph);
+  }
+}
+
 /*
 Takes an array of objects containing the stacks in the hand, in order.
 [{name:'card name', count:integer}, ...]
@@ -1169,6 +1179,8 @@ function enterGame() {
   chatSendButton.onmousedown = chatSend;
   // clear prompt
   endPrompt();
+  // clear seaside UI
+  setNativeVillageMat();
   // hide lobby
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('gameLobby').style.display = 'none';
@@ -1303,6 +1315,9 @@ function executeCommand(command) {
       break;
     case 'setDiscardSize':
       setDeckSize(command.size, 'discardStatus');
+      break;
+    case 'setNativeVillageMat':
+      setNativeVillageMat(command.contents);
       break;
     case 'setHand':
       setHand(command.hand);

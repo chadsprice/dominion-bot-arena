@@ -340,11 +340,7 @@ public class Game implements Runnable {
 
 		public VictoryReportCard(Player player) {
 			points = 0;
-			List<Card> deck = new ArrayList<Card>();
-			deck.addAll(player.getDraw());
-			deck.addAll(player.getHand());
-			deck.addAll(player.getPlay());
-			deck.addAll(player.getDiscard());
+			List<Card> deck = player.getDeck();
 			victoryCards = new ArrayList<Card>();
 			for (Card card : deck) {
 				if (card.isVictory || card == Card.CURSE) {

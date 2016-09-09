@@ -110,6 +110,8 @@ public class Player {
 	private List<Card> play;
 	private List<Card> discard;
 
+	private List<Card> nativeVillageMat;
+
 	private int actions;
 	private int buys;
 	private int extraCoins;
@@ -124,6 +126,7 @@ public class Player {
 		hand = new ArrayList<Card>();
 		play = new ArrayList<Card>();
 		discard = new ArrayList<Card>();
+		nativeVillageMat = new ArrayList<Card>();
 	}
 
 	public List<Card> takeFromDraw(int n) {
@@ -414,6 +417,38 @@ public class Player {
 
 	public void removeFromPlay(Card card) {
 		play.remove(card);
+	}
+
+	public void putOnNativeVillageMat(Card card) {
+		nativeVillageMat.add(card);
+		sendNativeVillageMat();
+	}
+
+	public List<Card> takeAllFromNativeVillageMat() {
+		List<Card> taken = new ArrayList<Card>(nativeVillageMat);
+		nativeVillageMat.clear();
+		sendNativeVillageMat();
+		return taken;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendNativeVillageMat() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setNativeVillageMat");
+		if (!nativeVillageMat.isEmpty()) {
+			command.put("contents", Card.htmlList(nativeVillageMat));
+		}
+		sendCommand(command);
+	}
+
+	public List<Card> getDeck() {
+		List<Card> deck = new ArrayList<Card>();
+		deck.addAll(draw);
+		deck.addAll(hand);
+		deck.addAll(play);
+		deck.addAll(discard);
+		deck.addAll(nativeVillageMat);
+		return deck;
 	}
 
 }
