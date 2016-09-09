@@ -167,6 +167,25 @@ body {
   width: 100%;
 }
 
+.embargoTokens {
+  z-index: 4;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.embargoTokens > label {
+  color: #ffffff;
+  background-color: #ab47bc;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
 #play {
   margin-left: 2em;
   display: flex;

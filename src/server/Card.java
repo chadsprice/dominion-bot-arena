@@ -76,12 +76,15 @@ public class Card {
 	public static final Card TRIBUTE = new Tribute();
 	public static final Card UPGRADE = new Upgrade();
 	public static final Card WISHING_WELL = new WishingWell();
+	// seaside expansion
+	public static final Card EMBARGO = new Embargo();
 
 	public static Map<String, Card> cardsByName;
 	
 	public static Set<Card> BASIC_CARDS;
 	public static Set<Card> BASE_SET;
 	public static Set<Card> INTRIGUE_SET;
+	public static Set<Card> SEASIDE_SET;
 	
 	public static Map<String, Set<Card>> setsByName;
 	public static List<Set<Card>> setOrder;
@@ -92,6 +95,7 @@ public class Card {
 		BASIC_CARDS = new HashSet<Card>();
 		BASE_SET = new HashSet<Card>();
 		INTRIGUE_SET = new HashSet<Card>();
+		SEASIDE_SET = new HashSet<Card>();
 		setsByName = new HashMap<String, Set<Card>>();
 		
 		setOrder = new ArrayList<Set<Card>>();
@@ -100,6 +104,8 @@ public class Card {
 		setNames.add("Base");
 		setOrder.add(INTRIGUE_SET);
 		setNames.add("Intrigue");
+		setOrder.add(SEASIDE_SET);
+		setNames.add("Seaside");
 		for (int i = 0; i < setOrder.size(); i++) {
 			setsByName.put(setNames.get(i), setOrder.get(i));
 		}
@@ -167,6 +173,8 @@ public class Card {
 		include(TRIBUTE, INTRIGUE_SET);
 		include(UPGRADE, INTRIGUE_SET);
 		include(WISHING_WELL, INTRIGUE_SET);
+		// seaside expansion
+		include(EMBARGO, SEASIDE_SET);
 	}
 	
 	public static void include(Card card, Set<Card> kingdomSet) {

@@ -70,9 +70,11 @@ public class Game implements Runnable {
 
 	public boolean isGameOver;
 
+	// various bits of game state required by individual card rules
 	public int cardCostReduction;
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
+	public Map<Card, Integer> embargoTokens;
 
 	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Set<Card> basicSet) {
 		this.server = server;
@@ -97,13 +99,18 @@ public class Game implements Runnable {
 	}
 
 	public void setup() {
-		// kingdom cards
+		// add kingdom cards to supply
 		for (Card card : kingdomCards) {
 			supply.put(card, card.startingSupply(players.size()));
 		}
-		// basic cards
+		// add basic cards to supply
 		for (Card card : basicCards) {
 			supply.put(card, card.startingSupply(players.size()));
+		}
+		// initialize embargo tokens
+		embargoTokens = new HashMap<Card, Integer>();
+		for (Card cardInSupply : supply.keySet()) {
+			embargoTokens.put(cardInSupply, 0);
 		}
 		// randomize turn order
 		Collections.shuffle(players);
@@ -155,6 +162,7 @@ public class Game implements Runnable {
 			gain(player, choice);
 			message(player, "You purchase " + choice.htmlName());
 			messageOpponents(player, player.username + " purchases " + choice.htmlName());
+			onBuy(player, choice);
 			// update player status
 			player.addBuys(-1);
 			player.addExtraCoins(-choice.cost(this));
@@ -171,6 +179,18 @@ public class Game implements Runnable {
 			message(eachPlayer, "...");
 		}
 		player.turns++;
+	}
+
+	private void onBuy(Player player, Card card) {
+		// if that card's pile was embargoed
+		if (embargoTokens.get(card) > 0 && supply.get(Card.CURSE) > 0) {
+			int cursesToGain = Math.min(embargoTokens.get(card), supply.get(Card.CURSE));
+			for (int i = 0; i < cursesToGain; i++) {
+				gain(player, Card.CURSE);
+			}
+			message(player, "... You gain " + Card.CURSE.htmlName(cursesToGain));
+			messageOpponents(player, "... gaining " + Card.CURSE.htmlName(cursesToGain));
+		}
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasTrashedSelf) {
@@ -561,6 +581,22 @@ public class Game implements Runnable {
 	private void issueCommandsToAllPlayers() {
 		for (Player player : players) {
 			player.issueCommands();
+		}
+	}
+
+	public void addEmbargoToken(Card card) {
+		embargoTokens.put(card, embargoTokens.get(card) + 1);
+		sendEmbargoTokens(card);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendEmbargoTokens(Card card) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setEmbargoTokens");
+		command.put("card", card.toString());
+		command.put("numTokens", embargoTokens.get(card));
+		for (Player player : players) {
+			player.sendCommand(command);
 		}
 	}
 

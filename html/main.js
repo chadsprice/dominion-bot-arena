@@ -374,6 +374,21 @@ function setPileSizes(piles) {
   }
 }
 
+function setEmbargoTokens(card, numTokens) {
+  var cardArtDiv = supplyCardElems[card].pile.getElementsByClassName('cardArt')[0];
+  // remove previous embargo token UI element
+  while (cardArtDiv.getElementsByClassName('embargoTokens').length != 0) {
+    cardArtDiv.removeChild(cardArtDiv.getElementsByClassName('embargoTokens')[0]);
+  }
+  // add new embargo token UI element
+  var tokensDiv = document.createElement('div');
+  tokensDiv.className = 'embargoTokens';
+  var tokensLabel = document.createElement('label');
+  tokensLabel.innerHTML = numTokens.toString();
+  tokensDiv.appendChild(tokensLabel);
+  cardArtDiv.appendChild(tokensDiv);
+}
+
 function setActions(actions) {
   var numActions = document.getElementById('numActions');
   if (actions != '') {
@@ -1039,6 +1054,9 @@ function createCustomGame() {
   if (document.getElementById('intrigueCheckbox').checked) {
     sets.push('Intrigue');
   }
+  if (document.getElementById('seasideCheckbox').checked) {
+    sets.push('Seaside');
+  }
   var cards = document.getElementById('customGameCards').value;
   var bots = getBots();
   socket.send(JSON.stringify({'type':'createCustomGame', 'name':name, 'numPlayers':numPlayers, 'sets':sets, 'cards':cards, 'bots':bots}));
@@ -1267,6 +1285,9 @@ function executeCommand(command) {
       break;
     case 'setPileSizes':
       setPileSizes(command.piles);
+      break;
+    case 'setEmbargoTokens':
+      setEmbargoTokens(command.card, command.numTokens);
       break;
     case 'setActions':
       setActions(command.actions);
