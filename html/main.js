@@ -447,6 +447,16 @@ function setNativeVillageMat(contents) {
   }
 }
 
+function setDurations(contents) {
+  var durations = document.getElementById('durations');
+  removeAllChildNodes(durations);
+  if (contents) {
+    var durationsParagraph = document.createElement('p');
+    durationsParagraph.innerHTML = 'Duration: ' + contents;
+    durations.appendChild(durationsParagraph);
+  }
+}
+
 /*
 Takes an array of objects containing the stacks in the hand, in order.
 [{name:'card name', count:integer}, ...]
@@ -1181,6 +1191,7 @@ function enterGame() {
   endPrompt();
   // clear seaside UI
   setNativeVillageMat();
+  setDurations();
   // hide lobby
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('gameLobby').style.display = 'none';
@@ -1318,6 +1329,9 @@ function executeCommand(command) {
       break;
     case 'setNativeVillageMat':
       setNativeVillageMat(command.contents);
+      break;
+    case 'setDurations':
+      setDurations(command.contents);
       break;
     case 'setHand':
       setHand(command.hand);

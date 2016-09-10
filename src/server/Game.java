@@ -135,6 +135,8 @@ public class Game implements Runnable {
 		messageOpponents(player, "------ " + player.username + "'s turn ------");
 		player.sendActions();
 		player.sendBuys();
+		// resolve durations
+		resolveDurations(player);
 		while (player.getActions() > 0 && player.hasPlayableAction()) {
 			// action phase
 			Set<Card> choices = playableActions(player);
@@ -179,6 +181,15 @@ public class Game implements Runnable {
 			message(eachPlayer, "...");
 		}
 		player.turns++;
+	}
+
+	private void resolveDurations(Player player) {
+		for (Duration duration : player.getDurations()) {
+			message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect");
+			messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect");
+			duration.durationCard.onDurationEffect(player, this, duration);
+		}
+		player.durationsResolved();
 	}
 
 	private void onBuy(Player player, Card card) {

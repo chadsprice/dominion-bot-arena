@@ -112,6 +112,9 @@ public class Player {
 
 	private List<Card> nativeVillageMat;
 
+	private List<Duration> durations;
+	private List<Card> resolvedDurationCards;
+
 	private int actions;
 	private int buys;
 	private int extraCoins;
@@ -127,6 +130,8 @@ public class Player {
 		play = new ArrayList<Card>();
 		discard = new ArrayList<Card>();
 		nativeVillageMat = new ArrayList<Card>();
+		durations = new ArrayList<Duration>();
+		resolvedDurationCards = new ArrayList<Card>();
 	}
 
 	public void startGame() {
@@ -134,6 +139,9 @@ public class Player {
 		hand.clear();
 		play.clear();
 		discard.clear();
+		nativeVillageMat.clear();
+		durations.clear();
+		resolvedDurationCards.clear();
 		turns = 0;
 		for (int i = 0; i < 3; i++) {
 			draw.add(Card.ESTATE);
@@ -159,6 +167,8 @@ public class Player {
 		play.clear();
 		discard.addAll(hand);
 		hand.clear();
+		discard.addAll(resolvedDurationCards);
+		resolvedDurationCards.clear();
 		sendDiscardSize();
 		newTurn();
 	}
@@ -336,7 +346,16 @@ public class Player {
 
 	public void putFromHandIntoPlay(Card card) {
 		hand.remove(card);
-		play.add(card);
+		if (!card.isDuration) {
+			play.add(card);
+		} else {
+			Duration duration = new Duration();
+			duration.durationCard = card;
+			if (card == Card.HAVEN) {
+				duration.havenedCards = new ArrayList<Card>();
+			}
+			addDuration(duration);
+		}
 		sendHand();
 	}
 
@@ -462,6 +481,67 @@ public class Player {
 		sendCommand(command);
 	}
 
+	public List<Duration> getDurations() {
+		return durations;
+	}
+
+	public void durationsResolved() {
+		for (Duration duration : durations) {
+			resolvedDurationCards.add(duration.durationCard);
+			if (duration.modifier != null) {
+				resolvedDurationCards.add(duration.modifier);
+			}
+		}
+		durations.clear();
+		sendDurations();
+	}
+
+	public void addDuration(Duration duration) {
+		durations.add(duration);
+		if (duration.durationCard != Card.HAVEN) {
+			sendDurations();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendDurations() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setDurations");
+		command.put("contents", durationsString());
+		sendCommand(command);
+	}
+	
+	private String durationsString() {
+		StringBuilder builder = new StringBuilder();
+		Iterator<Duration> iter = durations.iterator();
+		while (iter.hasNext()) {
+			Duration duration = iter.next();
+			String durationString = duration.durationCard.htmlName();
+			if (duration.havenedCards != null) {
+				durationString += "(" + Card.htmlList(duration.havenedCards) + ")";
+			}
+			if (duration.modifier != null) {
+				durationString = duration.modifier.htmlName() + "(" + durationString + ")";
+			}
+			builder.append(durationString);
+			if (iter.hasNext()) {
+				builder.append(", ");
+			}
+		}
+		return builder.toString();
+	}
+
+	public void setDurationModifier(Card modifier) {
+		play.remove(modifier);
+		durations.get(durations.size() - 1).modifier = modifier;
+		sendDurations();
+	}
+	
+	public void haven(Card card) {
+		durations.get(durations.size() - 1).havenedCards.add(card);
+		sendDurations();
+	}
+
 	public List<Card> getDeck() {
 		List<Card> deck = new ArrayList<Card>();
 		deck.addAll(draw);
@@ -469,6 +549,16 @@ public class Player {
 		deck.addAll(play);
 		deck.addAll(discard);
 		deck.addAll(nativeVillageMat);
+		for (Duration duration : durations) {
+			deck.add(duration.durationCard);
+			if (duration.modifier != null) {
+				deck.add(duration.modifier);
+			}
+			if (duration.havenedCards != null) {
+				deck.addAll(duration.havenedCards);
+			}
+		}
+		deck.addAll(resolvedDurationCards);
 		return deck;
 	}
 

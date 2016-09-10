@@ -80,6 +80,7 @@ public class Card {
 	public static final Card EMBARGO = new Embargo();
 	public static final Card NATIVE_VILLAGE = new NativeVillage();
 	public static final Card PEARL_DIVER = new PearlDiver();
+	public static final Card HAVEN = new Haven();
 
 	public static Map<String, Card> cardsByName;
 	
@@ -179,6 +180,7 @@ public class Card {
 		include(EMBARGO, SEASIDE_SET);
 		include(NATIVE_VILLAGE, SEASIDE_SET);
 		include(PEARL_DIVER, SEASIDE_SET);
+		include(HAVEN, SEASIDE_SET);
 	}
 	
 	public static void include(Card card, Set<Card> kingdomSet) {
@@ -197,6 +199,7 @@ public class Card {
 	public boolean isVictory;
 	public boolean isAttack;
 	public boolean isAttackReaction;
+	public boolean isDuration;
 
 	public int startingSupply(int numPlayers) {
 		if (isVictory) {
@@ -241,6 +244,10 @@ public class Card {
 	}
 	public boolean onAttackReaction(Player player, Game game) {
 		return false;
+	}
+
+	public void onDurationEffect(Player player, Game game, Duration duration) {
+		throw new UnsupportedOperationException();
 	}
 
 	public String htmlClass() {

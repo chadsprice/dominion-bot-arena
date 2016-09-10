@@ -29,6 +29,9 @@ public class ThroneRoom extends Card {
 			// remember if the card trashes itself on the first play
 			// necessary for cards like mining village
 			boolean hasTrashedSelf = game.playAction(player, toPlay, false);
+			if (toPlay.isDuration) {
+				player.setDurationModifier(this);
+			}
 			game.playAction(player, toPlay, hasTrashedSelf);
 		} else {
 			game.message(player, "... You have no actions to play twice");
