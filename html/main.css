@@ -415,7 +415,7 @@ body {
 }
 
 /* Card name background colors */
-.action-victory, .treasure-victory, .reaction, .action, .treasure, .victory, .curse {
+.action-victory, .treasure-victory, .reaction, .duration, .action, .treasure, .victory, .curse {
   padding-left: 0.25em;
   padding-right: 0.25em;
 }
@@ -429,8 +429,11 @@ body {
 }
 
 .reaction {
-  /*background-color: #40A7DF;*/
   background-color: #64b5f6;
+}
+
+.duration {
+  background-color: #ff9100;
 }
 
 .action {
@@ -438,17 +441,14 @@ body {
 }
 
 .treasure {
-  /*background-color: #FFE160;*/
   background-color: #ffd54f;
 }
 
 .victory {
-  /*background-color: #92C379;*/
   background-color: #66bb6a;
 }
 
 .curse {
-  /*background-color: #D08BD7;*/
   background-color: #ce93d8;
 }
 

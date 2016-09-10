@@ -257,6 +257,8 @@ public class Card {
 			return "treasure-victory";
 		} else if (isAttackReaction) {
 			return "reaction";
+		} else if (isDuration) {
+			return "duration";
 		} else if (isAction) {
 			return "action";
 		} else if (isTreasure) {
@@ -345,6 +347,8 @@ public class Card {
 		} else if (isAction) {
 			if (isAttack) {
 				return "Action-Attack";
+			} else if (isDuration) {
+				return "Action-Duration";
 			} else {
 				return "Action";
 			}
