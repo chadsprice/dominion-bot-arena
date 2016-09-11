@@ -84,6 +84,7 @@ public class Card {
 	public static final Card PEARL_DIVER = new PearlDiver();
 	public static final Card AMBASSADOR = new Ambassador();
 	public static final Card FISHING_VILLAGE = new FishingVillage();
+	public static final Card LOOKOUT = new Lookout();
 
 	public static Map<String, Card> cardsByName;
 	
@@ -187,6 +188,7 @@ public class Card {
 		include(LIGHTHOUSE, SEASIDE_SET);
 		include(AMBASSADOR, SEASIDE_SET);
 		include(FISHING_VILLAGE, SEASIDE_SET);
+		include(LOOKOUT, SEASIDE_SET);
 	}
 	
 	public static void include(Card card, Set<Card> kingdomSet) {
