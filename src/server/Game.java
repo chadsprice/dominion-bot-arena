@@ -232,10 +232,12 @@ public class Game implements Runnable {
 	}
 
 	private boolean reactToAttack(Player player) {
-		if (player.getHand().contains(Card.LIGHTHOUSE)) {
-			message(player, ".. (You have " + Card.LIGHTHOUSE.htmlName() + " in play)");
-			messageOpponents(player, "... (" + player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play)");
-			return true;
+		for (Duration duration : player.getDurations()) {
+			if (duration.durationCard == Card.LIGHTHOUSE) {
+				message(player, ".. (You have " + Card.LIGHTHOUSE.htmlName() + " in play)");
+				messageOpponents(player, "... (" + player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play)");
+				return true;
+			}
 		}
 		boolean unaffected = false;
 		Set<Card> reactions = getAttackReactions(player);
