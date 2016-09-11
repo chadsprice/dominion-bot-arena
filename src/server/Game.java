@@ -185,9 +185,16 @@ public class Game implements Runnable {
 
 	private void resolveDurations(Player player) {
 		for (Duration duration : player.getDurations()) {
-			message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect");
-			messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect");
-			duration.durationCard.onDurationEffect(player, this, duration);
+			if (duration.modifier == Card.THRONE_ROOM && duration.durationCard != Card.HAVEN) {
+				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect twice");
+				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect twice");
+				duration.durationCard.onDurationEffect(player, this, duration);
+				duration.durationCard.onDurationEffect(player, this, duration);
+			} else {
+				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect");
+				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect");
+				duration.durationCard.onDurationEffect(player, this, duration);
+			}
 		}
 		player.durationsResolved();
 	}
@@ -225,6 +232,11 @@ public class Game implements Runnable {
 	}
 
 	private boolean reactToAttack(Player player) {
+		if (player.getHand().contains(Card.LIGHTHOUSE)) {
+			message(player, ".. (You have " + Card.LIGHTHOUSE.htmlName() + " in play)");
+			messageOpponents(player, "... (" + player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play)");
+			return true;
+		}
 		boolean unaffected = false;
 		Set<Card> reactions = getAttackReactions(player);
 		if (reactions.size() > 0) {

@@ -46,6 +46,7 @@ public class Haven extends Card {
 		player.addToHand(duration.havenedCards);
 		game.message(player, "... You return " + Card.htmlList(duration.havenedCards) + " to your hand");
 		game.messageOpponents(player, "... returning " + duration.havenedCards + " card(s) to his hand");
+		duration.havenedCards.clear();
 	}
 	
 	@Override
