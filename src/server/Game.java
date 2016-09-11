@@ -401,6 +401,16 @@ public class Game implements Runnable {
 		}
 	}
 
+	public void returnToSupply(Card card, int count) {
+		// update supply
+		supply.put(card, supply.get(card) + count);
+		Map<Card, Integer> newSize = new HashMap<Card, Integer>();
+		newSize.put(card, supply.get(card));
+		for (Player eachPlayer : players) {
+			setPileSizes(eachPlayer, newSize);
+		}
+	}
+
 	public void gain(Player player, Card card) {
 		takeFromSupply(card);
 		// put card in player's discard

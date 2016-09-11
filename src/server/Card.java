@@ -78,10 +78,11 @@ public class Card {
 	public static final Card WISHING_WELL = new WishingWell();
 	// seaside expansion
 	public static final Card EMBARGO = new Embargo();
-	public static final Card NATIVE_VILLAGE = new NativeVillage();
-	public static final Card PEARL_DIVER = new PearlDiver();
 	public static final Card HAVEN = new Haven();
 	public static final Card LIGHTHOUSE = new Lighthouse();
+	public static final Card NATIVE_VILLAGE = new NativeVillage();
+	public static final Card PEARL_DIVER = new PearlDiver();
+	public static final Card AMBASSADOR = new Ambassador();
 
 	public static Map<String, Card> cardsByName;
 	
@@ -183,6 +184,7 @@ public class Card {
 		include(PEARL_DIVER, SEASIDE_SET);
 		include(HAVEN, SEASIDE_SET);
 		include(LIGHTHOUSE, SEASIDE_SET);
+		include(AMBASSADOR, SEASIDE_SET);
 	}
 	
 	public static void include(Card card, Set<Card> kingdomSet) {
@@ -288,7 +290,7 @@ public class Card {
 		return this.toString() + "s";
 	}
 	public String htmlName(int count) {
-		return (count > 1 ? count : indefiniteArticle()) + " <span class=\"" + htmlClass() + "\">" + (count > 1 ? plural() : toString()) + "</span>";
+		return ((count > 1 || count == 0) ? count : indefiniteArticle()) + " <span class=\"" + htmlClass() + "\">" + ((count > 1 || count == 0) ? plural() : toString()) + "</span>";
 	}
 	public String htmlName() {
 		return htmlName(1);
