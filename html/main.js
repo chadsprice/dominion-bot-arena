@@ -447,6 +447,16 @@ function setNativeVillageMat(contents) {
   }
 }
 
+function setIslandMat(contents) {
+  var islandMat = document.getElementById('islandMat');
+  removeAllChildNodes(islandMat);
+  if (contents) {
+    var islandParagraph = document.createElement('p');
+    islandParagraph.innerHTML = 'Island: ' + contents;
+    islandMat.appendChild(islandParagraph);
+  }
+}
+
 function setDurations(contents) {
   var durations = document.getElementById('durations');
   removeAllChildNodes(durations);
@@ -1191,6 +1201,7 @@ function enterGame() {
   endPrompt();
   // clear seaside UI
   setNativeVillageMat();
+  setIslandMat();
   setDurations();
   // hide lobby
   document.getElementById('lobby').style.display = 'none';
@@ -1329,6 +1340,9 @@ function executeCommand(command) {
       break;
     case 'setNativeVillageMat':
       setNativeVillageMat(command.contents);
+      break;
+    case 'setIslandMat':
+      setIslandMat(command.contents);
       break;
     case 'setDurations':
       setDurations(command.contents);

@@ -18,14 +18,14 @@ public class MiningVillage extends Card {
 	}
 
 	@Override
-	public boolean onPlayWithSelfTrashing(Player player, Game game, boolean hasTrashedSelf) {
+	public boolean onPlay(Player player, Game game, boolean hasMoved) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
 		// +2 actions
 		player.addActions(2);
 		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +2 actions");
 		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +2 actions");
-		if (!hasTrashedSelf) {
+		if (!hasMoved) {
 			// you may trash this card for +$2
 			int choice = game.promptMultipleChoice(player, "Mining Village: Trash the " + this.htmlName() + " for +$2?", new String[] {"Trash", "Keep"});
 			if (choice == 0) {

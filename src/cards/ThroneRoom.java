@@ -24,8 +24,8 @@ public class ThroneRoom extends Card {
 			Card toPlay = game.promptChoosePlay(player, actions, "Throne Room: Choose an action to play twice");
 			// put the chosen card into play
 			player.putFromHandIntoPlay(toPlay);
-			game.message(player, "... You play " + toPlay.htmlName() + " twice");
-			game.messageOpponents(player, "...  playing " + toPlay.htmlName() + " twice");
+			game.message(player, "... You choose " + toPlay.htmlName());
+			game.messageOpponents(player, "...  choosing " + toPlay.htmlName());
 			// remember if the card trashes itself on the first play
 			// necessary for cards like mining village
 			boolean hasTrashedSelf = game.playAction(player, toPlay, false);
@@ -34,8 +34,8 @@ public class ThroneRoom extends Card {
 			}
 			game.playAction(player, toPlay, hasTrashedSelf);
 		} else {
-			game.message(player, "... You have no actions to play twice");
-			game.messageOpponents(player, " ... having no actions to play twice");
+			game.message(player, "... You have no actions");
+			game.messageOpponents(player, " ... having no actions");
 		}
 	}
 

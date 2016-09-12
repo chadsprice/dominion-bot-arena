@@ -212,7 +212,7 @@ public class Game implements Runnable {
 		}
 	}
 
-	public boolean playAction(Player player, Card action, boolean hasTrashedSelf) {
+	public boolean playAction(Player player, Card action, boolean hasMoved) {
 		actionsPlayedThisTurn++;
 		message(player, "You play " + action.htmlName());
 		messageOpponents(player, player.username + " plays " + action.htmlName());
@@ -228,7 +228,7 @@ public class Game implements Runnable {
 			action.onAttack(player, this, targets);
 			return false;
 		} else {
-			return action.onPlayWithSelfTrashing(player, this, hasTrashedSelf);
+			return action.onPlay(player, this, hasMoved);
 		}
 	}
 
@@ -885,6 +885,23 @@ public class Game implements Runnable {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
 			Card card = bot.chooseTrashFromHand(choiceSet);
+			// check that the bot is making a valid choice
+			if (!choiceSet.contains(card)) {
+				throw new IllegalArgumentException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", true, "");
+	}
+
+	/**
+	 * Returns a card that the player has chosen to trash from their hand.
+	 * This choice is mandatory.
+	 */
+	public Card promptChooseIslandFromHand(Player player, Set<Card> choiceSet, String promptMessage) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseIslandFromHand(choiceSet);
 			// check that the bot is making a valid choice
 			if (!choiceSet.contains(card)) {
 				throw new IllegalArgumentException();

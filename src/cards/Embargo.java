@@ -16,26 +16,26 @@ public class Embargo extends Card {
 	}
 
 	@Override
-	public boolean onPlayWithSelfTrashing(Player player, Game game, boolean hasTrashedSelf) {
-		boolean trashesSelf = false;
+	public boolean onPlay(Player player, Game game, boolean hasMoved) {
+		boolean movedToTrash = false;
 		// +$2
 		player.addExtraCoins(2);
 		game.message(player, "... You get +$2");
 		game.messageOpponents(player, "... getting +$2");
-		if (!hasTrashedSelf) {
+		if (!hasMoved) {
 			// trash this
 			player.removeFromPlay(this);
 			game.trash.add(this);
 			game.message(player, "... You trash the " + this.htmlNameRaw());
 			game.messageOpponents(player, "... trashing the " + this.htmlNameRaw());
-			trashesSelf = true;
+			movedToTrash = true;
 		}
 		// put an embargo token on top of a supply pile
 		Card toEmbargo = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Embargo: Put an embargo token on a supply pile.");
 		game.addEmbargoToken(toEmbargo);
 		game.message(player, "... You put an embargo token on the " + toEmbargo.htmlName() + " pile");
 		game.messageOpponents(player, "... putting an embargo token on the " + toEmbargo.htmlName() + " pile");
-		return trashesSelf;
+		return movedToTrash;
 	}
 
 	@Override

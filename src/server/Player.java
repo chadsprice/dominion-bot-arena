@@ -111,6 +111,7 @@ public class Player {
 	private List<Card> discard;
 
 	private List<Card> nativeVillageMat;
+	private List<Card> islandMat;
 
 	private List<Duration> durations;
 	private List<Card> resolvedDurationCards;
@@ -133,6 +134,7 @@ public class Player {
 		play = new ArrayList<Card>();
 		discard = new ArrayList<Card>();
 		nativeVillageMat = new ArrayList<Card>();
+		islandMat = new ArrayList<Card>();
 		durations = new ArrayList<Duration>();
 		resolvedDurationCards = new ArrayList<Card>();
 		cardsGainedDuringTurn = new HashSet<Card>();
@@ -144,6 +146,7 @@ public class Player {
 		play.clear();
 		discard.clear();
 		nativeVillageMat.clear();
+		islandMat.clear();
 		durations.clear();
 		resolvedDurationCards.clear();
 		turns = 0;
@@ -494,6 +497,21 @@ public class Player {
 		sendCommand(command);
 	}
 
+	public void putOnIslandMat(Card card) {
+		islandMat.add(card);
+		sendIslandMat();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendIslandMat() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setIslandMat");
+		if (!islandMat.isEmpty()) {
+			command.put("contents", Card.htmlList(islandMat));
+		}
+		sendCommand(command);
+	}
+
 	public List<Duration> getDurations() {
 		return durations;
 	}
@@ -562,6 +580,7 @@ public class Player {
 		deck.addAll(play);
 		deck.addAll(discard);
 		deck.addAll(nativeVillageMat);
+		deck.addAll(islandMat);
 		for (Duration duration : durations) {
 			deck.add(duration.durationCard);
 			if (duration.modifier != null) {

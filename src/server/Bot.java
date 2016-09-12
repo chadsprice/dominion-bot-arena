@@ -150,6 +150,20 @@ public class Bot extends Player {
 		return choiceList.get(0);
 	}
 
+	public Card chooseIslandFromHand(Set<Card> choiceSet) {
+		// island any plain victory card
+		for (Card card : choiceSet) {
+			if (card.isVictory && !card.isAction) {
+				return card;
+			}
+		}
+		// island the cheapest card
+		List<Card> choiceList = new ArrayList<Card>(choiceSet);
+		Collections.sort(choiceList, COST_ORDER_COMPARATOR);
+		Collections.reverse(choiceList);
+		return choiceList.get(0);
+	}
+
 	public Card choosePutOnDeck(Set<Card> choiceSet) {
 		return choiceSet.iterator().next();
 	}

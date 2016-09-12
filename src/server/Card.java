@@ -23,7 +23,7 @@ public class Card {
 	public static final Card CURSE = new Curse();
 
 	// kingdom cards
-	
+
 	// base set
 	public static final Card ADVENTURER = new Adventurer();
 	public static final Card BUREAUCRAT = new Bureaucrat();
@@ -89,18 +89,19 @@ public class Card {
 	public static final Card WAREHOUSE = new Warehouse();
 	public static final Card CARAVAN = new Caravan();
 	public static final Card CUTPURSE = new Cutpurse();
+	public static final Card ISLAND = new Island();
 
 	public static Map<String, Card> cardsByName;
-	
+
 	public static Set<Card> BASIC_CARDS;
 	public static Set<Card> BASE_SET;
 	public static Set<Card> INTRIGUE_SET;
 	public static Set<Card> SEASIDE_SET;
-	
+
 	public static Map<String, Set<Card>> setsByName;
 	public static List<Set<Card>> setOrder;
 	public static List<String> setNames;
-	
+
 	static {
 		cardsByName = new HashMap<String, Card>();
 		BASIC_CARDS = new HashSet<Card>();
@@ -108,7 +109,7 @@ public class Card {
 		INTRIGUE_SET = new HashSet<Card>();
 		SEASIDE_SET = new HashSet<Card>();
 		setsByName = new HashMap<String, Set<Card>>();
-		
+
 		setOrder = new ArrayList<Set<Card>>();
 		setNames = new ArrayList<String>();
 		setOrder.add(BASE_SET);
@@ -120,7 +121,7 @@ public class Card {
 		for (int i = 0; i < setOrder.size(); i++) {
 			setsByName.put(setNames.get(i), setOrder.get(i));
 		}
-		
+
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);
 		include(DUCHY, BASIC_CARDS);
@@ -131,7 +132,7 @@ public class Card {
 		include(CURSE, BASIC_CARDS);
 
 		// kingdom cards
-		
+
 		// base set
 		include(ADVENTURER, BASE_SET);
 		include(BUREAUCRAT, BASE_SET);
@@ -197,15 +198,16 @@ public class Card {
 		include(WAREHOUSE, SEASIDE_SET);
 		include(CARAVAN, SEASIDE_SET);
 		include(CUTPURSE, SEASIDE_SET);
+		include(ISLAND, SEASIDE_SET);
 	}
-	
+
 	public static void include(Card card, Set<Card> kingdomSet) {
 		cardsByName.put(card.toString(), card);
 		if (kingdomSet != null) {
 			kingdomSet.add(card);
 		}
 	}
-	
+
 	public static Card fromName(String name) {
 		return cardsByName.get(name);
 	}
@@ -250,11 +252,11 @@ public class Card {
 	public void onPlay(Player player, Game game) {
 		throw new UnsupportedOperationException();
 	}
-	public boolean onPlayWithSelfTrashing(Player player, Game game, boolean hasTrashedSelf) {
+	public boolean onPlay(Player player, Game game, boolean hasMoved) {
 		onPlay(player, game);
 		return false;
 	}
-	
+
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		throw new UnsupportedOperationException();
 	}
