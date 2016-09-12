@@ -127,6 +127,7 @@ public class Game implements Runnable {
 	}
 
 	private void takeTurn(Player player) {
+		player.startNewTurn();
 		if (cardCostReduction > 0) {
 			setCardCostReduction(0);
 		}
@@ -415,6 +416,32 @@ public class Game implements Runnable {
 		takeFromSupply(card);
 		// put card in player's discard
 		player.addToDiscard(card);
+		onGained(player, card);
+	}
+
+	public void gainToTopOfDeck(Player player, Card card) {
+		takeFromSupply(card);
+		// put card on top of player's deck
+		player.putOnDraw(card);
+		onGained(player, card);
+	}
+
+	public void gainToHand(Player player, Card card) {
+		takeFromSupply(card);
+		// put card in player's hand
+		player.addToHand(card);
+		onGained(player, card);
+	}
+
+	public void gainFromTrash(Player player, Card card) {
+		trash.remove(card);
+		// put card in player's hand
+		player.addToDiscard(card);
+		onGained(player, card);
+	}
+
+	private void onGained(Player player, Card card) {
+		player.cardsGainedDuringTurn.add(card);
 	}
 
 	private boolean canBuyCard(Player player) {

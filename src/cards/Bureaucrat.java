@@ -24,8 +24,7 @@ public class Bureaucrat extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// gain a silver card
 		if (game.supply.get(Card.SILVER) > 0) {
-			game.takeFromSupply(Card.SILVER);
-			player.putOnDraw(Card.SILVER);
+			game.gainToTopOfDeck(player, Card.SILVER);
 			game.message(player, "... You gain " + Card.SILVER.htmlName() + " and put it on top of your deck");
 			game.messageOpponents(player, "... Gaining " + Card.SILVER.htmlName() + " and putting it on top of his deck");
 		}

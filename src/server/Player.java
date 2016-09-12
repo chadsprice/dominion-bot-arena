@@ -121,6 +121,9 @@ public class Player {
 
 	public int turns;
 
+	// keep track of gained cards for Smugglers
+	public Set<Card> cardsGainedDuringTurn;
+
 	public Player(PlayerWebSocketHandler conn) {
 		this.conn = conn;
 		commands = new ArrayList<JSONObject>();
@@ -132,6 +135,7 @@ public class Player {
 		nativeVillageMat = new ArrayList<Card>();
 		durations = new ArrayList<Duration>();
 		resolvedDurationCards = new ArrayList<Card>();
+		cardsGainedDuringTurn = new HashSet<Card>();
 	}
 
 	public void startGame() {
@@ -143,6 +147,7 @@ public class Player {
 		durations.clear();
 		resolvedDurationCards.clear();
 		turns = 0;
+		cardsGainedDuringTurn.clear();
 		for (int i = 0; i < 3; i++) {
 			draw.add(Card.ESTATE);
 		}
@@ -160,6 +165,10 @@ public class Player {
 		// drawing a new hand automatically sends the player their hand and coins
 		resetHandOrder();
 		drawIntoHand(5);
+	}
+
+	public void startNewTurn() {
+		cardsGainedDuringTurn.clear();
 	}
 
 	public void cleanup() {
@@ -510,7 +519,7 @@ public class Player {
 		command.put("contents", durationsString());
 		sendCommand(command);
 	}
-	
+
 	private String durationsString() {
 		StringBuilder builder = new StringBuilder();
 		Iterator<Duration> iter = durations.iterator();
@@ -536,7 +545,7 @@ public class Player {
 		durations.get(durations.size() - 1).modifier = modifier;
 		sendDurations();
 	}
-	
+
 	public void haven(Card card) {
 		durations.get(durations.size() - 1).havenedCards.add(card);
 		sendDurations();

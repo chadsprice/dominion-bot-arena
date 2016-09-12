@@ -24,8 +24,7 @@ public class TradingPost extends Card {
 			player.removeFromHand(toTrash);
 			game.trash.addAll(toTrash);
 			if (game.supply.get(Card.SILVER) > 0) {
-				game.takeFromSupply(Card.SILVER);
-				player.addToHand(Card.SILVER);
+				game.gainToHand(player, Card.SILVER);
 				game.message(player, "... You trash " + Card.htmlList(toTrash) + " and gain " + Card.SILVER.htmlName() + ", putting it into your hand");
 				game.messageOpponents(player, "... trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into his hand");
 			} else {

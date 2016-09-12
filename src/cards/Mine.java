@@ -76,8 +76,7 @@ public class Mine extends Card {
 			}
 		}
 		// gain card
-		game.takeFromSupply(toGain);
-		player.addToHand(toGain);
+		game.gainToHand(player, toGain);
 		game.message(player, "... You gain " + toGain.htmlName() + " and put it into your hand");
 		game.messageOpponents(player, "... gaining " + toGain.htmlName() + " and putting it into his hand");
 	}
