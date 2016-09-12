@@ -368,10 +368,14 @@ public class Player {
 		sendHand();
 	}
 
+	public void putFromHandIntoDiscard(Card card) {
+		removeFromHand(card);
+		addToDiscard(card);
+	}
+
 	public void putFromHandIntoDiscard(List<Card> cards) {
 		removeFromHand(cards);
-		discard.addAll(cards);
-		sendDiscardSize();
+		addToDiscard(cards);
 	}
 
 	public List<Card> getDiscard() {

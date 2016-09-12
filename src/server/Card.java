@@ -88,6 +88,7 @@ public class Card {
 	public static final Card SMUGGLERS = new Smugglers();
 	public static final Card WAREHOUSE = new Warehouse();
 	public static final Card CARAVAN = new Caravan();
+	public static final Card CUTPURSE = new Cutpurse();
 
 	public static Map<String, Card> cardsByName;
 	
@@ -195,6 +196,7 @@ public class Card {
 		include(SMUGGLERS, SEASIDE_SET);
 		include(WAREHOUSE, SEASIDE_SET);
 		include(CARAVAN, SEASIDE_SET);
+		include(CUTPURSE, SEASIDE_SET);
 	}
 	
 	public static void include(Card card, Set<Card> kingdomSet) {
