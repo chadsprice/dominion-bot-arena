@@ -91,6 +91,7 @@ public class Card {
 	public static final Card CUTPURSE = new Cutpurse();
 	public static final Card ISLAND = new Island();
 	public static final Card NAVIGATOR = new Navigator();
+	public static final Card PIRATE_SHIP = new PirateShip();
 
 	public static Map<String, Card> cardsByName;
 
@@ -201,6 +202,7 @@ public class Card {
 		include(CUTPURSE, SEASIDE_SET);
 		include(ISLAND, SEASIDE_SET);
 		include(NAVIGATOR, SEASIDE_SET);
+		include(PIRATE_SHIP, SEASIDE_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {

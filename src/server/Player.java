@@ -112,6 +112,7 @@ public class Player {
 
 	private List<Card> nativeVillageMat;
 	private List<Card> islandMat;
+	private int pirateShipTokens;
 
 	private List<Duration> durations;
 	private List<Card> resolvedDurationCards;
@@ -147,6 +148,7 @@ public class Player {
 		discard.clear();
 		nativeVillageMat.clear();
 		islandMat.clear();
+		pirateShipTokens = 0;
 		durations.clear();
 		resolvedDurationCards.clear();
 		turns = 0;
@@ -508,6 +510,25 @@ public class Player {
 		command.put("command", "setIslandMat");
 		if (!islandMat.isEmpty()) {
 			command.put("contents", Card.htmlList(islandMat));
+		}
+		sendCommand(command);
+	}
+
+	public void addPirateShipToken() {
+		pirateShipTokens++;
+		sendPirateShipMat();
+	}
+
+	public int getPirateShipTokens() {
+		return pirateShipTokens;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendPirateShipMat() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setPirateShipMat");
+		if (pirateShipTokens != 0) {
+			command.put("contents", "$" + pirateShipTokens);
 		}
 		sendCommand(command);
 	}

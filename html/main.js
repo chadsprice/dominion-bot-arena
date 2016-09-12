@@ -457,6 +457,16 @@ function setIslandMat(contents) {
   }
 }
 
+function setPirateShipMat(contents) {
+  var pirateShipMat = document.getElementById('pirateShipMat');
+  removeAllChildNodes(pirateShipMat);
+  if (contents) {
+    var pirateShipParagraph = document.createElement('p');
+    pirateShipParagraph.innerHTML = 'Pirate Ship: ' + contents;
+    pirateShipMat.appendChild(pirateShipParagraph);
+  }
+}
+
 function setDurations(contents) {
   var durations = document.getElementById('durations');
   removeAllChildNodes(durations);
@@ -1202,6 +1212,7 @@ function enterGame() {
   // clear seaside UI
   setNativeVillageMat();
   setIslandMat();
+  setPirateShipMat();
   setDurations();
   // hide lobby
   document.getElementById('lobby').style.display = 'none';
@@ -1343,6 +1354,9 @@ function executeCommand(command) {
       break;
     case 'setIslandMat':
       setIslandMat(command.contents);
+      break;
+    case 'setPirateShipMat':
+      setPirateShipMat(command.contents);
       break;
     case 'setDurations':
       setDurations(command.contents);
