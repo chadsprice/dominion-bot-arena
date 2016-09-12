@@ -1,6 +1,7 @@
 package cards;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class Scout extends Card {
 				game.messageOpponents(player, "... putting " + Card.htmlList(victoryCards) + " into his hand");
 			}
 			// put the remaining revealed cards on top of the deck
+			Collections.sort(revealed, Player.HAND_ORDER_COMPARATOR);
 			List<Card> toPutOnDeck = new ArrayList<Card>();
 			while (revealed.size() > 0) {
 				String[] choices = new String[revealed.size()];
