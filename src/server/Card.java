@@ -101,6 +101,7 @@ public class Card {
 	public static final Card MERCHANT_SHIP = new MerchantShip();
 	public static final Card OUTPOST = new Outpost();
 	public static final Card TACTICIAN = new Tactician();
+	public static final Card TREASURY = new Treasury();
 
 	public static Map<String, Card> cardsByName;
 
@@ -221,6 +222,7 @@ public class Card {
 		include(MERCHANT_SHIP, SEASIDE_SET);
 		include(OUTPOST, SEASIDE_SET);
 		include(TACTICIAN, SEASIDE_SET);
+		include(TREASURY, SEASIDE_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -75,6 +76,7 @@ public class Game implements Runnable {
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
 	public Map<Card, Integer> embargoTokens;
+	public boolean boughtVictoryCardThisTurn;
 
 	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Set<Card> basicSet) {
 		this.server = server;
@@ -134,6 +136,7 @@ public class Game implements Runnable {
 			setCardCostReduction(0);
 		}
 		actionsPlayedThisTurn = 0;
+		boughtVictoryCardThisTurn = false;
 		message(player, "------ Your turn ------");
 		messageOpponents(player, "------ " + player.username + "'s turn ------");
 		player.sendActions();
@@ -178,6 +181,34 @@ public class Game implements Runnable {
 		if (!givenBuyPrompt) {
 			promptMultipleChoice(player, "There are no cards that you can buy this turn", new String[] {"End Turn"});
 		}
+		// handle treasuries
+		if (!boughtVictoryCardThisTurn) {
+			int numTreasuries = 0;
+			for (Card card : player.getPlay()) {
+				if (card == Card.TREASURY) {
+					numTreasuries++;
+				}
+			}
+			if (numTreasuries > 0) {
+				String[] choices = new String[numTreasuries + 1];
+				for (int i = 0; i <= numTreasuries; i++) {
+					choices[i] = (numTreasuries - i) + "";
+				}
+				int choice = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
+				int numToPutOnDeck = numTreasuries - choice;
+				if (numToPutOnDeck > 0) {
+					for (Iterator<Card> iter = player.getPlay().iterator(); numToPutOnDeck > 0 && iter.hasNext(); ) {
+						if (iter.next() == Card.TREASURY) {
+							iter.remove();
+							player.putOnDraw(Card.TREASURY);
+							numToPutOnDeck--;
+						}
+					}
+					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
+					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of his deck");
+				}
+			}
+		}
 		// cleanup and redraw
 		player.cleanup();
 		for (Player eachPlayer : players) {
@@ -204,6 +235,9 @@ public class Game implements Runnable {
 	}
 
 	private void onBuy(Player player, Card card) {
+		if (card.isVictory) {
+			boughtVictoryCardThisTurn = true;
+		}
 		// if that card's pile was embargoed
 		if (embargoTokens.get(card) > 0 && supply.get(Card.CURSE) > 0) {
 			int cursesToGain = Math.min(embargoTokens.get(card), supply.get(Card.CURSE));
