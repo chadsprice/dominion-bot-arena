@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.server.handler.gzip.GzipHandler;
@@ -40,7 +41,6 @@ public class GameServer {
 	public static GameServer INSTANCE;
 
 	private static final int DEFAULT_HTTP_PORT = 8080;
-	private static final int DEFAULT_WEBSOCKET_PORT = 8081;
 	private static final int DEFAULT_WEBSOCKET_TIMEOUT = 600000;
 
 	private Map<PlayerWebSocketHandler, Player> players;
@@ -70,11 +70,10 @@ public class GameServer {
 		loadLogins();
 		gameLobbies = new HashMap<String, GameLobby>();
 		winningStrategies = new HashMap<Set<Card>, List<Card>>();
-		startHttpServer();
-		startWebSocketServer();
+		startServer();
 	}
 
-	public void startHttpServer() {
+	public void startServer() {
 		Server server = new Server(DEFAULT_HTTP_PORT);
 
 		ResourceHandler resourceHandler = new ResourceHandler();
@@ -83,20 +82,9 @@ public class GameServer {
 		resourceHandler.setResourceBase("html");
 
 		GzipHandler gzip = new GzipHandler();
-		server.setHandler(gzip);
 		HandlerList handlers = new HandlerList();
 		handlers.setHandlers(new Handler[] {resourceHandler, new DefaultHandler()});
 		gzip.setHandler(handlers);
-
-		try {
-			server.start();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void startWebSocketServer() {
-		Server webSocketServer = new Server(DEFAULT_WEBSOCKET_PORT);
 
 		WebSocketHandler webSocketHandler = new WebSocketHandler() {
 			@Override
@@ -105,10 +93,13 @@ public class GameServer {
 				factory.register(PlayerWebSocketHandler.class);
 			}
 		};
-		webSocketServer.setHandler(webSocketHandler);
+
+		HandlerCollection handlerCollection = new HandlerCollection();
+		handlerCollection.setHandlers(new Handler[] {webSocketHandler, gzip});
+		server.setHandler(handlerCollection);
 
 		try {
-			webSocketServer.start();
+			server.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

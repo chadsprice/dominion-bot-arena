@@ -1541,7 +1541,7 @@ function init() {
     host = 'localhost';
   }
   host = host.split(':')[0];
-  socket = new WebSocket('ws://' + host + ':8081');
+  socket = new WebSocket('ws://' + host + ':8080');
   socket.onopen = function() {
     // connected
   };
