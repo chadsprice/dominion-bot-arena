@@ -19,11 +19,11 @@ public class TradingPost extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		if (player.getHand().size() >= 2) {
+		if (!player.getHand().isEmpty()) {
 			List<Card> toTrash = game.promptTrashNumber(player, 2, "Trading Post");
 			player.removeFromHand(toTrash);
 			game.trash.addAll(toTrash);
-			if (game.supply.get(Card.SILVER) > 0) {
+			if (toTrash.size() == 2 && game.supply.get(Card.SILVER) > 0) {
 				game.gainToHand(player, Card.SILVER);
 				game.message(player, "... You trash " + Card.htmlList(toTrash) + " and gain " + Card.SILVER.htmlName() + ", putting it into your hand");
 				game.messageOpponents(player, "... trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into his hand");
@@ -32,8 +32,8 @@ public class TradingPost extends Card {
 				game.messageOpponents(player, "... trashing " + Card.htmlList(toTrash) + " and gaining nothing");
 			}
 		} else {
-			game.message(player, "... You don't have 2 cards to trash");
-			game.messageOpponents(player, "... not having 2 cards to trash");
+			game.message(player, "... You have no cards to trash");
+			game.messageOpponents(player, "... having no cards to trash");
 		}
 	}
 
