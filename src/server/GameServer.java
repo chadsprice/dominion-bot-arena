@@ -41,6 +41,7 @@ public class GameServer {
 
 	private static final int DEFAULT_HTTP_PORT = 8080;
 	private static final int DEFAULT_WEBSOCKET_PORT = 8081;
+	private static final int DEFAULT_WEBSOCKET_TIMEOUT = 600000;
 
 	private Map<PlayerWebSocketHandler, Player> players;
 	private Map<String, Player> loggedInPlayers;
@@ -100,6 +101,7 @@ public class GameServer {
 		WebSocketHandler webSocketHandler = new WebSocketHandler() {
 			@Override
 			public void configure(WebSocketServletFactory factory) {
+				factory.getPolicy().setIdleTimeout(DEFAULT_WEBSOCKET_TIMEOUT);
 				factory.register(PlayerWebSocketHandler.class);
 			}
 		};
