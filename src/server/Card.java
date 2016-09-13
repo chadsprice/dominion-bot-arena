@@ -102,6 +102,7 @@ public class Card {
 	public static final Card OUTPOST = new Outpost();
 	public static final Card TACTICIAN = new Tactician();
 	public static final Card TREASURY = new Treasury();
+	public static final Card WHARF = new Wharf();
 
 	public static Map<String, Card> cardsByName;
 
@@ -223,6 +224,7 @@ public class Card {
 		include(OUTPOST, SEASIDE_SET);
 		include(TACTICIAN, SEASIDE_SET);
 		include(TREASURY, SEASIDE_SET);
+		include(WHARF, SEASIDE_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {
