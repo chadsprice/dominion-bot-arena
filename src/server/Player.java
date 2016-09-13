@@ -377,16 +377,7 @@ public class Player {
 
 	public void putFromHandIntoPlay(Card card) {
 		hand.remove(card);
-		if (!card.isDuration || (card == Card.OUTPOST && isTakingExtraTurn())) {
-			play.add(card);
-		} else {
-			Duration duration = new Duration();
-			duration.durationCard = card;
-			if (card == Card.HAVEN) {
-				duration.havenedCards = new ArrayList<Card>();
-			}
-			addDuration(duration);
-		}
+		play.add(card);
 		sendHand();
 	}
 
@@ -567,13 +558,11 @@ public class Player {
 
 	public void addDuration(Duration duration) {
 		durations.add(duration);
-		if (duration.durationCard != Card.HAVEN) {
-			sendDurations();
-		}
+		sendDurations();
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendDurations() {
+	public void sendDurations() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setDurations");
 		command.put("contents", durationsString());
@@ -606,9 +595,8 @@ public class Player {
 		sendDurations();
 	}
 
-	public void haven(Card card) {
-		durations.get(durations.size() - 1).havenedCards.add(card);
-		sendDurations();
+	public List<Card> getLastHaven() {
+		return durations.get(durations.size() - 1).havenedCards;
 	}
 
 	public List<Card> getDeck() {

@@ -219,19 +219,47 @@ public class Game implements Runnable {
 		actionsPlayedThisTurn++;
 		message(player, "You play " + action.htmlName());
 		messageOpponents(player, player.username + " plays " + action.htmlName());
-		if (action.isAttack) {
-			// attack reactions
-			List<Player> targets = new ArrayList<Player>();
-			for (Player opponent : getOpponents(player)) {
-				boolean unaffected = reactToAttack(opponent);
-				if (!unaffected) {
-					targets.add(opponent);
+		if (!action.isDuration) {
+			if (action.isAttack) {
+				// attack reactions
+				List<Player> targets = new ArrayList<Player>();
+				for (Player opponent : getOpponents(player)) {
+					boolean unaffected = reactToAttack(opponent);
+					if (!unaffected) {
+						targets.add(opponent);
+					}
 				}
+				action.onAttack(player, this, targets);
+				return false;
+			} else {
+				return action.onPlay(player, this, hasMoved);
 			}
-			action.onAttack(player, this, targets);
-			return false;
 		} else {
-			return action.onPlay(player, this, hasMoved);
+			List<Card> toHaven = null;
+			if (!hasMoved) {
+				if (action == Card.HAVEN) {
+					toHaven = new ArrayList<Card>();
+				}
+				boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
+				if (willHaveEffect) {
+					// take this action out of normal play and save it as a duration effect
+					player.removeFromPlay(action);
+					Duration duration = new Duration();
+					duration.durationCard = action;
+					duration.havenedCards = toHaven;
+					player.addDuration(duration);
+				}
+				return willHaveEffect;
+			} else {
+				if (action == Card.HAVEN) {
+					toHaven = player.getLastHaven();
+				}
+				action.onDurationPlay(player, this, toHaven);
+				if (action == Card.HAVEN) {
+					player.sendDurations();
+				}
+				return false;
+			}
 		}
 	}
 

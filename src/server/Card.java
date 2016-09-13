@@ -284,6 +284,10 @@ public class Card {
 		return false;
 	}
 
+	public boolean onDurationPlay(Player player, Game game, List<Card> toHaven) {
+		onPlay(player, game);
+		return true;
+	}
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		throw new UnsupportedOperationException();
 	}

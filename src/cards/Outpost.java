@@ -1,5 +1,7 @@
 package cards;
 
+import java.util.List;
+
 import server.Card;
 import server.Duration;
 import server.Game;
@@ -18,16 +20,22 @@ public class Outpost extends Card {
 	}
 
 	@Override
-	public void onPlay(Player player, Game game) {
-		// outpost has no immediate effect
+	public boolean onDurationPlay(Player player, Game game, List<Card> havened) {
 		if (!player.isTakingExtraTurn()) {
-			game.message(player, "... You get an extra 3 card turn after this one");
-			game.messageOpponents(player, "... getting an extra 3 card turn after this one");
+			if (!player.hasExtraTurn()) {
+				game.message(player, "... You get an extra 3 card turn after this one");
+				game.messageOpponents(player, "... getting an extra 3 card turn after this one");
+				return true;
+			} else {
+				game.message(player, "... but will still only get one extra turn");
+				game.messageOpponents(player, "... but will still only get one extra turn");
+			}
 		} else {
 			// playing an outpost during an extra turn
 			game.message(player, "... but can't take more than two consecutive turns");
 			game.messageOpponents(player, "... but can't take more than two consecutive turns");
 		}
+		return false;
 	}
 
 	@Override

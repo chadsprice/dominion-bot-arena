@@ -21,7 +21,7 @@ public class Haven extends Card {
 	}
 
 	@Override
-	public void onPlay(Player player, Game game) {
+	public boolean onDurationPlay(Player player, Game game, List<Card> havened) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
 		// +1 action
@@ -32,12 +32,16 @@ public class Haven extends Card {
 		if (!player.getHand().isEmpty()) {
 			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Haven: Choose a card to set aside");
 			player.removeFromHand(toHaven);
-			player.haven(toHaven);
+			havened.add(toHaven);
 			game.message(player, "... You set aside " + Card.htmlList(drawn) + " face down");
 			game.messageOpponents(player, "... setting aside a card face down");
+			// indicate that this haven will have an effect next turn
+			return true;
 		} else {
 			game.message(player, "... You set aside nothing because your hand is emtpy");
-			game.message(player, "... setting aside nothing because his hand is emtpy");
+			game.messageOpponents(player, "... setting aside nothing because his hand is emtpy");
+			// indicate that this haven will have no effect next turn
+			return false;
 		}
 	}
 
