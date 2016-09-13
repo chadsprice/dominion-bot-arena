@@ -1102,6 +1102,15 @@ public class Game implements Runnable {
 	 * This prompt is the "actionPrompt" type.
 	 */
 	public List<Card> promptPutNumberOnDeck(Player player, int number, String cause) {
+		return promptPutNumberOnDeck(player, number, cause, "actionPrompt");
+	}
+
+	/**
+	 * Returns a list of cards that the player has chosen to put from their
+	 * hand on top of their deck.
+	 * This prompt is mandatory.
+	 */
+	public List<Card> promptPutNumberOnDeck(Player player, int number, String cause, String promptType) {
 		if (player.getHand().size() < number) {
 			number = player.getHand().size();
 		}
@@ -1120,7 +1129,7 @@ public class Game implements Runnable {
 			}
 			return toPutOnDeck;
 		}
-		return sendPromptDiscardNumber(player, number, true, cause, "actionPrompt", "draw");
+		return sendPromptDiscardNumber(player, number, true, cause, promptType, "draw");
 	}
 
 	/**

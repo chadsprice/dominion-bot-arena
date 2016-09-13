@@ -97,6 +97,7 @@ public class Card {
 	public static final Card TREASURE_MAP = new TreasureMap();
 	public static final Card BAZAAR = new Bazaar();
 	public static final Card EXPLORER = new Explorer();
+	public static final Card GHOST_SHIP = new GhostShip();
 
 	public static Map<String, Card> cardsByName;
 
@@ -213,6 +214,7 @@ public class Card {
 		include(TREASURE_MAP, SEASIDE_SET);
 		include(BAZAAR, SEASIDE_SET);
 		include(EXPLORER, SEASIDE_SET);
+		include(GHOST_SHIP, SEASIDE_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {
