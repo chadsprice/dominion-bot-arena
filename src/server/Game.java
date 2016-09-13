@@ -92,7 +92,9 @@ public class Game implements Runnable {
 		setup();
 		while (!gameOverConditionMet()) {
 			takeTurn(players.get(playerIndex));
-			playerIndex = (playerIndex + 1) % players.size();
+			if (!players.get(playerIndex).hasExtraTurn()) {
+				playerIndex = (playerIndex + 1) % players.size();
+			}
 		}
 		announceWinner();
 		endGame();
@@ -186,7 +188,8 @@ public class Game implements Runnable {
 
 	private void resolveDurations(Player player) {
 		for (Duration duration : player.getDurations()) {
-			if (duration.modifier == Card.THRONE_ROOM && duration.durationCard != Card.HAVEN) {
+			// if the duration is modified (except for havens and outposts)
+			if (duration.modifier == Card.THRONE_ROOM && duration.durationCard != Card.HAVEN && duration.durationCard != Card.OUTPOST) {
 				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect twice");
 				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect twice");
 				duration.durationCard.onDurationEffect(player, this, duration);

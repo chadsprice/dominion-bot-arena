@@ -169,7 +169,24 @@ public class Player {
 		extraCoins = 0;
 		// drawing a new hand automatically sends the player their hand and coins
 		resetHandOrder();
-		drawIntoHand(5);
+		if (!hasExtraTurn()) {
+			drawIntoHand(5);
+		} else {
+			drawIntoHand(3);
+		}
+	}
+
+	public boolean hasExtraTurn() {
+		for (Duration duration : durations) {
+			if (duration.durationCard == Card.OUTPOST) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean isTakingExtraTurn() {
+		return resolvedDurationCards.contains(Card.OUTPOST);
 	}
 
 	public void startNewTurn() {
@@ -360,7 +377,7 @@ public class Player {
 
 	public void putFromHandIntoPlay(Card card) {
 		hand.remove(card);
-		if (!card.isDuration) {
+		if (!card.isDuration || (card == Card.OUTPOST && isTakingExtraTurn())) {
 			play.add(card);
 		} else {
 			Duration duration = new Duration();
