@@ -41,6 +41,7 @@ public class GameLobby implements Comparable<GameLobby> {
 		Set<Set<Card>> sets = new HashSet<Set<Card>>();
 		sets.add(Card.BASE_SET);
 		sets.add(Card.INTRIGUE_SET);
+		sets.add(Card.SEASIDE_SET);
 		return new GameLobby("Automatch", numOpenings, sets, new HashSet<Card>(), new HashSet<Card>(), new ArrayList<Player>());
 	}
 
