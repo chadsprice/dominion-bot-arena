@@ -9,7 +9,7 @@
     <script type="text/javascript" src="bcrypt.js"></script>
   </head>
   <body>
-    <div id="loginContainer" class="aligner">
+    <div id="loginContainer">
       <div id="login" class="dropShadow actionPrompt">
         <p id="newLogin">New user</p>
         <label>Username</label>
@@ -17,14 +17,17 @@
         <label>Password <span class="optional">(Optional)</span></label>
         <input id="password" type="password" name="password" />
         <div id="loginButtons">
-          <button id="loginButton">Play</button>
+          <button id="loginButton">Log In</button>
         </div>
       </div>
     </div>
     <div id="lobby">
       <div id="lobbyHeader">
         <img src="logo.png" alt="Dominion Bot Arena">
-        <h1 id="lobbyUsernameText"></h1>
+        <div>
+          <label id="lobbyUsernameText"></label>
+          <button id="changeLoginButton">Log In</button>
+        </div>
       </div>
       <div id="lobbyBody">
         <div>

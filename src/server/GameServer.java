@@ -106,7 +106,10 @@ public class GameServer {
 	}
 
 	public synchronized void addConnection(PlayerWebSocketHandler conn) {
-		players.put(conn, new Player(conn));
+		Player player = new Player(conn);
+		players.put(conn, player);
+		anonymousLogin(player);
+		sendToLobby(player);
 	}
 
 	public synchronized void removeConnection(PlayerWebSocketHandler conn) {
@@ -178,26 +181,33 @@ public class GameServer {
 		player.receiveResponse(request.get("response"));
 	}
 
+	private void anonymousLogin(Player player) {
+		String username = "Anonymous" + (anonymousNumber++);
+		while (loggedInPlayers.containsKey(username)) {
+			username = "Anonymous" + (anonymousNumber++);
+		}
+		player.username = username;
+		loggedInPlayers.put(username, player);
+	}
+
 	private void handleLogin(Player player, JSONObject request) {
-		// ignore the request if the player is already logged in
-		if (player.username != null) {
+		// ignore the request if the player is not in the lobby
+		if (!playersInLobby.contains(player)) {
 			return;
 		}
 		String username = (String) request.get("username");
 		String password = (String) request.get("password");
 		Boolean newLogin = (Boolean) request.get("newLogin");
 		if (username == null) {
-			// silent error, the client should send no username
+			// silent error, the client should never send no username
 			return;
 		}
 		// sanitize username
 		username = cleanName(username);
-		// if no username given, assign "Anonymous#" username
+		// sanitized username is empty
 		if (username.equals("")) {
-			username = "Anonymous" + (anonymousNumber++);
-			while (loggedInPlayers.containsKey(username)) {
-				username = "Anonymous" + (anonymousNumber++);
-			}
+			loginError(player, "Username is empty.");
+			return;
 		}
 		// check that this username is not already logged in
 		if (loggedInPlayers.containsKey(username)) {
@@ -222,7 +232,7 @@ public class GameServer {
 				loginError(player, "Given username has no associated password.");
 				return;
 			}
-			/// else, okay non-password-protected login
+			// else, okay non-password-protected login
 		} else {
 			// creating a new login
 			// if this is an existing username
@@ -237,9 +247,12 @@ public class GameServer {
 			validLogins.put(username, hashedPassword);
 			saveLogin(username, hashedPassword);
 		}
+		// remove old username
+		loggedInPlayers.remove(player.username);
+		// set new username
 		player.username = username;
 		loggedInPlayers.put(username, player);
-		sendToLobby(player);
+		loginAccepted(player);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -247,6 +260,14 @@ public class GameServer {
 		JSONObject command = new JSONObject();
 		command.put("command", "loginError");
 		command.put("message", errorMessage);
+		player.issueCommand(command);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void loginAccepted(Player player) {
+		JSONObject command = new JSONObject();
+		command.put("command", "loginAccepted");
+		command.put("username", player.username);
 		player.issueCommand(command);
 	}
 

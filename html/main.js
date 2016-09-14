@@ -1118,6 +1118,7 @@ var playerIsReady;
 function enterGameLobby(name, sets, requiredCards, forbiddenCards) {
   // hide general lobby
   document.getElementById('lobby').style.display = 'none';
+  document.getElementById('loginContainer').style.display = 'none';
   // show this game's lobby
   document.getElementById('gameLobby').style.display = 'block';
   // upon joining a game lobby, the player is not ready to start
@@ -1300,6 +1301,9 @@ function executeCommand(command) {
     case 'customGameError':
       customGameError(command.message);
       break;
+    case 'loginAccepted':
+      loginAccepted(command.username);
+      break;
     case 'enterLobby':
       enterLobby(command.username, command.gameListings, command.availableBots);
       break;
@@ -1436,6 +1440,30 @@ var loginPending = false;
 // boolean indicating whether the players is trying to create a new login
 var creatingNewLogin = false;
 
+function changeLogin() {
+  // go from lobby to login
+  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('loginContainer').style.display = 'flex';
+
+  document.getElementById('newLogin').onmousedown = toggleCreatingNewLogin;
+  // send login info on button press, or on pressing return in a text field
+  document.getElementById('loginButton').onmousedown = sendLogin;
+  document.getElementById('username').onkeydown = loginKeyDown;
+  document.getElementById('password').onkeydown = loginKeyDown;
+
+  // autofocus on username field
+  document.getElementById('username').focus();
+}
+
+function loginAccepted(username) {
+  loginPending = false;
+  // update username
+  document.getElementById('lobbyUsernameText').innerHTML = username;
+  // return to lobby from login
+  document.getElementById('loginContainer').style.display = 'none';
+  document.getElementById('lobby').style.display = 'block';
+}
+
 /*
 Send new login request to the server unless a login request is already pending.
 */
@@ -1529,19 +1557,14 @@ function loginError(message) {
 function init() {
 
   // hide unused elements
-  document.getElementById('lobby').style.display = 'none';
+  document.getElementById('loginContainer').style.display = 'none';
   document.getElementById('gameLobby').style.display = 'none';
   document.getElementById('game').style.display = 'none';
   document.getElementById('waitingOn').style.display = 'none';
   document.getElementById('prompt').style.display = 'none';
 
   /* connect to server websocket */
-  var host = location.host;
-  if (host === '') {
-    host = 'localhost';
-  }
-  host = host.split(':')[0];
-  socket = new WebSocket('ws://' + host + ':8080');
+  socket = new WebSocket('ws://' + location.host);
   socket.onopen = function() {
     // connected
   };
@@ -1561,14 +1584,9 @@ function init() {
   document.getElementById('automatch4Checkbox').checked = true;
   document.getElementById('baseCheckbox').checked = true;
 
-  document.getElementById('newLogin').onmousedown = toggleCreatingNewLogin;
-  // send login info on button press, or on pressing return in a text field
-  document.getElementById('loginButton').onmousedown = sendLogin;
-  document.getElementById('username').onkeydown = loginKeyDown;
-  document.getElementById('password').onkeydown = loginKeyDown;
+  // set up lobby log in button
+  document.getElementById('changeLoginButton').onclick = changeLogin;
 
-  // autofocus on username field
-  document.getElementById('username').focus();
 }
 
 window.onload = function() {

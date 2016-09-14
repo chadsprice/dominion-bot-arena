@@ -462,7 +462,7 @@ body {
 }
 
 /* Login */
-.aligner {
+#loginContainer {
   display: flex;
   justify-content: center;
 }
@@ -511,7 +511,7 @@ body {
 
 /* Lobby */
 #lobby, #gameLobby {
-  padding: 2em;
+  padding: 1em;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -520,11 +520,18 @@ body {
 }
 
 #lobbyHeader {
-  margin-bottom: 1em;
+  margin-right: 1em;
+  margin-left: 1em;
+  margin-bottom: 0.5em;
   display: flex;
   flex-direction: row;
   align-items: flex-end;
   justify-content: space-between;
+}
+
+#lobbyUsernameText {
+  font-weight: bold;
+  font-size: 120%;
 }
 
 #lobbyBody {
@@ -535,7 +542,7 @@ body {
 
 .lobbySection {
   padding: 1em;
-  margin-bottom: 2em;
+  margin-bottom: 1em;
 
   background-color: #ffffff;
   border-style: solid;
@@ -584,7 +591,7 @@ h1 {
 
 #gamesSection {
   flex-grow: 10;
-  margin-left: 2em;
+  margin-left: 1em;
 }
 
 #removeClosedButton {
