@@ -519,15 +519,18 @@ body {
   right: 0;
 }
 
-#lobby {
+#lobbyHeader {
+  margin-bottom: 1em;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+#lobbyBody {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-}
-
-#lobbyUsername {
-  text-align: center;
-  margin: 1em;
 }
 
 .lobbySection {
@@ -641,6 +644,10 @@ h1 {
 }
 
 /* Game Lobby */
+#gameLobbyName {
+  text-align: center;
+}
+
 .ready, .notReady {
   margin-left: 0.5em;
 }

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="main.css">
     <link rel="icon" type="image/png" href="favicon.png"/>
+    <title>Dominion Bot Arena</title>
     <script type="text/javascript" src="main.js"></script>
     <script type="text/javascript" src="bcrypt.js"></script>
   </head>
@@ -21,69 +22,71 @@
       </div>
     </div>
     <div id="lobby">
-      <div>
-        <div id="lobbyUsername">
-          <p>Welcome,</p>
-          <h1 id="lobbyUsernameText"></h1>
-        </div>
-        <div class="lobbySection">
-          <h1>Automatch</h1>
-          <div class="lobbyContent">
-            <p>Automatically create games with other players using automatch.</p>
-            <div class="lobbyControl">
-              <input type="checkbox" id="automatchCheckbox"><label>Automatch On</label>
-            </div>
-            <label># Players</label>
-            <div class="lobbyControl">
-              <input type="checkbox" id="automatch2Checkbox"><label>2</label>
-              <input type="checkbox" id="automatch3Checkbox"><label>3</label>
-              <input type="checkbox" id="automatch4Checkbox"><label>4</label>
-            </div>
-          </div>
-        </div>
-        <div class="lobbySection" id="customGameSection">
-          <h1>Create Custom Game</h1>
-          <div class="lobbyContent">
-            <label>Name <span class="optional">(Optional)</span></label>
-            <div class="lobbyControl">
-              <input id="customGameName" type="text"></input>
-            </div>
-            <label># Players</label>
-            <div class="lobbyControl">
-              <select id="numPlayersSelect">
-                <option value="2" selected>2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-              </select>
-            </div>
-            <label>Sets</label>
-            <div class="lobbyControl">
-              <input type="checkbox" id="baseCheckbox"><label>Base</label><br>
-              <input type="checkbox" id="intrigueCheckbox"><label>Intrigue</label><br>
-              <input type="checkbox" id="seasideCheckbox"><label>Seaside</label>
-            </div>
-            <label>Cards <span class="optional">(Optional)</span></label>
-            <div class="lobbyControl">
-              <p>e.g. "Library, Witch, !Smithy"</p>
-              <input id="customGameCards" type="text"></input>
-            </div>
-            <label>Bots</label>
-            <div class="lobbyControl">
-              <div id="botList">
-              </div>
-              <button id="addBotButton">Add Bot</button>
-            </div>
-            <div class="lobbyControl">
-              <button id="createCustomGameButton">Create</button>
-            </div>
-          </div>
-        </div>
+      <div id="lobbyHeader">
+        <img src="logo.png" alt="Dominion Bot Arena">
+        <h1 id="lobbyUsernameText"></h1>
       </div>
-      <div class="lobbySection" id="gamesSection">
-        <h1>Custom Games</h1>
-        <div class="lobbyContent">
-          <button id="removeClosedButton">Remove Closed</button>
-          <div id="gameList">
+      <div id="lobbyBody">
+        <div>
+          <div class="lobbySection">
+            <h1>Automatch</h1>
+            <div class="lobbyContent">
+              <p>Automatically create games with other players using automatch.</p>
+              <div class="lobbyControl">
+                <input type="checkbox" id="automatchCheckbox"><label>Automatch On</label>
+              </div>
+              <label># Players</label>
+              <div class="lobbyControl">
+                <input type="checkbox" id="automatch2Checkbox"><label>2</label>
+                <input type="checkbox" id="automatch3Checkbox"><label>3</label>
+                <input type="checkbox" id="automatch4Checkbox"><label>4</label>
+              </div>
+            </div>
+          </div>
+          <div class="lobbySection" id="customGameSection">
+            <h1>Create Custom Game</h1>
+            <div class="lobbyContent">
+              <label>Name <span class="optional">(Optional)</span></label>
+              <div class="lobbyControl">
+                <input id="customGameName" type="text"></input>
+              </div>
+              <label># Players</label>
+              <div class="lobbyControl">
+                <select id="numPlayersSelect">
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <label>Sets</label>
+              <div class="lobbyControl">
+                <input type="checkbox" id="baseCheckbox"><label>Base</label><br>
+                <input type="checkbox" id="intrigueCheckbox"><label>Intrigue</label><br>
+                <input type="checkbox" id="seasideCheckbox"><label>Seaside</label>
+              </div>
+              <label>Cards <span class="optional">(Optional)</span></label>
+              <div class="lobbyControl">
+                <p>e.g. "Library, Witch, !Smithy"</p>
+                <input id="customGameCards" type="text"></input>
+              </div>
+              <label>Bots</label>
+              <div class="lobbyControl">
+                <div id="botList">
+                </div>
+                <button id="addBotButton">Add Bot</button>
+              </div>
+              <div class="lobbyControl">
+                <button id="createCustomGameButton">Create</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lobbySection" id="gamesSection">
+          <h1>Custom Games</h1>
+          <div class="lobbyContent">
+            <button id="removeClosedButton">Remove Closed</button>
+            <div id="gameList">
+            </div>
           </div>
         </div>
       </div>

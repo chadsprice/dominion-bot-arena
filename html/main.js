@@ -748,7 +748,7 @@ function enterLobby(username, gameListings, availableBots) {
   document.getElementById('gameLobby').style.display = 'none';
   document.getElementById('game').style.display = 'none';
   // show the lobby
-  document.getElementById('lobby').style.display = 'flex';
+  document.getElementById('lobby').style.display = 'block';
   // set username
   document.getElementById('lobbyUsernameText').innerHTML = username;
   // clear game list
