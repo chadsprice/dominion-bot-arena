@@ -1441,6 +1441,13 @@ var loginPending = false;
 var creatingNewLogin = false;
 
 function changeLogin() {
+  // if the user left automatch on, turn it off
+  var automatchCheckbox = document.getElementById('automatchCheckbox');
+  if (automatchCheckbox.checked) {
+    automatchCheckbox.checked = false;
+    automatchSet();
+  }
+
   // go from lobby to login
   document.getElementById('lobby').style.display = 'none';
   document.getElementById('loginContainer').style.display = 'flex';
