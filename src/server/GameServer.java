@@ -38,10 +38,19 @@ import org.mindrot.BCrypt;
 
 public class GameServer {
 
-	public static GameServer INSTANCE;
-
 	private static final int DEFAULT_HTTP_PORT = 8080;
 	private static final int DEFAULT_WEBSOCKET_TIMEOUT = 600000;
+
+	private static final String LOGINS_FILE_NAME = "logins";
+	private static final Path LOGINS_FILE_PATH = Paths.get(LOGINS_FILE_NAME);
+	private static final Charset LOGINS_FILE_CHARSET = Charset.forName("UTF-8");
+
+	private static final Path CONFIG_FILE_PATH = Paths.get("config");
+
+	public static GameServer INSTANCE;
+
+	private int httpPort;
+	private int websocketTimeout;
 
 	private Map<PlayerWebSocketHandler, Player> players;
 	private Map<String, Player> loggedInPlayers;
@@ -70,11 +79,59 @@ public class GameServer {
 		loadLogins();
 		gameLobbies = new HashMap<String, GameLobby>();
 		winningStrategies = new HashMap<Set<Card>, List<Card>>();
+		loadServerConfiguration();
 		startServer();
 	}
 
-	public void startServer() {
-		Server server = new Server(DEFAULT_HTTP_PORT);
+	private void loadServerConfiguration() {
+		// set default configuration
+		httpPort = DEFAULT_HTTP_PORT;
+		websocketTimeout = DEFAULT_WEBSOCKET_TIMEOUT;
+		// change configuration according to configuration file
+		try {
+			Scanner scanner = new Scanner(CONFIG_FILE_PATH);
+			while (scanner.hasNextLine()) {
+				String line = scanner.nextLine();
+				// ignore empty lines and lines starting with "#"
+				if (line.isEmpty() || line.startsWith("#")) {
+					continue;
+				}
+				String[] tokens = line.split("\\s+");
+				if (tokens.length != 2) {
+					configurationError(line);
+					continue;
+				}
+				String setting = tokens[0];
+				String value = tokens[1];
+				if ("port".equals(setting)) {
+					try {
+						httpPort = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						configurationError(line);
+					}
+				} else if ("websocketTimeout".equals(setting)) {
+					try {
+						websocketTimeout = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						configurationError(line);
+					}
+				} else {
+					// unknown setting
+					configurationError(line);
+				}
+			}
+			scanner.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void configurationError(String line) {
+		System.err.println("Error reading server configuration: \"" + line + "\"");
+	}
+
+	private void startServer() {
+		Server server = new Server(httpPort);
 
 		ResourceHandler resourceHandler = new ResourceHandler();
 		resourceHandler.setDirectoriesListed(true);
@@ -89,7 +146,7 @@ public class GameServer {
 		WebSocketHandler webSocketHandler = new WebSocketHandler() {
 			@Override
 			public void configure(WebSocketServletFactory factory) {
-				factory.getPolicy().setIdleTimeout(DEFAULT_WEBSOCKET_TIMEOUT);
+				factory.getPolicy().setIdleTimeout(websocketTimeout);
 				factory.register(PlayerWebSocketHandler.class);
 			}
 		};
@@ -717,10 +774,6 @@ public class GameServer {
 		}
 		return game;
 	}
-
-	private static final String LOGINS_FILE_NAME = "logins";
-	private static final Path LOGINS_FILE_PATH = Paths.get(LOGINS_FILE_NAME);
-	private static final Charset LOGINS_FILE_CHARSET = Charset.forName("UTF-8");
 
 	private void loadLogins() {
 		// if there is no logins file, do nothing

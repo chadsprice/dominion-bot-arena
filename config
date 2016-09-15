@@ -1,0 +1,7 @@
+# empty lines and lines starting with "#" are ignored
+
+# change the server port
+# port 80
+
+# change the time before inactive users are automatically dropped (in milliseconds)
+# websocketTimeout 600000
