@@ -281,6 +281,10 @@ public class GameServer {
 		name = cleanName(name);
 		if (name.equals("")) {
 			name = player.username + "'s Game";
+			int counter = 2;
+			while (gameLobbies.containsKey(name)) {
+				name = player.username + "'s Game " + counter++;
+			}
 		}
 		if (gameLobbies.containsKey(name)) {
 			customGameError(player, "That name is already taken.");
@@ -473,6 +477,8 @@ public class GameServer {
 		name = org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(name);
 		// trim again
 		name = name.trim();
+		// guarantee that no name contains a return character
+		name.replace("\n", "");
 		return name;
 	}
 
