@@ -462,7 +462,7 @@ body {
 }
 
 /* Login */
-#loginContainer, #lostConnection {
+#loginContainer {
   display: flex;
   justify-content: center;
 }
@@ -470,7 +470,6 @@ body {
 #login {
   display: flex;
   flex-direction: column;
-  background-color: #FFFFFF;
   padding: 1em;
   margin-top: 3em;
 }
@@ -670,4 +669,25 @@ h1 {
 /* Bots! */
 .botName {
   color: #555555;
+}
+
+/* Lost Connection */
+#lostConnection {
+  display: flex;
+  justify-content: center;
+}
+
+#lostConnectionBox {
+  padding: 1em;
+  margin-top: 3em;
+  text-align: center;
+}
+
+#lostConnectionBox p {
+  margin: 0;
+}
+
+#lostConnectionText {
+  color: #cc0000;
+  font-weight: bold;
 }
