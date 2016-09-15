@@ -462,7 +462,7 @@ body {
 }
 
 /* Login */
-#loginContainer {
+#loginContainer, #lostConnection {
   display: flex;
   justify-content: center;
 }

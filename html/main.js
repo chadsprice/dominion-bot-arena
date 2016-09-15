@@ -742,13 +742,8 @@ in each row.
 */
 function enterLobby(username, gameListings, availableBots) {
   availableBotNames = availableBots;
-  // hide everything except the lobby
-  document.getElementById('loginContainer').style.display = 'none';
-  document.getElementById('cardPopupContainer').style.display = 'none';
-  document.getElementById('gameLobby').style.display = 'none';
-  document.getElementById('game').style.display = 'none';
-  // show the lobby
-  document.getElementById('lobby').style.display = 'block';
+  // show lobby
+  showPage('lobby');
   // set username
   document.getElementById('lobbyUsernameText').innerHTML = username;
   // clear game list
@@ -1116,11 +1111,8 @@ function customGameError(message) {
 var playerIsReady;
 
 function enterGameLobby(name, sets, requiredCards, forbiddenCards) {
-  // hide general lobby
-  document.getElementById('lobby').style.display = 'none';
-  document.getElementById('loginContainer').style.display = 'none';
   // show this game's lobby
-  document.getElementById('gameLobby').style.display = 'block';
+  showPage('gameLobby');
   // upon joining a game lobby, the player is not ready to start
   playerIsReady = false;
   // show game's name
@@ -1215,16 +1207,15 @@ function enterGame() {
   setIslandMat();
   setPirateShipMat();
   setDurations();
-  // hide lobby
-  document.getElementById('lobby').style.display = 'none';
-  document.getElementById('gameLobby').style.display = 'none';
+  // hide popup
+  document.getElementById('cardPopupContainer').style.display = 'none';
   // hide "more"
   showingMore = true;
   toggleMore();
   document.getElementById('moreButton').onmousedown = toggleMore;
   document.getElementById('forfeitButton').onmousedown = forfeit;
   // show game
-  document.getElementById('game').style.display = 'flex';
+  showPage('game');
 }
 
 /*
@@ -1449,8 +1440,7 @@ function changeLogin() {
   }
 
   // go from lobby to login
-  document.getElementById('lobby').style.display = 'none';
-  document.getElementById('loginContainer').style.display = 'flex';
+  showPage('loginContainer');
 
   document.getElementById('newLogin').onmousedown = toggleCreatingNewLogin;
   // send login info on button press, or on pressing return in a text field
@@ -1467,8 +1457,7 @@ function loginAccepted(username) {
   // update username
   document.getElementById('lobbyUsernameText').innerHTML = username;
   // return to lobby from login
-  document.getElementById('loginContainer').style.display = 'none';
-  document.getElementById('lobby').style.display = 'block';
+  showPage('lobby');
 }
 
 /*
@@ -1561,12 +1550,26 @@ function loginError(message) {
   loginPending = false;
 }
 
+var pageDisplays = {'loginContainer':'flex', 'lobby':'block', 'gameLobby':'block', 'game':'flex', 'lostConnection':'flex'};
+function showPage(toShow) {
+  for (var pageId in pageDisplays) {
+    if (pageDisplays.hasOwnProperty(pageId)) {
+      var page = document.getElementById(pageId);
+      if (pageId === toShow) {
+        page.style.display = pageDisplays[pageId];
+      } else {
+        page.style.display = 'none';
+      }
+    }
+  }
+}
+
 function init() {
 
+  // show lobby
+  showPage('lobby');
   // hide unused elements
-  document.getElementById('loginContainer').style.display = 'none';
-  document.getElementById('gameLobby').style.display = 'none';
-  document.getElementById('game').style.display = 'none';
+  document.getElementById('cardPopupContainer').style.display = 'none';
   document.getElementById('waitingOn').style.display = 'none';
   document.getElementById('prompt').style.display = 'none';
 
@@ -1579,7 +1582,7 @@ function init() {
     receiveServerCommands(e.data);
   }
   socket.onclose = function() {
-    // TODO announce that the player has been disconnected from the server
+    showPage('lostConnection');
   };
 
   // setup unique controls
