@@ -71,13 +71,13 @@ public class Player {
 	protected synchronized void sendCommand(JSONObject command, boolean autoIssue) {
 		if (!forfeit) {
 			// premature optimization!
-			Iterator<JSONObject> iter = commands.iterator();
+			/*Iterator<JSONObject> iter = commands.iterator();
 			while (iter.hasNext()) {
 				String commandType = (String) iter.next().get("command");
 				if (!commandType.equals("message") && !commandType.equals("setPileSizes") && commandType.equals(command.get("command"))) {
 					iter.remove();
 				}
-			}
+			}*/
 			commands.add(command);
 			if (autoIssue) {
 				issueCommands();

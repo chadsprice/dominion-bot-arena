@@ -113,22 +113,38 @@ function displayPopup(cardName) {
   cardPopupContainer.style.display = 'block';
 }
 
-/*
-Scroll to the bottom of the element with the given id.
-*/
-function scrollToBottom(id) {
-  var div = document.getElementById(id);
-  div.scrollTop = div.scrollHeight - div.clientHeight;
-}
+var logIndents = [];
 
 /*
-Add the given line to the game log.
+Add the given text to the game log at the appropriate intentation level.
 */
-function log(message) {
-  var log = document.getElementById('log');
+function message(text, indent) {
   var p = document.createElement('p');
-  p.innerHTML = message;
-  log.appendChild(p);
+  p.innerHTML = text;
+  if (indent == 0) {
+    document.getElementById('log').appendChild(p);
+    return;
+  }
+  while (logIndents.length - 1 < indent) {
+    var indentDiv = document.createElement('div');
+    indentDiv.className = 'logIndent';
+    logIndents[logIndents.length - 1].appendChild(indentDiv);
+    logIndents.push(indentDiv);
+  }
+  while (logIndents.length - 1 > indent) {
+    logIndents.pop();
+  }
+  logIndents[indent].appendChild(p);
+}
+
+function newTurnMessage(text) {
+  var indentDiv = document.createElement('div');
+  indentDiv.className = 'turnIndent';
+  var p = document.createElement('p');
+  p.innerHTML = text;
+  indentDiv.appendChild(p);
+  document.getElementById('log').appendChild(indentDiv);
+  logIndents = [indentDiv];
 }
 
 /*
@@ -728,10 +744,6 @@ function promptDiscardNumberText(isMandatory, cause, destination) {
   } else { /* destination === 'draw' */
     return cause + ': Put ' + (isMandatory ? '' : 'up to ') + (discardNumber - toDiscard.length) + ' card(s) on top of your deck (the first card you choose will be on top of your deck)';
   }
-}
-
-function message(str) {
-  log(str);
 }
 
 /*
@@ -1385,7 +1397,10 @@ function executeCommand(command) {
       promptMultipleChoice(command.message, command.promptType, command.choices, command.disabled);
       break;
     case 'message':
-      message(command.message);
+      message(command.text, command.indent);
+      break;
+    case 'newTurnMessage':
+      newTurnMessage(command.text);
       break;
     case 'chat':
       receiveChat(command.username, command.message);

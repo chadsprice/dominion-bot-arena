@@ -204,6 +204,18 @@ body {
   margin-bottom: 2em;
 }
 
+.logIndent {
+  margin-left: 2em;
+}
+
+.turnIndent {
+  margin-bottom: 2em;
+}
+
+.turnTitle {
+  font-weight: bold;
+}
+
 #prompt {
   margin-left: 2em;
   margin-bottom: 2em;

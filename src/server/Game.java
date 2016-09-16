@@ -78,6 +78,8 @@ public class Game implements Runnable {
 	public Map<Card, Integer> embargoTokens;
 	public boolean boughtVictoryCardThisTurn;
 
+	public int messageIndent;
+
 	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Set<Card> basicSet) {
 		this.server = server;
 		kingdomCards = new ArrayList<>(kingdomSet);
@@ -137,8 +139,8 @@ public class Game implements Runnable {
 		}
 		actionsPlayedThisTurn = 0;
 		boughtVictoryCardThisTurn = false;
-		message(player, "------ Your turn ------");
-		messageOpponents(player, "------ " + player.username + "'s turn ------");
+		newTurnMessage(player);
+		messageIndent++;
 		player.sendActions();
 		player.sendBuys();
 		// resolve durations
@@ -211,10 +213,8 @@ public class Game implements Runnable {
 		}
 		// cleanup and redraw
 		player.cleanup();
-		for (Player eachPlayer : players) {
-			message(eachPlayer, "...");
-		}
 		player.turns++;
+		messageIndent--;
 	}
 
 	private void resolveDurations(Player player) {
@@ -250,23 +250,26 @@ public class Game implements Runnable {
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
+		boolean moves = false;
 		actionsPlayedThisTurn++;
 		message(player, "You play " + action.htmlName());
 		messageOpponents(player, player.username + " plays " + action.htmlName());
+		messageIndent++;
 		if (!action.isDuration) {
 			if (action.isAttack) {
 				// attack reactions
 				List<Player> targets = new ArrayList<Player>();
 				for (Player opponent : getOpponents(player)) {
+					messageIndent++;
 					boolean unaffected = reactToAttack(opponent);
+					messageIndent--;
 					if (!unaffected) {
 						targets.add(opponent);
 					}
 				}
 				action.onAttack(player, this, targets);
-				return false;
 			} else {
-				return action.onPlay(player, this, hasMoved);
+				moves = action.onPlay(player, this, hasMoved);
 			}
 		} else {
 			List<Card> toHaven = null;
@@ -283,7 +286,7 @@ public class Game implements Runnable {
 					duration.havenedCards = toHaven;
 					player.addDuration(duration);
 				}
-				return willHaveEffect;
+				moves = willHaveEffect;
 			} else {
 				if (action == Card.HAVEN) {
 					toHaven = player.getLastHaven();
@@ -292,9 +295,10 @@ public class Game implements Runnable {
 				if (action == Card.HAVEN) {
 					player.sendDurations();
 				}
-				return false;
 			}
 		}
+		messageIndent--;
+		return moves;
 	}
 
 	private boolean reactToAttack(Player player) {
@@ -313,7 +317,9 @@ public class Game implements Runnable {
 				if (choice != null) {
 					message(player, ".. (You reveal " + choice.htmlName() + ")");
 					messageOpponents(player, "... (" + player.username + " reveals " + choice.htmlName() + ")");
+					messageIndent++;
 					unaffected |= choice.onAttackReaction(player, this);
+					messageIndent--;
 					// update possible reactions
 					reactions = getAttackReactions(player);
 					// don't allow the same reaction to be played twice in a row
@@ -1336,11 +1342,33 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
+	public void newTurnMessage(Player player, String str) {
+		JSONObject command = new JSONObject();
+		command.put("command", "newTurnMessage");
+		command.put("text", str);
+		player.sendCommand(command);
+	}
+
+	public void newTurnMessage(Player player) {
+		newTurnMessage(player, "<span class=\"turnTitle\">--- Your Turn " + (player.turns + 1) + " ---</span>");
+		for (Player opponent : getOpponents(player)) {
+			newTurnMessage(opponent, "<span class=\"turnTitle\">--- " + player.username + "'s Turn " + (player.turns + 1) + " ---</span>");
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public void message(Player player, String str) {
-		JSONObject message = new JSONObject();
-		message.put("command", "message");
-		message.put("message", str);
-		player.sendCommand(message);
+		JSONObject command = new JSONObject();
+		command.put("command", "message");
+		command.put("text", str);
+		command.put("indent", messageIndent);
+		player.sendCommand(command);
+	}
+
+	public void messageAll(String str) {
+		for (Player player : players) {
+			message(player, str);
+		}
 	}
 
 	public void messageOpponents(Player player, String str) {
