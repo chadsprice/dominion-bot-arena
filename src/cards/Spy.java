@@ -22,18 +22,19 @@ public class Spy extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 action");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
+		game.messageAll("getting +1 action");
 		// reveal top card of each player's deck and decide to keep it or discard it
 		targets.add(0, player);
 		for (Player target : targets) {
 			List<Card> top = target.takeFromDraw(1);
 			if (top.size() == 1) {
 				Card card = top.get(0);
-				game.message(target, "... (You reveal " + card.htmlName() + ")");
-				game.messageOpponents(target, "... (" + target.username + " reveals " + card.htmlName() + ")");
+				game.message(target, "You reveal " + card.htmlName());
+				game.messageOpponents(target, target.username + " reveals " + card.htmlName());
 				int choice;
 				if (target == player) {
 					choice = game.promptMultipleChoice(player, "Spy: You reveal " + card.htmlName(), new String[] {"Keep it", "Discard it"});
@@ -42,16 +43,16 @@ public class Spy extends Card {
 				}
 				if (choice == 0) {
 					target.putOnDraw(card);
-					game.message(target, "... (You put it back)");
-					game.messageOpponents(target, "... (" + target.username + " puts it back)");
+					game.message(target, "You put it back");
+					game.messageOpponents(target, target.username + " puts it back");
 				} else {
 					target.addToDiscard(card);
-					game.message(target, "... (You discard it)");
-					game.messageOpponents(target, "... (" + target.username + " discards it)");
+					game.message(target, "You discard it");
+					game.messageOpponents(target, target.username + " discards it");
 				}
 			} else {
-				game.message(target, "... (Your deck is empty)");
-				game.messageOpponents(target, "... (" + target.username + "'s deck is empty)");
+				game.message(target, "Your deck is empty");
+				game.messageOpponents(target, target.username + "'s deck is empty");
 			}
 		}
 	}

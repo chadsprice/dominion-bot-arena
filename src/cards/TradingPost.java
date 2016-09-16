@@ -25,15 +25,14 @@ public class TradingPost extends Card {
 			game.trash.addAll(toTrash);
 			if (toTrash.size() == 2 && game.supply.get(Card.SILVER) > 0) {
 				game.gainToHand(player, Card.SILVER);
-				game.message(player, "... You trash " + Card.htmlList(toTrash) + " and gain " + Card.SILVER.htmlName() + ", putting it into your hand");
-				game.messageOpponents(player, "... trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into his hand");
+				game.message(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into your hand");
+				game.messageOpponents(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into his hand");
 			} else {
-				game.message(player, "... You trash " + Card.htmlList(toTrash) + " and gain nothing");
-				game.messageOpponents(player, "... trashing " + Card.htmlList(toTrash) + " and gaining nothing");
+				game.message(player, "trashing " + Card.htmlList(toTrash) + " and gain nothing");
+				game.messageOpponents(player, "trashing " + Card.htmlList(toTrash) + " and gaining nothing");
 			}
 		} else {
-			game.message(player, "... You have no cards to trash");
-			game.messageOpponents(player, "... having no cards to trash");
+			game.messageAll("having no cards to trash");
 		}
 	}
 

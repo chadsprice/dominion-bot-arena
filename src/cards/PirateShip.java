@@ -28,8 +28,8 @@ public class PirateShip extends Card {
 			for (Player target : targets) {
 				// reveal the target's top two cards and count the distinct treasures
 				List<Card> top = target.takeFromDraw(2);
-				game.message(target, "... (You reveal " + Card.htmlList(top) + ")");
-				game.messageOpponents(target, "... (" + target.username + " reveals " + Card.htmlList(top) + ")");
+				game.message(target, "You reveal " + Card.htmlList(top));
+				game.messageOpponents(target, target.username + " reveals " + Card.htmlList(top));
 				Set<Card> treasures = new HashSet<Card>();
 				for (Card card : top) {
 					if (card.isTreasure) {
@@ -47,8 +47,7 @@ public class PirateShip extends Card {
 					toTrash = treasures.iterator().next();
 				}
 				if (toTrash != null) {
-					game.message(target, "... You trash the " + toTrash.htmlNameRaw());
-					game.messageOpponents(target, "... " + target.username + " trashes the " + toTrash.htmlNameRaw());
+					game.messageAll("trashing the " + toTrash.htmlNameRaw());
 					top.remove(toTrash);
 					game.trash.add(toTrash);
 					trashedTreasure = true;
@@ -61,13 +60,12 @@ public class PirateShip extends Card {
 			// if any target trashed a treasure
 			if (trashedTreasure) {
 				player.addPirateShipToken();
-				game.message(player, "... You place a coin token on your pirate ship mat");
-				game.messageOpponents(player, "... placing a coin token on his pirate ship mat");
+				game.message(player, "You place a coin token on your pirate ship mat");
+				game.messageOpponents(player, player.username + " places a coin token on his pirate ship mat");
 			}
 		} else {
 			player.addExtraCoins(player.getPirateShipTokens());
-			game.message(player, "... You get +$" + player.getPirateShipTokens());
-			game.messageOpponents(player, "... getting +$" + player.getPirateShipTokens());
+			game.messageAll("getting +$" + player.getPirateShipTokens());
 		}
 	}
 

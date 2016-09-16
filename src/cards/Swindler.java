@@ -23,30 +23,29 @@ public class Swindler extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// +$2
 		player.addExtraCoins(2);
-		game.message(player, "... You get +$2");
-		game.messageOpponents(player, "... getting +$2");
+		game.messageAll("getting +$2");
 		// Swindling
 		for (Player target : targets) {
 			List<Card> drawn = target.takeFromDraw(1);
 			if (drawn.size() == 1) {
 				Card toTrash = drawn.get(0);
 				game.trash.add(toTrash);
-				game.message(target, "... You reveal and trash " + toTrash.htmlName());
-				game.messageOpponents(target, "... " + target.username + " reveals and trashes " + toTrash.htmlName());
+				game.message(target, "You reveal and trash " + toTrash.htmlName());
+				game.messageOpponents(target, target.username + " reveals and trashes " + toTrash.htmlName());
 				int cost = toTrash.cost(game);
 				Set<Card> gainable = game.cardsCostingExactly(cost);
 				if (gainable.size() > 0) {
 					Card toGain = game.promptChooseOpponentGainFromSupply(player, gainable, "Swindler: " + target.username + " reveals and trashes " + toTrash.htmlName() + ". Choose a card for " + target.username + " to gain");
 					game.gain(target, toGain);
-					game.message(target, "... You gain " + toGain.htmlName());
-					game.messageOpponents(target, "... " + target.username + " gains " + toGain.htmlName());
+					game.message(target, "You gain " + toGain.htmlName());
+					game.messageOpponents(target, target.username + " gains " + toGain.htmlName());
 				} else {
-					game.message(target, "... You gain nothing");
-					game.messageOpponents(target, "... " + target.username + " gains nothing");
+					game.message(target, "You gain nothing");
+					game.messageOpponents(target, target.username + " gains nothing");
 				}
 			} else {
-				game.message(target, "... Your deck is empty");
-				game.messageOpponents(target, "... " + target + "'s deck is empty");
+				game.message(target, "Your deck is empty");
+				game.messageOpponents(target, target + "'s deck is empty");
 			}
 		}
 	}

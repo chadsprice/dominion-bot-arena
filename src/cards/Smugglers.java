@@ -45,15 +45,12 @@ public class Smugglers extends Card {
 			// if there are any of the chosen card to gain in the supply
 			if (game.supply.get(toGain) != null && game.supply.get(toGain) > 0) {
 				game.gain(player, toGain);
-				game.message(player, "... You gain " + toGain.htmlName());
-				game.messageOpponents(player, "... gaining " + toGain.htmlName());
+				game.messageAll("gaining " + toGain.htmlName());
 			} else {
-				game.message(player, "... You gain nothing");
-				game.messageOpponents(player, "... gaining nothing");
+				game.messageAll("gaining nothing");
 			}
 		} else {
-			game.message(player, "... but " + playerOnRight.username + " gained no cards costing $6 or less on his last turn");
-			game.messageOpponents(player, "... but " + playerOnRight.username + " gained no cards costing $6 or less on his last turn");
+			game.messageAll("but " + playerOnRight.username + " gained no cards costing $6 or less on his last turn");
 		}
 	}
 

@@ -19,6 +19,7 @@ public class Baron extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 buy
 		player.addBuys(1);
+		game.messageAll("getting +1 buy");
 		// may discard an estate
 		boolean discardingEstate = false;
 		if (player.getHand().contains(Card.ESTATE)) {
@@ -26,11 +27,9 @@ public class Baron extends Card {
 			discardingEstate = (choice == 0);
 		}
 		if (discardingEstate) {
-			player.removeFromHand(Card.ESTATE);
-			player.addToDiscard(Card.ESTATE);
+			player.putFromHandIntoDiscard(Card.ESTATE);
 			player.addExtraCoins(4);
-			game.message(player, "... You get +1 buy and discard " + Card.ESTATE.htmlName() + " for +$4");
-			game.messageOpponents(player, "... getting +1 buy and discarding " + Card.ESTATE.htmlName() + " for +$4");
+			game.messageAll("discarding " + Card.ESTATE.htmlName() + " for +$4");
 		} else {
 			String cardName = null;
 			if (game.supply.get(Card.ESTATE) > 0) {
@@ -39,8 +38,7 @@ public class Baron extends Card {
 			} else {
 				cardName = "nothing";
 			}
-			game.message(player, "... You get +1 buy and gain " + cardName);
-			game.messageOpponents(player, "... getting +1 buy and gaining " + cardName);
+			game.messageAll("gaining " + cardName);
 		}
 	}
 

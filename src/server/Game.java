@@ -223,12 +223,16 @@ public class Game implements Runnable {
 			if (duration.modifier == Card.THRONE_ROOM && duration.durationCard != Card.HAVEN && duration.durationCard != Card.OUTPOST && duration.durationCard != Card.TACTICIAN) {
 				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect twice");
 				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect twice");
+				messageIndent++;
 				duration.durationCard.onDurationEffect(player, this, duration);
 				duration.durationCard.onDurationEffect(player, this, duration);
+				messageIndent--;
 			} else {
 				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect");
 				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect");
+				messageIndent++;
 				duration.durationCard.onDurationEffect(player, this, duration);
+				messageIndent--;
 			}
 		}
 		player.durationsResolved();
@@ -244,8 +248,9 @@ public class Game implements Runnable {
 			for (int i = 0; i < cursesToGain; i++) {
 				gain(player, Card.CURSE);
 			}
-			message(player, "... You gain " + Card.CURSE.htmlName(cursesToGain));
-			messageOpponents(player, "... gaining " + Card.CURSE.htmlName(cursesToGain));
+			messageIndent++;
+			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
+			messageIndent--;
 		}
 	}
 
@@ -304,8 +309,8 @@ public class Game implements Runnable {
 	private boolean reactToAttack(Player player) {
 		for (Duration duration : player.getDurations()) {
 			if (duration.durationCard == Card.LIGHTHOUSE) {
-				message(player, ".. (You have " + Card.LIGHTHOUSE.htmlName() + " in play)");
-				messageOpponents(player, "... (" + player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play)");
+				message(player, "You have " + Card.LIGHTHOUSE.htmlName() + " in play");
+				messageOpponents(player, player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play");
 				return true;
 			}
 		}
@@ -315,8 +320,8 @@ public class Game implements Runnable {
 			do {
 				Card choice = promptChooseRevealAttackReaction(player, reactions);
 				if (choice != null) {
-					message(player, ".. (You reveal " + choice.htmlName() + ")");
-					messageOpponents(player, "... (" + player.username + " reveals " + choice.htmlName() + ")");
+					message(player, "You reveal " + choice.htmlName());
+					messageOpponents(player, player.username + " reveals " + choice.htmlName());
 					messageIndent++;
 					unaffected |= choice.onAttackReaction(player, this);
 					messageIndent--;
@@ -1350,9 +1355,9 @@ public class Game implements Runnable {
 	}
 
 	public void newTurnMessage(Player player) {
-		newTurnMessage(player, "<span class=\"turnTitle\">--- Your Turn " + (player.turns + 1) + " ---</span>");
+		newTurnMessage(player, "<span class=\"turnTitle\">-- Your Turn " + (player.turns + 1) + " --</span>");
 		for (Player opponent : getOpponents(player)) {
-			newTurnMessage(opponent, "<span class=\"turnTitle\">--- " + player.username + "'s Turn " + (player.turns + 1) + " ---</span>");
+			newTurnMessage(opponent, "<span class=\"turnTitle\">-- " + player.username + "'s Turn " + (player.turns + 1) + " --</span>");
 		}
 	}
 

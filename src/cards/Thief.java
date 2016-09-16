@@ -25,8 +25,8 @@ public class Thief extends Card {
 		// each other player reveals the top 2 cards of his deck
 		for (Player target : targets) {
 			List<Card> top = target.takeFromDraw(2);
-			game.message(target, "... (You reveal " + Card.htmlList(top) + ")");
-			game.messageOpponents(target, "... (" + target.username + " reveals " + Card.htmlList(top) + ")");
+			game.message(target, "You reveal " + Card.htmlList(top));
+			game.messageOpponents(target, target.username + " reveals " + Card.htmlList(top));
 			Set<Card> treasures = new HashSet<Card>();
 			for (Card card : top) {
 				if (card.isTreasure) {
@@ -43,15 +43,15 @@ public class Thief extends Card {
 				toTrash = treasures.iterator().next();
 			}
 			if (toTrash != null) {
-				game.message(target, "... You trash the " + toTrash.htmlNameRaw());
-				game.messageOpponents(target, "... " + target.username + " trashes the " + toTrash.htmlNameRaw());
+				game.message(target, "You trash the " + toTrash.htmlNameRaw());
+				game.messageOpponents(target, target.username + " trashes the " + toTrash.htmlNameRaw());
 				top.remove(toTrash);
 				game.trash.add(toTrash);
 				int choice = game.promptMultipleChoice(player, "Thief: " + target.username + " trashes " + toTrash.htmlName() + ". Gain the trashed " + toTrash.htmlNameRaw() + "?", new String[] {"Yes", "No"});
 				if (choice == 0) {
 					game.gainFromTrash(player, toTrash);
-					game.message(player, "... You gain the trashed " + toTrash.htmlNameRaw());
-					game.messageOpponents(player, "... " + player.username + " gains the trashed " + toTrash.htmlNameRaw());
+					game.message(player, "You gain the trashed " + toTrash.htmlNameRaw());
+					game.messageOpponents(player, player.username + " gains the trashed " + toTrash.htmlNameRaw());
 				}
 			}
 			// discard the non-treasures

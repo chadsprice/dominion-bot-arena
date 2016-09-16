@@ -24,22 +24,23 @@ public class Haven extends Card {
 	public boolean onDurationPlay(Player player, Game game, List<Card> havened) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 action");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
+		game.messageAll("getting +1 action");
 		// choose a card to haven
 		if (!player.getHand().isEmpty()) {
 			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Haven: Choose a card to set aside");
 			player.removeFromHand(toHaven);
 			havened.add(toHaven);
-			game.message(player, "... You set aside " + Card.htmlList(drawn) + " face down");
-			game.messageOpponents(player, "... setting aside a card face down");
+			game.message(player, "setting aside " + Card.htmlList(drawn) + " face down");
+			game.messageOpponents(player, "setting aside a card face down");
 			// indicate that this haven will have an effect next turn
 			return true;
 		} else {
-			game.message(player, "... You set aside nothing because your hand is emtpy");
-			game.messageOpponents(player, "... setting aside nothing because his hand is emtpy");
+			game.message(player, "setting aside nothing because your hand is emtpy");
+			game.messageOpponents(player, "setting aside nothing because his hand is emtpy");
 			// indicate that this haven will have no effect next turn
 			return false;
 		}
@@ -48,8 +49,8 @@ public class Haven extends Card {
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		player.addToHand(duration.havenedCards);
-		game.message(player, "... You return " + Card.htmlList(duration.havenedCards) + " to your hand");
-		game.messageOpponents(player, "... returning " + duration.havenedCards + " card(s) to his hand");
+		game.message(player, "returning " + Card.htmlList(duration.havenedCards) + " to your hand");
+		game.messageOpponents(player, "returning " + Card.numCards(duration.havenedCards.size()) + " to his hand");
 		duration.havenedCards.clear();
 	}
 	

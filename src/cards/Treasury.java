@@ -21,12 +21,14 @@ public class Treasury extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
+		game.messageAll("getting +1 action");
 		// +$1
 		player.addExtraCoins(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + ", get +1 action, and get +$1");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s), getting +1 action, and getting +$1");
+		game.messageAll("getting +$1");
 	}
 
 	@Override

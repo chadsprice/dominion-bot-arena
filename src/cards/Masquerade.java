@@ -23,8 +23,8 @@ public class Masquerade extends Card {
 	public void onPlay(Player player, Game game) {
 		// +2 cards
 		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// Each player chooses a card to pass
 		List<Player> passOrder = game.getOpponents(player);
 		passOrder.add(0, player);
@@ -52,14 +52,14 @@ public class Masquerade extends Card {
 			}
 			// message player who is giving
 			String cardString = toPass == null ? "nothing" : toPass.htmlName();
-			game.message(eachPlayer, "... You pass " + cardString + " to " + playerOnLeft.username);
+			game.message(eachPlayer, "You pass " + cardString + " to " + playerOnLeft.username);
 			// message player who is receiving
-			game.message(playerOnLeft, "... " + eachPlayer.username + " passes " + cardString + " to you");
+			game.message(playerOnLeft, eachPlayer.username + " passes " + cardString + " to you");
 			// message other players (without naming the card passed)
 			cardString = toPass == null ? "nothing" : "a card";
 			for (Player eachUninvolved : passOrder) {
 				if (eachUninvolved != eachPlayer && eachUninvolved != playerOnLeft) {
-					game.message(eachUninvolved, "... " + eachPlayer.username + " passes " + cardString + " to " + playerOnLeft.username);
+					game.message(eachUninvolved, eachPlayer.username + " passes " + cardString + " to " + playerOnLeft.username);
 				}
 			}
 		}
@@ -70,8 +70,7 @@ public class Masquerade extends Card {
 				Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Masquerade: Trash a card from your hand");
 				player.removeFromHand(toTrash);
 				game.trash.add(toTrash);
-				game.message(player, "... You trash " + toTrash.htmlName());
-				game.messageOpponents(player, "... trashing " + toTrash.htmlName());
+				game.messageAll("trashing " + toTrash.htmlName());
 			}
 		}
 	}

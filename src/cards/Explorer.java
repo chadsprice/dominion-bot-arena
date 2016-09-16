@@ -23,19 +23,18 @@ public class Explorer extends Card {
 			int choice = game.promptMultipleChoice(player, "Explorer: Reveal " + Card.PROVINCE.htmlName() + " from your hand?", new String[] {"Reveal Province", "Don't"});
 			if (choice == 0) {
 				revealedProvince = true;
-				game.message(player, "... You reveal " + Card.PROVINCE.htmlName() + " from your hand");
-				game.messageOpponents(player, "... revealing " + Card.PROVINCE.htmlName() + " from his hand");
+				game.message(player, "revealing " + Card.PROVINCE.htmlName() + " from your hand");
+				game.messageOpponents(player, "revealing " + Card.PROVINCE.htmlName() + " from his hand");
 			}
 		}
 		// gain the respective card, putting it into your hand
 		Card toGain = revealedProvince ? Card.GOLD : Card.SILVER;
 		if (game.supply.get(toGain) > 0) {
 			game.gainToHand(player, toGain);
-			game.message(player, "... You gain " + toGain.htmlName() + ", putting it into your hand");
-			game.messageOpponents(player, "... gaining " + toGain.htmlName() + ", putting it into his hand");
+			game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
+			game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
 		} else {
-			game.message(player, "... You gain nothing");
-			game.messageOpponents(player, "... gaining nothing");
+			game.messageAll("gaining nothing");
 		}
 	}
 

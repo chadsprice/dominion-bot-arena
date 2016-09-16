@@ -23,18 +23,19 @@ public class Caravan extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 action");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
+		game.messageAll("getting +1 action");
 	}
 
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 	}
 
 	@Override

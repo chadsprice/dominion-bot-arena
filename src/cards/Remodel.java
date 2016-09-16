@@ -25,8 +25,7 @@ public class Remodel extends Card {
 		Set<Card> trashable = new HashSet<Card>(player.getHand());
 		Card toTrash = null;
 		if (trashable.size() == 0) {
-			game.message(player, "... You trash nothing");
-			game.messageOpponents(player, "... trashing nothing");
+			game.messageAll("trashing nothing");
 			return;
 		} else {
 			Card choice = game.promptChooseTrashFromHand(player, trashable, "Remodel: Choose a card to trash");
@@ -40,8 +39,7 @@ public class Remodel extends Card {
 		// trash card
 		player.removeFromHand(toTrash);
 		game.trash.add(toTrash);
-		game.message(player, "... You trash " + toTrash.htmlName());
-		game.messageOpponents(player, "... trashing " + toTrash.htmlName());
+		game.messageAll("trashing " + toTrash.htmlName());
 
 		// gain a card costing up to 2 more
 		int maxCost = cost + 2;
@@ -55,8 +53,7 @@ public class Remodel extends Card {
 			}
 		}
 		if (gainable.size() == 0) {
-			game.message(player, "... You gain nothing");
-			game.messageOpponents(player, "... gaining nothing");
+			game.messageAll("gaining nothing");
 			return;
 		} else {
 			Card choice = game.promptChooseGainFromSupply(player, gainable, "Remodel: Choose a card to gain");
@@ -68,8 +65,7 @@ public class Remodel extends Card {
 		}
 		// gain card
 		game.gain(player, toGain);
-		game.message(player, "... You gain " + toGain.htmlName());
-		game.messageOpponents(player, "... gaining " + toGain.htmlName());
+		game.messageAll("gaining " + toGain.htmlName());
 	}
 
 	@Override

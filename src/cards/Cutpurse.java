@@ -22,17 +22,16 @@ public class Cutpurse extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// +$2
 		player.addExtraCoins(2);
-		game.message(player, "... You get +$2");
-		game.messageOpponents(player, "... getting +$2");
+		game.messageAll("getting +$2");
 		// targets discard a copper
 		for (Player target : targets) {
 			if (target.getHand().contains(Card.COPPER)) {
 				target.putFromHandIntoDiscard(Card.COPPER);
-				game.message(target, "... (You discard " + Card.COPPER.htmlName() + ")");
-				game.messageOpponents(target, "... (" + target.username + " discards " + Card.COPPER.htmlName() + ")");
+				game.message(target, "You discard " + Card.COPPER.htmlName());
+				game.messageOpponents(target, target.username + " discards " + Card.COPPER.htmlName());
 			} else {
-				game.message(target, "... (You reveal " + Card.htmlList(target.getHand()) + ")");
-				game.messageOpponents(target, "... (" + target.username + " reveals " + Card.htmlList(target.getHand()) + ")");
+				game.message(target, "You reveal " + Card.htmlList(target.getHand()));
+				game.messageOpponents(target, target.username + " reveals " + Card.htmlList(target.getHand()));
 			}
 		}
 	}

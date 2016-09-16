@@ -23,8 +23,7 @@ public class Chapel extends Card {
 		List<Card> trashed = game.promptTrashNumber(player, 4, false, "Chapel");
 		player.removeFromHand(trashed);
 		game.trash.addAll(trashed);
-		game.message(player, "... You trash " + Card.htmlList(trashed));
-		game.messageOpponents(player, "... trashing " + Card.htmlList(trashed));
+		game.messageAll("trashing " + Card.htmlList(trashed));
 	}
 
 	@Override

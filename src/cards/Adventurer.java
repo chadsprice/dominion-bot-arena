@@ -45,10 +45,8 @@ public class Adventurer extends Card {
 		if (setAside.size() > 0) {
 			player.addToDiscard(setAside);
 		}
-		game.message(player, "... You reveal " + Card.htmlList(revealed));
-		game.messageOpponents(player, "... revealing " + Card.htmlList(revealed));
-		game.message(player, "... You draw " + Card.htmlList(treasures));
-		game.messageOpponents(player, "... drawing " + Card.htmlList(treasures));
+		game.messageAll("revealing " + Card.htmlList(revealed));
+		game.messageAll("drawing " + Card.htmlList(treasures));
 	}
 
 	@Override

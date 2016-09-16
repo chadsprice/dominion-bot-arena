@@ -26,8 +26,7 @@ public class Feast extends Card {
 			// trash this
 			player.removeFromPlay(this);
 			game.trash.add(this);
-			game.message(player, "... You trash the " + this.htmlNameRaw());
-			game.messageOpponents(player, "... trashing the " + this.htmlNameRaw());
+			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}
 		// gain a card costing up to $5
@@ -41,8 +40,7 @@ public class Feast extends Card {
 			}
 		}
 		if (gainable.size() == 0) {
-			game.message(player, "... You gain nothing");
-			game.messageOpponents(player, "... gaining nothing");
+			game.messageAll("gaining nothing");
 			return movedToTrash;
 		} else {
 			Card choice = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain");
@@ -54,8 +52,7 @@ public class Feast extends Card {
 		}
 		// gain card
 		game.gain(player, toGain);
-		game.message(player, "... You gain " + toGain.htmlName());
-		game.messageOpponents(player, "... gaining " + toGain.htmlName());
+		game.messageAll("gaining " + toGain.htmlName());
 		return movedToTrash;
 	}
 

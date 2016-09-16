@@ -39,8 +39,8 @@ public class Saboteur extends Card {
 			// if a card costing $3 or more was revealed
 			if (toTrash != null) {
 				// trash the card
-				game.message(target, "... You reveal " + Card.htmlList(revealed) + ", trashing the " + toTrash.htmlNameRaw());
-				game.messageOpponents(target, "... " + target.username + " reveals " + Card.htmlList(revealed) + ", trashing the " + toTrash.htmlNameRaw());
+				game.message(target, "You reveal " + Card.htmlList(revealed) + ", trashing the " + toTrash.htmlNameRaw());
+				game.messageOpponents(target, target.username + " reveals " + Card.htmlList(revealed) + ", trashing the " + toTrash.htmlNameRaw());
 				game.trash.add(toTrash);
 				// discard the rest
 				revealed.remove(toTrash);
@@ -50,19 +50,19 @@ public class Saboteur extends Card {
 				Card toGain = game.promptChooseGainFromSupply(target, game.cardsCostingAtMost(cost), "Saboteur: You trash " + toTrash.htmlName() + ". You may gain a card costing at most $2 less than it", "attackPrompt", false, "Gain nothing");
 				if (toGain != null) {
 					game.gain(target, toGain);
-					game.message(target, "... You gain " + toGain.htmlName());
-					game.messageOpponents(target, "... " + target.username + " gains " + toGain.htmlName());
+					game.message(target, "You gain " + toGain.htmlName());
+					game.messageOpponents(target, target.username + " gains " + toGain.htmlName());
 				} else {
-					game.message(target, "... You gain nothing");
-					game.messageOpponents(target, "... " + target.username + " gains nothing");
+					game.message(target, "You gain nothing");
+					game.messageOpponents(target, target.username + " gains nothing");
 				}
 			} else {
 				if (revealed.size() > 0) {
-					game.message(target, "... You reveal " + Card.htmlList(revealed) + ", trashing nothing");
-					game.messageOpponents(target, "... " + target.username + " reveals " + Card.htmlList(revealed) + ", trashing nothing");
+					game.message(target, "You reveal " + Card.htmlList(revealed) + ", trashing nothing");
+					game.messageOpponents(target, target.username + " reveals " + Card.htmlList(revealed) + ", trashing nothing");
 				} else {
-					game.message(target, "... Your deck is empty");
-					game.messageOpponents(target, "... " + target.username + "'s deck is empty");
+					game.message(target, "Your deck is empty");
+					game.messageOpponents(target, target.username + "'s deck is empty");
 				}
 			}
 		}

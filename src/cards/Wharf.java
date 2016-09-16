@@ -23,20 +23,22 @@ public class Wharf extends Card {
 	public void onPlay(Player player, Game game) {
 		// +2 cards
 		List<Card> drawn = player.drawIntoHand(2);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 buy
 		player.addBuys(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 buy");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 buy");
+		game.messageAll("getting +1 buy");
 	}
 
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		// +2 cards
 		List<Card> drawn = player.drawIntoHand(2);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 buy
 		player.addBuys(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 buy");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 buy");
+		game.messageAll("getting +1 buy");
 	}
 
 	@Override

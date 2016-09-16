@@ -23,31 +23,28 @@ public class Upgrade extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 action");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
+		game.messageAll("getting +1 action");
 		// trash a card from your hand
 		if (player.getHand().size() > 0) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand");
 			player.removeFromHand(toTrash);
 			game.trash.add(toTrash);
-			game.message(player, "... You trash " + toTrash.htmlName());
-			game.messageOpponents(player, "... trashing " + toTrash.htmlName());
+			game.messageAll("trashing " + toTrash.htmlName());
 			Set<Card> gainable = game.cardsCostingExactly(toTrash.cost(game) + 1);
 			// if there are cards that can be gained
 			if (gainable.size() > 0) {
 				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Upgrade: Choose a card to gain");
 				game.gain(player, toGain);
-				game.message(player, "... You gain " + toGain.htmlName());
-				game.messageOpponents(player, "... gaining " + toGain.htmlName());
+				game.messageAll("gaining " + toGain.htmlName());
 			} else {
-				game.message(player, "... You gain nothing");
-				game.messageOpponents(player, "... gaining nothing");
+				game.messageAll("gaining nothing");
 			}
 		} else {
-			game.message(player, "... Your hand is empty");
-			game.messageOpponents(player, "... " + player.username + "'s hand is empty");
+			game.messageAll("having no card to trash");
 		}
 	}
 

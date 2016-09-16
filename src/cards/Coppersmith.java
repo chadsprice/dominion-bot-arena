@@ -19,9 +19,7 @@ public class Coppersmith extends Card {
 	public void onPlay(Player player, Game game) {
 		game.coppersmithsPlayedThisTurn++;
 		player.sendCoins();
-		for (Player eachPlayer : game.players) {
-			game.message(eachPlayer, "... Copper produces an extra $1 this turn");
-		}
+		game.messageAll("Copper produces an extra $1 this turn");
 	}
 
 	@Override

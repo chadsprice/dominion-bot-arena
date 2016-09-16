@@ -21,8 +21,7 @@ public class Salvager extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 buy
 		player.addBuys(1);
-		game.message(player, "... You get +1 buy");
-		game.messageOpponents(player, "... getting +1 buy");
+		game.messageAll("getting +1 buy");
 		// trash a card from the hand, +$ equal to its cost
 		if (!player.getHand().isEmpty()) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Salvager: Choose a card to trash for +$ equal to its cost");
@@ -30,11 +29,9 @@ public class Salvager extends Card {
 			game.trash.add(toTrash);
 			int cost = toTrash.cost(game);
 			player.addExtraCoins(cost);
-			game.message(player, "... You trash " + toTrash.htmlName() + " for +$" + cost);
-			game.messageOpponents(player, "... trashing " + toTrash.htmlName() + " for +$" + cost);
+			game.messageAll("trashing " + toTrash.htmlName() + " for +$" + cost);
 		} else {
-			game.message(player, "... You have no card to trash");
-			game.messageOpponents(player, "... having no card to trash");
+			game.messageAll("having no card to trash");
 		}
 	}
 

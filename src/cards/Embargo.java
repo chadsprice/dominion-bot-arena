@@ -20,21 +20,18 @@ public class Embargo extends Card {
 		boolean movedToTrash = false;
 		// +$2
 		player.addExtraCoins(2);
-		game.message(player, "... You get +$2");
-		game.messageOpponents(player, "... getting +$2");
+		game.messageAll("getting +$2");
 		if (!hasMoved) {
 			// trash this
 			player.removeFromPlay(this);
 			game.trash.add(this);
-			game.message(player, "... You trash the " + this.htmlNameRaw());
-			game.messageOpponents(player, "... trashing the " + this.htmlNameRaw());
+			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}
 		// put an embargo token on top of a supply pile
 		Card toEmbargo = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Embargo: Put an embargo token on a supply pile.");
 		game.addEmbargoToken(toEmbargo);
-		game.message(player, "... You put an embargo token on the " + toEmbargo.htmlName() + " pile");
-		game.messageOpponents(player, "... putting an embargo token on the " + toEmbargo.htmlName() + " pile");
+		game.messageAll("putting an embargo token on the " + toEmbargo.htmlName() + " pile");
 		return movedToTrash;
 	}
 

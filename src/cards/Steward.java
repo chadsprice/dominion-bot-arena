@@ -26,14 +26,13 @@ public class Steward extends Card {
 		case 0:
 			// +2 cards
 			List<Card> drawn = player.drawIntoHand(2);
-			game.message(player, "... You draw " + Card.htmlList(drawn));
-			game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+			game.message(player, "drawing " + Card.htmlList(drawn));
+			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 			break;
 		case 1:
 			// +$2
 			player.addExtraCoins(2);
-			game.message(player, "... You get +$2");
-			game.messageOpponents(player, "... getting +$2");
+			game.messageAll("getting +$2");
 			break;
 		default:
 			// Trash 2 cards
@@ -45,8 +44,7 @@ public class Steward extends Card {
 			} else {
 				toTrash = new ArrayList<Card>();
 			}
-			game.message(player, "... You trash " + Card.htmlList(toTrash));
-			game.messageOpponents(player, "... trashing " + Card.htmlList(toTrash));
+			game.messageAll("trashing " + Card.htmlList(toTrash));
 		}
 	}
 

@@ -21,18 +21,17 @@ public class Lighthouse extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 action
 		player.addActions(1);
+		game.messageAll("getting +1 action");
 		// +$1
 		player.addExtraCoins(1);
-		game.message(player, "... You  get +1 action and +$1");
-		game.messageOpponents(player, "... getting +1 action and +$1");
+		game.messageAll("getting +$1");
 	}
 
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		// +$1
 		player.addExtraCoins(1);
-		game.message(player, "... You  get +$1");
-		game.messageOpponents(player, "... getting +$1");
+		game.messageAll("getting +$1");
 	}
 
 	@Override

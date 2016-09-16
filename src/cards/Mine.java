@@ -31,8 +31,7 @@ public class Mine extends Card {
 		Card toTrash = null;
 		if (trashable.size() == 0) {
 			// no trashable cards
-			game.message(player, "... You trash nothing");
-			game.messageOpponents(player, "... trashing nothing");
+			game.messageAll("trashing nothing");
 			return;
 		} else {
 			// at least one trashable card
@@ -47,8 +46,7 @@ public class Mine extends Card {
 		// trash card
 		player.removeFromHand(toTrash);
 		game.trash.add(toTrash);
-		game.message(player, "... You trash " + toTrash.htmlName());
-		game.messageOpponents(player, "... trashing " + toTrash.htmlName());
+		game.messageAll("trashing " + toTrash.htmlName());
 		
 		// gain a treasure costing up to 3 more
 		int maxCost = cost + 3;
@@ -63,8 +61,7 @@ public class Mine extends Card {
 		Card toGain = null;
 		if (gainable.size() == 0) {
 			// no gainable cards
-			game.message(player, "... You gain nothing");
-			game.messageOpponents(player, "... gaining nothing");
+			game.messageAll("gaining nothing");
 			return;
 		} else {
 			// at least one gainable card
@@ -77,8 +74,8 @@ public class Mine extends Card {
 		}
 		// gain card
 		game.gainToHand(player, toGain);
-		game.message(player, "... You gain " + toGain.htmlName() + " and put it into your hand");
-		game.messageOpponents(player, "... gaining " + toGain.htmlName() + " and putting it into his hand");
+		game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
+		game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
 	}
 	
 	@Override

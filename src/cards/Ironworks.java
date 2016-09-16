@@ -33,33 +33,29 @@ public class Ironworks extends Card {
 			}
 		}
 		if (gainable.size() == 0) {
-			game.message(player, "... You gain nothing");
-			game.messageOpponents(player, "... gaining nothing");
+			game.messageAll("gaining nothing");
 			return;
 		} else {
 			toGain = game.promptChooseGainFromSupply(player, gainable, "Ironworks: Choose a card to gain");
 		}
 		// gain card
 		game.gain(player, toGain);
-		game.message(player, "... You gain " + toGain.htmlName());
-		game.messageOpponents(player, "... gaining " + toGain.htmlName());
+		game.messageAll("gaining " + toGain.htmlName());
 		// +1 action
 		if (toGain.isAction) {
 			player.addActions(1);
-			game.message(player, "... You get +1 action");
-			game.messageOpponents(player, "... getting +1 action");
+			game.messageAll("getting +1 action");
 		}
 		// +$1
 		if (toGain.isTreasure) {
 			player.addExtraCoins(1);
-			game.message(player, "... You get +$1");
-			game.messageOpponents(player, "... getting +$1");
+			game.messageAll("getting +$1");
 		}
 		// +1 card
 		if (toGain.isVictory) {
 			List<Card> drawn = player.drawIntoHand(1);
-			game.message(player, "... You draw " + Card.htmlList(drawn));
-			game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+			game.message(player, "drawing " + Card.htmlList(drawn));
+			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		}
 	}
 

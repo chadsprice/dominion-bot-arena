@@ -21,10 +21,11 @@ public class Village extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +2 actions
 		player.addActions(2);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +2 actions");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +2 actions");
+		game.messageAll("getting +2 actions");
 	}
 
 	@Override

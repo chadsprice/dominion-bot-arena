@@ -40,18 +40,17 @@ public class Ambassador extends Card {
 				player.removeFromHand(card);
 			}
 			game.returnToSupply(card, numToReturn);
-			game.message(player, "... You return " + card.htmlName(numToReturn) + " to the supply");
-			game.messageOpponents(player, "... returning " + card.htmlName(numToReturn) + " to the supply");
+			game.messageAll("returning " + card.htmlName(numToReturn) + " to the supply");
 			for (Player target : targets) {
 				if (game.supply.get(card) > 0) {
 					game.gain(target, card);
-					game.message(target, "... You gain " + card.htmlName());
-					game.messageOpponents(target, "... " + target.username + " gains " + card.htmlName());
+					game.message(target, "You gain " + card.htmlName());
+					game.messageOpponents(target, target.username + " gains " + card.htmlName());
 				}
 			}
 		} else {
-			game.message(player, "... You have no card to reveal from your hand");
-			game.messageOpponents(player, "... having no card to reveal from his hand");
+			game.message(player, "having no card to reveal from your hand");
+			game.messageOpponents(player, "having no card to reveal from his hand");
 		}
 	}
 

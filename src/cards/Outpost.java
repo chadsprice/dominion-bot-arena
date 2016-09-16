@@ -23,17 +23,14 @@ public class Outpost extends Card {
 	public boolean onDurationPlay(Player player, Game game, List<Card> havened) {
 		if (!player.isTakingExtraTurn()) {
 			if (!player.hasExtraTurn()) {
-				game.message(player, "... You get an extra 3 card turn after this one");
-				game.messageOpponents(player, "... getting an extra 3 card turn after this one");
+				game.messageAll("getting an extra 3 card turn after this one");
 				return true;
 			} else {
-				game.message(player, "... but will still only get one extra turn");
-				game.messageOpponents(player, "... but will still only get one extra turn");
+				game.messageAll("but will still only get one extra turn");
 			}
 		} else {
 			// playing an outpost during an extra turn
-			game.message(player, "... but can't take more than two consecutive turns");
-			game.messageOpponents(player, "... but can't take more than two consecutive turns");
+			game.messageAll("but can't take more than two consecutive turns");
 		}
 		return false;
 	}

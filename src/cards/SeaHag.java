@@ -32,8 +32,8 @@ public class SeaHag extends Card {
 				game.gainToTopOfDeck(target, Card.CURSE);
 				gained = Card.CURSE.htmlName();
 			}
-			game.message(target, "... (You discard " + discarded + " from the top of your deck and put " + gained + " on top)");
-			game.messageOpponents(target, "... (" + target.username + " discards " + discarded + " from the top of his deck and puts " + gained + " on top)");
+			game.message(target, "You discard " + discarded + " from the top of your deck and put " + gained + " on top");
+			game.messageOpponents(target, target.username + " discards " + discarded + " from the top of his deck and puts " + gained + " on top");
 		}
 	}
 

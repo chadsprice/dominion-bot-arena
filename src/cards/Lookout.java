@@ -19,9 +19,11 @@ public class Lookout extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
+		player.addActions(1);
+		game.messageAll("getting +1 action");
 		List<Card> drawn = player.takeFromDraw(3);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + Card.htmlList(drawn));
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// trash one
 		if (!drawn.isEmpty()) {
 			String[] choices = new String[drawn.size()];
@@ -30,8 +32,8 @@ public class Lookout extends Card {
 			}
 			int choice = game.promptMultipleChoice(player, "Lookout: Choose one to trash", choices);
 			Card toTrash = drawn.get(choice);
-			game.message(player, "... You trash the " + toTrash.htmlNameRaw());
-			game.messageOpponents(player, "... trashing " + toTrash.htmlName());
+			game.message(player, "trashing the " + toTrash.htmlNameRaw());
+			game.messageOpponents(player, "trashing " + toTrash.htmlName());
 			drawn.remove(choice);
 			game.trash.add(toTrash);
 		}
@@ -43,16 +45,16 @@ public class Lookout extends Card {
 			}
 			int choice = game.promptMultipleChoice(player, "Lookout: Choose one to discard", choices);
 			Card toDiscard = drawn.get(choice);
-			game.message(player, "... You discard the " + toDiscard.htmlNameRaw());
-			game.messageOpponents(player, "... discarding " + toDiscard.htmlName());
+			game.message(player, "discarding the " + toDiscard.htmlNameRaw());
+			game.messageOpponents(player, "discarding " + toDiscard.htmlName());
 			drawn.remove(choice);
 			player.addToDiscard(toDiscard);
 		}
 		// put the other one on top of your deck
 		if (!drawn.isEmpty()) {
 			Card toPutOnDeck = drawn.get(0);
-			game.message(player, "... You put the " + toPutOnDeck.htmlNameRaw() + " on top of your deck");
-			game.messageOpponents(player, "... putting a card on top of his deck");
+			game.message(player, "putting the " + toPutOnDeck.htmlNameRaw() + " on top of your deck");
+			game.messageOpponents(player, "putting a card on top of his deck");
 			player.putOnDraw(toPutOnDeck);
 		}
 	}

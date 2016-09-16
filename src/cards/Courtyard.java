@@ -23,16 +23,16 @@ public class Courtyard extends Card {
 	public void onPlay(Player player, Game game) {
 		// +3 cards
 		List<Card> drawn = player.drawIntoHand(3);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// put a card from hand back on deck
 		if (player.getHand().size() > 0) {
 			Set<Card> choiceSet = new HashSet<Card>(player.getHand());
 			Card choice = game.promptChoosePutOnDeck(player, choiceSet, "Courtyard: Choose a card from your hand to put on top of your deck");
 			player.removeFromHand(choice);
 			player.putOnDraw(choice);
-			game.message(player, "... You put " + choice.htmlName() + " on top of your deck");
-			game.messageOpponents(player, "... putting a card on top of his deck");
+			game.message(player, "putting " + choice.htmlName() + " on top of your deck");
+			game.messageOpponents(player, "putting a card on top of his deck");
 		}
 	}
 

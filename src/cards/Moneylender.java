@@ -24,11 +24,9 @@ public class Moneylender extends Card {
 			game.trash.add(Card.COPPER);
 			// +$3
 			player.addExtraCoins(3);
-			game.message(player, "... You trash " + Card.COPPER.htmlName() + " and get +$3");
-			game.messageOpponents(player, "... trashing " + Card.COPPER.htmlName() + " and getting +$3");
+			game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
 		} else {
-			game.message(player, "... You trash nothing");
-			game.messageOpponents(player, "... trashing nothing");
+			game.messageAll("trashing nothing");
 		}
 	}
 	

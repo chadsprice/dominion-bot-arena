@@ -26,16 +26,15 @@ public class SecretChamber extends Card {
 		player.putFromHandIntoDiscard(discarded);
 		// +$1 per card discarded
 		player.addExtraCoins(discarded.size());
-		game.message(player, "... You discard " + Card.htmlList(discarded) + " and get +$" + discarded.size());
-		game.messageOpponents(player, "... discarding " + Card.htmlList(discarded) + " and getting +$" + discarded.size());
+		game.messageAll("discarding " + Card.htmlList(discarded) + " for +$" + discarded.size());
 	}
 
 	@Override
 	public boolean onAttackReaction(Player player, Game game) {
 		// +2 cards
 		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// put 2 cards from your hand back on top of your deck
 		List<Card> discarded;
 		if (player.getHand().size() > 0) {
@@ -46,8 +45,8 @@ public class SecretChamber extends Card {
 		} else {
 			discarded = new ArrayList<Card>();
 		}
-		game.message(player, "... You put " + Card.htmlList(discarded) + " on top of your deck");
-		game.messageOpponents(player, "... putting " + drawn.size() + " card(s) on top of his deck");
+		game.message(player, "putting " + Card.htmlList(discarded) + " on top of your deck");
+		game.messageOpponents(player, "putting " + Card.numCards(drawn.size()) + " on top of his deck");
 		return false;
 	}
 

@@ -31,26 +31,23 @@ public class Pawn extends Card {
 			case 0:
 				// +1 card
 				List<Card> drawn = player.drawIntoHand(1);
-				game.message(player, "... You draw " + Card.htmlList(drawn));
-				game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+				game.message(player, "drawing " + Card.htmlList(drawn));
+				game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 				break;
 			case 1:
 				// +1 action
 				player.addActions(1);
-				game.message(player, "... You get +1 action");
-				game.messageOpponents(player, "... getting +1 action");
+				game.messageAll("getting +1 action");
 				break;
 			case 2:
 				// +1 buy
 				player.addBuys(1);
-				game.message(player, "... You get +1 buy");
-				game.messageOpponents(player, "... getting +1 buy");
+				game.messageAll("getting +1 buy");
 				break;
 			default:
 				// +$1
 				player.addExtraCoins(1);
-				game.message(player, "... You get +$1");
-				game.messageOpponents(player, "... getting +$1");
+				game.messageAll("getting +$1");
 			}
 		}
 	}

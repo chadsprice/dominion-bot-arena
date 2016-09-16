@@ -29,13 +29,12 @@ public class Nobles extends Card {
 		if (choice == 0) {
 			// +3 cards
 			List<Card> drawn = player.drawIntoHand(3);
-			game.message(player, "... You draw " + Card.htmlList(drawn));
-			game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+			game.message(player, "drawing " + Card.htmlList(drawn));
+			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		} else {
 			// +2 Actions
 			player.addActions(2);
-			game.message(player, "... You get +2 actions");
-			game.messageOpponents(player, "... getting +2 actions");
+			game.messageAll("getting +2 actions");
 		}
 	}
 

@@ -21,15 +21,14 @@ public class Cellar extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You get +1 action");
-		game.messageOpponents(player, "... getting +1 action");
+		game.messageAll("getting +1 action");
 		// discard any number of cards
 		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Cellar");
 		player.putFromHandIntoDiscard(discarded);
 		// draw the same number of cards
 		List<Card> drawn = player.drawIntoHand(discarded.size());
-		game.message(player, "... You discard " + Card.htmlList(discarded) + " and draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... discarding " + Card.htmlList(discarded) + " and drawing " + drawn.size() + " card(s)");
+		game.message(player, "discarding " + Card.htmlList(discarded) + " and drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "discarding " + Card.htmlList(discarded) + " and drawing " + Card.numCards(drawn.size()));
 	}
 	
 	@Override

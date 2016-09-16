@@ -23,19 +23,17 @@ public class Navigator extends Card {
 	public void onPlay(Player player, Game game) {
 		// +$2
 		player.addExtraCoins(2);
-		game.message(player, "... You get +$2");
-		game.messageOpponents(player, "... getting +$2");
+		game.messageAll("getting +$2");
 		// look at the top 5 cards of the deck
 		List<Card> drawn = player.takeFromDraw(5);
 		if (!drawn.isEmpty()) {
-			game.message(player, "... You draw " + Card.htmlList(drawn));
-			game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+			game.message(player, "drawing " + Card.htmlList(drawn));
+			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 			int choice = game.promptMultipleChoice(player, "Navigator: you draw " + Card.htmlList(drawn), new String[]{"Discard", "Put back on top"});
 			if (choice == 0) {
 				// discard all of the drawn cards
 				player.addToDiscard(drawn);
-				game.message(player, "... You discard them");
-				game.messageOpponents(player, "... discarding them");
+				game.messageAll("discarding them");
 			} else {
 				// put them back on top of the deck in any order
 				Collections.sort(drawn, Player.HAND_ORDER_COMPARATOR);
@@ -49,12 +47,12 @@ public class Navigator extends Card {
 					toPutOnDeck.add(drawn.remove(next));
 				}
 				player.putOnDraw(toPutOnDeck);
-				game.message(player, "... You put them back on top of your deck");
-				game.messageOpponents(player, "... putting them back on top of his deck");
+				game.message(player, "putting them back on top of your deck");
+				game.messageOpponents(player, "putting them back on top of his deck");
 			}
 		} else {
-			game.message(player, "... Your deck is empty");
-			game.messageOpponents(player, "... having an empty deck");
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "his deck is empty");
 		}
 	}
 

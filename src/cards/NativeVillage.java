@@ -21,8 +21,7 @@ public class NativeVillage extends Card {
 	public void onPlay(Player player, Game game) {
 		// +2 actions
 		player.addActions(2);
-		game.message(player, "... You get +2 actions");
-		game.messageOpponents(player, "... getting +2 actions");
+		game.messageAll("getting +2 actions");
 		// native village interaction
 		int choice = game.promptMultipleChoice(player, "Native Village: Choose one", new String[] {"Put the top card of your deck on your native village mat", "Put all the cards from your mat into your hand"});
 		if (choice == 0) {
@@ -30,21 +29,21 @@ public class NativeVillage extends Card {
 			if (drawn.size() == 1) {
 				Card card = drawn.get(0);
 				player.putOnNativeVillageMat(card);
-				game.message(player, "... You put " + card.htmlName() + " on your native village mat");
-				game.messageOpponents(player, "... putting the top card of his deck on his native village mat");
+				game.message(player, "putting " + card.htmlName() + " on your native village mat");
+				game.messageOpponents(player, "putting the top card of his deck on his native village mat");
 			} else {
-				game.message(player, "... You put nothing on your native village mat because your deck is empty");
-				game.messageOpponents(player, "... putting nothing on his native village mat because his deck is empty");
+				game.message(player, "putting nothing on your native village mat because your deck is empty");
+				game.messageOpponents(player, "putting nothing on his native village mat because his deck is empty");
 			}
 		} else {
 			List<Card> taken = player.takeAllFromNativeVillageMat();
 			if (!taken.isEmpty()) {
 				player.addToHand(taken);
-				game.message(player, "... You put " + Card.htmlList(taken) + " into your hand");
-				game.messageOpponents(player, "... putting all " + taken.size() + " card(s) from his native village mat into his hand");
+				game.message(player, "putting " + Card.htmlList(taken) + " into your hand");
+				game.messageOpponents(player, "putting all " + Card.numCards(taken.size()) + " from his native village mat into his hand");
 			} else {
-				game.message(player, "... You put nothing into your hand because your native village mat is empty");
-				game.messageOpponents(player, "... putting nothing into his hand because his native village mat is empty");
+				game.message(player, "putting nothing into your hand because your native village mat is empty");
+				game.messageOpponents(player, "putting nothing into his hand because his native village mat is empty");
 			}
 		}
 	}

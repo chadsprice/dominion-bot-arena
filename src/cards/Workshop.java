@@ -32,16 +32,14 @@ public class Workshop extends Card {
 			}
 		}
 		if (gainable.size() == 0) {
-			game.message(player, "... You gain nothing");
-			game.messageOpponents(player, "... gaining nothing");
+			game.messageAll("gaining nothing");
 			return;
 		} else {
 			toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain");
 		}
 		// gain card
 		game.gain(player, toGain);
-		game.message(player, "... You gain " + toGain.htmlName());
-		game.messageOpponents(player, "... gaining " + toGain.htmlName());
+		game.messageAll("gaining " + toGain.htmlName());
 	}
 
 	@Override

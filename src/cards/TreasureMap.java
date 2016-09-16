@@ -22,16 +22,15 @@ public class TreasureMap extends Card {
 			// trash this
 			player.removeFromPlay(this);
 			game.trash.add(this);
-			game.message(player, "... You trash the " + this.htmlNameRaw());
-			game.messageOpponents(player, "... trashing the " + this.htmlNameRaw());
+			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}
 		if (player.getHand().contains(this)) {
 			// trash another copy of treasure map from the hand
 			player.removeFromHand(this);
 			game.trash.add(this);
-			game.message(player, "... You trash " + this.htmlName() + " from your hand");
-			game.messageOpponents(player, "... trashing " + this.htmlName() + " from your hand");
+			game.message(player, "trashing " + this.htmlName() + " from your hand");
+			game.messageOpponents(player, "trashing " + this.htmlName() + " from his hand");
 			// only if both treasure maps were trashed
 			if (movedToTrash) {
 				// gain up to 4 golds, putting them on top of the deck
@@ -39,12 +38,11 @@ public class TreasureMap extends Card {
 				for (int i = 0; i < goldsToGain; i++) {
 					game.gainToTopOfDeck(player, Card.GOLD);
 				}
-				game.message(player, "... You gain " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of your deck");
-				game.messageOpponents(player, "... gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of his deck");
+				game.message(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of your deck");
+				game.messageOpponents(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of his deck");
 			}
 		} else {
-			game.message(player, "... You have no treasure map in hand");
-			game.messageOpponents(player, "... having no treasure map in hand");
+			game.messageAll("having no treasure map in hand");
 		}
 		return movedToTrash;
 	}

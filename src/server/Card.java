@@ -384,6 +384,9 @@ public class Card {
 		}
 		return builder.toString();
 	}
+	public static String numCards(int count) {
+		return count + ((count > 1 || count == 0) ? " cards" : " card");
+	}
 
 	public String htmlType() {
 		if (isAction && isVictory) {

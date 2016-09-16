@@ -21,25 +21,26 @@ public class PearlDiver extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 action");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
+		game.messageAll("getting +1 action");
 		// look at bottom of deck
 		Card card = player.bottomOfDeck();
 		if (card != null) {
 			int choice = game.promptMultipleChoice(player, "Pearl Diver: You see " + card.htmlName() + ". Put it on top of your deck?", new String[] {"Put it on top", "Leave it on bottom"});
 			if (choice == 0) {
 				player.putOnDraw(player.takeFromBottomOfDeck());
-				game.message(player, "... You put the " + card.htmlNameRaw() + " on top of your deck");
-				game.messageOpponents(player, "... putting the card at the bottom of his deck on top");
+				game.message(player, "putting the " + card.htmlNameRaw() + " on top of your deck");
+				game.messageOpponents(player, "putting the card at the bottom of his deck on top");
 			} else {
-				game.message(player, "... You leave the " + card.htmlNameRaw() + " at the bottom of your deck");
-				game.messageOpponents(player, "... leaving the card at the bottom of his deck");
+				game.message(player, "leaving the " + card.htmlNameRaw() + " at the bottom of your deck");
+				game.messageOpponents(player, "leaving the card at the bottom of his deck");
 			}
 		} else {
-			game.message(player, "... Your deck is empty");
-			game.messageOpponents(player, "... having an empty deck");
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "his deck is empty");
 		}
 	}
 

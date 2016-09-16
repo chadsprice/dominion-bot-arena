@@ -21,8 +21,8 @@ public class Smithy extends Card {
 	public void onPlay(Player player, Game game) {
 		// +3 cards
 		List<Card> drawn = player.drawIntoHand(3);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 	}
 
 	@Override

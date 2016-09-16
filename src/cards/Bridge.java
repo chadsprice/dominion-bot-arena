@@ -18,13 +18,12 @@ public class Bridge extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		player.addBuys(1);
+		game.messageAll("getting +1 buy");
 		player.addExtraCoins(1);
-		game.message(player, "... You get +1 buy and +$1");
-		game.messageOpponents(player, "... getting +1 buy and +$1");
+		game.messageAll("getting +$1");
+		
 		game.addCardCostReduction(1);
-		for (Player eachPlayer : game.players) {
-			game.message(eachPlayer, "... All cards cost $1 less this turn");
-		}
+		game.messageAll("all cards cost $1 less this turn");
 	}
 
 	@Override

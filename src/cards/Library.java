@@ -21,40 +21,37 @@ public class Library extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		List<Card> setAside = new ArrayList<>();
-		int numDrawn = 0;
+		List<Card> addedToHand = new ArrayList<>();
+		// draw until 7 in hand
 		while (player.getHand().size() < 7) {
 			List<Card> drawn = player.takeFromDraw(1);
 			if (drawn.size() == 0) {
-				game.message(player, "... You draw " + numDrawn + " card(s)");
-				game.messageOpponents(player, "... drawing " + numDrawn + " card(s)");
-				numDrawn = 0;
+				game.message(player, "your deck is empty");
+				game.messageOpponents(player, "his deck is empty");
 				break;
 			}
 			Card card = drawn.get(0);
+			// allow action cards to be set aside
 			if (card.isAction) {
-				int choice = game.promptMultipleChoice(player, "Library: You draw " + card.htmlName() + "; set it aside?", new String[] {"Set aside", "Keep"});
+				int choice = game.promptMultipleChoice(player, "Library: You draw " + card.htmlName() + ", set it aside?", new String[] {"Set aside", "Keep"});
 				if (choice == 0) {
-					if (numDrawn > 0) {
-						game.message(player, "... You draw " + numDrawn + " card(s)");
-						game.messageOpponents(player, "... drawing " + numDrawn + " card(s)");
-						numDrawn = 0;
+					// if one is set aside, announce the number drawn before it and what the set aside card is
+					if (addedToHand.size() > 0) {
+						game.message(player, "drawing " + Card.htmlList(addedToHand));
+						game.messageOpponents(player, "drawing " + Card.numCards(addedToHand.size()));
+						addedToHand.clear();
 					}
 					setAside.add(card);
-					game.message(player, "... You set aside " + card.htmlName());
-					game.messageOpponents(player, "... setting aside " + card.htmlName());
-				} else {
-					player.addToHand(card);
-					numDrawn++;
+					game.messageAll("setting aside " + card.htmlName());
+					continue;
 				}
-			} else {
-				player.addToHand(card);
-				numDrawn++;
 			}
+			player.addToHand(card);
+			addedToHand.add(card);
 		}
-		if (numDrawn > 0) {
-			game.message(player, "... You draw " + numDrawn + " card(s)");
-			game.messageOpponents(player, "... drawing " + numDrawn + " card(s)");
-			numDrawn = 0;
+		if (addedToHand.size() > 0) {
+			game.message(player, "drawing " + Card.htmlList(addedToHand));
+			game.messageOpponents(player, "drawing " + Card.numCards(addedToHand.size()));
 		}
 		if (setAside.size() > 0) {
 			player.addToDiscard(setAside);

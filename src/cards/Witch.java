@@ -22,14 +22,14 @@ public class Witch extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// +2 cards
 		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "... You draw " + Card.htmlList(drawn));
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s)");
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// each other player gains a curse
 		for (Player target : targets) {
 			if (game.supply.get(Card.CURSE) > 0) {
 				game.gain(target, Card.CURSE);
-				game.message(target, "... You gain " + Card.CURSE.htmlName());
-				game.messageOpponents(target, "... " + target.username + " gains " + Card.CURSE.htmlName());
+				game.message(target, "You gain " + Card.CURSE.htmlName());
+				game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
 			}
 		}
 	}

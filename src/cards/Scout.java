@@ -24,18 +24,18 @@ public class Scout extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 action
 		player.addActions(1);
+		game.messageAll("getting +1 action");
 		// reveal 4 cards, etc.
 		List<Card> revealed = player.takeFromDraw(4);
 		if (revealed.size() > 0) {
 			// reveal top 4 cards
-			game.message(player, "... You get +1 action and reveal " + Card.htmlList(revealed));
-			game.messageOpponents(player, "... getting +1 action and revealing " + Card.htmlList(revealed));
+			game.messageAll("revealing " + Card.htmlList(revealed));
 			List<Card> victoryCards = removeVictoryCards(revealed);
 			// add revealed victory cards to hand
 			if (victoryCards.size() > 0) {
 				player.addToHand(victoryCards);
-				game.message(player, "... You put " + Card.htmlList(victoryCards) + " into your hand");
-				game.messageOpponents(player, "... putting " + Card.htmlList(victoryCards) + " into his hand");
+				game.message(player, "putting " + Card.htmlList(victoryCards) + " into your hand");
+				game.messageOpponents(player, "putting " + Card.htmlList(victoryCards) + " into his hand");
 			}
 			// put the remaining revealed cards on top of the deck
 			Collections.sort(revealed, Player.HAND_ORDER_COMPARATOR);
@@ -50,12 +50,12 @@ public class Scout extends Card {
 			}
 			if (toPutOnDeck.size() > 0) {
 				player.putOnDraw(toPutOnDeck);
-				game.message(player, "... You put the remaining on top of your deck");
-				game.messageOpponents(player, "... putting the remaining card(s) on top of his deck");
+				game.message(player, "putting the remaining on top of your deck");
+				game.messageOpponents(player, "putting the remaining " + Card.numCards(toPutOnDeck.size()) + " on top of his deck");
 			}
 		} else {
-			game.message(player, "... Your deck is empty");
-			game.messageOpponents(player, "... " + player.username + "'s deck is empty");
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "his deck is empty");
 		}
 	}
 

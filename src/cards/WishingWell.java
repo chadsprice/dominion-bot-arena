@@ -25,10 +25,11 @@ public class WishingWell extends Card {
 	public void onPlay(Player player, Game game) {
 		// +1 card
 		List<Card> drawn = player.drawIntoHand(1);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 		// +1 action
 		player.addActions(1);
-		game.message(player, "... You draw " + Card.htmlList(drawn) + " and get +1 action");
-		game.messageOpponents(player, "... drawing " + drawn.size() + " card(s) and getting +1 action");
+		game.messageAll("getting +1 action");
 		// Name a card
 		drawn = player.takeFromDraw(1);
 		if (drawn.size() == 1) {
@@ -67,16 +68,16 @@ public class WishingWell extends Card {
 			Card revealedCard = drawn.get(0);
 			if (namedCard == revealedCard) {
 				player.addToHand(revealedCard);
-				game.message(player, "... You name " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it into your hand");
-				game.messageOpponents(player, "... naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it into his hand");
+				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it into your hand");
+				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it into his hand");
 			} else {
 				player.putOnDraw(revealedCard);
-				game.message(player, "... You name " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it back");
-				game.messageOpponents(player, "... naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it back");
+				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it back");
+				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it back");
 			}
 		} else {
-			game.message(player, "... Your deck is empty");
-			game.messageOpponents(player, "... " + player + "'s deck is empty");
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "his deck is empty");
 		}
 	}
 
