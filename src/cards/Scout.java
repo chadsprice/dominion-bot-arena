@@ -22,9 +22,7 @@ public class Scout extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusActions(player, game, 1);
 		// reveal 4 cards, etc.
 		List<Card> revealed = player.takeFromDraw(4);
 		if (revealed.size() > 0) {

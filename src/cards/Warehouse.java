@@ -19,13 +19,8 @@ public class Warehouse extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +3 cards
-		List<Card> drawn = player.drawIntoHand(3);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 actions
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusCards(player, game, 3);
+		plusActions(player, game, 1);
 		// discard 3 cards
 		List<Card> toDiscard = game.promptDiscardNumber(player, 3, this.toString(), "actionPrompt");
 		for (Card card : toDiscard) {

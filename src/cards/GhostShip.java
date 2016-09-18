@@ -20,10 +20,7 @@ public class GhostShip extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +2 cards
-		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 2);
 		// targets discard down to 3, putting the discarded cards on top of their decks
 		for (Player target : targets) {
 			if (target.getHand().size() > 3) {

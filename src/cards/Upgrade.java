@@ -1,7 +1,6 @@
 package cards;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import server.Card;
@@ -21,13 +20,8 @@ public class Upgrade extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusCards(player, game, 1);
+		plusActions(player, game, 1);
 		// trash a card from your hand
 		if (player.getHand().size() > 0) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand");

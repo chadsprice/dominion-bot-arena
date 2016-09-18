@@ -23,15 +23,10 @@ public class WishingWell extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusCards(player, game, 1);
+		plusActions(player, game, 1);
 		// Name a card
-		drawn = player.takeFromDraw(1);
+		List<Card> drawn = player.takeFromDraw(1);
 		if (drawn.size() == 1) {
 			// TODO add a nameACard method to Game.java
 			Card namedCard = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Wishing Well: Name a card", false, "Name a card that is not in the supply");

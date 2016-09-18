@@ -19,9 +19,7 @@ public class Conspirator extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		// if you played at least 3 actions this turn, +1 card, +1 action
 		if (game.actionsPlayedThisTurn >= 3) {
 			List<Card> drawn = player.drawIntoHand(1);

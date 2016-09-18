@@ -298,6 +298,24 @@ public class Card {
 		throw new UnsupportedOperationException();
 	}
 
+	protected void plusCards(Player player, Game game, int numCards) {
+		List<Card> drawn = player.drawIntoHand(numCards);
+		game.message(player, "drawing " + Card.htmlList(drawn));
+		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+	}
+	protected void plusActions(Player player, Game game, int numActions) {
+		player.addActions(numActions);
+		game.messageAll("getting +" + numActions + ((numActions == 1) ? " action" : " actions"));
+	}
+	protected void plusBuys(Player player, Game game, int numBuys) {
+		player.addBuys(numBuys);
+		game.messageAll("getting +" + numBuys + ((numBuys == 1) ? " buy" : " buys"));
+	}
+	protected void plusCoins(Player player, Game game, int numCoins) {
+		player.addExtraCoins(numCoins);
+		game.messageAll("getting +$" + numCoins);
+	}
+
 	public String htmlClass() {
 		if (isAction && isVictory) {
 			return "action-victory";

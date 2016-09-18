@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -19,10 +17,7 @@ public class Smithy extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +3 cards
-		List<Card> drawn = player.drawIntoHand(3);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 3);
 	}
 
 	@Override

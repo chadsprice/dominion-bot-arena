@@ -19,8 +19,7 @@ public class Lookout extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusActions(player, game, 1);
 		List<Card> drawn = player.takeFromDraw(3);
 		game.message(player, "drawing " + Card.htmlList(drawn));
 		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));

@@ -20,10 +20,7 @@ public class Witch extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +2 cards
-		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 2);
 		// each other player gains a curse
 		for (Player target : targets) {
 			if (game.supply.get(Card.CURSE) > 0) {

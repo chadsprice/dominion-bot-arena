@@ -20,13 +20,8 @@ public class Spy extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusCards(player, game, 1);
+		plusActions(player, game, 1);
 		// reveal top card of each player's deck and decide to keep it or discard it
 		targets.add(0, player);
 		for (Player target : targets) {

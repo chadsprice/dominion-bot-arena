@@ -17,12 +17,8 @@ public class Woodcutter extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 buy
-		player.addBuys(1);
-		game.messageAll("getting +1 buy");
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusBuys(player, game, 1);
+		plusCoins(player, game, 2);
 	}
 
 	@Override

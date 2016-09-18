@@ -21,10 +21,7 @@ public class Masquerade extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +2 cards
-		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 2);
 		// Each player chooses a card to pass
 		List<Player> passOrder = game.getOpponents(player);
 		passOrder.add(0, player);

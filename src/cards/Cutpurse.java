@@ -20,9 +20,7 @@ public class Cutpurse extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		// targets discard a copper
 		for (Player target : targets) {
 			if (target.getHand().contains(Card.COPPER)) {

@@ -29,25 +29,16 @@ public class Pawn extends Card {
 		for (Integer benefit : benefitIndexes) {
 			switch (benefit) {
 			case 0:
-				// +1 card
-				List<Card> drawn = player.drawIntoHand(1);
-				game.message(player, "drawing " + Card.htmlList(drawn));
-				game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+				plusCards(player, game, 1);
 				break;
 			case 1:
-				// +1 action
-				player.addActions(1);
-				game.messageAll("getting +1 action");
+				plusActions(player, game, 1);
 				break;
 			case 2:
-				// +1 buy
-				player.addBuys(1);
-				game.messageAll("getting +1 buy");
+				plusBuys(player, game, 1);
 				break;
 			default:
-				// +$1
-				player.addExtraCoins(1);
-				game.messageAll("getting +$1");
+				plusCoins(player, game, 1);
 			}
 		}
 	}

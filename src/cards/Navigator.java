@@ -21,9 +21,7 @@ public class Navigator extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		// look at the top 5 cards of the deck
 		List<Card> drawn = player.takeFromDraw(5);
 		if (!drawn.isEmpty()) {

@@ -19,19 +19,13 @@ public class Lighthouse extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
-		// +$1
-		player.addExtraCoins(1);
-		game.messageAll("getting +$1");
+		plusActions(player, game, 1);
+		plusCoins(player, game, 1);
 	}
 
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
-		// +$1
-		player.addExtraCoins(1);
-		game.messageAll("getting +$1");
+		plusCoins(player, game, 1);
 	}
 
 	@Override

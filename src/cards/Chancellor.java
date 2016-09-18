@@ -17,9 +17,7 @@ public class Chancellor extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		// you may immediately put your deck into your discard pile
 		if (player.getDraw().size() > 0) {
 			int choice = game.promptMultipleChoice(player, "Chancellor: Put your deck into your discard pile immediately?", new String[]{"Yes", "No"});

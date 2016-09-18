@@ -20,10 +20,7 @@ public class Torturer extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +3 cards
-		List<Card> drawn = player.drawIntoHand(3);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 3);
 		// torture targets
 		for (Player target : targets) {
 			int choice = game.promptMultipleChoice(target, "Torturer: Choose one", "attackPrompt", new String[] {"Discard 2 cards", "Gain a Curse, putting it into your hand"});

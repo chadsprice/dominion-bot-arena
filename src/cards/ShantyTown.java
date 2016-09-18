@@ -19,9 +19,7 @@ public class ShantyTown extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +2 actions
-		player.addActions(2);
-		game.messageAll("getting +2 actions");
+		plusActions(player, game, 2);
 		// reveal your hand
 		game.messageAll("revealing " + Card.htmlList(player.getHand()));
 		// if no actions, +2 cards

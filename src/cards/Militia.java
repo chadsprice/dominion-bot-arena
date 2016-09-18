@@ -20,9 +20,7 @@ public class Militia extends Card {
 	
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		// other players discard down to 3
 		for (Player target : targets) {
 			if (target.getHand().size() > 3) {

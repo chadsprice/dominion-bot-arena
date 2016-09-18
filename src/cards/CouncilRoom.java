@@ -19,16 +19,11 @@ public class CouncilRoom extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +4 cards
-		List<Card> drawn = player.drawIntoHand(4);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 buys
-		player.addBuys(1);
-		game.messageAll("getting +1 buy");
+		plusCards(player, game, 4);
+		plusBuys(player, game, 1);
 		// each other player draws a card
 		for (Player opponent : game.getOpponents(player)) {
-			drawn = opponent.drawIntoHand(1);
+			List<Card> drawn = opponent.drawIntoHand(1);
 			game.message(opponent, "You draw " + Card.htmlList(drawn));
 			game.messageOpponents(opponent, opponent.username + " draws " + Card.numCards(drawn.size()));
 		}

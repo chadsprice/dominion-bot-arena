@@ -22,19 +22,14 @@ public class Haven extends Card {
 
 	@Override
 	public boolean onDurationPlay(Player player, Game game, List<Card> havened) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusCards(player, game, 1);
+		plusActions(player, game, 1);
 		// choose a card to haven
 		if (!player.getHand().isEmpty()) {
 			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Haven: Choose a card to set aside");
 			player.removeFromHand(toHaven);
 			havened.add(toHaven);
-			game.message(player, "setting aside " + Card.htmlList(drawn) + " face down");
+			game.message(player, "setting aside " + toHaven.htmlName() + " face down");
 			game.messageOpponents(player, "setting aside a card face down");
 			// indicate that this haven will have an effect next turn
 			return true;

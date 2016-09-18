@@ -21,9 +21,7 @@ public class Swindler extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		// Swindling
 		for (Player target : targets) {
 			List<Card> drawn = target.takeFromDraw(1);

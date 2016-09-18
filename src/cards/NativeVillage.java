@@ -19,9 +19,7 @@ public class NativeVillage extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +2 actions
-		player.addActions(2);
-		game.messageAll("getting +2 actions");
+		plusActions(player, game, 2);
 		// native village interaction
 		int choice = game.promptMultipleChoice(player, "Native Village: Choose one", new String[] {"Put the top card of your deck on your native village mat", "Put all the cards from your mat into your hand"});
 		if (choice == 0) {

@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -27,14 +25,9 @@ public class Nobles extends Card {
 	public void onPlay(Player player, Game game) {
 		int choice = game.promptMultipleChoice(player, "Nobles: Choose one", new String[] {"+3 Cards", "+2 Actions"});
 		if (choice == 0) {
-			// +3 cards
-			List<Card> drawn = player.drawIntoHand(3);
-			game.message(player, "drawing " + Card.htmlList(drawn));
-			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+			plusCards(player, game, 3);
 		} else {
-			// +2 Actions
-			player.addActions(2);
-			game.messageAll("getting +2 actions");
+			plusActions(player, game, 2);
 		}
 	}
 

@@ -1,7 +1,6 @@
 package cards;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,21 +40,17 @@ public class Ironworks extends Card {
 		// gain card
 		game.gain(player, toGain);
 		game.messageAll("gaining " + toGain.htmlName());
-		// +1 action
+		// action -> +1 action
 		if (toGain.isAction) {
-			player.addActions(1);
-			game.messageAll("getting +1 action");
+			plusActions(player, game, 1);
 		}
-		// +$1
+		// treasure -> +$1
 		if (toGain.isTreasure) {
-			player.addExtraCoins(1);
-			game.messageAll("getting +$1");
+			plusCoins(player, game, 1);
 		}
-		// +1 card
+		// victory -> +1 card
 		if (toGain.isVictory) {
-			List<Card> drawn = player.drawIntoHand(1);
-			game.message(player, "drawing " + Card.htmlList(drawn));
-			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+			plusCards(player, game, 1);
 		}
 	}
 

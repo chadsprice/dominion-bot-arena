@@ -24,15 +24,10 @@ public class Steward extends Card {
 		int choice = game.promptMultipleChoice(player, "Steward: Choose one", choices);
 		switch (choice) {
 		case 0:
-			// +2 cards
-			List<Card> drawn = player.drawIntoHand(2);
-			game.message(player, "drawing " + Card.htmlList(drawn));
-			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+			plusCards(player, game, 2);
 			break;
 		case 1:
-			// +$2
-			player.addExtraCoins(2);
-			game.messageAll("getting +$2");
+			plusCoins(player, game, 2);
 			break;
 		default:
 			// Trash 2 cards

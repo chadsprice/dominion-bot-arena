@@ -19,16 +19,12 @@ public class MerchantShip extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 	}
 
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 	}
 
 	@Override

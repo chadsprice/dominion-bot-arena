@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -20,10 +18,7 @@ public class Moat extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +2 cards
-		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 2);
 	}
 
 	@Override

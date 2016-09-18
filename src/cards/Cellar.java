@@ -19,9 +19,7 @@ public class Cellar extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusActions(player, game, 1);
 		// discard any number of cards
 		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Cellar");
 		player.putFromHandIntoDiscard(discarded);

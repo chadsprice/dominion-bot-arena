@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -19,13 +17,8 @@ public class MiningVillage extends Card {
 
 	@Override
 	public boolean onPlay(Player player, Game game, boolean hasMoved) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +2 actions
-		player.addActions(2);
-		game.messageAll("getting +2 actions");
+		plusCards(player, game, 1);
+		plusActions(player, game, 2);
 		if (!hasMoved) {
 			// you may trash this card for +$2
 			int choice = game.promptMultipleChoice(player, "Mining Village: Trash the " + this.htmlName() + " for +$2?", new String[] {"Trash", "Keep"});

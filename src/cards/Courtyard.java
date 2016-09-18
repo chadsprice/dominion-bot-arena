@@ -1,7 +1,6 @@
 package cards;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import server.Card;
@@ -21,10 +20,7 @@ public class Courtyard extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +3 cards
-		List<Card> drawn = player.drawIntoHand(3);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 3);
 		// put a card from hand back on deck
 		if (player.getHand().size() > 0) {
 			Set<Card> choiceSet = new HashSet<Card>(player.getHand());

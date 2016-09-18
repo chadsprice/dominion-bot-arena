@@ -18,9 +18,7 @@ public class Embargo extends Card {
 	@Override
 	public boolean onPlay(Player player, Game game, boolean hasMoved) {
 		boolean movedToTrash = false;
-		// +$2
-		player.addExtraCoins(2);
-		game.messageAll("getting +$2");
+		plusCoins(player, game, 2);
 		if (!hasMoved) {
 			// trash this
 			player.removeFromPlay(this);

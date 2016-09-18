@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Duration;
 import server.Game;
@@ -21,21 +19,13 @@ public class Caravan extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-		// +1 action
-		player.addActions(1);
-		game.messageAll("getting +1 action");
+		plusCards(player, game, 1);
+		plusActions(player, game, 1);
 	}
 
 	@Override
 	public void onDurationEffect(Player player, Game game, Duration duration) {
-		// +1 card
-		List<Card> drawn = player.drawIntoHand(1);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 1);
 	}
 
 	@Override

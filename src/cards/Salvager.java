@@ -19,9 +19,7 @@ public class Salvager extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 buy
-		player.addBuys(1);
-		game.messageAll("getting +1 buy");
+		plusBuys(player, game, 1);
 		// trash a card from the hand, +$ equal to its cost
 		if (!player.getHand().isEmpty()) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Salvager: Choose a card to trash for +$ equal to its cost");
