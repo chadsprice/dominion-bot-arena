@@ -73,6 +73,8 @@ Displays a popup with the information of the card with the given name, which
 should have an entry in cardDescriptions.
 */
 function displayPopup(cardName) {
+  // remember if the user was scrolled to the bottom of the game screen
+  var lockToBottomOfGame = isOnBottomOfGame();
   // get description info
   var description = cardDescriptions[cardName];
   // get the card name's background color
@@ -111,6 +113,10 @@ function displayPopup(cardName) {
   var cardPopupContainer = document.getElementById('cardPopupContainer');
   cardPopupContainer.style.width = cardPopupContainer.parentElement.clientWidth + 'px';
   cardPopupContainer.style.display = 'block';
+  // if the user was scrolled to the bottom of the game screen, scroll there again
+  if (lockToBottomOfGame && document.getElementById('game').style.display == 'flex') {
+    scrollToBottomOfGame();
+  }
 }
 
 var logIndents = [];
@@ -1410,6 +1416,17 @@ function executeCommand(command) {
   }
 }
 
+function isOnBottomOfGame() {
+  var gameDiv = document.getElementById('game');
+  // if the player is scrolled to the exact bottom, or if the game is to short to have a scroll bar
+  return (gameDiv.style.display == 'flex' && (gameDiv.clientHeight - window.innerHeight == window.pageYOffset || document.getElementById('gameColumns').clientHeight < document.getElementById('game').clientHeight));
+}
+
+function scrollToBottomOfGame() {
+  // over-scroll just to be safe
+  window.scrollTo(0, document.getElementById('game').clientHeight);
+}
+
 /*
 Receives a string from the server, executing it as a list of commands.
 */
@@ -1418,18 +1435,14 @@ function receiveServerCommands(text) {
   console.log(text);
   commands = JSON.parse(text);
   // remember if the user was scrolled to the bottom of the game screen
-  var lockToBottomOfGame = false;
-  var gameDiv = document.getElementById('game');
-  if (gameDiv.style.display == 'flex' && gameDiv.clientHeight - window.innerHeight == window.pageYOffset) {
-    lockToBottomOfGame = true;
-  }
+  var lockToBottomOfGame = isOnBottomOfGame();
   // execute commands
   for (var i = 0; i < commands.length; i++) {
     executeCommand(commands[i]);
   }
   // if the user was scrolled to the bottom of the game screen, scroll there again
-  if (lockToBottomOfGame && gameDiv.style.display == 'flex') {
-    window.scrollTo(0, document.getElementById('game').clientHeight);
+  if (lockToBottomOfGame && document.getElementById('game').style.display == 'flex') {
+    scrollToBottomOfGame();
   }
 }
 
