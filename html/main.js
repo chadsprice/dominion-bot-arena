@@ -459,43 +459,13 @@ function setDeckSize(size, elemId) {
   }
 }
 
-function setNativeVillageMat(contents) {
-  var nativeVillageMat = document.getElementById('nativeVillageMat');
-  removeAllChildNodes(nativeVillageMat);
+function setArea(id, name, contents) {
+  var area = document.getElementById(id);
+  removeAllChildNodes(area);
   if (contents) {
-    var nativeVillageParagraph = document.createElement('p');
-    nativeVillageParagraph.innerHTML = 'Native Village: ' + contents;
-    nativeVillageMat.appendChild(nativeVillageParagraph);
-  }
-}
-
-function setIslandMat(contents) {
-  var islandMat = document.getElementById('islandMat');
-  removeAllChildNodes(islandMat);
-  if (contents) {
-    var islandParagraph = document.createElement('p');
-    islandParagraph.innerHTML = 'Island: ' + contents;
-    islandMat.appendChild(islandParagraph);
-  }
-}
-
-function setPirateShipMat(contents) {
-  var pirateShipMat = document.getElementById('pirateShipMat');
-  removeAllChildNodes(pirateShipMat);
-  if (contents) {
-    var pirateShipParagraph = document.createElement('p');
-    pirateShipParagraph.innerHTML = 'Pirate Ship: ' + contents;
-    pirateShipMat.appendChild(pirateShipParagraph);
-  }
-}
-
-function setDurations(contents) {
-  var durations = document.getElementById('durations');
-  removeAllChildNodes(durations);
-  if (contents) {
-    var durationsParagraph = document.createElement('p');
-    durationsParagraph.innerHTML = 'Duration: ' + contents;
-    durations.appendChild(durationsParagraph);
+    var p = document.createElement('p');
+    p.innerHTML = name + ': ' + contents;
+    area.appendChild(p);
   }
 }
 
@@ -1221,10 +1191,11 @@ function enterGame() {
   // clear prompt
   endPrompt();
   // clear seaside UI
-  setNativeVillageMat();
-  setIslandMat();
-  setPirateShipMat();
-  setDurations();
+  setArea('nativeVillageMat');
+  setArea('islandMat');
+  setArea('pirateShipMat');
+  setArea('durations');
+  setArea('inPlay');
   // hide popup
   document.getElementById('cardPopupContainer').style.display = 'none';
   // hide "more"
@@ -1363,16 +1334,19 @@ function executeCommand(command) {
       setDeckSize(command.size, 'discardStatus');
       break;
     case 'setNativeVillageMat':
-      setNativeVillageMat(command.contents);
+      setArea('nativeVillageMat', 'Native Village', command.contents);
       break;
     case 'setIslandMat':
-      setIslandMat(command.contents);
+      setArea('islandMat', 'Island', command.contents);
       break;
     case 'setPirateShipMat':
-      setPirateShipMat(command.contents);
+      setArea('pirateShipMat', 'Pirate Ship', command.contents);
       break;
     case 'setDurations':
-      setDurations(command.contents);
+      setArea('durations', 'Duration', command.contents);
+      break;
+    case 'setInPlay':
+      setArea('inPlay', 'In Play', command.contents);
       break;
     case 'setHand':
       setHand(command.hand);

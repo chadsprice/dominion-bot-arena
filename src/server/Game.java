@@ -206,6 +206,7 @@ public class Game implements Runnable {
 							numToPutOnDeck--;
 						}
 					}
+					player.sendPlay();
 					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
 					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of his deck");
 				}

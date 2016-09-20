@@ -196,6 +196,7 @@ public class Player {
 	public void cleanup() {
 		discard.addAll(play);
 		play.clear();
+		sendPlay();
 		discard.addAll(hand);
 		hand.clear();
 		discard.addAll(resolvedDurationCards);
@@ -376,9 +377,8 @@ public class Player {
 	}
 
 	public void putFromHandIntoPlay(Card card) {
-		hand.remove(card);
-		play.add(card);
-		sendHand();
+		removeFromHand(card);
+		addToPlay(card);
 	}
 
 	public void putFromHandIntoDiscard(Card card) {
@@ -481,8 +481,24 @@ public class Player {
 		return play;
 	}
 
+	public void addToPlay(Card card) {
+		play.add(card);
+		sendPlay();
+	}
+
 	public void removeFromPlay(Card card) {
 		play.remove(card);
+		sendPlay();
+	}
+
+	@SuppressWarnings("unchecked")
+	public void sendPlay() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setInPlay");
+		if (!play.isEmpty()) {
+			command.put("contents", Card.htmlList(play));
+		}
+		sendCommand(command);
 	}
 
 	public void putOnNativeVillageMat(Card card) {
@@ -590,7 +606,7 @@ public class Player {
 	}
 
 	public void setDurationModifier(Card modifier) {
-		play.remove(modifier);
+		removeFromPlay(modifier);
 		durations.get(durations.size() - 1).modifier = modifier;
 		sendDurations();
 	}
