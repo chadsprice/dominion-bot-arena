@@ -25,7 +25,7 @@ public class MiningVillage extends Card {
 			if (choice == 0) {
 				player.removeFromPlay(this);
 				game.trash.add(this);
-				player.addExtraCoins(2);
+				player.addCoins(2);
 				game.messageAll("trashing the " + this.htmlNameRaw() + " for +$2");
 				return true;
 			}

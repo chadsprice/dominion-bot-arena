@@ -23,7 +23,7 @@ public class Moneylender extends Card {
 			player.removeFromHand(Card.COPPER);
 			game.trash.add(Card.COPPER);
 			// +$3
-			player.addExtraCoins(3);
+			player.addCoins(3);
 			game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
 		} else {
 			game.messageAll("trashing nothing");

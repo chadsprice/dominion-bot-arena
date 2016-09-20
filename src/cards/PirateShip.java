@@ -64,7 +64,7 @@ public class PirateShip extends Card {
 				game.messageOpponents(player, player.username + " places a coin token on his pirate ship mat");
 			}
 		} else {
-			player.addExtraCoins(player.getPirateShipTokens());
+			player.addCoins(player.getPirateShipTokens());
 			game.messageAll("getting +$" + player.getPirateShipTokens());
 		}
 	}

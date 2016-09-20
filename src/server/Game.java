@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 public class Game implements Runnable {
 
@@ -162,20 +163,32 @@ public class Game implements Runnable {
 		boolean givenBuyPrompt = false;
 		while (player.getBuys() > 0 && canBuyCard(player)) {
 			// buy phase
-			Set<Card> choices = buyableCards(player);
 			givenBuyPrompt = true;
-			Card choice = promptChooseBuy(player, choices);
-			if (choice == null) {
+			BuyPhaseChoice choice = promptBuyPhase(player);
+			if (choice.toBuy != null) {
+				// automatically play all treasures
+				if (!player.isPlayingTreasuresIndividually()) {
+					playAllTreasures(player);
+				}
+				// gain purchased card
+				gain(player, choice.toBuy);
+				message(player, "You purchase " + choice.toBuy.htmlName());
+				messageOpponents(player, player.username + " purchases " + choice.toBuy.htmlName());
+				onBuy(player, choice.toBuy);
+				// update player status
+				player.addBuys(-1);
+				player.addCoins(-choice.toBuy.cost(this));
+				recordPlayerGained(player, choice.toBuy);
+			} else if (choice.toPlay != null) {
+				player.putFromHandIntoPlay(choice.toPlay);
+				player.addCoins(choice.toPlay.treasureValue(this));
+				message(player, "You play " + choice.toPlay.htmlName());
+				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
+			} else if (choice.isPlayingTreasuresIndividually) {
+				player.setPlayingTreasuresIndividually();
+			} else if (choice.isEndingTurn) {
 				break;
 			}
-			// gain purchased card
-			gain(player, choice);
-			message(player, "You purchase " + choice.htmlName());
-			messageOpponents(player, player.username + " purchases " + choice.htmlName());
-			onBuy(player, choice);
-			// update player status
-			player.addBuys(-1);
-			player.addExtraCoins(-choice.cost(this));
 		}
 		clearBuys(player);
 		coppersmithsPlayedThisTurn = 0;
@@ -237,6 +250,23 @@ public class Game implements Runnable {
 			}
 		}
 		player.durationsResolved();
+	}
+
+	private void playAllTreasures(Player player) {
+		List<Card> treasures = new ArrayList<Card>();
+		for (Card card : player.getHand()) {
+			if (card.isTreasure) {
+				treasures.add(card);
+			}
+		}
+		if (!treasures.isEmpty()) {
+			for (Card treasure : treasures) {
+				player.putFromHandIntoPlay(treasure);
+				player.addCoins(treasure.treasureValue(this));
+			}
+			message(player, "You play " + Card.htmlList(treasures));
+			messageOpponents(player, player.username + " plays " + Card.htmlList(treasures));
+		}
 	}
 
 	private void onBuy(Player player, Card card) {
@@ -535,11 +565,21 @@ public class Game implements Runnable {
 
 	private Set<Card> buyableCards(Player player) {
 		Set<Card> cards = new HashSet<Card>();
-		int coins = player.getCoins();
+		int coins = player.getUsableCoins();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();
 			if (card.cost(this) <= coins && count > 0) {
+				cards.add(card);
+			}
+		}
+		return cards;
+	}
+
+	private Set<Card> playableTreasures(Player player) {
+		Set<Card> cards = new HashSet<Card>();
+		for (Card card : player.getHand()) {
+			if (card.isTreasure) {
 				cards.add(card);
 			}
 		}
@@ -802,23 +842,100 @@ public class Game implements Runnable {
 		}
 	}
 
+	private static class BuyPhaseChoice {
+		Card toBuy;
+		Card toPlay;
+		boolean isPlayingTreasuresIndividually;
+		boolean isEndingTurn;
+	}
+
+	private BuyPhaseChoice endTurnChoice() {
+		BuyPhaseChoice choice = new BuyPhaseChoice();
+		choice.isEndingTurn = true;
+		return choice;
+	}
+
+	private BuyPhaseChoice promptBuyPhase(Player player) {
+		return promptBuyPhase(player, buyableCards(player), playableTreasures(player));
+	}
+
 	/**
 	 * Returns a card that the player has chosen to buy, or null if they do not
 	 * choose to buy anything.
 	 */
-	public Card promptChooseBuy(Player player, Set<Card> choiceSet) {
+	@SuppressWarnings("unchecked")
+	public BuyPhaseChoice promptBuyPhase(Player player, Set<Card> canBuy, Set<Card> canPlay) {
+		BuyPhaseChoice choice = new BuyPhaseChoice();
+		//
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
-			Card card = bot.chooseBuy(choiceSet);
+			Card card = bot.chooseBuy(canBuy);
 			// check that the bot is making a valid choice
-			if (card != null && !choiceSet.contains(card)) {
+			if (card != null && !canBuy.contains(card)) {
 				throw new IllegalStateException();
 			}
-			return card;
+			choice.toBuy = card;
+			return choice;
 		}
-		Card toBuy = sendPromptChooseFromSupply(player, choiceSet, "Buy Phase: Choose a card to purchase", "buyPrompt", false, "End Turn");
-		recordPlayerGained(player, toBuy);
-		return toBuy;
+		// send prompt
+		JSONObject command = new JSONObject();
+		command.put("command", "promptBuyPhase");
+		JSONArray canBuyJSONArray = new JSONArray();
+		for (Card card : canBuy) {
+			canBuyJSONArray.add(card.toString());
+		}
+		command.put("canBuy", canBuyJSONArray);
+		command.put("playingTreasuresIndividually", player.isPlayingTreasuresIndividually());
+		if (player.isPlayingTreasuresIndividually()) {
+			JSONArray canPlayJSONArray = new JSONArray();
+			for (Card card : canPlay) {
+				canPlayJSONArray.add(card.toString());
+			}
+			command.put("canPlay", canPlayJSONArray);
+		}
+		player.sendCommand(command);
+		// wait for response
+		String responseString = null;
+		try {
+			responseString = (String) waitForResponse(player);
+		} catch (ClassCastException e) {
+			// ignore incorrect responses
+		}
+		// parse response
+		try {
+			JSONObject response = (JSONObject) JSONValue.parse(responseString);
+			String responseType = (String) response.get("responseType");
+			if ("buy".equals(responseType)) {
+				Card toBuy = Card.fromName((String) response.get("toBuy"));
+				// verify response
+				if (!canBuy.contains(toBuy)) {
+					return endTurnChoice();
+				}
+				choice.toBuy = toBuy;
+				return choice;
+			} else if ("play".equals(responseType)) {
+				Card toPlay = Card.fromName((String) response.get("toPlay"));
+				// verify response
+				if (!canPlay.contains(toPlay)) {
+					return endTurnChoice();
+				}
+				choice.toPlay = toPlay;
+				return choice;
+			} else if ("playTreasuresIndividually".equals(responseType)) {
+				// verify response
+				if (player.isPlayingTreasuresIndividually()) {
+					return endTurnChoice();
+				}
+				choice.isPlayingTreasuresIndividually = true;
+				return choice;
+			} else if ("endTurn".equals(responseType)) {
+				choice.isEndingTurn = true;
+				return choice;
+			}
+		} catch (Exception e) {
+			// ignore improperly formatted responses
+		}
+		return endTurnChoice();
 	}
 
 	/**

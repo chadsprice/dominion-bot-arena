@@ -25,7 +25,7 @@ public class SecretChamber extends Card {
 		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Secret Chamber");
 		player.putFromHandIntoDiscard(discarded);
 		// +$1 per card discarded
-		player.addExtraCoins(discarded.size());
+		player.addCoins(discarded.size());
 		game.messageAll("discarding " + Card.htmlList(discarded) + " for +$" + discarded.size());
 	}
 

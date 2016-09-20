@@ -312,7 +312,7 @@ public class Card {
 		game.messageAll("getting +" + numBuys + ((numBuys == 1) ? " buy" : " buys"));
 	}
 	protected void plusCoins(Player player, Game game, int numCoins) {
-		player.addExtraCoins(numCoins);
+		player.addCoins(numCoins);
 		game.messageAll("getting +$" + numCoins);
 	}
 

@@ -26,7 +26,7 @@ public class Salvager extends Card {
 			player.removeFromHand(toTrash);
 			game.trash.add(toTrash);
 			int cost = toTrash.cost(game);
-			player.addExtraCoins(cost);
+			player.addCoins(cost);
 			game.messageAll("trashing " + toTrash.htmlName() + " for +$" + cost);
 		} else {
 			game.messageAll("having no card to trash");

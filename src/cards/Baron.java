@@ -28,7 +28,7 @@ public class Baron extends Card {
 		}
 		if (discardingEstate) {
 			player.putFromHandIntoDiscard(Card.ESTATE);
-			player.addExtraCoins(4);
+			player.addCoins(4);
 			game.messageAll("discarding " + Card.ESTATE.htmlName() + " for +$4");
 		} else {
 			String cardName = null;

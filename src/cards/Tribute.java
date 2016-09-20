@@ -37,7 +37,7 @@ public class Tribute extends Card {
 				}
 				// +$2
 				if (card.isTreasure) {
-					player.addExtraCoins(2);
+					player.addCoins(2);
 					game.message(player, "You get +$2 for the " + card.htmlNameRaw());
 					game.messageOpponents(player, player.username + " gets +$2 for the " + card.htmlNameRaw());
 				}

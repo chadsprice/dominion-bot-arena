@@ -71,14 +71,18 @@ public class Player {
 	protected synchronized void sendCommand(JSONObject command, boolean autoIssue) {
 		if (!forfeit) {
 			// premature optimization!
-			/*Iterator<JSONObject> iter = commands.iterator();
-			while (iter.hasNext()) {
-				String commandType = (String) iter.next().get("command");
-				if (!commandType.equals("message") && !commandType.equals("setPileSizes") && commandType.equals(command.get("command"))) {
-					iter.remove();
+			String commandType = (String) command.get("command");
+			if ("message".equals(commandType) || "newTurnMessage".equals(commandType) || "setPileSizes".equals(commandType)) {
+				commands.add(command);
+			} else {
+				Iterator<JSONObject> iter = commands.iterator();
+				while (iter.hasNext()) {
+					if (commandType.equals(iter.next().get("command"))) {
+						iter.remove();
+					}
 				}
-			}*/
-			commands.add(command);
+				commands.add(command);
+			}
 			if (autoIssue) {
 				issueCommands();
 			}
@@ -110,6 +114,8 @@ public class Player {
 	private List<Card> play;
 	private List<Card> discard;
 
+	private boolean isPlayingTreasuresIndividually;
+
 	private List<Card> nativeVillageMat;
 	private List<Card> islandMat;
 	private int pirateShipTokens;
@@ -119,7 +125,7 @@ public class Player {
 
 	private int actions;
 	private int buys;
-	private int extraCoins;
+	private int coins;
 
 	public int turns;
 
@@ -166,9 +172,11 @@ public class Player {
 	public void newTurn() {
 		actions = 1;
 		buys = 1;
-		extraCoins = 0;
-		// drawing a new hand automatically sends the player their hand and coins
+		coins = 0;
+		// reset UI state
 		resetHandOrder();
+		isPlayingTreasuresIndividually = false;
+		// drawing a new hand automatically sends the player their hand and coins
 		if (!hasExtraTurn()) {
 			drawIntoHand(5);
 		} else {
@@ -257,30 +265,45 @@ public class Player {
 	}
 
 	public int getCoins() {
-		int coins = extraCoins;
-		for (Card card : hand) {
-			if (card.isTreasure) {
-				coins += card.treasureValue(game);
-			}
-		}
 		return coins;
 	}
 
-	public void setExtraCoins(int extraCoins) {
-		this.extraCoins = extraCoins;
+	public void setCoins(int coins) {
+		this.coins = coins;
 		sendCoins();
 	}
 
-	public void addExtraCoins(int toAdd) {
-		setExtraCoins(extraCoins + toAdd);
+	public void addCoins(int toAdd) {
+		setCoins(coins + toAdd);
+	}
+
+	public int getUsableCoins() {
+		int usableCoins = coins;
+		if (!isPlayingTreasuresIndividually) {
+			for (Card card : hand) {
+				if (card.isTreasure) {
+					usableCoins += card.treasureValue(game);
+				}
+			}
+		}
+		return usableCoins;
+	}
+
+	public boolean isPlayingTreasuresIndividually() {
+		return isPlayingTreasuresIndividually;
+	}
+
+	public void setPlayingTreasuresIndividually() {
+		isPlayingTreasuresIndividually = true;
+		sendCoins();
 	}
 
 	@SuppressWarnings("unchecked")
 	public void sendCoins() {
-		JSONObject setCoins = new JSONObject();
-		setCoins.put("command", "setCoins");
-		setCoins.put("coins", "$" + Integer.toString(getCoins()));
-		sendCommand(setCoins);
+		JSONObject command = new JSONObject();
+		command.put("command", "setCoins");
+		command.put("coins", "$" + Integer.toString(getUsableCoins()));
+		sendCommand(command);
 	}
 
 	@SuppressWarnings("unchecked")
