@@ -552,7 +552,7 @@ public class Game implements Runnable {
 	}
 
 	private boolean canBuyCard(Player player) {
-		int coins = player.getCoins();
+		int coins = player.getUsableCoins();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();

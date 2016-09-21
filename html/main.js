@@ -589,6 +589,45 @@ function endPrompt() {
   }
 }
 
+function promptBuyPhase(canBuy, playingTreasuresIndividually, canPlay) {
+  // set message
+  var message;
+  if (playingTreasuresIndividually) {
+    message = 'Buy Phase: Choose a card to purchase, or treasure to play';
+  } else {
+    message = 'Buy Phase: Choose a card to purchase (playing all treasures automatically), or';
+  }
+  setPromptMessage(message, 'buyPrompt');
+  // "play treasures individually" button
+  if (!playingTreasuresIndividually) {
+    var button = addPromptButton('Play treasures individually');
+    sendResponseOnMouseDown(button, JSON.stringify({'responseType':'playTreasuresIndividually'}));
+  }
+  // "end turn" button
+  var endTurnButton = addPromptButton('End turn');
+  sendResponseOnMouseDown(endTurnButton, JSON.stringify({'responseType':'endTurn'}));
+  // enable buying cards
+  for (var i = 0; i < canBuy.length; i++) {
+    // show plus icon
+    supplyCardElems[canBuy[i]].plus.style.display = 'block';
+    // add visual flair when hovering over this pile
+    var pile = supplyCardElems[canBuy[i]].pile;
+    pile.className += ' clickable';
+    // choose on mouse down
+    sendResponseOnMouseDown(pile, JSON.stringify({'responseType':'buy', 'toBuy':canBuy[i]}));
+  }
+  // enable playing treasures
+  if (playingTreasuresIndividually) {
+    for (var i = 0; i < canPlay.length; i++) {
+      // add visual flair when hovering over stack
+      var stack = handCardElems[canPlay[i]];
+      stack.className += ' clickable';
+      sendResponseOnMouseDown(stack, JSON.stringify({'responseType':'play', 'toPlay':canPlay[i]}));
+    }
+  }
+  displayPrompt();
+}
+
 function promptChooseFromSupply(choices, message, promptType, isMandatory, noneMessage) {
   // set message
   setPromptMessage(message, promptType);
@@ -1359,6 +1398,10 @@ function executeCommand(command) {
       break;
     case 'allowHurryUp':
       allowHurryUp();
+      break;
+    case 'promptBuyPhase':
+      setWaitingOn();
+      promptBuyPhase(command.canBuy, command.playingTreasuresIndividually, command.canPlay);
       break;
     case 'promptChooseFromSupply':
       setWaitingOn();
