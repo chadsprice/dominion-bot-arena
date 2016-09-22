@@ -181,6 +181,7 @@ public class Game implements Runnable {
 				recordPlayerGained(player, choice.toBuy);
 			} else if (choice.toPlay != null) {
 				player.putFromHandIntoPlay(choice.toPlay);
+				choice.toPlay.onPlay(player, this);
 				player.addCoins(choice.toPlay.treasureValue(this));
 				message(player, "You play " + choice.toPlay.htmlName());
 				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
@@ -260,12 +261,15 @@ public class Game implements Runnable {
 			}
 		}
 		if (!treasures.isEmpty()) {
-			for (Card treasure : treasures) {
-				player.putFromHandIntoPlay(treasure);
-				player.addCoins(treasure.treasureValue(this));
-			}
 			message(player, "You play " + Card.htmlList(treasures));
 			messageOpponents(player, player.username + " plays " + Card.htmlList(treasures));
+			messageIndent++;
+			for (Card treasure : treasures) {
+				player.putFromHandIntoPlay(treasure);
+				treasure.onPlay(player, this);
+				player.addCoins(treasure.treasureValue(this));
+			}
+			messageIndent--;
 		}
 	}
 

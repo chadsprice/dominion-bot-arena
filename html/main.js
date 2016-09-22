@@ -1119,6 +1119,9 @@ function createCustomGame() {
   if (document.getElementById('seasideCheckbox').checked) {
     sets.push('Seaside');
   }
+  if (document.getElementById('prosperityCheckbox').checked) {
+    sets.push('Prosperity');
+  }
   var cards = document.getElementById('customGameCards').value;
   var bots = getBots();
   socket.send(JSON.stringify({'type':'createCustomGame', 'name':name, 'numPlayers':numPlayers, 'sets':sets, 'cards':cards, 'bots':bots}));

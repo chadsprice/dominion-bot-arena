@@ -103,6 +103,8 @@ public class Card {
 	public static final Card TACTICIAN = new Tactician();
 	public static final Card TREASURY = new Treasury();
 	public static final Card WHARF = new Wharf();
+	// prosperity expansion
+	public static final Card LOAN = new Loan();
 
 	public static Map<String, Card> cardsByName;
 
@@ -110,6 +112,7 @@ public class Card {
 	public static Set<Card> BASE_SET;
 	public static Set<Card> INTRIGUE_SET;
 	public static Set<Card> SEASIDE_SET;
+	public static Set<Card> PROSPERITY_SET;
 
 	public static Map<String, Set<Card>> setsByName;
 	public static List<Set<Card>> setOrder;
@@ -121,6 +124,7 @@ public class Card {
 		BASE_SET = new HashSet<Card>();
 		INTRIGUE_SET = new HashSet<Card>();
 		SEASIDE_SET = new HashSet<Card>();
+		PROSPERITY_SET = new HashSet<Card>();
 		setsByName = new HashMap<String, Set<Card>>();
 
 		setOrder = new ArrayList<Set<Card>>();
@@ -131,6 +135,8 @@ public class Card {
 		setNames.add("Intrigue");
 		setOrder.add(SEASIDE_SET);
 		setNames.add("Seaside");
+		setOrder.add(PROSPERITY_SET);
+		setNames.add("Prosperity");
 		for (int i = 0; i < setOrder.size(); i++) {
 			setsByName.put(setNames.get(i), setOrder.get(i));
 		}
@@ -225,6 +231,8 @@ public class Card {
 		include(TACTICIAN, SEASIDE_SET);
 		include(TREASURY, SEASIDE_SET);
 		include(WHARF, SEASIDE_SET);
+		// prosperity expansion
+		include(LOAN, PROSPERITY_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {
@@ -276,7 +284,7 @@ public class Card {
 	}
 
 	public void onPlay(Player player, Game game) {
-		throw new UnsupportedOperationException();
+		// do nothing (this should only be called by basic treasures)
 	}
 	public boolean onPlay(Player player, Game game, boolean hasMoved) {
 		onPlay(player, game);
