@@ -291,7 +291,7 @@ public class Game implements Runnable {
 			}
 			messageIndent--;
 		}
-		// if the card can be affected by talisman
+		// if the purchase can be affected by talisman
 		if (card.cost(this) <= 4 && !card.isVictory && supply.get(card) > 0) {
 			int numTalismans = numberInPlay(Card.TALISMAN);
 			// if the player has talismans in play
@@ -305,6 +305,20 @@ public class Game implements Runnable {
 				}
 				for (int i = 0; i < copiesToGain; i++) {
 					gain(player, card);
+				}
+				messageIndent--;
+			}
+		}
+		// if the purchase can be affected by hoard
+		if (card.isVictory && supply.get(Card.GOLD) > 0) {
+			int numHoards = numberInPlay(Card.HOARD);
+			// if the player has hoards in play
+			if (numHoards > 0) {
+				int goldsToGain = Math.min(numHoards, supply.get(Card.GOLD));
+				messageIndent++;
+				messageAll("gaining " + Card.GOLD.htmlName(goldsToGain) + " because of " + Card.HOARD.htmlNameRaw());
+				for (int i = 0; i < goldsToGain; i++) {
+					gain(player, Card.GOLD);
 				}
 				messageIndent--;
 			}
