@@ -108,6 +108,9 @@ public class Card {
 	public static final Card QUARRY = new Quarry();
 	public static final Card TALISMAN = new Talisman();
 	public static final Card CONTRABAND = new Contraband();
+	// prosperity basic cards
+	public static final Card PLATINUM = new Platinum();
+	public static final Card COLONY = new Colony();
 
 	public static Map<String, Card> cardsByName;
 
@@ -116,6 +119,7 @@ public class Card {
 	public static Set<Card> INTRIGUE_SET;
 	public static Set<Card> SEASIDE_SET;
 	public static Set<Card> PROSPERITY_SET;
+	public static Set<Card> PROSPERITY_BASIC_CARDS;
 
 	public static Map<String, Set<Card>> setsByName;
 	public static List<Set<Card>> setOrder;
@@ -128,6 +132,7 @@ public class Card {
 		INTRIGUE_SET = new HashSet<Card>();
 		SEASIDE_SET = new HashSet<Card>();
 		PROSPERITY_SET = new HashSet<Card>();
+		PROSPERITY_BASIC_CARDS = new HashSet<Card>();
 		setsByName = new HashMap<String, Set<Card>>();
 
 		setOrder = new ArrayList<Set<Card>>();
@@ -239,6 +244,9 @@ public class Card {
 		include(QUARRY, PROSPERITY_SET);
 		include(TALISMAN, PROSPERITY_SET);
 		include(CONTRABAND, PROSPERITY_SET);
+		// prosperity basic cards
+		include(PLATINUM, PROSPERITY_BASIC_CARDS);
+		include(COLONY, PROSPERITY_BASIC_CARDS);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {

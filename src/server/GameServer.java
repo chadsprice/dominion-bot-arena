@@ -377,7 +377,7 @@ public class GameServer {
 					cardName = cardName.substring(1).trim();
 				}
 				Card card = Card.fromName(cardName);
-				if (card != null && !Card.BASIC_CARDS.contains(card)) {
+				if (card != null && !Card.BASIC_CARDS.contains(card) && !Card.PROSPERITY_BASIC_CARDS.contains(card)) {
 					if (isForbidden) {
 						forbiddenCards.add(card);
 					} else {
@@ -883,6 +883,17 @@ public class GameServer {
 		basicSet.add(Card.SILVER);
 		basicSet.add(Card.COPPER);
 		basicSet.add(Card.CURSE);
+		// somewhat-randomly choose whether to include platinum and colony
+		int numProsperityCards = 0;
+		for (Card card : chosen) {
+			if (Card.PROSPERITY_SET.contains(card)) {
+				numProsperityCards++;
+			}
+		}
+		if ((int) (Math.random() * chosen.size()) < numProsperityCards) {
+			basicSet.add(Card.PLATINUM);
+			basicSet.add(Card.COLONY);
+		}
 		// initialize the game with this kingdom and basic set
 		game.init(this, players, chosen, basicSet);
 	}
