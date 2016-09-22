@@ -111,6 +111,7 @@ public class Card {
 	public static final Card ROYAL_SEAL = new RoyalSeal();
 	public static final Card VENTURE = new Venture();
 	public static final Card HOARD = new Hoard();
+	public static final Card BANK = new Bank();
 	// prosperity basic cards
 	public static final Card PLATINUM = new Platinum();
 	public static final Card COLONY = new Colony();
@@ -250,6 +251,7 @@ public class Card {
 		include(ROYAL_SEAL, PROSPERITY_SET);
 		include(VENTURE, PROSPERITY_SET);
 		include(HOARD, PROSPERITY_SET);
+		include(BANK, PROSPERITY_SET);
 		// prosperity basic cards
 		include(PLATINUM, PROSPERITY_BASIC_CARDS);
 		include(COLONY, PROSPERITY_BASIC_CARDS);

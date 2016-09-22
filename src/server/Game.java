@@ -60,6 +60,32 @@ public class Game implements Runnable {
 		}
 	};
 
+	private static final Comparator<Card> TREASURE_PLAY_ORDER_COMPARATOR = new Comparator<Card>() {
+		@Override
+		public int compare(Card c1, Card c2) {
+			int c1Type = type(c1);
+			int c2Type = type(c2);
+			if (c1Type != c2Type) {
+				// contraband < other treasures cards < bank 
+				return c1Type - c2Type;
+			} else {
+				// order alphabetically
+				return c1.toString().compareTo(c2.toString());
+			}
+		}
+		private int type(Card card) {
+			if (card == Card.CONTRABAND) {
+				// play contraband first so opponents don't know how much coin you have exactly when they prohibit you from buying something
+				return 0;
+			} else if (card == Card.BANK) {
+				// play bank last to maximize its value
+				return 2;
+			} else {
+				return 1;
+			}
+		}
+	};
+
 	private GameServer server;
 
 	private int playerIndex;
@@ -269,12 +295,23 @@ public class Game implements Runnable {
 		if (!treasures.isEmpty()) {
 			message(player, "You play " + Card.htmlList(treasures));
 			messageOpponents(player, player.username + " plays " + Card.htmlList(treasures));
+			Collections.sort(treasures, TREASURE_PLAY_ORDER_COMPARATOR);
 			messageIndent++;
 			for (Card treasure : treasures) {
 				playTreasure(player, treasure);
 			}
 			messageIndent--;
 		}
+	}
+
+	public int numTreasuresInPlay() {
+		int num = 0;
+		for (Card card : players.get(playerIndex).getPlay()) {
+			if (card.isTreasure) {
+				num++;
+			}
+		}
+		return num;
 	}
 
 	private void onBuy(Player player, Card card) {
