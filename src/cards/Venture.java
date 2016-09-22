@@ -7,15 +7,15 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-public class Loan extends Card {
+public class Venture extends Card {
 
-	public Loan() {
+	public Venture() {
 		isTreasure = true;
 	}
 
 	@Override
 	public int cost() {
-		return 3;
+		return 5;
 	}
 
 	@Override
@@ -44,19 +44,15 @@ public class Loan extends Card {
 		}
 		game.messageAll("revealing " + Card.htmlList(revealed));
 		if (treasure != null) {
-			// discard or trash the revealed treasure
 			revealed.remove(treasure);
-			int choice = game.promptMultipleChoice(player, "You reveal " + treasure.htmlName() + ", discard or trash it?", new String[] {"Discard", "Trash"});
-			if (choice == 0) {
-				player.addToDiscard(treasure);
-				game.messageAll("discarding the " + treasure.htmlNameRaw());
-			} else {
-				game.trash.add(treasure);
-				game.messageAll("trashing the " + treasure.htmlNameRaw());
-			}
 		}
 		// discard the rest
 		player.addToDiscard(revealed);
+		if (treasure != null) {
+			// play the revealed treasure
+			game.messageAll("playing the " + treasure.htmlNameRaw());
+			game.playTreasure(player, treasure);
+		}
 	}
 
 	@Override
@@ -66,12 +62,12 @@ public class Loan extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[]{"$1", "When you play this, reveal cards from your deck until you reveal a Treasure.", "Discard it or trash it.", "Discard the other cards."};
+		return new String[]{"$1", "When you play this, reveal cards from your deck until you reveal a Treasure. Discard the other cards.", "Play that treasure."};
 	}
 
 	@Override
 	public String toString() {
-		return "Loan";
+		return "Venture";
 	}
 
 }

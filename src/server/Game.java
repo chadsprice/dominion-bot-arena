@@ -184,9 +184,7 @@ public class Game implements Runnable {
 			} else if (choice.toPlay != null) {
 				message(player, "You play " + choice.toPlay.htmlName());
 				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
-				player.putFromHandIntoPlay(choice.toPlay);
-				choice.toPlay.onPlay(player, this);
-				player.addCoins(choice.toPlay.treasureValue(this));
+				playTreasure(player, choice.toPlay);
 			} else if (choice.isPlayingAllTreasures) {
 				playAllTreasures(player);
 			} else if (choice.isEndingTurn) {
@@ -255,6 +253,12 @@ public class Game implements Runnable {
 		player.durationsResolved();
 	}
 
+	public void playTreasure(Player player, Card treasure) {
+		player.putFromHandIntoPlay(treasure);
+		treasure.onPlay(player, this);
+		player.addCoins(treasure.treasureValue(this));
+	}
+
 	private void playAllTreasures(Player player) {
 		List<Card> treasures = new ArrayList<Card>();
 		for (Card card : player.getHand()) {
@@ -267,9 +271,7 @@ public class Game implements Runnable {
 			messageOpponents(player, player.username + " plays " + Card.htmlList(treasures));
 			messageIndent++;
 			for (Card treasure : treasures) {
-				player.putFromHandIntoPlay(treasure);
-				treasure.onPlay(player, this);
-				player.addCoins(treasure.treasureValue(this));
+				playTreasure(player, treasure);
 			}
 			messageIndent--;
 		}
