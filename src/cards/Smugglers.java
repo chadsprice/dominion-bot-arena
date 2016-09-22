@@ -44,8 +44,8 @@ public class Smugglers extends Card {
 			Card toGain = smuggleable.get(choice);
 			// if there are any of the chosen card to gain in the supply
 			if (game.supply.get(toGain) != null && game.supply.get(toGain) > 0) {
-				game.gain(player, toGain);
 				game.messageAll("gaining " + toGain.htmlName());
+				game.gain(player, toGain);
 			} else {
 				game.messageAll("gaining nothing");
 			}

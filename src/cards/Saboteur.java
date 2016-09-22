@@ -49,9 +49,9 @@ public class Saboteur extends Card {
 				int cost = toTrash.cost(game) - 2;
 				Card toGain = game.promptChooseGainFromSupply(target, game.cardsCostingAtMost(cost), "Saboteur: You trash " + toTrash.htmlName() + ". You may gain a card costing at most $2 less than it", "attackPrompt", false, "Gain nothing");
 				if (toGain != null) {
-					game.gain(target, toGain);
 					game.message(target, "You gain " + toGain.htmlName());
 					game.messageOpponents(target, target.username + " gains " + toGain.htmlName());
+					game.gain(target, toGain);
 				} else {
 					game.message(target, "You gain nothing");
 					game.messageOpponents(target, target.username + " gains nothing");

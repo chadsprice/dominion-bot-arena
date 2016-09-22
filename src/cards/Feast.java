@@ -51,8 +51,8 @@ public class Feast extends Card {
 			}
 		}
 		// gain card
-		game.gain(player, toGain);
 		game.messageAll("gaining " + toGain.htmlName());
+		game.gain(player, toGain);
 		return movedToTrash;
 	}
 

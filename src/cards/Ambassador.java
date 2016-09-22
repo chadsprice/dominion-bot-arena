@@ -43,9 +43,9 @@ public class Ambassador extends Card {
 			game.messageAll("returning " + card.htmlName(numToReturn) + " to the supply");
 			for (Player target : targets) {
 				if (game.supply.get(card) > 0) {
-					game.gain(target, card);
 					game.message(target, "You gain " + card.htmlName());
 					game.messageOpponents(target, target.username + " gains " + card.htmlName());
+					game.gain(target, card);
 				}
 			}
 		} else {

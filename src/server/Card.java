@@ -108,6 +108,7 @@ public class Card {
 	public static final Card QUARRY = new Quarry();
 	public static final Card TALISMAN = new Talisman();
 	public static final Card CONTRABAND = new Contraband();
+	public static final Card ROYAL_SEAL = new RoyalSeal();
 	// prosperity basic cards
 	public static final Card PLATINUM = new Platinum();
 	public static final Card COLONY = new Colony();
@@ -244,6 +245,7 @@ public class Card {
 		include(QUARRY, PROSPERITY_SET);
 		include(TALISMAN, PROSPERITY_SET);
 		include(CONTRABAND, PROSPERITY_SET);
+		include(ROYAL_SEAL, PROSPERITY_SET);
 		// prosperity basic cards
 		include(PLATINUM, PROSPERITY_BASIC_CARDS);
 		include(COLONY, PROSPERITY_BASIC_CARDS);

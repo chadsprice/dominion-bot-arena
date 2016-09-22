@@ -173,9 +173,9 @@ public class Game implements Runnable {
 			BuyPhaseChoice choice = promptBuyPhase(player);
 			if (choice.toBuy != null) {
 				// gain purchased card
-				gain(player, choice.toBuy);
 				message(player, "You purchase " + choice.toBuy.htmlName());
 				messageOpponents(player, player.username + " purchases " + choice.toBuy.htmlName());
+				gain(player, choice.toBuy);
 				onBuy(player, choice.toBuy);
 				// update player status
 				player.addBuys(-1);
@@ -282,11 +282,11 @@ public class Game implements Runnable {
 		// if that card's pile was embargoed
 		if (embargoTokens.get(card) > 0 && supply.get(Card.CURSE) > 0) {
 			int cursesToGain = Math.min(embargoTokens.get(card), supply.get(Card.CURSE));
+			messageIndent++;
+			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
 			for (int i = 0; i < cursesToGain; i++) {
 				gain(player, Card.CURSE);
 			}
-			messageIndent++;
-			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
 			messageIndent--;
 		}
 		// if the card can be affected by talisman
@@ -295,14 +295,14 @@ public class Game implements Runnable {
 			// if the player has talismans in play
 			if (numTalismans > 0) {
 				int copiesToGain = Math.min(numTalismans, supply.get(card));
-				for (int i = 0; i < copiesToGain; i++) {
-					gain(player, card);
-				}
 				messageIndent++;
 				if (copiesToGain == 1) {
 					messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
 				} else {
 					messageAll("gaining another " + card.htmlName(copiesToGain) + " because of " + Card.TALISMAN.htmlNameRaw());
+				}
+				for (int i = 0; i < copiesToGain; i++) {
+					gain(player, card);
 				}
 				messageIndent--;
 			}
@@ -544,6 +544,9 @@ public class Game implements Runnable {
 	}
 
 	public void gain(Player player, Card card) {
+		if (royalSealGain(player, card)) {
+			return;
+		}
 		takeFromSupply(card);
 		// put card in player's discard
 		player.addToDiscard(card);
@@ -558,6 +561,9 @@ public class Game implements Runnable {
 	}
 
 	public void gainToHand(Player player, Card card) {
+		if (royalSealGain(player, card)) {
+			return;
+		}
 		takeFromSupply(card);
 		// put card in player's hand
 		player.addToHand(card);
@@ -565,10 +571,26 @@ public class Game implements Runnable {
 	}
 
 	public void gainFromTrash(Player player, Card card) {
+		if (royalSealGain(player, card)) {
+			return;
+		}
 		trash.remove(card);
 		// put card in player's hand
 		player.addToDiscard(card);
 		onGained(player, card);
+	}
+
+	private boolean royalSealGain(Player player, Card card) {
+		if (player.getPlay().contains(Card.ROYAL_SEAL)) {
+			int choice = promptMultipleChoice(player, "Royal Seal: Put the " + card.htmlNameRaw() + " on top of your deck?", new String[] {"Yes", "No"});
+			if (choice == 0) {
+				message(player, "you use your " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
+				messageOpponents(player, player.username + " uses his " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of his deck");
+				gainToTopOfDeck(player, card);
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private void onGained(Player player, Card card) {

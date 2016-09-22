@@ -38,8 +38,8 @@ public class Ironworks extends Card {
 			toGain = game.promptChooseGainFromSupply(player, gainable, "Ironworks: Choose a card to gain");
 		}
 		// gain card
-		game.gain(player, toGain);
 		game.messageAll("gaining " + toGain.htmlName());
+		game.gain(player, toGain);
 		// action -> +1 action
 		if (toGain.isAction) {
 			plusActions(player, game, 1);

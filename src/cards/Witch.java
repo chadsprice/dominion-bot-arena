@@ -24,9 +24,9 @@ public class Witch extends Card {
 		// each other player gains a curse
 		for (Player target : targets) {
 			if (game.supply.get(Card.CURSE) > 0) {
-				game.gain(target, Card.CURSE);
 				game.message(target, "You gain " + Card.CURSE.htmlName());
 				game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
+				game.gain(target, Card.CURSE);
 			}
 		}
 	}

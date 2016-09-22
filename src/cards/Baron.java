@@ -31,14 +31,12 @@ public class Baron extends Card {
 			player.addCoins(4);
 			game.messageAll("discarding " + Card.ESTATE.htmlName() + " for +$4");
 		} else {
-			String cardName = null;
 			if (game.supply.get(Card.ESTATE) > 0) {
+				game.messageAll("gaining " + Card.ESTATE.htmlName());
 				game.gain(player, Card.ESTATE);
-				cardName = Card.ESTATE.htmlName();
 			} else {
-				cardName = "nothing";
+				game.messageAll("gaining nothing");
 			}
-			game.messageAll("gaining " + cardName);
 		}
 	}
 

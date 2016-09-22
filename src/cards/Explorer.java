@@ -30,9 +30,9 @@ public class Explorer extends Card {
 		// gain the respective card, putting it into your hand
 		Card toGain = revealedProvince ? Card.GOLD : Card.SILVER;
 		if (game.supply.get(toGain) > 0) {
-			game.gainToHand(player, toGain);
 			game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
 			game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
+			game.gainToHand(player, toGain);
 		} else {
 			game.messageAll("gaining nothing");
 		}

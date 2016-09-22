@@ -38,8 +38,8 @@ public class Workshop extends Card {
 			toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain");
 		}
 		// gain card
-		game.gain(player, toGain);
 		game.messageAll("gaining " + toGain.htmlName());
+		game.gain(player, toGain);
 	}
 
 	@Override

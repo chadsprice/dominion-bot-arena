@@ -38,9 +38,9 @@ public class Torturer extends Card {
 			} else {
 				// gain a curse putting it into your hand
 				if (game.supply.get(Card.CURSE) > 0) {
-					game.gainToHand(player, Card.CURSE);
 					game.message(target, "You gain " + Card.CURSE.htmlName() + ", putting it into your hand");
 					game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName() + ", putting it into his hand");
+					game.gainToHand(player, Card.CURSE);
 				} else {
 					game.message(target, "You gain nothing");
 					game.messageOpponents(target, target.username + " gains nothing");
