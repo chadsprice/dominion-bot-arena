@@ -285,6 +285,24 @@ public class Game implements Runnable {
 			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
 			messageIndent--;
 		}
+		// if the card can be affected by talisman
+		if (card.cost(this) <= 4 && !card.isVictory && supply.get(card) > 0) {
+			int numTalismans = numberInPlay(Card.TALISMAN);
+			// if the player has talismans in play
+			if (numTalismans > 0) {
+				int copiesToGain = Math.min(numTalismans, supply.get(card));
+				for (int i = 0; i < copiesToGain; i++) {
+					gain(player, card);
+				}
+				messageIndent++;
+				if (copiesToGain == 1) {
+					messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
+				} else {
+					messageAll("gaining another " + card.htmlName(copiesToGain) + " because of " + Card.TALISMAN.htmlNameRaw());
+				}
+				messageIndent--;
+			}
+		}
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
@@ -640,14 +658,14 @@ public class Game implements Runnable {
 		sendCardCosts();
 	}
 
-	public int numQuarriesInPlay() {
-		int numQuarries = 0;
-		for (Card card : players.get(playerIndex).getPlay()) {
-			if (card == Card.QUARRY) {
-				numQuarries++;
+	public int numberInPlay(Card card) {
+		int num = 0;
+		for (Card inPlay : players.get(playerIndex).getPlay()) {
+			if (inPlay == card) {
+				num++;
 			}
 		}
-		return numQuarries;
+		return num;
 	}
 
 	public void sendCardCosts() {

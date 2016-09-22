@@ -106,6 +106,7 @@ public class Card {
 	// prosperity expansion
 	public static final Card LOAN = new Loan();
 	public static final Card QUARRY = new Quarry();
+	public static final Card TALISMAN = new Talisman();
 
 	public static Map<String, Card> cardsByName;
 
@@ -235,6 +236,7 @@ public class Card {
 		// prosperity expansion
 		include(LOAN, PROSPERITY_SET);
 		include(QUARRY, PROSPERITY_SET);
+		include(TALISMAN, PROSPERITY_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {
@@ -267,7 +269,7 @@ public class Card {
 		int computedCost = cost();
 		computedCost -=  game.cardCostReduction;
 		if (isAction) {
-			computedCost -= 2 * game.numQuarriesInPlay();
+			computedCost -= 2 * game.numberInPlay(Card.QUARRY);
 		}
 		// cost can never be less than zero
 		return Math.max(computedCost, 0);
