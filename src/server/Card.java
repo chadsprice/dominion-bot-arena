@@ -107,6 +107,7 @@ public class Card {
 	public static final Card LOAN = new Loan();
 	public static final Card QUARRY = new Quarry();
 	public static final Card TALISMAN = new Talisman();
+	public static final Card CONTRABAND = new Contraband();
 
 	public static Map<String, Card> cardsByName;
 
@@ -237,6 +238,7 @@ public class Card {
 		include(LOAN, PROSPERITY_SET);
 		include(QUARRY, PROSPERITY_SET);
 		include(TALISMAN, PROSPERITY_SET);
+		include(CONTRABAND, PROSPERITY_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {

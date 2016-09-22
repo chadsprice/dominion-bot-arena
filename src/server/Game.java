@@ -79,6 +79,7 @@ public class Game implements Runnable {
 	public int coppersmithsPlayedThisTurn;
 	public Map<Card, Integer> embargoTokens;
 	public boolean boughtVictoryCardThisTurn;
+	public Set<Card> contrabandProhibited;
 
 	public int messageIndent;
 
@@ -120,6 +121,8 @@ public class Game implements Runnable {
 		for (Card cardInSupply : supply.keySet()) {
 			embargoTokens.put(cardInSupply, 0);
 		}
+		// initialize contraband prohibited cards
+		contrabandProhibited = new HashSet<Card>();
 		// randomize turn order
 		Collections.shuffle(players);
 		for (Player player : players) {
@@ -142,6 +145,7 @@ public class Game implements Runnable {
 		}
 		actionsPlayedThisTurn = 0;
 		boughtVictoryCardThisTurn = false;
+		contrabandProhibited.clear();
 		newTurnMessage(player);
 		messageIndent++;
 		player.sendActions();
@@ -178,11 +182,11 @@ public class Game implements Runnable {
 				player.addCoins(-choice.toBuy.cost(this));
 				recordPlayerGained(player, choice.toBuy);
 			} else if (choice.toPlay != null) {
+				message(player, "You play " + choice.toPlay.htmlName());
+				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
 				player.putFromHandIntoPlay(choice.toPlay);
 				choice.toPlay.onPlay(player, this);
 				player.addCoins(choice.toPlay.treasureValue(this));
-				message(player, "You play " + choice.toPlay.htmlName());
-				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
 			} else if (choice.isPlayingAllTreasures) {
 				playAllTreasures(player);
 			} else if (choice.isEndingTurn) {
@@ -602,6 +606,8 @@ public class Game implements Runnable {
 				cards.add(card);
 			}
 		}
+		// remove cards prohibited by contraband
+		cards.removeAll(contrabandProhibited);
 		return cards;
 	}
 
@@ -1506,6 +1512,41 @@ public class Game implements Runnable {
 			}
 		}
 		return false;
+	}
+
+	public Card promptNameACard(Player player, String cause, String prompt) {
+		Card namedCard = promptChooseGainFromSupply(player, supply.keySet(), cause + ": " + prompt, false, "Name a card that is not in the supply");
+		if (namedCard == null) {
+			// find all cards not in the supply
+			Set<Card> cardsNotInSupply = new HashSet<Card>(Card.cardsByName.values());
+			cardsNotInSupply.removeAll(supply.keySet());
+			// create an alphabet of only the first letters of cards not in the supply
+			Set<Character> letters = new HashSet<Character>();
+			for (Card cardNotInSupply : cardsNotInSupply) {
+				letters.add(cardNotInSupply.toString().charAt(0));
+			}
+			List<Character> orderedLetters = new ArrayList<Character>(letters);
+			Collections.sort(orderedLetters);
+			String[] choices = new String[orderedLetters.size()];
+			for (int i = 0; i < orderedLetters.size(); i++) {
+				choices[i] = orderedLetters.get(i) + "";
+			}
+			char chosenLetter = orderedLetters.get(promptMultipleChoice(player, cause + ": Select the first letter of the card you want to name", choices));
+			// find all cards not in the supply starting with the chosen letter
+			List<String> names = new ArrayList<String>();
+			for (Card cardNotInSupply : cardsNotInSupply) {
+				String name = cardNotInSupply.toString();
+				if (name.charAt(0) == chosenLetter) {
+					names.add(name);
+				}
+			}
+			Collections.sort(names);
+			choices = new String[names.size()];
+			choices = (String[]) names.toArray(choices);
+			String chosenName = choices[promptMultipleChoice(player, cause + ": Select the card you want to name", choices)];
+			namedCard = Card.fromName(chosenName);
+		}
+		return namedCard;
 	}
 
 	@SuppressWarnings("unchecked")

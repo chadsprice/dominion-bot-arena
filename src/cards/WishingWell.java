@@ -1,10 +1,6 @@
 package cards;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import server.Card;
 import server.Game;
@@ -28,38 +24,7 @@ public class WishingWell extends Card {
 		// Name a card
 		List<Card> drawn = player.takeFromDraw(1);
 		if (drawn.size() == 1) {
-			// TODO add a nameACard method to Game.java
-			Card namedCard = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Wishing Well: Name a card", false, "Name a card that is not in the supply");
-			if (namedCard == null) {
-				// find all cards not in the supply
-				Set<Card> cardsNotInSupply = new HashSet<Card>(Card.cardsByName.values());
-				cardsNotInSupply.removeAll(game.supply.keySet());
-				// create an alphabet of only the first letters of cards not in the supply
-				Set<Character> letters = new HashSet<Character>();
-				for (Card cardNotInSupply : cardsNotInSupply) {
-					letters.add(cardNotInSupply.toString().charAt(0));
-				}
-				List<Character> orderedLetters = new ArrayList<Character>(letters);
-				Collections.sort(orderedLetters);
-				String[] choices = new String[orderedLetters.size()];
-				for (int i = 0; i < orderedLetters.size(); i++) {
-					choices[i] = orderedLetters.get(i) + "";
-				}
-				char chosenLetter = orderedLetters.get(game.promptMultipleChoice(player, "Wishing Well: Select the first letter of the card you want to name", choices));
-				// find all cards not in the supply starting with the chosen letter
-				List<String> names = new ArrayList<String>();
-				for (Card cardNotInSupply : cardsNotInSupply) {
-					String name = cardNotInSupply.toString();
-					if (name.charAt(0) == chosenLetter) {
-						names.add(name);
-					}
-				}
-				Collections.sort(names);
-				choices = new String[names.size()];
-				choices = (String[]) names.toArray(choices);
-				String chosenName = choices[game.promptMultipleChoice(player, "Wishing Well: Select the card you want to name", choices)];
-				namedCard = Card.fromName(chosenName);
-			}
+			Card namedCard = game.promptNameACard(player, "Wishing Well", "Name a card. If that is the top card of your deck, it will go into your hand");
 			Card revealedCard = drawn.get(0);
 			if (namedCard == revealedCard) {
 				player.addToHand(revealedCard);
