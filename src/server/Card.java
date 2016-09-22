@@ -105,6 +105,7 @@ public class Card {
 	public static final Card WHARF = new Wharf();
 	// prosperity expansion
 	public static final Card LOAN = new Loan();
+	public static final Card QUARRY = new Quarry();
 
 	public static Map<String, Card> cardsByName;
 
@@ -233,6 +234,7 @@ public class Card {
 		include(WHARF, SEASIDE_SET);
 		// prosperity expansion
 		include(LOAN, PROSPERITY_SET);
+		include(QUARRY, PROSPERITY_SET);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {
@@ -262,8 +264,13 @@ public class Card {
 	}
 
 	public int cost(Game game) {
+		int computedCost = cost();
+		computedCost -=  game.cardCostReduction;
+		if (isAction) {
+			computedCost -= 2 * game.numQuarriesInPlay();
+		}
 		// cost can never be less than zero
-		return Math.max(cost() - game.cardCostReduction, 0);
+		return Math.max(computedCost, 0);
 	}
 	public int cost() {
 		throw new UnsupportedOperationException();

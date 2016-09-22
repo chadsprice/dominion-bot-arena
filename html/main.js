@@ -589,19 +589,19 @@ function endPrompt() {
   }
 }
 
-function promptBuyPhase(canBuy, playingTreasuresIndividually, canPlay) {
+function promptBuyPhase(canBuy, hasUnplayedTreasure, canPlay) {
   // set message
   var message;
-  if (playingTreasuresIndividually) {
+  if (hasUnplayedTreasure) {
     message = 'Buy Phase: Choose a card to purchase, or treasure to play';
   } else {
-    message = 'Buy Phase: Choose a card to purchase (playing all treasures automatically), or';
+    message = 'Buy Phase: Choose a card to purchase, or';
   }
   setPromptMessage(message, 'buyPrompt');
   // "play treasures individually" button
-  if (!playingTreasuresIndividually) {
-    var button = addPromptButton('Play treasures individually');
-    sendResponseOnMouseDown(button, JSON.stringify({'responseType':'playTreasuresIndividually'}));
+  if (hasUnplayedTreasure) {
+    var button = addPromptButton('Play all treasures');
+    sendResponseOnMouseDown(button, JSON.stringify({'responseType':'playAllTreasures'}));
   }
   // "end turn" button
   var endTurnButton = addPromptButton('End turn');
@@ -617,13 +617,11 @@ function promptBuyPhase(canBuy, playingTreasuresIndividually, canPlay) {
     sendResponseOnMouseDown(pile, JSON.stringify({'responseType':'buy', 'toBuy':canBuy[i]}));
   }
   // enable playing treasures
-  if (playingTreasuresIndividually) {
-    for (var i = 0; i < canPlay.length; i++) {
-      // add visual flair when hovering over stack
-      var stack = handCardElems[canPlay[i]];
-      stack.className += ' clickable';
-      sendResponseOnMouseDown(stack, JSON.stringify({'responseType':'play', 'toPlay':canPlay[i]}));
-    }
+  for (var i = 0; i < canPlay.length; i++) {
+    // add visual flair when hovering over stack
+    var stack = handCardElems[canPlay[i]];
+    stack.className += ' clickable';
+    sendResponseOnMouseDown(stack, JSON.stringify({'responseType':'play', 'toPlay':canPlay[i]}));
   }
   displayPrompt();
 }
@@ -1404,7 +1402,7 @@ function executeCommand(command) {
       break;
     case 'promptBuyPhase':
       setWaitingOn();
-      promptBuyPhase(command.canBuy, command.playingTreasuresIndividually, command.canPlay);
+      promptBuyPhase(command.canBuy, command.hasUnplayedTreasure, command.canPlay);
       break;
     case 'promptChooseFromSupply':
       setWaitingOn();

@@ -114,8 +114,6 @@ public class Player {
 	private List<Card> play;
 	private List<Card> discard;
 
-	private boolean isPlayingTreasuresIndividually;
-
 	private List<Card> nativeVillageMat;
 	private List<Card> islandMat;
 	private int pirateShipTokens;
@@ -175,7 +173,6 @@ public class Player {
 		coins = 0;
 		// reset UI state
 		resetHandOrder();
-		isPlayingTreasuresIndividually = false;
 		// drawing a new hand automatically sends the player their hand and coins
 		if (!hasExtraTurn()) {
 			drawIntoHand(5);
@@ -277,32 +274,11 @@ public class Player {
 		setCoins(coins + toAdd);
 	}
 
-	public int getUsableCoins() {
-		int usableCoins = coins;
-		if (!isPlayingTreasuresIndividually) {
-			for (Card card : hand) {
-				if (card.isTreasure) {
-					usableCoins += card.treasureValue(game);
-				}
-			}
-		}
-		return usableCoins;
-	}
-
-	public boolean isPlayingTreasuresIndividually() {
-		return isPlayingTreasuresIndividually;
-	}
-
-	public void setPlayingTreasuresIndividually() {
-		isPlayingTreasuresIndividually = true;
-		sendCoins();
-	}
-
 	@SuppressWarnings("unchecked")
 	public void sendCoins() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setCoins");
-		command.put("coins", "$" + Integer.toString(getUsableCoins()));
+		command.put("coins", "$" + Integer.toString(getCoins()));
 		sendCommand(command);
 	}
 

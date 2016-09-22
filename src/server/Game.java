@@ -74,6 +74,7 @@ public class Game implements Runnable {
 
 	// various bits of game state required by individual card rules
 	public int cardCostReduction;
+	public boolean quarryPlayedLastTurn;
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
 	public Map<Card, Integer> embargoTokens;
@@ -135,8 +136,9 @@ public class Game implements Runnable {
 
 	private void takeTurn(Player player) {
 		player.startNewTurn();
-		if (cardCostReduction > 0) {
+		if (cardCostReduction > 0 || quarryPlayedLastTurn) {
 			setCardCostReduction(0);
+			quarryPlayedLastTurn = false;
 		}
 		actionsPlayedThisTurn = 0;
 		boughtVictoryCardThisTurn = false;
@@ -161,15 +163,11 @@ public class Game implements Runnable {
 		}
 		clearActions(player);
 		boolean givenBuyPrompt = false;
-		while (player.getBuys() > 0 && canBuyCard(player)) {
+		while (player.getBuys() > 0 && (hasUnplayedTreasure(player) || canBuyCard(player))) {
 			// buy phase
 			givenBuyPrompt = true;
 			BuyPhaseChoice choice = promptBuyPhase(player);
 			if (choice.toBuy != null) {
-				// automatically play all treasures
-				if (!player.isPlayingTreasuresIndividually()) {
-					playAllTreasures(player);
-				}
 				// gain purchased card
 				gain(player, choice.toBuy);
 				message(player, "You purchase " + choice.toBuy.htmlName());
@@ -185,8 +183,8 @@ public class Game implements Runnable {
 				player.addCoins(choice.toPlay.treasureValue(this));
 				message(player, "You play " + choice.toPlay.htmlName());
 				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
-			} else if (choice.isPlayingTreasuresIndividually) {
-				player.setPlayingTreasuresIndividually();
+			} else if (choice.isPlayingAllTreasures) {
+				playAllTreasures(player);
 			} else if (choice.isEndingTurn) {
 				break;
 			}
@@ -556,7 +554,7 @@ public class Game implements Runnable {
 	}
 
 	private boolean canBuyCard(Player player) {
-		int coins = player.getUsableCoins();
+		int coins = player.getCoins();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();
@@ -567,9 +565,18 @@ public class Game implements Runnable {
 		return false;
 	}
 
+	private boolean hasUnplayedTreasure(Player player) {
+		for (Card card : player.getHand()) {
+			if (card.isTreasure) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	private Set<Card> buyableCards(Player player) {
 		Set<Card> cards = new HashSet<Card>();
-		int coins = player.getUsableCoins();
+		int coins = player.getCoins();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();
@@ -630,13 +637,27 @@ public class Game implements Runnable {
 
 	public void setCardCostReduction(int reduction) {
 		cardCostReduction = reduction;
+		sendCardCosts();
+	}
+
+	public int numQuarriesInPlay() {
+		int numQuarries = 0;
+		for (Card card : players.get(playerIndex).getPlay()) {
+			if (card == Card.QUARRY) {
+				numQuarries++;
+			}
+		}
+		return numQuarries;
+	}
+
+	public void sendCardCosts() {
 		for (Player player : players) {
-			setCardCosts(player);
+			sendCardCosts(player);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setCardCosts(Player player) {
+	public void sendCardCosts(Player player) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setCardCosts");
 		JSONObject costs = new JSONObject();
@@ -849,7 +870,7 @@ public class Game implements Runnable {
 	private static class BuyPhaseChoice {
 		Card toBuy;
 		Card toPlay;
-		boolean isPlayingTreasuresIndividually;
+		boolean isPlayingAllTreasures;
 		boolean isEndingTurn;
 	}
 
@@ -870,9 +891,12 @@ public class Game implements Runnable {
 	@SuppressWarnings("unchecked")
 	public BuyPhaseChoice promptBuyPhase(Player player, Set<Card> canBuy, Set<Card> canPlay) {
 		BuyPhaseChoice choice = new BuyPhaseChoice();
-		//
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
+			if (!canPlay.isEmpty()) {
+				choice.isPlayingAllTreasures = true;
+				return choice;
+			}
 			Card card = bot.chooseBuy(canBuy);
 			// check that the bot is making a valid choice
 			if (card != null && !canBuy.contains(card)) {
@@ -889,14 +913,12 @@ public class Game implements Runnable {
 			canBuyJSONArray.add(card.toString());
 		}
 		command.put("canBuy", canBuyJSONArray);
-		command.put("playingTreasuresIndividually", player.isPlayingTreasuresIndividually());
-		if (player.isPlayingTreasuresIndividually()) {
-			JSONArray canPlayJSONArray = new JSONArray();
-			for (Card card : canPlay) {
-				canPlayJSONArray.add(card.toString());
-			}
-			command.put("canPlay", canPlayJSONArray);
+		command.put("hasUnplayedTreasure", !canPlay.isEmpty());
+		JSONArray canPlayJSONArray = new JSONArray();
+		for (Card card : canPlay) {
+			canPlayJSONArray.add(card.toString());
 		}
+		command.put("canPlay", canPlayJSONArray);
 		player.sendCommand(command);
 		// wait for response
 		String responseString = null;
@@ -925,12 +947,12 @@ public class Game implements Runnable {
 				}
 				choice.toPlay = toPlay;
 				return choice;
-			} else if ("playTreasuresIndividually".equals(responseType)) {
+			} else if ("playAllTreasures".equals(responseType)) {
 				// verify response
-				if (player.isPlayingTreasuresIndividually()) {
+				if (!hasUnplayedTreasure(player)) {
 					return endTurnChoice();
 				}
-				choice.isPlayingTreasuresIndividually = true;
+				choice.isPlayingAllTreasures = true;
 				return choice;
 			} else if ("endTurn".equals(responseType)) {
 				choice.isEndingTurn = true;
