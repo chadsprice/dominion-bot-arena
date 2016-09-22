@@ -167,7 +167,7 @@ body {
   width: 100%;
 }
 
-.embargoTokens {
+.pileTokens {
   z-index: 4;
   position: absolute;
   left: 0;
@@ -179,9 +179,16 @@ body {
   align-items: center;
 }
 
-.embargoTokens > label {
+.pileTokens > .embargoTokens {
   color: #ffffff;
   background-color: #ab47bc;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+.pileTokens > .tradeRouteToken {
+  color: #000000;
+  background-color: #ffd54f;
   padding-left: 0.25em;
   padding-right: 0.25em;
 }

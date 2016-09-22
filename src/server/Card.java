@@ -105,6 +105,7 @@ public class Card {
 	public static final Card WHARF = new Wharf();
 	// prosperity expansion
 	public static final Card LOAN = new Loan();
+	public static final Card TRADE_ROUTE = new TradeRoute();
 	public static final Card QUARRY = new Quarry();
 	public static final Card TALISMAN = new Talisman();
 	public static final Card CONTRABAND = new Contraband();
@@ -245,6 +246,7 @@ public class Card {
 		include(WHARF, SEASIDE_SET);
 		// prosperity expansion
 		include(LOAN, PROSPERITY_SET);
+		include(TRADE_ROUTE, PROSPERITY_SET);
 		include(QUARRY, PROSPERITY_SET);
 		include(TALISMAN, PROSPERITY_SET);
 		include(CONTRABAND, PROSPERITY_SET);

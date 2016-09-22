@@ -72,7 +72,7 @@ public class Player {
 		if (!forfeit) {
 			// premature optimization!
 			String commandType = (String) command.get("command");
-			if ("message".equals(commandType) || "newTurnMessage".equals(commandType) || "setPileSizes".equals(commandType)) {
+			if ("message".equals(commandType) || "newTurnMessage".equals(commandType) || "setPileSizes".equals(commandType) || "setTradeRouteToken".equals(commandType)) {
 				commands.add(command);
 			} else {
 				Iterator<JSONObject> iter = commands.iterator();

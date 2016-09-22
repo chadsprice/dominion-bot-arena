@@ -106,6 +106,8 @@ public class Game implements Runnable {
 	public Map<Card, Integer> embargoTokens;
 	public boolean boughtVictoryCardThisTurn;
 	public Set<Card> contrabandProhibited;
+	public Set<Card> tradeRouteTokenedPiles;
+	public int tradeRouteMat;
 
 	public int messageIndent;
 
@@ -149,11 +151,19 @@ public class Game implements Runnable {
 		}
 		// initialize contraband prohibited cards
 		contrabandProhibited = new HashSet<Card>();
+		// initialize trade route token piles
+		tradeRouteTokenedPiles = new HashSet<Card>();
+		for (Card card : supply.keySet()) {
+			if (card.isVictory) {
+				tradeRouteTokenedPiles.add(card);
+			}
+		}
 		// randomize turn order
 		Collections.shuffle(players);
 		for (Player player : players) {
 			setKingdomCards(player);
 			setBasicCards(player);
+			sendTradeRouteTokenedPiles(player);
 			setPileSizes(player, supply);
 			player.startGame();
 			clearActions(player);
@@ -648,6 +658,15 @@ public class Game implements Runnable {
 
 	private void onGained(Player player, Card card) {
 		player.cardsGainedDuringTurn.add(card);
+		if (tradeRouteTokenedPiles.contains(card)) {
+			tradeRouteTokenedPiles.remove(card);
+			tradeRouteMat++;
+			messageIndent++;
+			messageAll("the trade route token on " + card.htmlNameRaw() + " moves to the trade route mat");
+			messageIndent--;
+			sendTradeRouteToken(card);
+			sendTradeRouteMat();
+		}
 	}
 
 	private boolean canBuyCard(Player player) {
@@ -894,6 +913,39 @@ public class Game implements Runnable {
 		command.put("command", "setEmbargoTokens");
 		command.put("card", card.toString());
 		command.put("numTokens", embargoTokens.get(card));
+		for (Player player : players) {
+			player.sendCommand(command);
+		}
+	}
+
+	private void sendTradeRouteTokenedPiles(Player player) {
+		for (Card card : tradeRouteTokenedPiles) {
+			sendTradeRouteToken(player, card);
+		}
+	}
+
+	private void sendTradeRouteToken(Card card) {
+		for (Player player : players) {
+			sendTradeRouteToken(player, card);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendTradeRouteToken(Player player, Card card) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setTradeRouteToken");
+		command.put("card", card.toString());
+		command.put("hasToken", tradeRouteTokenedPiles.contains(card));
+		player.sendCommand(command);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendTradeRouteMat() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setTradeRouteMat");
+		if (tradeRouteMat != 0) {
+			command.put("contents", "$"+tradeRouteMat);
+		}
 		for (Player player : players) {
 			player.sendCommand(command);
 		}

@@ -397,18 +397,46 @@ function setPileSizes(piles) {
 }
 
 function setEmbargoTokens(card, numTokens) {
-  var cardArtDiv = supplyCardElems[card].pile.getElementsByClassName('cardArt')[0];
-  // remove previous embargo token UI element
-  while (cardArtDiv.getElementsByClassName('embargoTokens').length != 0) {
-    cardArtDiv.removeChild(cardArtDiv.getElementsByClassName('embargoTokens')[0]);
+  var pileTokensDiv = getPileTokensDiv(card);
+  // remove previous embargo tokens
+  while (pileTokensDiv.getElementsByClassName('embargoTokens').length != 0) {
+    pileTokensDiv.removeChild(pileTokensDiv.getElementsByClassName('embargoTokens')[0]);
   }
-  // add new embargo token UI element
-  var tokensDiv = document.createElement('div');
-  tokensDiv.className = 'embargoTokens';
-  var tokensLabel = document.createElement('label');
-  tokensLabel.innerHTML = numTokens.toString();
-  tokensDiv.appendChild(tokensLabel);
-  cardArtDiv.appendChild(tokensDiv);
+  // add new embargo tokens
+  var embargoTokensLabel = document.createElement('label');
+  embargoTokensLabel.className = 'embargoTokens';
+  embargoTokensLabel.innerHTML = numTokens.toString();
+  pileTokensDiv.appendChild(embargoTokensLabel);
+}
+
+function setTradeRouteToken(card, hasToken) {
+  var pileTokensDiv = getPileTokensDiv(card);
+  // remove previous trade route token
+  while (pileTokensDiv.getElementsByClassName('tradeRouteToken').length != 0) {
+    pileTokensDiv.removeChild(pileTokensDiv.getElementsByClassName('tradeRouteToken')[0]);
+  }
+  if (hasToken) {
+    // add new trade route token
+    var tradeRouteTokensLabel = document.createElement('label');
+    tradeRouteTokensLabel.className = 'tradeRouteToken';
+    tradeRouteTokensLabel.innerHTML = '1';
+    pileTokensDiv.appendChild(tradeRouteTokensLabel);
+  }
+}
+
+function getPileTokensDiv(card) {
+  var cardArtDiv = supplyCardElems[card].pile.getElementsByClassName('cardArt')[0];
+  var pileTokensDiv;
+  if (cardArtDiv.getElementsByClassName('pileTokens').length != 0) {
+    // return the existing pile tokens div
+    pileTokensDiv = cardArtDiv.getElementsByClassName('pileTokens')[0];
+  } else {
+    // create a pile tokens div if none exists
+    pileTokensDiv = document.createElement('div');
+    pileTokensDiv.className = 'pileTokens';
+    cardArtDiv.appendChild(pileTokensDiv);
+  }
+  return pileTokensDiv;
 }
 
 function setActions(actions) {
@@ -1358,6 +1386,9 @@ function executeCommand(command) {
     case 'setEmbargoTokens':
       setEmbargoTokens(command.card, command.numTokens);
       break;
+    case 'setTradeRouteToken':
+      setTradeRouteToken(command.card, command.hasToken);
+      break;
     case 'setActions':
       setActions(command.actions);
       break;
@@ -1372,6 +1403,9 @@ function executeCommand(command) {
       break;
     case 'setDiscardSize':
       setDeckSize(command.size, 'discardStatus');
+      break;
+    case 'setTradeRouteMat':
+      setArea('tradeRouteMat', 'Trade Route', command.contents);
       break;
     case 'setNativeVillageMat':
       setArea('nativeVillageMat', 'Native Village', command.contents);
