@@ -500,6 +500,21 @@ public class Player {
 		sendPlay();
 	}
 
+	public List<Card> removeAllTreasuresFromPlay() {
+		List<Card> treasures = new ArrayList<Card>();
+		for (Iterator<Card> iter = play.iterator(); iter.hasNext(); ) {
+			Card card = iter.next();
+			if (card.isTreasure) {
+				iter.remove();
+				treasures.add(card);
+			}
+		}
+		if (!treasures.isEmpty()) {
+			sendPlay();
+		}
+		return treasures;
+	}
+
 	public void removeFromDiscard(Card card, int count) {
 		for (Iterator<Card> iter = discard.iterator(); count != 0 && iter.hasNext(); ) {
 			if (iter.next() == card) {

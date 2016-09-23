@@ -373,6 +373,16 @@ public class Game implements Runnable {
 				messageIndent--;
 			}
 		}
+		// if the purchase was a mint, trash all treasures in play
+		if (card == Card.MINT) {
+			List<Card> treasures = player.removeAllTreasuresFromPlay();
+			if (!treasures.isEmpty()) {
+				messageIndent++;
+				messageAll("trashing " + Card.htmlList(treasures) + " from play");
+				messageIndent--;
+				trash.addAll(treasures);
+			}
+		}
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
@@ -1388,6 +1398,23 @@ public class Game implements Runnable {
 			return card;
 		}
 		return sendPromptChooseFromHand(player, choiceSet, "Choose a reaction", "reactionPrompt", false, "No Reaction");
+	}
+
+	/**
+	 * Returns a card that the player wants to gain a copy of, or null
+	 * if they choose to gain nothing.
+	 */
+	public Card promptChooseGainCopyOfCardInHand(Player player, Set<Card> choiceSet, String promptMessage) {
+		if (player instanceof Bot) {
+			Bot bot = (Bot) player;
+			Card card = bot.chooseGainFromSupply(choiceSet, false);
+			// check that the bot is making a valid choice
+			if (card != null && !choiceSet.contains(card)) {
+				throw new IllegalArgumentException();
+			}
+			return card;
+		}
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", false, "None");
 	}
 
 	/**
