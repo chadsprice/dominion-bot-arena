@@ -383,6 +383,14 @@ public class Game implements Runnable {
 				trash.addAll(treasures);
 			}
 		}
+		// if the purchase can be affected by goons
+		int numGoons = numberInPlay(Card.GOONS);
+		if (numGoons > 0) {
+			messageIndent++;
+			messageAll("gaining +" + numGoons + " VP because of " + Card.GOONS.htmlNameRaw());
+			player.addVictoryTokens(numGoons);
+			messageIndent--;
+		}
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
