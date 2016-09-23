@@ -117,6 +117,7 @@ public class Card {
 	public static final Card COUNTING_HOUSE = new CountingHouse();
 	public static final Card MINT = new Mint();
 	public static final Card MOUNTEBANK = new Mountebank();
+	public static final Card RABBLE = new Rabble();
 	public static final Card ROYAL_SEAL = new RoyalSeal();
 	public static final Card VENTURE = new Venture();
 	public static final Card HOARD = new Hoard();
@@ -266,6 +267,7 @@ public class Card {
 		include(COUNTING_HOUSE, PROSPERITY_SET);
 		include(MINT, PROSPERITY_SET);
 		include(MOUNTEBANK, PROSPERITY_SET);
+		include(RABBLE, PROSPERITY_SET);
 		include(ROYAL_SEAL, PROSPERITY_SET);
 		include(VENTURE, PROSPERITY_SET);
 		include(HOARD, PROSPERITY_SET);
