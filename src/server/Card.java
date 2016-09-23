@@ -114,6 +114,7 @@ public class Card {
 	public static final Card WORKERS_VILLAGE = new WorkersVillage();
 	public static final Card CITY = new City();
 	public static final Card CONTRABAND = new Contraband();
+	public static final Card COUNTING_HOUSE = new CountingHouse();
 	public static final Card ROYAL_SEAL = new RoyalSeal();
 	public static final Card VENTURE = new Venture();
 	public static final Card HOARD = new Hoard();
@@ -260,6 +261,7 @@ public class Card {
 		include(WORKERS_VILLAGE, PROSPERITY_SET);
 		include(CITY, PROSPERITY_SET);
 		include(CONTRABAND, PROSPERITY_SET);
+		include(COUNTING_HOUSE, PROSPERITY_SET);
 		include(ROYAL_SEAL, PROSPERITY_SET);
 		include(VENTURE, PROSPERITY_SET);
 		include(HOARD, PROSPERITY_SET);

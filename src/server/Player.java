@@ -361,6 +361,13 @@ public class Player {
 		sendHand();
 	}
 
+	public void addToHand(Card card, int count) {
+		for (int i = 0; i < count; i++) {
+			hand.add(card);
+		}
+		sendHand();
+	}
+
 	public void addToHand(List<Card> cards) {
 		hand.addAll(cards);
 		sendHand();
@@ -491,6 +498,16 @@ public class Player {
 	public void removeFromPlay(Card card) {
 		play.remove(card);
 		sendPlay();
+	}
+
+	public void removeFromDiscard(Card card, int count) {
+		for (Iterator<Card> iter = discard.iterator(); count != 0 && iter.hasNext(); ) {
+			if (iter.next() == card) {
+				iter.remove();
+				count--;
+			}
+		}
+		sendDiscardSize();
 	}
 
 	@SuppressWarnings("unchecked")
