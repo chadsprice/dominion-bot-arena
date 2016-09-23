@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -800,6 +801,16 @@ public class Game implements Runnable {
 		int num = 0;
 		for (Card inPlay : players.get(playerIndex).getPlay()) {
 			if (inPlay == card) {
+				num++;
+			}
+		}
+		return num;
+	}
+
+	public int numEmptySupplyPiles() {
+		int num = 0;
+		for (Entry<Card, Integer> supplyPile : supply.entrySet()) {
+			if (supplyPile.getValue() == 0) {
 				num++;
 			}
 		}

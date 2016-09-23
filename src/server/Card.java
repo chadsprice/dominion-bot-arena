@@ -112,6 +112,7 @@ public class Card {
 	public static final Card QUARRY = new Quarry();
 	public static final Card TALISMAN = new Talisman();
 	public static final Card WORKERS_VILLAGE = new WorkersVillage();
+	public static final Card CITY = new City();
 	public static final Card CONTRABAND = new Contraband();
 	public static final Card ROYAL_SEAL = new RoyalSeal();
 	public static final Card VENTURE = new Venture();
@@ -257,6 +258,7 @@ public class Card {
 		include(QUARRY, PROSPERITY_SET);
 		include(TALISMAN, PROSPERITY_SET);
 		include(WORKERS_VILLAGE, PROSPERITY_SET);
+		include(CITY, PROSPERITY_SET);
 		include(CONTRABAND, PROSPERITY_SET);
 		include(ROYAL_SEAL, PROSPERITY_SET);
 		include(VENTURE, PROSPERITY_SET);
