@@ -7,30 +7,30 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-public class Remodel extends Card {
+public class Expand extends Card {
 
-	public Remodel() {
+	public Expand() {
 		isAction = true;
 	}
 
 	@Override
 	public int cost() {
-		return 4;
+		return 7;
 	}
 
 	@Override
 	public void onPlay(Player player, Game game) {
 		// trash a card from hand
 		if (!player.getHand().isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Remodel: Choose a card to trash");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Expand: Choose a card to trash");
 			// trash card
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);
 			game.trash.add(toTrash);
-			// gain a card costing up to 2 more
-			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 2);
+			// gain a card costing up to 3 more
+			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 3);
 			if (!gainable.isEmpty()) {
-				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Remodel: Choose a card to gain");
+				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Expand: Choose a card to gain");
 				game.messageAll("gaining " + toGain.htmlName());
 				game.gain(player, toGain);
 			} else {
@@ -43,12 +43,12 @@ public class Remodel extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[]{"Trash a card from your hand.", "Gain a card costing up to $2 more than the trashed card."};
+		return new String[]{"Trash a card from your hand.", "Gain a card costing up to $3 more than the trashed card."};
 	}
 
 	@Override
 	public String toString() {
-		return "Remodel";
+		return "Expand";
 	}
 
 }

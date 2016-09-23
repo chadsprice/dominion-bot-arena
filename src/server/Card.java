@@ -125,6 +125,7 @@ public class Card {
 	public static final Card GRAND_MARKET = new GrandMarket();
 	public static final Card HOARD = new Hoard();
 	public static final Card BANK = new Bank();
+	public static final Card EXPAND = new Expand();
 	// prosperity basic cards
 	public static final Card PLATINUM = new Platinum();
 	public static final Card COLONY = new Colony();
@@ -278,6 +279,7 @@ public class Card {
 		include(GRAND_MARKET, PROSPERITY_SET);
 		include(HOARD, PROSPERITY_SET);
 		include(BANK, PROSPERITY_SET);
+		include(EXPAND, PROSPERITY_SET);
 		// prosperity basic cards
 		include(PLATINUM, PROSPERITY_BASIC_CARDS);
 		include(COLONY, PROSPERITY_BASIC_CARDS);
