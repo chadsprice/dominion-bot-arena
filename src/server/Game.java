@@ -153,9 +153,11 @@ public class Game implements Runnable {
 		contrabandProhibited = new HashSet<Card>();
 		// initialize trade route token piles
 		tradeRouteTokenedPiles = new HashSet<Card>();
-		for (Card card : supply.keySet()) {
-			if (card.isVictory) {
-				tradeRouteTokenedPiles.add(card);
+		if (supply.keySet().contains(Card.TRADE_ROUTE)) {
+			for (Card card : supply.keySet()) {
+				if (card.isVictory) {
+					tradeRouteTokenedPiles.add(card);
+				}
 			}
 		}
 		// randomize turn order
@@ -607,7 +609,7 @@ public class Game implements Runnable {
 	}
 
 	public void gain(Player player, Card card) {
-		if (royalSealGain(player, card)) {
+		if (gainRedirect(player, card)) {
 			return;
 		}
 		takeFromSupply(card);
@@ -624,7 +626,7 @@ public class Game implements Runnable {
 	}
 
 	public void gainToHand(Player player, Card card) {
-		if (royalSealGain(player, card)) {
+		if (gainRedirect(player, card)) {
 			return;
 		}
 		takeFromSupply(card);
@@ -634,7 +636,7 @@ public class Game implements Runnable {
 	}
 
 	public void gainFromTrash(Player player, Card card) {
-		if (royalSealGain(player, card)) {
+		if (gainRedirect(player, card)) {
 			return;
 		}
 		trash.remove(card);
@@ -643,13 +645,38 @@ public class Game implements Runnable {
 		onGained(player, card);
 	}
 
-	private boolean royalSealGain(Player player, Card card) {
+	private boolean gainRedirect(Player player, Card card) {
+		if (player.getHand().contains(Card.WATCHTOWER)) {
+			int choice = promptMultipleChoice(player, "You gained " + card.htmlName() + ". Reveal your " + Card.WATCHTOWER.htmlName() + "?", "reactionPrompt", new String[] {"Reveal", "Don't"});
+			if (choice == 0) {
+				messageIndent++;
+				message(player, "you reveal " + Card.WATCHTOWER.htmlName());
+				messageOpponents(player, player.username + " reveals " + Card.WATCHTOWER.htmlName());
+				choice = promptMultipleChoice(player, "Watchtower: Trash the " + card.htmlNameRaw() + " or put it on top of your deck?", "reactionPrompt", new String[] {"Trash", "Put on top of deck"});
+				if (choice == 0) {
+					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
+					messageOpponents(player, player.username + " uses his " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
+					takeFromSupply(card);
+					trash.add(card);
+					messageIndent--;
+					return true;
+				} else {
+					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
+					messageOpponents(player, player.username + " uses his " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of his deck");
+					gainToTopOfDeck(player, card);
+					messageIndent--;
+					return true;
+				}
+			}
+		}
 		if (player.getPlay().contains(Card.ROYAL_SEAL)) {
 			int choice = promptMultipleChoice(player, "Royal Seal: Put the " + card.htmlNameRaw() + " on top of your deck?", new String[] {"Yes", "No"});
 			if (choice == 0) {
+				messageIndent++;
 				message(player, "you use your " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
 				messageOpponents(player, player.username + " uses his " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of his deck");
 				gainToTopOfDeck(player, card);
+				messageIndent--;
 				return true;
 			}
 		}
