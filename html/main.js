@@ -1264,6 +1264,9 @@ function enterGame() {
   setArea('pirateShipMat');
   setArea('durations');
   setArea('inPlay');
+  // clear seaside UI
+  setArea('victoryTokenMat');
+  setArea('tradeRouteMat');
   // hide popup
   document.getElementById('cardPopupContainer').style.display = 'none';
   // hide "more"
@@ -1403,6 +1406,9 @@ function executeCommand(command) {
       break;
     case 'setDiscardSize':
       setDeckSize(command.size, 'discardStatus');
+      break;
+    case 'setVictoryTokenMat':
+      setArea('victoryTokenMat', 'Victory Tokens', command.contents);
       break;
     case 'setTradeRouteMat':
       setArea('tradeRouteMat', 'Trade Route', command.contents);

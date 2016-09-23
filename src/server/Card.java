@@ -107,6 +107,7 @@ public class Card {
 	public static final Card LOAN = new Loan();
 	public static final Card TRADE_ROUTE = new TradeRoute();
 	public static final Card WATCHTOWER = new Watchtower();
+	public static final Card MONUMENT = new Monument();
 	public static final Card QUARRY = new Quarry();
 	public static final Card TALISMAN = new Talisman();
 	public static final Card CONTRABAND = new Contraband();
@@ -249,6 +250,7 @@ public class Card {
 		include(LOAN, PROSPERITY_SET);
 		include(TRADE_ROUTE, PROSPERITY_SET);
 		include(WATCHTOWER, PROSPERITY_SET);
+		include(MONUMENT, PROSPERITY_SET);
 		include(QUARRY, PROSPERITY_SET);
 		include(TALISMAN, PROSPERITY_SET);
 		include(CONTRABAND, PROSPERITY_SET);
@@ -353,6 +355,10 @@ public class Card {
 	protected void plusCoins(Player player, Game game, int numCoins) {
 		player.addCoins(numCoins);
 		game.messageAll("getting +$" + numCoins);
+	}
+	protected void plusVictoryTokens(Player player, Game game, int numTokens) {
+		player.addVictoryTokens(numTokens);
+		game.messageAll("getting +" + numTokens + " VP");
 	}
 
 	public String htmlClass() {

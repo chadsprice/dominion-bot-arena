@@ -518,12 +518,12 @@ public class Game implements Runnable {
 		}
 		for (Player player : players) {
 			message(player, "The game has ended");
-			message(player, "You had " + reportCards.get(player).points + " victory points (" + Card.htmlList(reportCards.get(player).victoryCards) + ")");
+			message(player, "You had " + victoryPointSummary(player, reportCards.get(player)));
 			for (Player opponent : getOpponents(player)) {
 				if (opponent.forfeit) {
-					message(player, opponent.username + " forfeited, having " + reportCards.get(opponent).points + " victory points (" + Card.htmlList(reportCards.get(opponent).victoryCards) + ")");
+					message(player, opponent.username + " forfeited, having " + victoryPointSummary(opponent, reportCards.get(opponent)));
 				} else {
-					message(player, opponent.username + " had " + reportCards.get(opponent).points + " victory points (" + Card.htmlList(reportCards.get(opponent).victoryCards) + ")");
+					message(player, opponent.username + " had " + victoryPointSummary(opponent, reportCards.get(opponent)));
 				}
 			}
 			// if this player won
@@ -543,6 +543,16 @@ public class Game implements Runnable {
 				message(player, "(Tie broken by fewest turns taken)");
 			}
 		}
+	}
+
+	private String victoryPointSummary(Player player, VictoryReportCard card) {
+		String summary = card.points + " victory points (" + Card.htmlList(card.victoryCards);
+		if (player.getVictoryTokens() != 0) {
+			summary += ", " + player.getVictoryTokens() + " VP tokens)";
+		} else {
+			 summary += ")";
+		}
+		return summary;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -570,6 +580,7 @@ public class Game implements Runnable {
 					victoryCards.add(card);
 				}
 			}
+			points += player.getVictoryTokens();
 		}
 	}
 
