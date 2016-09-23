@@ -206,7 +206,7 @@ public class Game implements Runnable {
 		}
 		clearActions(player);
 		boolean givenBuyPrompt = false;
-		while (player.getBuys() > 0 && (hasUnplayedTreasure(player) || canBuyCard(player))) {
+		while (player.getBuys() > 0 && (hasUnplayedTreasure(player) || !buyableCards(player).isEmpty())) {
 			// buy phase
 			givenBuyPrompt = true;
 			BuyPhaseChoice choice = promptBuyPhase(player);
@@ -726,18 +726,6 @@ public class Game implements Runnable {
 		}
 	}
 
-	private boolean canBuyCard(Player player) {
-		int coins = player.getCoins();
-		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
-			Card card = pile.getKey();
-			Integer count = pile.getValue();
-			if (card.cost(this) <= coins && count > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private boolean hasUnplayedTreasure(Player player) {
 		for (Card card : player.getHand()) {
 			if (card.isTreasure) {
@@ -759,6 +747,10 @@ public class Game implements Runnable {
 		}
 		// remove cards prohibited by contraband
 		cards.removeAll(contrabandProhibited);
+		// remove grand market if the player has a copper in play
+		if (cards.contains(Card.GRAND_MARKET) && player.getPlay().contains(Card.COPPER)) {
+			cards.remove(Card.GRAND_MARKET);
+		}
 		return cards;
 	}
 

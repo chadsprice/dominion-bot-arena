@@ -122,6 +122,7 @@ public class Card {
 	public static final Card VAULT = new Vault();
 	public static final Card VENTURE = new Venture();
 	public static final Card GOONS = new Goons();
+	public static final Card GRAND_MARKET = new GrandMarket();
 	public static final Card HOARD = new Hoard();
 	public static final Card BANK = new Bank();
 	// prosperity basic cards
@@ -274,6 +275,7 @@ public class Card {
 		include(VAULT, PROSPERITY_SET);
 		include(VENTURE, PROSPERITY_SET);
 		include(GOONS, PROSPERITY_SET);
+		include(GRAND_MARKET, PROSPERITY_SET);
 		include(HOARD, PROSPERITY_SET);
 		include(BANK, PROSPERITY_SET);
 		// prosperity basic cards
