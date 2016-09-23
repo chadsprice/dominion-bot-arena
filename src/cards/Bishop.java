@@ -37,7 +37,7 @@ public class Bishop extends Card {
 			if (!opponent.getHand().isEmpty()) {
 				int choice = game.promptMultipleChoice(opponent, "Bishop: Trash a card from your hand?", new String[] {"Yes", "No"});
 				if (choice == 0) {
-					Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Bishop: Choose a card to trash");
+					Card toTrash = game.promptChooseTrashFromHand(opponent, new HashSet<Card>(player.getHand()), "Bishop: Choose a card to trash");
 					opponent.removeFromHand(toTrash);
 					game.trash.add(toTrash);
 					game.message(opponent, "you trash " + toTrash.htmlName());
