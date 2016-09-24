@@ -127,6 +127,7 @@ public class Card {
 	public static final Card BANK = new Bank();
 	public static final Card EXPAND = new Expand();
 	public static final Card FORGE = new Forge();
+	public static final Card KINGS_COURT = new KingsCourt();
 	// prosperity basic cards
 	public static final Card PLATINUM = new Platinum();
 	public static final Card COLONY = new Colony();
@@ -282,6 +283,7 @@ public class Card {
 		include(BANK, PROSPERITY_SET);
 		include(EXPAND, PROSPERITY_SET);
 		include(FORGE, PROSPERITY_SET);
+		include(KINGS_COURT, PROSPERITY_SET);
 		// prosperity basic cards
 		include(PLATINUM, PROSPERITY_BASIC_CARDS);
 		include(COLONY, PROSPERITY_BASIC_CARDS);

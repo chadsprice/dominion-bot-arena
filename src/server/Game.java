@@ -281,6 +281,14 @@ public class Game implements Runnable {
 				duration.durationCard.onDurationEffect(player, this, duration);
 				duration.durationCard.onDurationEffect(player, this, duration);
 				messageIndent--;
+			} else if (duration.modifier == Card.KINGS_COURT && duration.durationCard != Card.HAVEN && duration.durationCard != Card.OUTPOST && duration.durationCard != Card.TACTICIAN) {
+				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect three times");
+				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect three times");
+				messageIndent++;
+				duration.durationCard.onDurationEffect(player, this, duration);
+				duration.durationCard.onDurationEffect(player, this, duration);
+				duration.durationCard.onDurationEffect(player, this, duration);
+				messageIndent--;
 			} else {
 				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect");
 				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect");
