@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import server.Card;
@@ -22,24 +20,14 @@ public class Workshop extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// gain a card costing up to $4
-		Set<Card> gainable = new HashSet<Card>();
-		Card toGain = null;
-		for (Map.Entry<Card, Integer> entry : game.supply.entrySet()) {
-			Card card = entry.getKey();
-			int count = entry.getValue();
-			if (card.cost(game) <= 4 && count > 0) {
-				gainable.add(card);
-			}
-		}
-		if (gainable.size() == 0) {
-			game.messageAll("gaining nothing");
-			return;
+		Set<Card> gainable = game.cardsCostingAtMost(4);
+		if (!gainable.isEmpty()) {
+			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain");
+			game.messageAll("gaining " + toGain.htmlName());
+			game.gain(player, toGain);
 		} else {
-			toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain");
+			game.messageAll("gaining nothing");
 		}
-		// gain card
-		game.messageAll("gaining " + toGain.htmlName());
-		game.gain(player, toGain);
 	}
 
 	@Override

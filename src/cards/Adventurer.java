@@ -26,7 +26,7 @@ public class Adventurer extends Card {
 		// draw at most 2 treasures
 		while (treasures.size() < 2) {
 			List<Card> drawn = player.takeFromDraw(1);
-			if (drawn.size() == 0) {
+			if (drawn.isEmpty()) {
 				break;
 			}
 			Card card = drawn.get(0);
@@ -38,11 +38,11 @@ public class Adventurer extends Card {
 			}
 		}
 		// put drawn treasures in the hand
-		if (treasures.size() > 0) {
+		if (!treasures.isEmpty()) {
 			player.addToHand(treasures);
 		}
 		// put the rest in the discard
-		if (setAside.size() > 0) {
+		if (!setAside.isEmpty()) {
 			player.addToDiscard(setAside);
 		}
 		game.messageAll("revealing " + Card.htmlList(revealed));

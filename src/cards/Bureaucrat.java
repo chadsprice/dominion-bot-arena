@@ -24,26 +24,23 @@ public class Bureaucrat extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// gain a silver card
 		if (game.supply.get(Card.SILVER) > 0) {
-			game.gainToTopOfDeck(player, Card.SILVER);
 			game.message(player, "gaining " + Card.SILVER.htmlName() + " and putting it on top of your deck");
 			game.messageOpponents(player, "gaining " + Card.SILVER.htmlName() + " and putting it on top of his deck");
+			game.gainToTopOfDeck(player, Card.SILVER);
 		}
 		// each other player puts a victory card from his hand on top of his deck or reveals a hand with no victory cards
 		for (Player target : targets) {
 			Set<Card> choices = victoryCardsInHand(target);
-			if (choices.size() > 0) {
+			if (!choices.isEmpty()) {
 				Card choice = game.promptChoosePutOnDeck(target, choices, "Bureaucrat: Choose a victory card to reveal and put on top of your deck", "attackPrompt");
-				if (choice == null) {
-					choice = choices.iterator().next();
-				}
 				target.removeFromHand(choice);
 				target.putOnDraw(choice);
 				game.message(target, "You reveal " + choice.htmlName() + " and put it on top of your deck");
 				game.messageOpponents(target, target.username + " reveals " + choice.htmlName() + " and puts it on top of his deck");
 			} else {
-				String htmlHand = target.getHand().size() > 0 ? Card.htmlList(target.getHand()) : "an empty hand";
-				game.message(target, "You reveal " + htmlHand);
-				game.messageOpponents(target, target.username + " reveals " + htmlHand);
+				String handString = target.getHand().isEmpty() ? "an empty hand" : Card.htmlList(target.getHand());
+				game.message(target, "You reveal " + handString);
+				game.messageOpponents(target, target.username + " reveals " + handString);
 			}
 		}
 	}

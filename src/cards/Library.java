@@ -49,11 +49,11 @@ public class Library extends Card {
 			player.addToHand(card);
 			addedToHand.add(card);
 		}
-		if (addedToHand.size() > 0) {
+		if (!addedToHand.isEmpty()) {
 			game.message(player, "drawing " + Card.htmlList(addedToHand));
 			game.messageOpponents(player, "drawing " + Card.numCards(addedToHand.size()));
 		}
-		if (setAside.size() > 0) {
+		if (!setAside.isEmpty()) {
 			player.addToDiscard(setAside);
 		}
 	}

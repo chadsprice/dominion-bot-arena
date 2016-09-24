@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import server.Card;
@@ -30,29 +28,14 @@ public class Feast extends Card {
 			movedToTrash = true;
 		}
 		// gain a card costing up to $5
-		Set<Card> gainable = new HashSet<Card>();
-		Card toGain = null;
-		for (Map.Entry<Card, Integer> entry : game.supply.entrySet()) {
-			Card card = entry.getKey();
-			int count = entry.getValue();
-			if (card.cost() <= 5 && count > 0) {
-				gainable.add(card);
-			}
-		}
-		if (gainable.size() == 0) {
-			game.messageAll("gaining nothing");
-			return movedToTrash;
+		Set<Card> gainable = game.cardsCostingAtMost(5);
+		if (!gainable.isEmpty()) {
+			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain");
+			game.messageAll("gaining " + toGain.htmlName());
+			game.gain(player, toGain);
 		} else {
-			Card choice = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain");
-			if (choice != null) {
-				toGain = choice;
-			} else {
-				toGain = gainable.iterator().next();
-			}
+			game.messageAll("gaining nothing");
 		}
-		// gain card
-		game.messageAll("gaining " + toGain.htmlName());
-		game.gain(player, toGain);
 		return movedToTrash;
 	}
 

@@ -55,7 +55,7 @@ public class Thief extends Card {
 				}
 			}
 			// discard the non-treasures
-			if (top.size() > 0) {
+			if (!top.isEmpty()) {
 				target.addToDiscard(top);
 			}
 		}
