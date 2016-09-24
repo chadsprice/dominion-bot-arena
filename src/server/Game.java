@@ -109,6 +109,7 @@ public class Game implements Runnable {
 	public Set<Card> contrabandProhibited;
 	public Set<Card> tradeRouteTokenedPiles;
 	public int tradeRouteMat;
+	public boolean inBuyPhase;
 
 	public int messageIndent;
 
@@ -206,6 +207,7 @@ public class Game implements Runnable {
 		}
 		clearActions(player);
 		boolean givenBuyPrompt = false;
+		enterBuyPhase();
 		while (player.getBuys() > 0 && (hasUnplayedTreasure(player) || !buyableCards(player).isEmpty())) {
 			// buy phase
 			givenBuyPrompt = true;
@@ -232,6 +234,7 @@ public class Game implements Runnable {
 		}
 		clearBuys(player);
 		coppersmithsPlayedThisTurn = 0;
+		exitBuyPhase();
 		// if the player couldn't buy anything, notify them that their turn is over
 		if (!givenBuyPrompt) {
 			promptMultipleChoice(player, "There are no cards that you can buy this turn", new String[] {"End Turn"});
@@ -329,6 +332,16 @@ public class Game implements Runnable {
 		int num = 0;
 		for (Card card : players.get(playerIndex).getPlay()) {
 			if (card.isTreasure) {
+				num++;
+			}
+		}
+		return num;
+	}
+
+	public int numActionsInPlay() {
+		int num = 0;
+		for (Card card : players.get(playerIndex).getPlay()) {
+			if (card.isAction) {
 				num++;
 			}
 		}
@@ -495,6 +508,22 @@ public class Game implements Runnable {
 		return reactions;
 	}
 
+	private void enterBuyPhase() {
+		inBuyPhase = true;
+		// display current peddler cost
+		if (supply.keySet().contains(Card.PEDDLER)) {
+			sendCardCost(Card.PEDDLER);
+		}
+	}
+
+	private void exitBuyPhase() {
+		inBuyPhase = true;
+		// display current peddler cost
+		if (supply.keySet().contains(Card.PEDDLER)) {
+			sendCardCost(Card.PEDDLER);
+		}
+	}
+
 	private boolean gameOverConditionMet() {
 		// check if game has been forfeited
 		if (isGameOver) {
@@ -577,7 +606,7 @@ public class Game implements Runnable {
 		if (player.getVictoryTokens() != 0) {
 			summary += ", " + player.getVictoryTokens() + " VP tokens)";
 		} else {
-			 summary += ")";
+			summary += ")";
 		}
 		return summary;
 	}
@@ -849,6 +878,22 @@ public class Game implements Runnable {
 		for (Card card : supply.keySet()) {
 			costs.put(card.toString(), card.cost(this));
 		}
+		command.put("costs", costs);
+		player.sendCommand(command);
+	}
+
+	public void sendCardCost(Card card) {
+		for (Player player : players) {
+			sendCardCost(player, card);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void sendCardCost(Player player, Card card) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setCardCosts");
+		JSONObject costs = new JSONObject();
+		costs.put(card.toString(), card.cost(this));
 		command.put("costs", costs);
 		player.sendCommand(command);
 	}
