@@ -9,6 +9,8 @@ import java.util.Set;
 
 import org.json.simple.JSONObject;
 
+import cards.Smugglers;
+
 public class Bot extends Player {
 
 	private static final Comparator<Card> COST_ORDER_COMPARATOR = new Comparator<Card>() {
@@ -89,7 +91,10 @@ public class Bot extends Player {
 	}
 
 	private boolean isFreeCantrip(Card card) {
-		Card[] freeCantrips = new Card[] {Card.VILLAGE, Card.SPY, Card.FESTIVAL, Card.LABORATORY, Card.MARKET, Card.GREAT_HALL, Card.WISHING_WELL, Card.MINING_VILLAGE};
+		Card[] freeCantrips = new Card[] {Card.VILLAGE, Card.SPY, Card.FESTIVAL, Card.LABORATORY, Card.MARKET,
+				Card.GREAT_HALL, Card.WISHING_WELL, Card.MINING_VILLAGE,
+				Card.PEARL_DIVER, Card.CARAVAN, Card.BAZAAR, Card.TREASURY,
+				Card.WORKERS_VILLAGE, Card.CITY, Card.GRAND_MARKET, Card.PEDDLER};
 		for (Card freeCantrip : freeCantrips) {
 			if (card == freeCantrip) {
 				return true;
@@ -133,6 +138,13 @@ public class Bot extends Player {
 		} else if (card == Card.TRADING_POST) {
 			// Trading Post has no benefit if you cannot trash two cards from your hand (after playing it)
 			return getHand().size() < 3;
+		} else if (card == Card.AMBASSADOR) {
+			// Ambassador has no benefit if you do not want to trash anything
+			return wantToTrash(new HashSet<Card>(getHand())) == null;
+		} else if (card == Card.SMUGGLERS) {
+			// Smugglers has no benefit if you can't smuggle anything you want
+			Smugglers SMUGGLERS = (Smugglers) Card.SMUGGLERS;
+			return chooseGainFromSupply(SMUGGLERS.smuggleable(this, game), false) == null;
 		}
 		return false;
 	}
