@@ -121,6 +121,15 @@ public class Bot extends Player {
 		} else if (card == Card.MONEYLENDER) {
 			// Moneylender has no benefit if you have no copper
 			return !getHand().contains(Card.COPPER);
+		} else if (card == Card.THRONE_ROOM) {
+			// Throne Room has no benefit if you have no other actions
+			int numActions = 0;
+			for (Card cardInHand : getHand()) {
+				if (cardInHand.isAction) {
+					numActions++;
+				}
+			}
+			return numActions >= 2;
 		} else if (card == Card.LIBRARY) {
 			// Library has no benefit if you already have more than 7 cards in hand
 			return getHand().size() > 7;
@@ -145,6 +154,33 @@ public class Bot extends Player {
 			// Smugglers has no benefit if you can't smuggle anything you want
 			Smugglers SMUGGLERS = (Smugglers) Card.SMUGGLERS;
 			return chooseGainFromSupply(SMUGGLERS.smuggleable(this, game), false) == null;
+		} else if (card == Card.TREASURE_MAP) {
+			// Treasure map has no benefit if you don't have another treasure map to trash
+			int numTreasureMaps = 0;
+			for (Card cardInHand : getHand()) {
+				if (cardInHand == Card.TREASURE_MAP) {
+					numTreasureMaps++;
+				}
+			}
+			return numTreasureMaps < 2;
+		} else if (card == Card.OUTPOST) {
+			// Outpost has no benefit if you are already getting an extra turn, or if this is an extra turn
+			return hasExtraTurn() || isTakingExtraTurn();
+		} else if (card == Card.TACTICIAN) {
+			// Tactician has no benefit if you have no other cards to discard
+			return getHand().size() == 1;
+		} else if (card == Card.WATCHTOWER) {
+			// Watchtower has no benefit if you have 6 or more cards in hand (after playing it)
+			return getHand().size() > 6;
+		} else if (card == Card.COUNTING_HOUSE) {
+			// Counting house has no benefit if you have no copper in your discard
+			return !getDiscard().contains(Card.COPPER);
+		} else if (card == Card.MINT) {
+			// Mint has no benefit if you have no treasure in your hand (exactly like Mine)
+			return hasNoBenefit(Card.MINE);
+		} else if (card == Card.KINGS_COURT) {
+			// King's Court has no benefit if you have no other actions (exactly like Throne Room)
+			return hasNoBenefit(Card.THRONE_ROOM);
 		}
 		return false;
 	}
