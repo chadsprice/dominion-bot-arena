@@ -277,11 +277,51 @@ public class Player {
 		setCoins(coins + toAdd);
 	}
 
+	public int getUsableCoins() {
+		if (!isAutoplayingTreasures()) {
+			return getCoins();
+		} else {
+			// start with current coins
+			int usableCoins = getCoins();
+			int numTreasuresInPlay = 0;
+			int numBanks = 0;
+			// add the value of all unplayed non-bank treasures
+			for (Card card : hand) {
+				if (card == Card.BANK) {
+					numBanks++;
+				} else if (card.isTreasure) {
+					usableCoins += card.treasureValue(game);
+					numTreasuresInPlay++;
+				}
+			}
+			// add the number of treasures currently in play to the number of non-bank treasures
+			for (Card card : play) {
+				if (card.isTreasure) {
+					numTreasuresInPlay++;
+				}
+			}
+			// add the value of all banks
+			while (numBanks != 0) {
+				usableCoins += (numTreasuresInPlay + 1);
+				numBanks--;
+				numTreasuresInPlay++;
+			}
+			return usableCoins;
+		}
+	}
+
+	public boolean isAutoplayingTreasures() {
+		return !hand.contains(Card.QUARRY) && !hand.contains(Card.CONTRABAND) && !hand.contains(Card.VENTURE) && !(game.supply.containsKey(Card.GRAND_MARKET) && hand.contains(Card.COPPER));
+	}
+
 	@SuppressWarnings("unchecked")
 	public void sendCoins() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setCoins");
-		command.put("coins", "$" + Integer.toString(getCoins()));
+		command.put("coins", "$" + Integer.toString(getUsableCoins()));
+		if (!isAutoplayingTreasures()) {
+			command.put("notAutoplayingTreasures", true);
+		}
 		sendCommand(command);
 	}
 

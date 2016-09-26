@@ -335,6 +335,10 @@ body {
   text-align: center;
 }
 
+.notAutoplayingTreasures {
+  color: #cc0000;
+}
+
 #optionsButton {
   margin-left: 1em;
 }

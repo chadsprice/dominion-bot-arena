@@ -180,8 +180,8 @@ public class Game implements Runnable {
 	private void takeTurn(Player player) {
 		player.startNewTurn();
 		if (cardCostReduction > 0 || quarryPlayedLastTurn) {
-			setCardCostReduction(0);
 			quarryPlayedLastTurn = false;
+			setCardCostReduction(0);
 		}
 		actionsPlayedThisTurn = 0;
 		boughtVictoryCardThisTurn = false;
@@ -213,6 +213,14 @@ public class Game implements Runnable {
 			givenBuyPrompt = true;
 			BuyPhaseChoice choice = promptBuyPhase(player);
 			if (choice.toBuy != null) {
+				// autoplay treasures
+				if (player.isAutoplayingTreasures()) {
+					playAllTreasures(player);
+					// if the coin prediction was wrong and we let the user choose something that they couldn't actually buy 
+					if (!buyableCards(player).contains(choice.toBuy)) {
+						throw new IllegalStateException();
+					}
+				}
 				// gain purchased card
 				message(player, "You purchase " + choice.toBuy.htmlName());
 				messageOpponents(player, player.username + " purchases " + choice.toBuy.htmlName());
@@ -774,11 +782,11 @@ public class Game implements Runnable {
 
 	private Set<Card> buyableCards(Player player) {
 		Set<Card> cards = new HashSet<Card>();
-		int coins = player.getCoins();
+		int usableCoins = player.getUsableCoins();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();
-			if (card.cost(this) <= coins && count > 0) {
+			if (card.cost(this) <= usableCoins && count > 0) {
 				cards.add(card);
 			}
 		}

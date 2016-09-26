@@ -459,7 +459,10 @@ function setBuys(buys) {
   }
 }
 
-function setCoins(coins) {
+function setCoins(coins, notAutoplayingTreasures) {
+  if (notAutoplayingTreasures) {
+    coins = '<span class="notAutoplayingTreasures">' + coins + '</span>';
+  }
   document.getElementById('numCoins').innerHTML = coins;
 }
 
@@ -1399,7 +1402,7 @@ function executeCommand(command) {
       setBuys(command.buys);
       break;
     case 'setCoins':
-      setCoins(command.coins);
+      setCoins(command.coins, command.notAutoplayingTreasures);
       break;
     case 'setDrawSize':
       setDeckSize(command.size, 'drawStatus');
