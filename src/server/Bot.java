@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.json.simple.JSONObject;
@@ -37,18 +38,102 @@ public class Bot extends Player {
 	}
 
 	public Card chooseGainFromSupply(Set<Card> choiceSet, boolean isMandatory) {
-		if (choiceSet.contains(Card.PROVINCE)) {
-			return Card.PROVINCE;
-		} else if (choiceSet.contains(Card.DUCHY) && game.supply.get(Card.PROVINCE) <= 2) {
-			return Card.DUCHY;
-		} else if (choiceSet.contains(Card.GOLD)) {
-			return Card.GOLD;
-		} else if (choiceSet.contains(Card.SILVER)) {
-			return Card.SILVER;
-		} else if (choiceSet.contains(Card.COPPER)) {
-			return Card.COPPER;
-		} else {
+		// choose the first priority card that is available
+		List<Card> priority = gainPriority();
+		for (Card card : priority) {
+			if (choiceSet.contains(card)) {
+				return card;
+			}
+		}
+		// none of the priority cards are available
+		if (isMandatory) {
 			return choiceSet.iterator().next();
+		} else {
+			return null;
+		}
+	}
+
+	public List<Card> gainPriority() {
+		// based on WanderingWinder's "Big Money" bot
+		List<Card> priority = new ArrayList<Card>();
+		if (game.supply.containsKey(Card.COLONY)) {
+			if (getTotalMoney() > 32) {
+				priority.add(Card.COLONY);
+			}
+			if (gainsToEndGame() <= 6) {
+				priority.add(Card.PROVINCE);
+			}
+			if (gainsToEndGame() <= 5) {
+				priority.add(Card.DUCHY);
+			}
+			if (gainsToEndGame() <= 2) {
+				priority.add(Card.ESTATE);
+			}
+			priority.add(Card.PLATINUM);
+			if (countInSupply(Card.COLONY) <= 7) {
+				priority.add(Card.PROVINCE);
+			}
+			priority.add(Card.GOLD);
+			if (gainsToEndGame() <= 6) {
+				priority.add(Card.DUCHY);
+			}
+			priority.add(Card.SILVER);
+			if (gainsToEndGame() <= 2) {
+				priority.add(Card.COPPER);
+			}
+		} else {
+			if (getTotalMoney() > 18) {
+				priority.add(Card.PROVINCE);
+			}
+			if (gainsToEndGame() <= 4) {
+				priority.add(Card.DUCHY);
+			}
+			if (gainsToEndGame() <= 2) {
+				priority.add(Card.ESTATE);
+			}
+			priority.add(Card.GOLD);
+			if (gainsToEndGame() <= 6) {
+				priority.add(Card.DUCHY);
+			}
+			priority.add(Card.SILVER);
+		}
+		return priority;
+	}
+
+	public int getTotalMoney() {
+		int totalMoney = 0;
+		for (Card card : getDeck()) {
+			if (card.isTreasure) {
+				totalMoney += card.treasureValue(game);
+			}
+		}
+		return totalMoney;
+	}
+
+	public int gainsToEndGame() {
+		// get the number of cards in the smallest 3 piles
+		List<Integer> piles = new ArrayList<Integer>();
+		for (Entry<Card, Integer> pile : game.supply.entrySet()) {
+			piles.add(pile.getValue());
+		}
+		Collections.sort(piles);
+		int gains = 0;
+		for (int i = 0; i < 3; i++) {
+			gains += piles.get(i);
+		}
+		// compare that to the number of provinces and colonies remaining
+		gains = Math.min(gains, game.supply.get(Card.PROVINCE));
+		if (game.supply.containsKey(Card.COLONY)) {
+			gains = Math.min(gains, game.supply.get(Card.COLONY));
+		}
+		return gains;
+	}
+
+	public int countInSupply(Card card) {
+		if (!game.supply.containsKey(card)) {
+			return 0;
+		} else {
+			return game.supply.get(card);
 		}
 	}
 
