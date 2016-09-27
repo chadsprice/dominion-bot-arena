@@ -10,7 +10,7 @@ public class MimicBot extends Bot {
 
 	public MimicBot() {
 		super();
-		username = "<span class=\"botName\">Mimic[Bot]</span>";
+		setName("Mimic");
 	}
 
 	public void setStrategy(List<Card> gainStrategy) {

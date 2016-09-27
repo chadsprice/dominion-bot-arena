@@ -1164,6 +1164,7 @@ public class Game implements Runnable {
 		BuyPhaseChoice choice = new BuyPhaseChoice();
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
+			// have the bot automatically play all of its treasures at the beginning of its turn
 			if (!canPlay.isEmpty()) {
 				choice.isPlayingAllTreasures = true;
 				return choice;
@@ -1173,7 +1174,12 @@ public class Game implements Runnable {
 			if (card != null && !canBuy.contains(card)) {
 				throw new IllegalStateException();
 			}
-			choice.toBuy = card;
+			// if the bot doesn't want to buy anything, end its turn
+			if (card == null) {
+				choice.isEndingTurn = true;
+			} else {
+				choice.toBuy = card;
+			}
 			return choice;
 		}
 		// send prompt

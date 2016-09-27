@@ -30,7 +30,11 @@ public class Bot extends Player {
 
 	public Bot() {
 		super(null);
-		username = "<span class=\"botName\">BigMoney[Bot]</span>";
+		setName("BigMoney");
+	}
+
+	protected void setName(String name) {
+		username = "<span class=\"botName\">" + name + "[Bot]</span>";
 	}
 
 	public Card chooseBuy(Set<Card> choiceSet) {
@@ -100,7 +104,7 @@ public class Bot extends Player {
 		return priority;
 	}
 
-	public int getTotalMoney() {
+	protected int getTotalMoney() {
 		int totalMoney = 0;
 		for (Card card : getDeck()) {
 			if (card.isTreasure) {
@@ -110,7 +114,7 @@ public class Bot extends Player {
 		return totalMoney;
 	}
 
-	public int gainsToEndGame() {
+	protected int gainsToEndGame() {
 		// get the number of cards in the smallest 3 piles
 		List<Integer> piles = new ArrayList<Integer>();
 		for (Entry<Card, Integer> pile : game.supply.entrySet()) {
@@ -129,12 +133,27 @@ public class Bot extends Player {
 		return gains;
 	}
 
-	public int countInSupply(Card card) {
+	protected int countInSupply(Card card) {
 		if (!game.supply.containsKey(card)) {
 			return 0;
 		} else {
 			return game.supply.get(card);
 		}
+	}
+
+	protected int countInDeck(Card card) {
+		int count = 0;
+		for (Card cardInDeck : getDeck()) {
+			if (cardInDeck == card) {
+				count++;
+			}
+		}
+		return count;
+	}
+
+	public Set<Card> required() {
+		// BigMoney requires no non-basic cards
+		return new HashSet<Card>();
 	}
 
 	public Card chooseOpponentGainFromSupply(Set<Card> choiceSet) {

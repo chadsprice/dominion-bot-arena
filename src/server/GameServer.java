@@ -396,14 +396,16 @@ public class GameServer {
 			botNames.add((String) botName);
 		}
 		if (botNames.size() >= numPlayers) {
-			customGameError(player, "Too many bots.");
+			customGameError(player, "Increase the number of players to make room for yourself!");
 			return;
 		}
 		List<Player> bots = new ArrayList<Player>();
 		for (String botName : botNames) {
 			if ("Mimic".equals(botName)) {
 				bots.add(new MimicBot());
-			} else {
+			} else if ("BankWharf".equals(botName)) {
+				bots.add(new BankWharfBot());
+			} else { // "BigMoney"
 				bots.add(new Bot());
 			}
 		}
@@ -749,6 +751,7 @@ public class GameServer {
 		// send all available bots
 		JSONArray availableBots = new JSONArray();
 		availableBots.add("BigMoney");
+		availableBots.add("BankWharf");
 		availableBots.add("Mimic");
 		// send command to enter lobby
 		JSONObject command = new JSONObject();
@@ -840,10 +843,49 @@ public class GameServer {
 
 	private void setupGame(Game game, Set<Set<Card>> sets, Set<Card> required, Set<Card> forbidden, Set<Player> players) {
 		if (containsMimicBot(players)) {
-			boolean successful = setupGameWithMimicBot(game, players);
-			if (successful) {
-				return;
+			// if there is no available strategy, replace all Mimic bots
+			if (winningStrategies.keySet().isEmpty()) {
+				int numToReplace = 0;
+				for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
+					if (iter.next() instanceof MimicBot) {
+						iter.remove();
+						numToReplace++;
+					}
+				}
+				for (int n = 0; n < numToReplace; n++) {
+					Bot bot = new Bot();
+					bot.game = game;
+					players.add(bot);
+				}
+			} else {
+				required = winningStrategies.keySet().iterator().next();
+				for (Player player : players) {
+					if (player instanceof MimicBot) {
+						MimicBot mimicBot = (MimicBot) player;
+						mimicBot.setStrategy(winningStrategies.get(required));
+					}
+				}
 			}
+		}
+		// replace any bot that cannot have its required cards
+		int numToReplace = 0;
+		for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
+			Player next = iter.next(); 
+			if (next instanceof Bot) {
+				Set<Card> requiredForBot = new HashSet<Card>(required);
+				requiredForBot.addAll(((Bot) next).required());
+				if (requiredForBot.size() > 10) {
+					iter.remove();
+					numToReplace++;
+				} else {
+					required = requiredForBot;
+				}
+			}
+		}
+		for (int n = 0; n < numToReplace; n++) {
+			Bot bot = new Bot();
+			bot.game = game;
+			players.add(bot);
 		}
 		// start with the required cards
 		Set<Card> chosen = required;
@@ -896,44 +938,6 @@ public class GameServer {
 		}
 		// initialize the game with this kingdom and basic set
 		game.init(this, players, chosen, basicSet);
-	}
-
-	private boolean setupGameWithMimicBot(Game game, Set<Player> players) {
-		// if there are no strategies to mimic, replace all of the mimic bots with big money
-		if (winningStrategies.keySet().isEmpty()) {
-			int numToReplace = 0;
-			for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
-				if (iter.next() instanceof MimicBot) {
-					iter.remove();
-					numToReplace++;
-				}
-			}
-			for (int n = 0; n < numToReplace; n++) {
-				Bot bot = new Bot();
-				bot.game = game;
-				players.add(bot);
-			}
-			return false;
-		}
-		Set<Card> kingdomSet = winningStrategies.keySet().iterator().next();
-		for (Player player : players) {
-			if (player instanceof MimicBot) {
-				MimicBot mimicBot = (MimicBot) player;
-				mimicBot.setStrategy(winningStrategies.get(kingdomSet));
-			}
-		}
-		// basic cards
-		Set<Card> basicSet = new HashSet<Card>();
-		basicSet.add(Card.PROVINCE);
-		basicSet.add(Card.DUCHY);
-		basicSet.add(Card.ESTATE);
-		basicSet.add(Card.GOLD);
-		basicSet.add(Card.SILVER);
-		basicSet.add(Card.COPPER);
-		basicSet.add(Card.CURSE);
-		// initialize the the necessary kingdom and basic set
-		game.init(this, players, kingdomSet, basicSet);
-		return true;
 	}
 
 	private boolean containsMimicBot(Set<Player> players) {
