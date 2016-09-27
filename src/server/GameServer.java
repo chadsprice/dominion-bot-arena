@@ -405,6 +405,8 @@ public class GameServer {
 				bots.add(new MimicBot());
 			} else if ("BankWharf".equals(botName)) {
 				bots.add(new BankWharfBot());
+			} else if ("BM Masquerade".equals(botName)) {
+				bots.add(new BmMasqueradeBot());
 			} else { // "BigMoney"
 				bots.add(new Bot());
 			}
@@ -752,6 +754,7 @@ public class GameServer {
 		JSONArray availableBots = new JSONArray();
 		availableBots.add("BigMoney");
 		availableBots.add("BankWharf");
+		availableBots.add("BM Masquerade");
 		availableBots.add("Mimic");
 		// send command to enter lobby
 		JSONObject command = new JSONObject();
