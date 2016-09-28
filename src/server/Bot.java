@@ -380,15 +380,24 @@ public class Bot extends Player {
 	}
 
 	public Card wantToTrash(Set<Card> choiceSet) {
-		if (choiceSet.contains(Card.CURSE)) {
-			return Card.CURSE;
-		} else if (choiceSet.contains(Card.ESTATE)) {
-			return Card.ESTATE;
-		} else if (choiceSet.contains(Card.COPPER)) {
-			return Card.COPPER;
-		} else {
-			return null;
+		for (Card card : trashPriority()) {
+			if (choiceSet.contains(card)) {
+				return card;
+			}
 		}
+		return null;
+	}
+
+	public List<Card> trashPriority() {
+		List<Card> priority = new ArrayList<Card>();
+		priority.add(Card.CURSE);
+		if (gainsToEndGame() > 4) {
+			priority.add(Card.ESTATE);
+		}
+		if (getTotalMoney() > 4) {
+			priority.add(Card.COPPER);
+		}
+		return priority;
 	}
 
 	public List<Card> putNumberOnDeck(int number) {

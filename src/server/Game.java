@@ -541,6 +541,10 @@ public class Game implements Runnable {
 		if (supply.get(Card.PROVINCE) == 0) {
 			return true;
 		}
+		// check if colony pile is empty
+		if (supply.containsKey(Card.COLONY) && supply.get(Card.COLONY) == 0) {
+			return true;
+		}
 		// check if three supply piles are empty
 		int emptyPiles = 0;
 		for (Integer count : supply.values()) {
