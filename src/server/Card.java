@@ -38,6 +38,7 @@ public class Card {
 	public static final Card LABORATORY = new Laboratory();
 	public static final Card LIBRARY = new Library();
 	public static final Card MARKET = new Market();
+	public static final Card MERCHANT = new Merchant();
 	public static final Card MILITIA = new Militia();
 	public static final Card MINE = new Mine();
 	public static final Card MOAT = new Moat();
@@ -196,6 +197,7 @@ public class Card {
 		include(LABORATORY, BASE_SET);
 		include(LIBRARY, BASE_SET);
 		include(MARKET, BASE_SET);
+		include(MERCHANT, BASE_SET);
 		include(MILITIA, BASE_SET);
 		include(MINE, BASE_SET);
 		include(MOAT, BASE_SET);

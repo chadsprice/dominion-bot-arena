@@ -306,6 +306,10 @@ public class Player {
 				numBanks--;
 				numTreasuresInPlay++;
 			}
+			// handle merchant +$1 on first silver
+			if (play.contains(Card.MERCHANT) && !game.playedSilverThisTurn && hand.contains(Card.SILVER)) {
+				usableCoins += numberInPlay(Card.MERCHANT);
+			}
 			return usableCoins;
 		}
 	}
@@ -528,6 +532,16 @@ public class Player {
 
 	public List<Card> getPlay() {
 		return play;
+	}
+
+	public int numberInPlay(Card card) {
+		int num = 0;
+		for (Card inPlay : play) {
+			if (inPlay == card) {
+				num++;
+			}
+		}
+		return num;
 	}
 
 	public void addToPlay(Card card) {

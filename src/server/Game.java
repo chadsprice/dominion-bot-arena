@@ -100,6 +100,7 @@ public class Game implements Runnable {
 	public boolean isGameOver;
 
 	// various bits of game state required by individual card rules
+	public boolean playedSilverThisTurn;
 	public int cardCostReduction;
 	public boolean quarryPlayedLastTurn;
 	public int actionsPlayedThisTurn;
@@ -183,6 +184,7 @@ public class Game implements Runnable {
 			quarryPlayedLastTurn = false;
 			setCardCostReduction(0);
 		}
+		playedSilverThisTurn = false;
 		actionsPlayedThisTurn = 0;
 		boughtVictoryCardThisTurn = false;
 		contrabandProhibited.clear();
@@ -857,13 +859,7 @@ public class Game implements Runnable {
 	}
 
 	public int numberInPlay(Card card) {
-		int num = 0;
-		for (Card inPlay : players.get(playerIndex).getPlay()) {
-			if (inPlay == card) {
-				num++;
-			}
-		}
-		return num;
+		return players.get(playerIndex).numberInPlay(card);
 	}
 
 	public int numEmptySupplyPiles() {

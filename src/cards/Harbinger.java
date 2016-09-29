@@ -40,8 +40,8 @@ public class Harbinger extends Card {
                 game.messageAll("putting nothing from his discard on top of his deck");
             }
         } else {
-            game.message(player, "but your discard is empty");
-            game.messageOpponents(player, "but his discard is empty");
+            game.message(player, "your discard is empty");
+            game.messageOpponents(player, "his discard is empty");
         }
     }
 
