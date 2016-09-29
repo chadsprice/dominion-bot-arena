@@ -34,6 +34,7 @@ public class Card {
 	public static final Card FEAST = new Feast();
 	public static final Card FESTIVAL = new Festival();
 	public static final Card GARDENS = new Gardens();
+	public static final Card HARBINGER = new Harbinger();
 	public static final Card LABORATORY = new Laboratory();
 	public static final Card LIBRARY = new Library();
 	public static final Card MARKET = new Market();
@@ -191,6 +192,7 @@ public class Card {
 		include(FEAST, BASE_SET);
 		include(FESTIVAL, BASE_SET);
 		include(GARDENS, BASE_SET);
+		include(HARBINGER, BASE_SET);
 		include(LABORATORY, BASE_SET);
 		include(LIBRARY, BASE_SET);
 		include(MARKET, BASE_SET);
