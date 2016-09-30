@@ -43,6 +43,7 @@ public class Card {
 	public static final Card MINE = new Mine();
 	public static final Card MOAT = new Moat();
 	public static final Card MONEYLENDER = new Moneylender();
+	public static final Card POACHER = new Poacher();
 	public static final Card REMODEL = new Remodel();
 	public static final Card SMITHY = new Smithy();
 	public static final Card SPY = new Spy();
@@ -203,6 +204,7 @@ public class Card {
 		include(MINE, BASE_SET);
 		include(MOAT, BASE_SET);
 		include(MONEYLENDER, BASE_SET);
+		include(POACHER, BASE_SET);
 		include(REMODEL, BASE_SET);
 		include(SMITHY, BASE_SET);
 		include(SPY, BASE_SET);
