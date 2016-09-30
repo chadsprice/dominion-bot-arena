@@ -48,6 +48,7 @@ public class Card {
 	public static final Card SPY = new Spy();
 	public static final Card THIEF = new Thief();
 	public static final Card THRONE_ROOM = new ThroneRoom();
+	public static final Card VASSAL = new Vassal();
 	public static final Card VILLAGE = new Village();
 	public static final Card WITCH = new Witch();
 	public static final Card WOODCUTTER = new Woodcutter();
@@ -207,6 +208,7 @@ public class Card {
 		include(SPY, BASE_SET);
 		include(THIEF, BASE_SET);
 		include(THRONE_ROOM, BASE_SET);
+		include(VASSAL, BASE_SET);
 		include(VILLAGE, BASE_SET);
 		include(WITCH, BASE_SET);
 		include(WOODCUTTER, BASE_SET);
