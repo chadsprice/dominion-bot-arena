@@ -26,6 +26,7 @@ public class Card {
 
 	// base set
 	public static final Card ADVENTURER = new Adventurer();
+	public static final Card ARTISAN = new Artisan();
 	public static final Card BANDIT = new Bandit();
 	public static final Card BUREAUCRAT = new Bureaucrat();
 	public static final Card CELLAR = new Cellar();
@@ -189,6 +190,7 @@ public class Card {
 
 		// base set
 		include(ADVENTURER, BASE_SET);
+		include(ARTISAN, BASE_SET);
 		include(BANDIT, BASE_SET);
 		include(BUREAUCRAT, BASE_SET);
 		include(CELLAR, BASE_SET);
