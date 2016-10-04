@@ -46,6 +46,7 @@ public class Card {
 	public static final Card MONEYLENDER = new Moneylender();
 	public static final Card POACHER = new Poacher();
 	public static final Card REMODEL = new Remodel();
+	public static final Card SENTRY = new Sentry();
 	public static final Card SMITHY = new Smithy();
 	public static final Card SPY = new Spy();
 	public static final Card THIEF = new Thief();
@@ -208,6 +209,7 @@ public class Card {
 		include(MONEYLENDER, BASE_SET);
 		include(POACHER, BASE_SET);
 		include(REMODEL, BASE_SET);
+		include(SENTRY, BASE_SET);
 		include(SMITHY, BASE_SET);
 		include(SPY, BASE_SET);
 		include(THIEF, BASE_SET);
