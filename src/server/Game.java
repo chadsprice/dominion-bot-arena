@@ -721,7 +721,7 @@ public class Game implements Runnable {
 			return;
 		}
 		trash.remove(card);
-		// put card in player's hand
+		// put card in player's discard
 		player.addToDiscard(card);
 		onGained(player, card);
 	}
