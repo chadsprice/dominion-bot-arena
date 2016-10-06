@@ -498,8 +498,10 @@ public class Game implements Runnable {
 					// update possible reactions
 					reactions = getAttackReactions(player);
 					// don't allow the same reaction to be played twice in a row
-					// (they are designed so that playing them twice in a row gives no new benefit)
-					reactions.remove(choice);
+					// (they are designed so that playing them twice in a row gives no new benefit, with the exception of Diplomat)
+					if (choice != Card.DIPLOMAT) {
+						reactions.remove(choice);
+					}
 				} else {
 					break;
 				}
@@ -514,6 +516,10 @@ public class Game implements Runnable {
 			if (card.isAttackReaction) {
 				reactions.add(card);
 			}
+		}
+		// diplomat requires a hand of 5 or more cards in order to be revealable
+		if (player.getHand().size() < 5) {
+			reactions.remove(Card.DIPLOMAT);
 		}
 		return reactions;
 	}
