@@ -463,7 +463,11 @@ public class Player {
 	}
 
 	public void putOnDraw(Card card) {
-		draw.add(0, card);
+		putInDraw(card, 0);
+	}
+
+	public void putInDraw(Card card, int index) {
+		draw.add(index, card);
 		sendDrawSize();
 	}
 

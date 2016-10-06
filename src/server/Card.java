@@ -78,6 +78,7 @@ public class Card {
 	public static final Card SABOTEUR = new Saboteur();
 	public static final Card SCOUT = new Scout();
 	public static final Card SECRET_CHAMBER = new SecretChamber();
+	public static final Card SECRET_PASSAGE = new SecretPassage();
 	public static final Card SHANTY_TOWN = new ShantyTown();
 	public static final Card STEWARD = new Steward();
 	public static final Card SWINDLER = new Swindler();
@@ -245,6 +246,7 @@ public class Card {
 		include(SABOTEUR, INTRIGUE_SET);
 		include(SCOUT, INTRIGUE_SET);
 		include(SECRET_CHAMBER, INTRIGUE_SET);
+		include(SECRET_PASSAGE, INTRIGUE_SET);
 		include(SHANTY_TOWN, INTRIGUE_SET);
 		include(STEWARD, INTRIGUE_SET);
 		include(SWINDLER, INTRIGUE_SET);
