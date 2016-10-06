@@ -33,7 +33,7 @@ public class Sentry extends Card {
                 int choice = game.promptMultipleChoice(player, "Sentry: You draw " + Card.htmlList(top) + ". What will you do with the " + card.htmlNameRaw() + "?", new String[] {"Trash", "Discard", "Put back"});
                 if (choice == 0) {
                     game.messageAll("trashing " + card.htmlName());
-                    game.trash.add(card);
+                    game.addToTrash(card);
                 } else if (choice == 1) {
                     game.messageAll("discarding " + card.htmlName());
                     player.addToDiscard(card);

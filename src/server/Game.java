@@ -95,7 +95,7 @@ public class Game implements Runnable {
 	public List<Card> kingdomCards;
 	public List<Card> basicCards;
 	public Map<Card, Integer> supply;
-	public List<Card> trash;
+	private List<Card> trash;
 
 	public boolean isGameOver;
 
@@ -411,7 +411,7 @@ public class Game implements Runnable {
 				messageIndent++;
 				messageAll("trashing " + Card.htmlList(treasures) + " from play");
 				messageIndent--;
-				trash.addAll(treasures);
+				addToTrash(treasures);
 			}
 		}
 		// if the purchase can be affected by goons
@@ -720,7 +720,7 @@ public class Game implements Runnable {
 		if (gainRedirect(player, card)) {
 			return;
 		}
-		trash.remove(card);
+		removeFromTrash(card);
 		// put card in player's discard
 		player.addToDiscard(card);
 		onGained(player, card);
@@ -738,7 +738,7 @@ public class Game implements Runnable {
 					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					messageOpponents(player, player.username + " uses his " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					takeFromSupply(card);
-					trash.add(card);
+					addToTrash(card);
 					messageIndent--;
 					return true;
 				} else {
@@ -774,6 +774,39 @@ public class Game implements Runnable {
 			messageIndent--;
 			sendTradeRouteToken(card);
 			sendTradeRouteMat();
+		}
+	}
+
+	public List<Card> getTrash() {
+		return trash;
+	}
+
+	public void addToTrash(Card card) {
+		trash.add(card);
+		sendTrash();
+	}
+
+	public void addToTrash(List<Card> cards) {
+		trash.addAll(cards);
+		sendTrash();
+	}
+
+	public void removeFromTrash(Card card) {
+		trash.remove(card);
+		sendTrash();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendTrash() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setTrash");
+		String trashString = "";
+		if (!trash.isEmpty()) {
+			trashString = Card.htmlList(trash);
+		}
+		command.put("contents", trashString);
+		for (Player player : players) {
+			player.sendCommand(command);
 		}
 	}
 

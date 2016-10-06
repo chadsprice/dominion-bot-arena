@@ -22,7 +22,7 @@ public class TradingPost extends Card {
 		if (!player.getHand().isEmpty()) {
 			List<Card> toTrash = game.promptTrashNumber(player, 2, "Trading Post");
 			player.removeFromHand(toTrash);
-			game.trash.addAll(toTrash);
+			game.addToTrash(toTrash);
 			if (toTrash.size() == 2 && game.supply.get(Card.SILVER) > 0) {
 				game.message(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into your hand");
 				game.messageOpponents(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + ", putting it into his hand");

@@ -27,7 +27,7 @@ public class Swindler extends Card {
 			List<Card> drawn = target.takeFromDraw(1);
 			if (drawn.size() == 1) {
 				Card toTrash = drawn.get(0);
-				game.trash.add(toTrash);
+				game.addToTrash(toTrash);
 				game.message(target, "You reveal and trash " + toTrash.htmlName());
 				game.messageOpponents(target, target.username + " reveals and trashes " + toTrash.htmlName());
 				int cost = toTrash.cost(game);

@@ -41,7 +41,7 @@ public class Saboteur extends Card {
 				// trash the card
 				game.message(target, "You reveal " + Card.htmlList(revealed) + ", trashing the " + toTrash.htmlNameRaw());
 				game.messageOpponents(target, target.username + " reveals " + Card.htmlList(revealed) + ", trashing the " + toTrash.htmlNameRaw());
-				game.trash.add(toTrash);
+				game.addToTrash(toTrash);
 				// discard the rest
 				revealed.remove(toTrash);
 				target.addToDiscard(revealed);

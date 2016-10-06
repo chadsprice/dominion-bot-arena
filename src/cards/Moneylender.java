@@ -21,7 +21,7 @@ public class Moneylender extends Card {
 		if (player.getHand().contains(Card.COPPER)) {
 			// trash it
 			player.removeFromHand(Card.COPPER);
-			game.trash.add(Card.COPPER);
+			game.addToTrash(Card.COPPER);
 			// +$3
 			player.addCoins(3);
 			game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");

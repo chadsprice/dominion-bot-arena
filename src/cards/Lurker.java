@@ -26,14 +26,13 @@ public class Lurker extends Card {
             if (!trashable.isEmpty()) {
                 Card toTrash = game.promptChooseGainFromSupply(player, trashable, "Lurker: Choose an action card from the supply to trash");
                 game.messageAll("trashing " + toTrash.htmlName() + " from the supply");
-                // TODO: add the trash to the browser-side UI
                 game.takeFromSupply(toTrash);
-                game.trash.add(toTrash);
+                game.addToTrash(toTrash);
             } else {
                 game.messageAll("but there are no action cards in the supply to trash");
             }
         } else {
-            List<Card> gainableSorted = new ArrayList<Card>(actions(game.trash));
+            List<Card> gainableSorted = new ArrayList<Card>(actions(game.getTrash()));
             Collections.sort(gainableSorted, Player.HAND_ORDER_COMPARATOR);
             if (!gainableSorted.isEmpty()) {
                 String[] choices = new String[gainableSorted.size()];

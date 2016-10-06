@@ -49,7 +49,7 @@ public class PirateShip extends Card {
 				if (toTrash != null) {
 					game.messageAll("trashing the " + toTrash.htmlNameRaw());
 					top.remove(toTrash);
-					game.trash.add(toTrash);
+					game.addToTrash(toTrash);
 					trashedTreasure = true;
 				}
 				// discard the non-treasures

@@ -51,7 +51,7 @@ public class Loan extends Card {
 				player.addToDiscard(treasure);
 				game.messageAll("discarding the " + treasure.htmlNameRaw());
 			} else {
-				game.trash.add(treasure);
+				game.addToTrash(treasure);
 				game.messageAll("trashing the " + treasure.htmlNameRaw());
 			}
 		}

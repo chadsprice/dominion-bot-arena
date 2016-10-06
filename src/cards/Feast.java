@@ -23,7 +23,7 @@ public class Feast extends Card {
 		if (!hasMoved) {
 			// trash this
 			player.removeFromPlay(this);
-			game.trash.add(this);
+			game.addToTrash(this);
 			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}

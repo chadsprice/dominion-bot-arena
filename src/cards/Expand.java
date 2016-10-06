@@ -26,7 +26,7 @@ public class Expand extends Card {
 			// trash card
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);
-			game.trash.add(toTrash);
+			game.addToTrash(toTrash);
 			// gain a card costing up to 3 more
 			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 3);
 			if (!gainable.isEmpty()) {

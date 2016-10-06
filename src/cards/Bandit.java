@@ -50,7 +50,7 @@ public class Bandit extends Card {
                     game.message(target, "you trash " + toTrash.htmlName());
                     game.messageOpponents(target, target.username + " trashes " + toTrash.htmlName());
                     revealed.remove(toTrash);
-                    game.trash.add(toTrash);
+                    game.addToTrash(toTrash);
                 }
             } else {
                 game.message(target, "your deck is empty");

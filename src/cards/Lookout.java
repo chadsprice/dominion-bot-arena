@@ -34,7 +34,7 @@ public class Lookout extends Card {
 			game.message(player, "trashing the " + toTrash.htmlNameRaw());
 			game.messageOpponents(player, "trashing " + toTrash.htmlName());
 			drawn.remove(choice);
-			game.trash.add(toTrash);
+			game.addToTrash(toTrash);
 		}
 		// discard one
 		if (!drawn.isEmpty()) {

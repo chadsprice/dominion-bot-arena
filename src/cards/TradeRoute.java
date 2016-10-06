@@ -27,7 +27,7 @@ public class TradeRoute extends Card {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Trade Route: Choose a card to trash from your hand.");
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);
-			game.trash.add(toTrash);
+			game.addToTrash(toTrash);
 		} else {
 			game.messageAll("having no card to trash");
 		}

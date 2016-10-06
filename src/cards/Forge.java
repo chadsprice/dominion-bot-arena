@@ -24,7 +24,7 @@ public class Forge extends Card {
 		List<Card> toTrash = game.promptTrashNumber(player, player.getHand().size(), false, "Forge");
 		game.messageAll("trashing " + Card.htmlList(toTrash));
 		player.removeFromHand(toTrash);
-		game.trash.addAll(toTrash);
+		game.addToTrash(toTrash);
 		// get the total cost of the trashed cards (0 if nothing was trashed)
 		int totalCost = 0;
 		for (Card card : toTrash) {

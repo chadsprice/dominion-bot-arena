@@ -1261,6 +1261,8 @@ function enterGame() {
   chatSendButton.onmousedown = chatSend;
   // clear prompt
   endPrompt();
+  // clear trash
+  setTrash();
   // clear seaside UI
   setArea('nativeVillageMat');
   setArea('islandMat');
@@ -1319,10 +1321,19 @@ function toggleMore() {
   showingMore = !showingMore;
   if (showingMore) {
     document.getElementById('moreButton').innerHTML = 'Less';
-    document.getElementById('forfeitButton').style.display = 'inline-block';
+    document.getElementById('moreContents').style.display = 'block';
   } else {
     document.getElementById('moreButton').innerHTML = 'More';
-    document.getElementById('forfeitButton').style.display = 'none';
+    document.getElementById('moreContents').style.display = 'none';
+  }
+}
+
+function setTrash(contents) {
+  var trash = document.getElementById('trash');
+  if (contents && contents != '') {
+    trash.innerHTML = 'Trash: ' + contents;
+  } else {
+    trash.innerHTML = 'Trash: (empty)';
   }
 }
 
@@ -1430,6 +1441,9 @@ function executeCommand(command) {
       break;
     case 'setInPlay':
       setArea('inPlay', 'In Play', command.contents);
+      break;
+    case 'setTrash':
+      setTrash(command.contents);
       break;
     case 'setHand':
       setHand(command.hand);

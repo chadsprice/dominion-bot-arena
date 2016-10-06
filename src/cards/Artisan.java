@@ -31,7 +31,7 @@ public class Artisan extends Card {
         }
         // discard a card
         if (!player.getHand().isEmpty()) {
-            Card toDiscard = game.promptDiscardNumber(player, 1, "Artisan", "actionPrompt").get(0);
+            Card toDiscard = game.promptDiscardNumber(player, 1, "Artisan", "attackPrompt").get(0);
             game.messageAll("discarding " + toDiscard.htmlName());
             player.putFromHandIntoDiscard(toDiscard);
         } else {

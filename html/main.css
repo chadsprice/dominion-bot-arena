@@ -302,8 +302,13 @@ body {
   margin-bottom: 1em;
 }
 
-#more button {
-  margin-right: 1em;
+#moreContents {
+  margin-top: 0.5em;
+  margin-left: 0.5em;
+}
+
+#moreContents p {
+  margin-bottom: 0.5em;
 }
 
 #playerStatusRow {

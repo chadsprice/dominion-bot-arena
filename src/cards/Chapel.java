@@ -22,7 +22,7 @@ public class Chapel extends Card {
 		// trash up to 4 cards from hand
 		List<Card> trashed = game.promptTrashNumber(player, 4, false, "Chapel");
 		player.removeFromHand(trashed);
-		game.trash.addAll(trashed);
+		game.addToTrash(trashed);
 		game.messageAll("trashing " + Card.htmlList(trashed));
 	}
 
