@@ -70,6 +70,7 @@ public class Card {
 	public static final Card IRONWORKS = new Ironworks();
 	public static final Card LURKER = new Lurker();
 	public static final Card MASQUERADE = new Masquerade();
+	public static final Card MILL = new Mill();
 	public static final Card MINING_VILLAGE = new MiningVillage();
 	public static final Card MINION = new Minion();
 	public static final Card NOBLES = new Nobles();
@@ -234,6 +235,7 @@ public class Card {
 		include(GREAT_HALL, INTRIGUE_SET);
 		include(HAREM, INTRIGUE_SET);
 		include(MASQUERADE, INTRIGUE_SET);
+		include(MILL, INTRIGUE_SET);
 		include(MINING_VILLAGE, INTRIGUE_SET);
 		include(MINION, INTRIGUE_SET);
 		include(IRONWORKS, INTRIGUE_SET);
