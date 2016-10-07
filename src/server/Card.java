@@ -75,6 +75,7 @@ public class Card {
 	public static final Card MINING_VILLAGE = new MiningVillage();
 	public static final Card MINION = new Minion();
 	public static final Card NOBLES = new Nobles();
+	public static final Card PATROL = new Patrol();
 	public static final Card PAWN = new Pawn();
 	public static final Card SABOTEUR = new Saboteur();
 	public static final Card SCOUT = new Scout();
@@ -243,6 +244,7 @@ public class Card {
 		include(MINION, INTRIGUE_SET);
 		include(IRONWORKS, INTRIGUE_SET);
 		include(LURKER, INTRIGUE_SET);
+		include(PATROL, INTRIGUE_SET);
 		include(PAWN, INTRIGUE_SET);
 		include(NOBLES, INTRIGUE_SET);
 		include(SABOTEUR, INTRIGUE_SET);
@@ -411,6 +413,24 @@ public class Card {
 	protected void plusVictoryTokens(Player player, Game game, int numTokens) {
 		player.addVictoryTokens(numTokens);
 		game.messageAll("getting +" + numTokens + " VP");
+	}
+
+	protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt) {
+		Collections.sort(cards, Player.HAND_ORDER_COMPARATOR);
+		List<Card> toPutOnDeck = new ArrayList<Card>();
+		while (!cards.isEmpty()) {
+			String[] choices = new String[cards.size()];
+			for (int i = 0; i < cards.size(); i++) {
+				choices[i] = cards.get(i).toString();
+			}
+			int choice = game.promptMultipleChoice(player, prompt + " (the first card you choose will be on top of your deck)", choices);
+			toPutOnDeck.add(cards.remove(choice));
+		}
+		if (!toPutOnDeck.isEmpty()) {
+			player.putOnDraw(toPutOnDeck);
+			game.message(player, "putting " + Card.htmlList(toPutOnDeck) + " on top of your deck");
+			game.messageOpponents(player, "putting " + Card.numCards(toPutOnDeck.size()) + " on top of his deck");
+		}
 	}
 
 	public String htmlClass() {

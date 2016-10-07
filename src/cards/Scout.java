@@ -25,7 +25,7 @@ public class Scout extends Card {
 		plusActions(player, game, 1);
 		// reveal 4 cards, etc.
 		List<Card> revealed = player.takeFromDraw(4);
-		if (revealed.size() > 0) {
+		if (!revealed.isEmpty()) {
 			// reveal top 4 cards
 			game.messageAll("revealing " + Card.htmlList(revealed));
 			List<Card> victoryCards = removeVictoryCards(revealed);
@@ -35,25 +35,11 @@ public class Scout extends Card {
 				game.message(player, "putting " + Card.htmlList(victoryCards) + " into your hand");
 				game.messageOpponents(player, "putting " + Card.htmlList(victoryCards) + " into his hand");
 			}
-			// put the remaining revealed cards on top of the deck
-			Collections.sort(revealed, Player.HAND_ORDER_COMPARATOR);
-			List<Card> toPutOnDeck = new ArrayList<Card>();
-			while (revealed.size() > 0) {
-				String[] choices = new String[revealed.size()];
-				for (int i = 0; i < revealed.size(); i++) {
-					choices[i] = revealed.get(i).toString();
-				}
-				int choice = game.promptMultipleChoice(player, "Scout: Put the remaining cards on top of your deck (the first card you choose will be on top of your deck)", choices);
-				toPutOnDeck.add(revealed.remove(choice));
-			}
-			if (toPutOnDeck.size() > 0) {
-				player.putOnDraw(toPutOnDeck);
-				game.message(player, "putting the remaining on top of your deck");
-				game.messageOpponents(player, "putting the remaining " + Card.numCards(toPutOnDeck.size()) + " on top of his deck");
-			}
+			// put the rest on top of your deck in any order
+			putOnDeckInAnyOrder(player, game, revealed, "Scout: Put the remaining cards on top of your deck");
 		} else {
-			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "his deck is empty");
+			game.message(player, "revealing nothing because your deck is empty");
+			game.messageOpponents(player, "revealing nothing because his deck is empty");
 		}
 	}
 
