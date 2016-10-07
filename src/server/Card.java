@@ -77,6 +77,7 @@ public class Card {
 	public static final Card NOBLES = new Nobles();
 	public static final Card PATROL = new Patrol();
 	public static final Card PAWN = new Pawn();
+	public static final Card REPLACE = new Replace();
 	public static final Card SABOTEUR = new Saboteur();
 	public static final Card SCOUT = new Scout();
 	public static final Card SECRET_CHAMBER = new SecretChamber();
@@ -246,6 +247,7 @@ public class Card {
 		include(LURKER, INTRIGUE_SET);
 		include(PATROL, INTRIGUE_SET);
 		include(PAWN, INTRIGUE_SET);
+		include(REPLACE, INTRIGUE_SET);
 		include(NOBLES, INTRIGUE_SET);
 		include(SABOTEUR, INTRIGUE_SET);
 		include(SCOUT, INTRIGUE_SET);

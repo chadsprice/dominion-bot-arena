@@ -37,7 +37,7 @@ public class Remodel extends Card {
 				game.messageAll("gaining nothing");
 			}
 		} else {
-			game.messageAll("trashing nothing");
+			game.messageAll("having nothing in hand to trash");
 		}
 	}
 
