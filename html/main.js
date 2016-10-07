@@ -1142,8 +1142,14 @@ function createCustomGame() {
   if (document.getElementById('baseCheckbox').checked) {
     sets.push('Base');
   }
+  if (document.getElementById('baseFirstEditionCheckbox').checked) {
+    sets.push('BaseFirstEdition');
+  }
   if (document.getElementById('intrigueCheckbox').checked) {
     sets.push('Intrigue');
+  }
+  if (document.getElementById('intrigueFirstEditionCheckbox').checked) {
+    sets.push('IntrigueFirstEdition');
   }
   if (document.getElementById('seasideCheckbox').checked) {
     sets.push('Seaside');

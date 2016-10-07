@@ -24,72 +24,76 @@ public class Card {
 
 	// kingdom cards
 
-	// base set
-	public static final Card ADVENTURER = new Adventurer();
-	public static final Card ARTISAN = new Artisan();
-	public static final Card BANDIT = new Bandit();
+	// base set (cards in both 1st and 2nd editions)
 	public static final Card BUREAUCRAT = new Bureaucrat();
 	public static final Card CELLAR = new Cellar();
 	public static final Card CHAPEL = new Chapel();
-	public static final Card CHANCELLOR = new Chancellor();
 	public static final Card COUNCIL_ROOM = new CouncilRoom();
-	public static final Card FEAST = new Feast();
 	public static final Card FESTIVAL = new Festival();
 	public static final Card GARDENS = new Gardens();
-	public static final Card HARBINGER = new Harbinger();
 	public static final Card LABORATORY = new Laboratory();
 	public static final Card LIBRARY = new Library();
 	public static final Card MARKET = new Market();
-	public static final Card MERCHANT = new Merchant();
 	public static final Card MILITIA = new Militia();
 	public static final Card MINE = new Mine();
 	public static final Card MOAT = new Moat();
 	public static final Card MONEYLENDER = new Moneylender();
-	public static final Card POACHER = new Poacher();
 	public static final Card REMODEL = new Remodel();
-	public static final Card SENTRY = new Sentry();
 	public static final Card SMITHY = new Smithy();
-	public static final Card SPY = new Spy();
-	public static final Card THIEF = new Thief();
 	public static final Card THRONE_ROOM = new ThroneRoom();
-	public static final Card VASSAL = new Vassal();
 	public static final Card VILLAGE = new Village();
 	public static final Card WITCH = new Witch();
-	public static final Card WOODCUTTER = new Woodcutter();
 	public static final Card WORKSHOP = new Workshop();
-	// intrigue expansion
+	// base set (1st edition only)
+	public static final Card ADVENTURER = new Adventurer();
+	public static final Card CHANCELLOR = new Chancellor();
+	public static final Card FEAST = new Feast();
+	public static final Card SPY = new Spy();
+	public static final Card THIEF = new Thief();
+	public static final Card WOODCUTTER = new Woodcutter();
+	// base set (2nd edition only)
+	public static final Card ARTISAN = new Artisan();
+	public static final Card BANDIT = new Bandit();
+	public static final Card HARBINGER = new Harbinger();
+	public static final Card MERCHANT = new Merchant();
+	public static final Card POACHER = new Poacher();
+	public static final Card SENTRY = new Sentry();
+	public static final Card VASSAL = new Vassal();
+	// intrigue expansion (cards in both 1st and 2nd editions)
 	public static final Card BARON = new Baron();
 	public static final Card BRIDGE = new Bridge();
 	public static final Card CONSPIRATOR = new Conspirator();
-	public static final Card COPPERSMITH = new Coppersmith();
-	public static final Card COURTIER = new Courtier();
-	public static final Card DIPLOMAT = new Diplomat();
 	public static final Card COURTYARD = new Courtyard();
 	public static final Card DUKE = new Duke();
-	public static final Card GREAT_HALL = new GreatHall();
 	public static final Card HAREM = new Harem();
 	public static final Card IRONWORKS = new Ironworks();
-	public static final Card LURKER = new Lurker();
 	public static final Card MASQUERADE = new Masquerade();
-	public static final Card MILL = new Mill();
 	public static final Card MINING_VILLAGE = new MiningVillage();
 	public static final Card MINION = new Minion();
 	public static final Card NOBLES = new Nobles();
-	public static final Card PATROL = new Patrol();
 	public static final Card PAWN = new Pawn();
-	public static final Card REPLACE = new Replace();
-	public static final Card SABOTEUR = new Saboteur();
-	public static final Card SCOUT = new Scout();
-	public static final Card SECRET_CHAMBER = new SecretChamber();
-	public static final Card SECRET_PASSAGE = new SecretPassage();
 	public static final Card SHANTY_TOWN = new ShantyTown();
 	public static final Card STEWARD = new Steward();
 	public static final Card SWINDLER = new Swindler();
 	public static final Card TORTURER = new Torturer();
 	public static final Card TRADING_POST = new TradingPost();
-	public static final Card TRIBUTE = new Tribute();
 	public static final Card UPGRADE = new Upgrade();
 	public static final Card WISHING_WELL = new WishingWell();
+	// intrigue expansion (1st edition only)
+	public static final Card COPPERSMITH = new Coppersmith();
+	public static final Card GREAT_HALL = new GreatHall();
+	public static final Card SABOTEUR = new Saboteur();
+	public static final Card SCOUT = new Scout();
+	public static final Card SECRET_CHAMBER = new SecretChamber();
+	public static final Card TRIBUTE = new Tribute();
+	// intrigue expansion (2nd edition only)
+	public static final Card COURTIER = new Courtier();
+	public static final Card DIPLOMAT = new Diplomat();
+	public static final Card LURKER = new Lurker();
+	public static final Card MILL = new Mill();
+	public static final Card PATROL = new Patrol();
+	public static final Card REPLACE = new Replace();
+	public static final Card SECRET_PASSAGE = new SecretPassage();
 	// seaside expansion
 	public static final Card EMBARGO = new Embargo();
 	public static final Card HAVEN = new Haven();
@@ -147,42 +151,29 @@ public class Card {
 	public static final Card PLATINUM = new Platinum();
 	public static final Card COLONY = new Colony();
 
-	public static Map<String, Card> cardsByName;
+	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
-	public static Set<Card> BASIC_CARDS;
-	public static Set<Card> BASE_SET;
-	public static Set<Card> INTRIGUE_SET;
-	public static Set<Card> SEASIDE_SET;
-	public static Set<Card> PROSPERITY_SET;
-	public static Set<Card> PROSPERITY_BASIC_CARDS;
+	public static Set<Card> BASIC_CARDS = new HashSet<Card>();
+	public static Set<Card> BASE_SET = new HashSet<Card>();
+	public static Set<Card> BASE_SET_FIRST_EDITION = new HashSet<Card>();
+	public static Set<Card> INTRIGUE_SET = new HashSet<Card>();
+	public static Set<Card> INTRIGUE_SET_FIRST_EDITION = new HashSet<Card>();
+	public static Set<Card> SEASIDE_SET = new HashSet<Card>();
+	public static Set<Card> PROSPERITY_SET = new HashSet<Card>();
+	public static Set<Card> PROSPERITY_BASIC_CARDS = new HashSet<Card>();
 
-	public static Map<String, Set<Card>> setsByName;
-	public static List<Set<Card>> setOrder;
-	public static List<String> setNames;
+	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
+	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
+	public static List<String> setNames = new ArrayList<String>();
 
-	static {
-		cardsByName = new HashMap<String, Card>();
-		BASIC_CARDS = new HashSet<Card>();
-		BASE_SET = new HashSet<Card>();
-		INTRIGUE_SET = new HashSet<Card>();
-		SEASIDE_SET = new HashSet<Card>();
-		PROSPERITY_SET = new HashSet<Card>();
-		PROSPERITY_BASIC_CARDS = new HashSet<Card>();
-		setsByName = new HashMap<String, Set<Card>>();
+	public static void initializeCardSets() {
 
-		setOrder = new ArrayList<Set<Card>>();
-		setNames = new ArrayList<String>();
-		setOrder.add(BASE_SET);
-		setNames.add("Base");
-		setOrder.add(INTRIGUE_SET);
-		setNames.add("Intrigue");
-		setOrder.add(SEASIDE_SET);
-		setNames.add("Seaside");
-		setOrder.add(PROSPERITY_SET);
-		setNames.add("Prosperity");
-		for (int i = 0; i < setOrder.size(); i++) {
-			setsByName.put(setNames.get(i), setOrder.get(i));
-		}
+		include(BASE_SET, "Base");
+		include(BASE_SET_FIRST_EDITION, "BaseFirstEdition");
+		include(INTRIGUE_SET, "Intrigue");
+		include(INTRIGUE_SET_FIRST_EDITION, "IntrigueFirstEdition");
+		include(SEASIDE_SET, "Seaside");
+		include(PROSPERITY_SET, "Prosperity");
 
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);
@@ -195,72 +186,79 @@ public class Card {
 
 		// kingdom cards
 
-		// base set
-		include(ADVENTURER, BASE_SET);
-		include(ARTISAN, BASE_SET);
-		include(BANDIT, BASE_SET);
+		// base set (cards in both 1st and 2nd editions)
 		include(BUREAUCRAT, BASE_SET);
 		include(CELLAR, BASE_SET);
 		include(CHAPEL, BASE_SET);
-		include(CHANCELLOR, BASE_SET);
 		include(COUNCIL_ROOM, BASE_SET);
-		include(FEAST, BASE_SET);
 		include(FESTIVAL, BASE_SET);
 		include(GARDENS, BASE_SET);
-		include(HARBINGER, BASE_SET);
 		include(LABORATORY, BASE_SET);
 		include(LIBRARY, BASE_SET);
 		include(MARKET, BASE_SET);
-		include(MERCHANT, BASE_SET);
 		include(MILITIA, BASE_SET);
 		include(MINE, BASE_SET);
 		include(MOAT, BASE_SET);
 		include(MONEYLENDER, BASE_SET);
-		include(POACHER, BASE_SET);
 		include(REMODEL, BASE_SET);
-		include(SENTRY, BASE_SET);
 		include(SMITHY, BASE_SET);
-		include(SPY, BASE_SET);
-		include(THIEF, BASE_SET);
 		include(THRONE_ROOM, BASE_SET);
-		include(VASSAL, BASE_SET);
 		include(VILLAGE, BASE_SET);
 		include(WITCH, BASE_SET);
 		include(WOODCUTTER, BASE_SET);
 		include(WORKSHOP, BASE_SET);
-		// intrigue expansion
+		BASE_SET_FIRST_EDITION.addAll(BASE_SET);
+		// base set (1st edition only)
+		include(ADVENTURER, BASE_SET_FIRST_EDITION);
+		include(CHANCELLOR, BASE_SET_FIRST_EDITION);
+		include(FEAST, BASE_SET_FIRST_EDITION);
+		include(SPY, BASE_SET_FIRST_EDITION);
+		include(THIEF, BASE_SET_FIRST_EDITION);
+		include(WOODCUTTER, BASE_SET_FIRST_EDITION);
+		// base set (2nd edition only)
+		include(ARTISAN, BASE_SET);
+		include(BANDIT, BASE_SET);
+		include(HARBINGER, BASE_SET);
+		include(MERCHANT, BASE_SET);
+		include(POACHER, BASE_SET);
+		include(SENTRY, BASE_SET);
+		include(VASSAL, BASE_SET);
+		// intrigue expansion (cards in both 1st and 2nd editions)
 		include(BARON, INTRIGUE_SET);
 		include(BRIDGE, INTRIGUE_SET);
 		include(CONSPIRATOR, INTRIGUE_SET);
-		include(COPPERSMITH, INTRIGUE_SET);
-		include(COURTIER, INTRIGUE_SET);
 		include(COURTYARD, INTRIGUE_SET);
-		include(DIPLOMAT, INTRIGUE_SET);
 		include(DUKE, INTRIGUE_SET);
-		include(GREAT_HALL, INTRIGUE_SET);
 		include(HAREM, INTRIGUE_SET);
 		include(MASQUERADE, INTRIGUE_SET);
-		include(MILL, INTRIGUE_SET);
 		include(MINING_VILLAGE, INTRIGUE_SET);
 		include(MINION, INTRIGUE_SET);
 		include(IRONWORKS, INTRIGUE_SET);
-		include(LURKER, INTRIGUE_SET);
-		include(PATROL, INTRIGUE_SET);
 		include(PAWN, INTRIGUE_SET);
-		include(REPLACE, INTRIGUE_SET);
 		include(NOBLES, INTRIGUE_SET);
-		include(SABOTEUR, INTRIGUE_SET);
-		include(SCOUT, INTRIGUE_SET);
-		include(SECRET_CHAMBER, INTRIGUE_SET);
-		include(SECRET_PASSAGE, INTRIGUE_SET);
 		include(SHANTY_TOWN, INTRIGUE_SET);
 		include(STEWARD, INTRIGUE_SET);
 		include(SWINDLER, INTRIGUE_SET);
 		include(TORTURER, INTRIGUE_SET);
 		include(TRADING_POST, INTRIGUE_SET);
-		include(TRIBUTE, INTRIGUE_SET);
 		include(UPGRADE, INTRIGUE_SET);
 		include(WISHING_WELL, INTRIGUE_SET);
+		INTRIGUE_SET_FIRST_EDITION.addAll(INTRIGUE_SET);
+		// intrigue expansion (1st edition only)
+		include(COPPERSMITH, INTRIGUE_SET_FIRST_EDITION);
+		include(GREAT_HALL, INTRIGUE_SET_FIRST_EDITION);
+		include(SABOTEUR, INTRIGUE_SET_FIRST_EDITION);
+		include(SCOUT, INTRIGUE_SET_FIRST_EDITION);
+		include(SECRET_CHAMBER, INTRIGUE_SET_FIRST_EDITION);
+		include(TRIBUTE, INTRIGUE_SET_FIRST_EDITION);
+		// intrigue expansion (2nd edition only)
+		include(COURTIER, INTRIGUE_SET);
+		include(DIPLOMAT, INTRIGUE_SET);
+		include(MILL, INTRIGUE_SET);
+		include(LURKER, INTRIGUE_SET);
+		include(PATROL, INTRIGUE_SET);
+		include(REPLACE, INTRIGUE_SET);
+		include(SECRET_PASSAGE, INTRIGUE_SET);
 		// seaside expansion
 		include(EMBARGO, SEASIDE_SET);
 		include(NATIVE_VILLAGE, SEASIDE_SET);
@@ -317,6 +315,12 @@ public class Card {
 		// prosperity basic cards
 		include(PLATINUM, PROSPERITY_BASIC_CARDS);
 		include(COLONY, PROSPERITY_BASIC_CARDS);
+	}
+
+	public static void include(Set<Card> cardSet, String name) {
+		setOrder.add(cardSet);
+		setNames.add(name);
+		setsByName.put(name, cardSet);
 	}
 
 	public static void include(Card card, Set<Card> kingdomSet) {

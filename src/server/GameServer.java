@@ -966,6 +966,8 @@ public class GameServer {
 	}
 
 	public static void main(String[] args) {
+		Card.initializeCardSets();
+
 		INSTANCE = new GameServer();
 		INSTANCE.run();
 
