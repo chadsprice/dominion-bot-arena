@@ -2,6 +2,7 @@ package cards;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import server.Card;
@@ -22,45 +23,54 @@ public class Masquerade extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		plusCards(player, game, 2);
-		// Each player chooses a card to pass
+		// ask players in turn order which card they want to pass, starting with this player
 		List<Player> passOrder = game.getOpponents(player);
 		passOrder.add(0, player);
-		List<Card> cardsToPass = new ArrayList<Card>();
-		int i = 0;
-		for (Player eachPlayer : passOrder) {
-			if (eachPlayer.getHand().size() > 0) {
-				Player playerOnLeft = passOrder.get((i + 1) % passOrder.size());
-				String promptType = (eachPlayer == player) ? "actionPrompt" : "attackPrompt";
-				Card toPass = game.promptChoosePassToOpponent(eachPlayer, new HashSet<Card>(eachPlayer.getHand()), "Masquerade: Pass a card from your hand to " + playerOnLeft.username, promptType);
-				cardsToPass.add(toPass);
-			} else {
-				cardsToPass.add(null);
+		// skip over players with no cards in hand
+		for (Iterator<Player> iter = passOrder.iterator(); iter.hasNext(); ) {
+			if (iter.next().getHand().isEmpty()) {
+				iter.remove();
 			}
-			i++;
 		}
-		// Pass cards
-		for (i = 0; i < passOrder.size(); i++) {
-			Player eachPlayer = passOrder.get(i);
-			Player playerOnLeft = passOrder.get((i + 1) % passOrder.size());
-			Card toPass = cardsToPass.get(i);
-			if (toPass != null) {
-				eachPlayer.removeFromHand(toPass);
-				playerOnLeft.addToHand(toPass);
+		// only bother to pass cards if there are at least 2 players that will pass cards
+		if (passOrder.size() >= 2) {
+			List<Card> cardsToPass = new ArrayList<Card>();
+			int i = 0;
+			for (Player eachPlayer : passOrder) {
+				if (eachPlayer.getHand().size() > 0) {
+					Player playerOnLeft = passOrder.get((i + 1) % passOrder.size());
+					String promptType = (eachPlayer == player) ? "actionPrompt" : "attackPrompt";
+					Card toPass = game.promptChoosePassToOpponent(eachPlayer, new HashSet<Card>(eachPlayer.getHand()), "Masquerade: Pass a card from your hand to " + playerOnLeft.username, promptType);
+					cardsToPass.add(toPass);
+				} else {
+					cardsToPass.add(null);
+				}
+				i++;
 			}
-			// message player who is giving
-			String cardString = toPass == null ? "nothing" : toPass.htmlName();
-			game.message(eachPlayer, "You pass " + cardString + " to " + playerOnLeft.username);
-			// message player who is receiving
-			game.message(playerOnLeft, eachPlayer.username + " passes " + cardString + " to you");
-			// message other players (without naming the card passed)
-			cardString = toPass == null ? "nothing" : "a card";
-			for (Player eachUninvolved : passOrder) {
-				if (eachUninvolved != eachPlayer && eachUninvolved != playerOnLeft) {
-					game.message(eachUninvolved, eachPlayer.username + " passes " + cardString + " to " + playerOnLeft.username);
+			// pass cards
+			for (i = 0; i < passOrder.size(); i++) {
+				Player eachPlayer = passOrder.get(i);
+				Player playerOnLeft = passOrder.get((i + 1) % passOrder.size());
+				Card toPass = cardsToPass.get(i);
+				if (toPass != null) {
+					eachPlayer.removeFromHand(toPass);
+					playerOnLeft.addToHand(toPass);
+				}
+				// message player who is giving
+				String cardString = toPass == null ? "nothing" : toPass.htmlName();
+				game.message(eachPlayer, "You pass " + cardString + " to " + playerOnLeft.username);
+				// message player who is receiving
+				game.message(playerOnLeft, eachPlayer.username + " passes " + cardString + " to you");
+				// message other players (without naming the card passed)
+				cardString = toPass == null ? "nothing" : "a card";
+				for (Player eachUninvolved : passOrder) {
+					if (eachUninvolved != eachPlayer && eachUninvolved != playerOnLeft) {
+						game.message(eachUninvolved, eachPlayer.username + " passes " + cardString + " to " + playerOnLeft.username);
+					}
 				}
 			}
 		}
-		// You may trash a card from your hand
+		// you may trash a card from your hand
 		if (player.getHand().size() > 0){
 			int choice = game.promptMultipleChoice(player, "Masquerade: Trash a card from your hand?", new String[] {"Yes", "No"});
 			if (choice == 0) {
@@ -74,7 +84,7 @@ public class Masquerade extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+2 Cards", "Each player passes a card from his hand to the left at once. Then you may trash a card from your hand."};
+		return new String[] {"+2 Cards", "Each player with any cards in hand passes one to the next such player to their left, at once. Then you may trash a card from your hand."};
 	}
 
 	@Override

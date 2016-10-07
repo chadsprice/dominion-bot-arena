@@ -158,6 +158,12 @@ Returns the location of the card art image for the given card.
 e.g. 'Council Room' -> 'card_art/council_room.jpg'
 */
 function cardArtSrc(cardName) {
+  // remove " (1st ed.)" because first edition cards have the same card art
+  // as their second edition counterparts
+  var suffix = " (1st ed.)";
+  if (cardName.endsWith(suffix)) {
+    cardName = cardName.substring(0, cardName.length - suffix.length);
+  }
   cardName = cardName.toLowerCase();
   cardName = cardName.replace(' ', '_');
   return 'card_art/' + cardName + '.jpg';

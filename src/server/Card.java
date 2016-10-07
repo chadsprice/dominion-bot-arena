@@ -67,7 +67,6 @@ public class Card {
 	public static final Card DUKE = new Duke();
 	public static final Card HAREM = new Harem();
 	public static final Card IRONWORKS = new Ironworks();
-	public static final Card MASQUERADE = new Masquerade();
 	public static final Card MINING_VILLAGE = new MiningVillage();
 	public static final Card MINION = new Minion();
 	public static final Card NOBLES = new Nobles();
@@ -82,6 +81,7 @@ public class Card {
 	// intrigue expansion (1st edition only)
 	public static final Card COPPERSMITH = new Coppersmith();
 	public static final Card GREAT_HALL = new GreatHall();
+	public static final Card MASQUERADE_FIRST_EDITION = new MasqueradeFirstEdition();
 	public static final Card SABOTEUR = new Saboteur();
 	public static final Card SCOUT = new Scout();
 	public static final Card SECRET_CHAMBER = new SecretChamber();
@@ -90,6 +90,7 @@ public class Card {
 	public static final Card COURTIER = new Courtier();
 	public static final Card DIPLOMAT = new Diplomat();
 	public static final Card LURKER = new Lurker();
+	public static final Card MASQUERADE = new Masquerade();
 	public static final Card MILL = new Mill();
 	public static final Card PATROL = new Patrol();
 	public static final Card REPLACE = new Replace();
@@ -230,7 +231,6 @@ public class Card {
 		include(COURTYARD, INTRIGUE_SET);
 		include(DUKE, INTRIGUE_SET);
 		include(HAREM, INTRIGUE_SET);
-		include(MASQUERADE, INTRIGUE_SET);
 		include(MINING_VILLAGE, INTRIGUE_SET);
 		include(MINION, INTRIGUE_SET);
 		include(IRONWORKS, INTRIGUE_SET);
@@ -247,6 +247,7 @@ public class Card {
 		// intrigue expansion (1st edition only)
 		include(COPPERSMITH, INTRIGUE_SET_FIRST_EDITION);
 		include(GREAT_HALL, INTRIGUE_SET_FIRST_EDITION);
+		include(MASQUERADE_FIRST_EDITION, INTRIGUE_SET_FIRST_EDITION);
 		include(SABOTEUR, INTRIGUE_SET_FIRST_EDITION);
 		include(SCOUT, INTRIGUE_SET_FIRST_EDITION);
 		include(SECRET_CHAMBER, INTRIGUE_SET_FIRST_EDITION);
@@ -254,8 +255,9 @@ public class Card {
 		// intrigue expansion (2nd edition only)
 		include(COURTIER, INTRIGUE_SET);
 		include(DIPLOMAT, INTRIGUE_SET);
-		include(MILL, INTRIGUE_SET);
 		include(LURKER, INTRIGUE_SET);
+		include(MASQUERADE, INTRIGUE_SET);
+		include(MILL, INTRIGUE_SET);
 		include(PATROL, INTRIGUE_SET);
 		include(REPLACE, INTRIGUE_SET);
 		include(SECRET_PASSAGE, INTRIGUE_SET);
