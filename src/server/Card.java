@@ -62,6 +62,7 @@ public class Card {
 	public static final Card BRIDGE = new Bridge();
 	public static final Card CONSPIRATOR = new Conspirator();
 	public static final Card COPPERSMITH = new Coppersmith();
+	public static final Card COURTIER = new Courtier();
 	public static final Card DIPLOMAT = new Diplomat();
 	public static final Card COURTYARD = new Courtyard();
 	public static final Card DUKE = new Duke();
@@ -230,6 +231,7 @@ public class Card {
 		include(BRIDGE, INTRIGUE_SET);
 		include(CONSPIRATOR, INTRIGUE_SET);
 		include(COPPERSMITH, INTRIGUE_SET);
+		include(COURTIER, INTRIGUE_SET);
 		include(COURTYARD, INTRIGUE_SET);
 		include(DIPLOMAT, INTRIGUE_SET);
 		include(DUKE, INTRIGUE_SET);

@@ -49,7 +49,7 @@ public class SecretPassage extends Card {
             player.removeFromHand(card);
             player.putInDraw(card, choice);
         } else {
-            game.messageAll("having no cards in hand");
+            game.messageAll("having no card in hand");
         }
     }
 
