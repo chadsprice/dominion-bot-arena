@@ -37,7 +37,6 @@ public class Card {
 	public static final Card MILITIA = new Militia();
 	public static final Card MINE = new Mine();
 	public static final Card MOAT = new Moat();
-	public static final Card MONEYLENDER = new Moneylender();
 	public static final Card REMODEL = new Remodel();
 	public static final Card SMITHY = new Smithy();
 	public static final Card THRONE_ROOM = new ThroneRoom();
@@ -48,6 +47,7 @@ public class Card {
 	public static final Card ADVENTURER = new Adventurer();
 	public static final Card CHANCELLOR = new Chancellor();
 	public static final Card FEAST = new Feast();
+	public static final Card MONEYLENDER_FIRST_EDITION = new MoneylenderFirstEdition();
 	public static final Card SPY = new Spy();
 	public static final Card THIEF = new Thief();
 	public static final Card WOODCUTTER = new Woodcutter();
@@ -56,6 +56,7 @@ public class Card {
 	public static final Card BANDIT = new Bandit();
 	public static final Card HARBINGER = new Harbinger();
 	public static final Card MERCHANT = new Merchant();
+	public static final Card MONEYLENDER = new Moneylender();
 	public static final Card POACHER = new Poacher();
 	public static final Card SENTRY = new Sentry();
 	public static final Card VASSAL = new Vassal();
@@ -200,7 +201,6 @@ public class Card {
 		include(MILITIA, BASE_SET);
 		include(MINE, BASE_SET);
 		include(MOAT, BASE_SET);
-		include(MONEYLENDER, BASE_SET);
 		include(REMODEL, BASE_SET);
 		include(SMITHY, BASE_SET);
 		include(THRONE_ROOM, BASE_SET);
@@ -213,6 +213,7 @@ public class Card {
 		include(ADVENTURER, BASE_SET_FIRST_EDITION);
 		include(CHANCELLOR, BASE_SET_FIRST_EDITION);
 		include(FEAST, BASE_SET_FIRST_EDITION);
+		include(MONEYLENDER_FIRST_EDITION, BASE_SET_FIRST_EDITION);
 		include(SPY, BASE_SET_FIRST_EDITION);
 		include(THIEF, BASE_SET_FIRST_EDITION);
 		include(WOODCUTTER, BASE_SET_FIRST_EDITION);
@@ -221,6 +222,7 @@ public class Card {
 		include(BANDIT, BASE_SET);
 		include(HARBINGER, BASE_SET);
 		include(MERCHANT, BASE_SET);
+		include(MONEYLENDER, BASE_SET);
 		include(POACHER, BASE_SET);
 		include(SENTRY, BASE_SET);
 		include(VASSAL, BASE_SET);

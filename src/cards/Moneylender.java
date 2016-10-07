@@ -17,14 +17,20 @@ public class Moneylender extends Card {
 	
 	@Override
 	public void onPlay(Player player, Game game) {
-		// if player has a Copper in his hand
+		boolean trashingCopper = false;
+		// if you have a Copper in hand
 		if (player.getHand().contains(Card.COPPER)) {
-			// trash it
+			// you may choose to trash it for +$3
+			int choice = game.promptMultipleChoice(player, "Moneylender: Trash " + Card.COPPER.htmlName() + " for +$3?", new String[] {"Yes", "No"});
+			if (choice == 0) {
+				trashingCopper = true;
+			}
+		}
+		if (trashingCopper) {
+			game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
 			player.removeFromHand(Card.COPPER);
 			game.addToTrash(Card.COPPER);
-			// +$3
 			player.addCoins(3);
-			game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
 		} else {
 			game.messageAll("trashing nothing");
 		}
@@ -32,7 +38,7 @@ public class Moneylender extends Card {
 	
 	@Override
 	public String[] description() {
-		return new String[] {"Trash a Copper from your hand.", "If you do, +$3."};
+		return new String[] {"You may trash a Copper from your hand for +$3."};
 	}
 	
 	@Override
