@@ -21,17 +21,22 @@ public class ThroneRoom extends Card {
 	public void onPlay(Player player, Game game) {
 		Set<Card> actions = game.playableActions(player);
 		if (!actions.isEmpty()) {
-			Card toPlay = game.promptChoosePlay(player, actions, "Throne Room: Choose an action to play twice");
-			// put the chosen card into play
-			player.putFromHandIntoPlay(toPlay);
-			game.messageAll("choosing " + toPlay.htmlName());
-			// remember if the card moves itself
-			// necessary for the "lose track" rule
-			boolean hasMoved = game.playAction(player, toPlay, false);
-			if (toPlay.isDuration && hasMoved) {
-				player.setDurationModifier(this);
+			// you may choose a card to play twice
+			Card toPlay = game.promptChoosePlay(player, actions, "Throne Room: Choose an action to play twice", false, "None");
+			if (toPlay != null) {
+				// put the chosen card into play
+				player.putFromHandIntoPlay(toPlay);
+				game.messageAll("choosing " + toPlay.htmlName());
+				// remember if the card moves itself
+				// necessary for the "lose track" rule
+				boolean hasMoved = game.playAction(player, toPlay, false);
+				if (toPlay.isDuration && hasMoved) {
+					player.setDurationModifier(this);
+				}
+				game.playAction(player, toPlay, hasMoved);
+			} else {
+				game.messageAll("choosing nothing");
 			}
-			game.playAction(player, toPlay, hasMoved);
 		} else {
 			game.messageAll("having no actions");
 		}
@@ -39,7 +44,7 @@ public class ThroneRoom extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Choose an action card in your hand.", "Play it twice."};
+		return new String[] {"You may play an Action card from your hand twice."};
 	}
 
 	@Override

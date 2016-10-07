@@ -21,18 +21,22 @@ public class KingsCourt extends Card {
 	public void onPlay(Player player, Game game) {
 		Set<Card> actions = game.playableActions(player);
 		if (!actions.isEmpty()) {
-			Card toPlay = game.promptChoosePlay(player, actions, "King's Court: Choose an action to play twice", false, "None");
-			// put the chosen card into play
-			player.putFromHandIntoPlay(toPlay);
-			game.messageAll("choosing " + toPlay.htmlName());
-			// remember if the card moves itself
-			// necessary for the "lose track" rule
-			boolean hasMoved = false;
-			for (int i = 0; i < 3; i++) {
-				hasMoved |= game.playAction(player, toPlay, hasMoved);
-				if (toPlay.isDuration && hasMoved) {
-					player.setDurationModifier(this);
+			Card toPlay = game.promptChoosePlay(player, actions, "King's Court: Choose an action to play three times", false, "None");
+			if (toPlay != null) {
+				// put the chosen card into play
+				player.putFromHandIntoPlay(toPlay);
+				game.messageAll("choosing " + toPlay.htmlName());
+				// remember if the card moves itself
+				// necessary for the "lose track" rule
+				boolean hasMoved = false;
+				for (int i = 0; i < 3; i++) {
+					hasMoved |= game.playAction(player, toPlay, hasMoved);
+					if (toPlay.isDuration && hasMoved) {
+						player.setDurationModifier(this);
+					}
 				}
+			} else {
+				game.messageAll("choosing nothing");
 			}
 		} else {
 			game.messageAll("having no actions");

@@ -38,7 +38,6 @@ public class Card {
 	public static final Card MOAT = new Moat();
 	public static final Card REMODEL = new Remodel();
 	public static final Card SMITHY = new Smithy();
-	public static final Card THRONE_ROOM = new ThroneRoom();
 	public static final Card VILLAGE = new Village();
 	public static final Card WITCH = new Witch();
 	public static final Card WORKSHOP = new Workshop();
@@ -50,6 +49,7 @@ public class Card {
 	public static final Card MONEYLENDER_FIRST_EDITION = new MoneylenderFirstEdition();
 	public static final Card SPY = new Spy();
 	public static final Card THIEF = new Thief();
+	public static final Card THRONE_ROOM_FIRST_EDITION = new ThroneRoomFirstEdition();
 	public static final Card WOODCUTTER = new Woodcutter();
 	// base set (2nd edition only)
 	public static final Card ARTISAN = new Artisan();
@@ -60,6 +60,7 @@ public class Card {
 	public static final Card MONEYLENDER = new Moneylender();
 	public static final Card POACHER = new Poacher();
 	public static final Card SENTRY = new Sentry();
+	public static final Card THRONE_ROOM = new ThroneRoom();
 	public static final Card VASSAL = new Vassal();
 	// intrigue expansion (cards in both 1st and 2nd editions)
 	public static final Card BARON = new Baron();
@@ -203,7 +204,6 @@ public class Card {
 		include(MOAT, BASE_SET);
 		include(REMODEL, BASE_SET);
 		include(SMITHY, BASE_SET);
-		include(THRONE_ROOM, BASE_SET);
 		include(VILLAGE, BASE_SET);
 		include(WITCH, BASE_SET);
 		include(WOODCUTTER, BASE_SET);
@@ -217,6 +217,7 @@ public class Card {
 		include(MONEYLENDER_FIRST_EDITION, BASE_SET_FIRST_EDITION);
 		include(SPY, BASE_SET_FIRST_EDITION);
 		include(THIEF, BASE_SET_FIRST_EDITION);
+		include(THRONE_ROOM_FIRST_EDITION, BASE_SET_FIRST_EDITION);
 		include(WOODCUTTER, BASE_SET_FIRST_EDITION);
 		// base set (2nd edition only)
 		include(ARTISAN, BASE_SET);
@@ -227,6 +228,7 @@ public class Card {
 		include(MONEYLENDER, BASE_SET);
 		include(POACHER, BASE_SET);
 		include(SENTRY, BASE_SET);
+		include(THRONE_ROOM, BASE_SET);
 		include(VASSAL, BASE_SET);
 		// intrigue expansion (cards in both 1st and 2nd editions)
 		include(BARON, INTRIGUE_SET);

@@ -36,7 +36,7 @@ public class MineFirstEdition extends Card {
                 }
             }
             if (!gainable.isEmpty()) {
-                Card toGain = game.promptChooseGainFromSupply(player, gainable, "Mine: Choose a treasure to gain");
+                Card toGain = game.promptChooseGainFromSupply(player, gainable, "Mine (1st ed.): Choose a treasure to gain");
                 game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
                 game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
                 game.gainToHand(player, toGain);
