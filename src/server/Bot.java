@@ -289,11 +289,13 @@ public class Bot extends Player {
 		return false;
 	}
 
-	public Card chooseTrashFromHand(Set<Card> choiceSet) {
+	public Card chooseTrashFromHand(Set<Card> choiceSet, boolean isMandatory) {
 		// trash a card willingly
 		Card card = wantToTrash(choiceSet);
 		if (card != null) {
 			return card;
+		} else if (!isMandatory) {
+			return null;
 		}
 		// trash the cheapest card
 		List<Card> choiceList = new ArrayList<Card>(choiceSet);
@@ -321,7 +323,7 @@ public class Bot extends Player {
 	}
 
 	public Card choosePassToOpponent(Set<Card> choiceSet) {
-		return chooseTrashFromHand(choiceSet);
+		return chooseTrashFromHand(choiceSet, true);
 	}
 
 	public Card chooseRevealAttackReaction(Set<Card> choiceSet) {

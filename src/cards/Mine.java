@@ -20,28 +20,33 @@ public class Mine extends Card {
 	
 	@Override
 	public void onPlay(Player player, Game game) {
-		// trash a treasure card from hand
+		// get all treasures in hand
 		Set<Card> treasures = treasuresInHand(player);
 		if (!treasures.isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, treasures, "Mine: Choose a treasure to trash");
-			game.messageAll("trashing " + toTrash.htmlName());
-			player.removeFromHand(toTrash);
-			game.addToTrash(toTrash);
-			// gain a treasure costing up to 3 more
-			Set<Card> cardsCosting3More = game.cardsCostingAtMost(toTrash.cost(game) + 3);
-			Set<Card> gainable = new HashSet<Card>();
-			for (Card card : cardsCosting3More) {
-				if (card.isTreasure) {
-					gainable.add(card);
+			// choose a treasure to trash (or choose to trash none)
+			Card toTrash = game.promptChooseTrashFromHand(player, treasures, "Mine: Choose a treasure to trash", false, "None");
+			if (toTrash != null) {
+				game.messageAll("trashing " + toTrash.htmlName());
+				player.removeFromHand(toTrash);
+				game.addToTrash(toTrash);
+				// gain a treasure costing up to 3 more
+				Set<Card> cardsCosting3More = game.cardsCostingAtMost(toTrash.cost(game) + 3);
+				Set<Card> gainable = new HashSet<Card>();
+				for (Card card : cardsCosting3More) {
+					if (card.isTreasure) {
+						gainable.add(card);
+					}
 				}
-			}
-			if (!gainable.isEmpty()) {
-				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Mine: Choose a treasure to gain");
-				game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
-				game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
-				game.gainToHand(player, toGain);
+				if (!gainable.isEmpty()) {
+					Card toGain = game.promptChooseGainFromSupply(player, gainable, "Mine: Choose a treasure to gain");
+					game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
+					game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
+					game.gainToHand(player, toGain);
+				} else {
+					game.messageAll("gaining nothing");
+				}
 			} else {
-				game.messageAll("gaining nothing");
+				game.messageAll("trashing nothing");
 			}
 		} else {
 			game.messageAll("trashing nothing");
@@ -60,7 +65,7 @@ public class Mine extends Card {
 	
 	@Override
 	public String[] description() {
-		return new String[]{"Trash a Treasure card from your hand.", "Gain a Treasure card costing up to $3 more; put it into your hand."};
+		return new String[]{"You may trash a Treasure from your hand. Gain a Treasure to your hand costing up to $3 more than it."};
 	}
 	
 	@Override

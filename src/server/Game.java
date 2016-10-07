@@ -1418,16 +1418,29 @@ public class Game implements Runnable {
 	 * This choice is mandatory.
 	 */
 	public Card promptChooseTrashFromHand(Player player, Set<Card> choiceSet, String promptMessage) {
+		return promptChooseTrashFromHand(player, choiceSet, promptMessage, true, "");
+	}
+
+	/**
+	 * Returns a card that the player has chosen to trash from their hand, or null if they choose not to trash a card.
+	 */
+	public Card promptChooseTrashFromHand(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
-			Card card = bot.chooseTrashFromHand(choiceSet);
+			Card card = bot.chooseTrashFromHand(choiceSet, isMandatory);
 			// check that the bot is making a valid choice
-			if (!choiceSet.contains(card)) {
-				throw new IllegalArgumentException();
+			if (isMandatory) {
+				if (!choiceSet.contains(card)) {
+					throw new IllegalArgumentException();
+				}
+			} else {
+				if (card != null && !choiceSet.contains(card)) {
+					throw new IllegalArgumentException();
+				}
 			}
 			return card;
 		}
-		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", true, "");
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", isMandatory, noneMessage);
 	}
 
 	/**
