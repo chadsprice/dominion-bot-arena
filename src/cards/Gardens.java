@@ -27,7 +27,7 @@ public class Gardens extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Worth 1 VP for every 10 cards in your deck (rounded down)."};
+		return new String[] {"Worth 1 VP per 10 cards you have (rounded down)."};
 	}
 
 	@Override

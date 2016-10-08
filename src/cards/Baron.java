@@ -42,7 +42,7 @@ public class Baron extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+1 Buy", "You may discard an Estate card.", "If you do, +$4.", "Otherwise, gain an Estate card."};
+		return new String[] {"+1 Buy", "You may discard an Estate for +$4. If you don't, gain an Estate."};
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class MiningVillage extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+1 Card", "+2 Actions", "You may trash this card immediately.", "If you do, +$2."};
+		return new String[] {"+1 Card", "+2 Actions", "You may trash this for +$2."};
 	}
 
 	@Override

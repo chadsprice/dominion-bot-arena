@@ -51,7 +51,7 @@ public class Torturer extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+3 Cards", "Each other player chooses one: he discards 2 cards; or he gains a Curse card, putting it in his hand."};
+		return new String[] {"+3 Cards", "Each other player either discards 2 cards or gains a Curse to their hand, their choice. (They may pick an option they can't do.)"};
 	}
 
 	@Override

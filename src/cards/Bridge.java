@@ -26,7 +26,7 @@ public class Bridge extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+1 Buy", "+$1", "All cards (including cards in players' hands) cost $1 less this turn, but not less than $0. "};
+		return new String[] {"+1 Buy", "+$1", "This turn, cards (everywhere) cost $1 less, but not less than $0."};
 	}
 
 	@Override

@@ -35,7 +35,7 @@ public class Militia extends Card {
 	
 	@Override
 	public String[] description() {
-		return new String[]{"+$2", "Each other player discards down to 3 cards in his hand."};
+		return new String[]{"+$2", "Each other player discards down to 3 cards in hand."};
 	}
 	
 	@Override

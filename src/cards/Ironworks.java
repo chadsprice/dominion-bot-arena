@@ -56,7 +56,7 @@ public class Ironworks extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[]{"Gain a card costing up to $4.", "If it is an...", "Action card, +1 Action", "Treasure card, +$1", "Victory card, +1 Card"};
+		return new String[]{"Gain a card costing up to $4.", "If the gained card is an...", "Action card, +1 Action", "Treasure card, +$1", "Victory card, +1 Card"};
 	}
 
 	@Override

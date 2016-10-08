@@ -38,7 +38,7 @@ public class TradingPost extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Trash 2 cards from your hand.", "If you do, gain a Silver card; put it into your hand."};
+		return new String[] {"Trash 2 cards from your hand. If you did, gain a Silver to your hand."};
 	}
 
 	@Override

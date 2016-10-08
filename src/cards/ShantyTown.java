@@ -41,7 +41,7 @@ public class ShantyTown extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+2 Actions", "Reveal your hand.", "If you have no Action cards in hand, +2 Cards."};
+		return new String[] {"+2 Actions", "Reveal your hand. If you have no Action cards in hand, +2 Cards."};
 	}
 
 	@Override

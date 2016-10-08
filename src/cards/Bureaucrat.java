@@ -57,7 +57,7 @@ public class Bureaucrat extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Gain a Silver card; put it on top of your deck.", "Each other player reveals a Victory card from his hand and puts it on his deck (or reveals a hand with no Victory cards)."};
+		return new String[] {"Gain a Silver onto your deck. Each other player reveals a Victory card from their hand and puts it on their deck (or reveals a hand with no Victory cards)."};
 	}
 
 	@Override

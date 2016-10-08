@@ -28,7 +28,7 @@ public class Moat extends Card {
 	
 	@Override
 	public String[] description() {
-		return new String[]{"+2 Cards", "When another player plays an Attack card, you may reveal this from your hand. If you do, then you are unaffected by that Attack."};
+		return new String[]{"+2 Cards", "When another player plays an Attack card, you may first reveal this from your hand, to be unaffected by it."};
 	}
 	
 	@Override

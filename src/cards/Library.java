@@ -60,7 +60,7 @@ public class Library extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Draw until you have 7 cards in hand.", "You may set aside any Action cards drawn this way, as you draw them; discard the set aside cards after you finish drawing."};
+		return new String[] {"Draw until you have 7 cards in hand, skipping any Action cards you choose to; set those aside, discarding them afterwards."};
 	}
 
 	@Override

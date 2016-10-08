@@ -50,7 +50,7 @@ public class Swindler extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+$2", "Each other player trashes the top card of his deck and gains a card with the same cost that you choose."};
+		return new String[] {"+$2", "Each other player trashes the top card of their deck and gains a card with the same cost that you choose."};
 	}
 
 	@Override

@@ -45,7 +45,7 @@ public class Pawn extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Choose two; +1 Card; +1 Action; +1 Buy; +$1.", "(The choices must be different.)"};
+		return new String[] {"Choose two: +1 Card; +1 Action; +1 Buy; +$1.", "The choices must be different."};
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class Cellar extends Card {
 	
 	@Override
 	public String[] description() {
-		return new String[]{"+1 action", "Discard any number of cards.", "+1 Card per card discarded."};
+		return new String[]{"+1 Action", "Discard any number of cards, then draw that many."};
 	}
 
 	@Override

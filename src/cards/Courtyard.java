@@ -34,7 +34,7 @@ public class Courtyard extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+3 Cards", "Put a card from your hand on top of your deck."};
+		return new String[] {"+3 Cards", "Put a card from your hand onto your deck."};
 	}
 
 	public String toString() {

@@ -22,8 +22,8 @@ public class Minion extends Card {
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		plusActions(player, game, 1);
-		// Choose effect
-		int choice = game.promptMultipleChoice(player, "Minion: Choose one", new String[] {"+$2", "Discard your hand, +4 cards, and each other player with at least 5 cards in hand discards his hand and draws 4 cards"});
+		// choose effect
+		int choice = game.promptMultipleChoice(player, "Minion: Choose one", new String[] {"+$2", "Attack"});
 		if (choice == 0) {
 			plusCoins(player, game, 2);
 		} else {
@@ -52,7 +52,7 @@ public class Minion extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+1 Action", "Choose one: +$2; or discard your hand, +4 cards, and each player with at least 5 cards in hand discards his hand and draws 4 cards."};
+		return new String[] {"+1 Action", "Choose one: +$2; or discard your hand, +4 cards, and each player with at least 5 cards in hand discards their hand and draws 4 cards."};
 	}
 
 	@Override

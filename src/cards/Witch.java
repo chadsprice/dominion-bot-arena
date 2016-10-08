@@ -33,7 +33,7 @@ public class Witch extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+2 Cards", "Each other player gains a Curse card."};
+		return new String[] {"+2 Cards", "Each other player gains a Curse."};
 	}
 
 	@Override

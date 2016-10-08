@@ -32,7 +32,7 @@ public class Conspirator extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+$2", "If you've played 3 or more Actions this turn (counting this): +1 Card, +1 Action."};
+		return new String[] {"+$2", "If you've played 3 or more Actions this turn (counting this), +1 Card and +1 Action."};
 	}
 
 	@Override

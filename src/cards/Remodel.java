@@ -43,7 +43,7 @@ public class Remodel extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[]{"Trash a card from your hand.", "Gain a card costing up to $2 more than the trashed card."};
+		return new String[]{"Trash a card from your hand.", "Gain a card costing up to $2 more than it."};
 	}
 
 	@Override
