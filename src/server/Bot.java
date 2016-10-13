@@ -15,6 +15,8 @@ public class Bot extends Player {
 	public static void initializeBots() {
 		include(Bot.class);
 		include(BankWharfBot.class);
+		include(BigNothing.class);
+		include(BigSmithy.class);
 		include(BmLibraryBot.class);
 		include(BmMasqueradeBot.class);
 		include(ChapelWitchBot.class);
