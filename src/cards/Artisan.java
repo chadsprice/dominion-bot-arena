@@ -32,7 +32,7 @@ public class Artisan extends Card {
         }
         // put a card onto your deck
         if (!player.getHand().isEmpty()) {
-            Card toPutOnDeck = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Artisan", "attackPrompt");
+            Card toPutOnDeck = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Artisan: Put a card from your hand onto your deck.", "attackPrompt");
             game.message(player, "putting " + toPutOnDeck.htmlName() + " on your deck");
             game.messageOpponents(player, "putting " + toPutOnDeck.htmlName() + " on their deck");
             player.putFromHandOntoDraw(toPutOnDeck);

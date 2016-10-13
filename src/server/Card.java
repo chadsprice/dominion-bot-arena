@@ -333,9 +333,15 @@ public class Card {
 
 	public static void include(Card card, Set<Card> kingdomSet) {
 		cardsByName.put(card.toString(), card);
+		// include simplified name user-typed cards to ignore capitalization and punctuation
+		cardsByName.put(simplifiedName(card.toString()), card);
 		if (kingdomSet != null) {
 			kingdomSet.add(card);
 		}
+	}
+
+	public static String simplifiedName(String name) {
+		return name.toLowerCase().replaceAll("[^a-z]", "");
 	}
 
 	public static Card fromName(String name) {
