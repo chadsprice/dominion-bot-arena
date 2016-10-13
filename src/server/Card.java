@@ -443,7 +443,7 @@ public class Card {
 		if (!toPutOnDeck.isEmpty()) {
 			player.putOnDraw(toPutOnDeck);
 			game.message(player, "putting " + Card.htmlList(toPutOnDeck) + " on top of your deck");
-			game.messageOpponents(player, "putting " + Card.numCards(toPutOnDeck.size()) + " on top of his deck");
+			game.messageOpponents(player, "putting " + Card.numCards(toPutOnDeck.size()) + " on top of their deck");
 		}
 	}
 

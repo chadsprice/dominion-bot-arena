@@ -37,14 +37,14 @@ public class Patrol extends Card {
             }
             if (!toPutInHand.isEmpty()) {
                 game.message(player, "putting " + Card.htmlList(toPutInHand) + " into your hand");
-                game.messageOpponents(player, "putting " + Card.htmlList(toPutInHand) + " into his hand");
+                game.messageOpponents(player, "putting " + Card.htmlList(toPutInHand) + " into their hand");
                 player.addToHand(toPutInHand);
             }
             // put the rest on top of your deck any order
             putOnDeckInAnyOrder(player, game, revealed, "Patrol: Put the remaining cards on top of your deck");
         } else {
             game.message(player, "revealing nothing because your deck is empty");
-            game.messageOpponents(player, "revealing nothing because his deck is empty");
+            game.messageOpponents(player, "revealing nothing because their deck is empty");
         }
     }
 

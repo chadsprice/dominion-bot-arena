@@ -26,7 +26,7 @@ public class Haven extends Card {
 		plusActions(player, game, 1);
 		// choose a card to haven
 		if (!player.getHand().isEmpty()) {
-			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Haven: Choose a card to set aside");
+			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Haven: Choose a card to set aside.");
 			player.removeFromHand(toHaven);
 			havened.add(toHaven);
 			game.message(player, "setting aside " + toHaven.htmlName() + " face down");
@@ -34,8 +34,8 @@ public class Haven extends Card {
 			// indicate that this haven will have an effect next turn
 			return true;
 		} else {
-			game.message(player, "setting aside nothing because your hand is emtpy");
-			game.messageOpponents(player, "setting aside nothing because his hand is emtpy");
+			game.message(player, "setting aside nothing because your hand is empty");
+			game.messageOpponents(player, "setting aside nothing because their hand is empty");
 			// indicate that this haven will have no effect next turn
 			return false;
 		}
@@ -45,7 +45,7 @@ public class Haven extends Card {
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		player.addToHand(duration.havenedCards);
 		game.message(player, "returning " + Card.htmlList(duration.havenedCards) + " to your hand");
-		game.messageOpponents(player, "returning " + Card.numCards(duration.havenedCards.size()) + " to his hand");
+		game.messageOpponents(player, "returning " + Card.numCards(duration.havenedCards.size()) + " to their hand");
 		duration.havenedCards.clear();
 	}
 	

@@ -33,13 +33,13 @@ public class SeaHag extends Card {
 				gained = Card.CURSE.htmlName();
 			}
 			game.message(target, "You discard " + discarded + " from the top of your deck and put " + gained + " on top");
-			game.messageOpponents(target, target.username + " discards " + discarded + " from the top of his deck and puts " + gained + " on top");
+			game.messageOpponents(target, target.username + " discards " + discarded + " from the top of their deck and puts " + gained + " on top");
 		}
 	}
 
 	@Override
 	public String[] description() {
-		return new String[] {"Each other player discards the top card of his deck, then gains a Curse card, putting it on top of his deck."};
+		return new String[] {"Each other player discards the top card of their deck, then gains a Curse card, putting it on top of their deck."};
 	}
 
 	@Override

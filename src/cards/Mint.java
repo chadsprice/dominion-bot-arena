@@ -22,7 +22,7 @@ public class Mint extends Card {
 	public void onPlay(Player player, Game game) {
 		Set<Card> treasures = treasuresInHand(player);
 		if (!treasures.isEmpty()) {
-			Card card = game.promptChooseGainCopyOfCardInHand(player, treasures, "Mint: Choose a card to reveal from your hand and gain a copy of");
+			Card card = game.promptChooseGainCopyOfCardInHand(player, treasures, "Mint: Choose a card to reveal from your hand and gain a copy of.");
 			if (card != null) {
 				if (game.supply.get(card) != 0) {
 					game.messageAll("revealing " + card.htmlName() + " and gaining a copy of it");
@@ -35,7 +35,7 @@ public class Mint extends Card {
 			}
 		} else {
 			game.message(player, "having no treasure in your hand");
-			game.messageOpponents(player, "having no treasure in his hand");
+			game.messageOpponents(player, "having no treasure in their hand");
 		}
 	}
 

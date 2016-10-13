@@ -74,7 +74,7 @@ public class MasqueradeFirstEdition extends Card {
 
     @Override
     public String[] description() {
-        return new String[] {"+2 Cards", "Each player passes a card from his hand to the left at once. Then you may trash a card from your hand."};
+        return new String[] {"+2 Cards", "Each player passes a card from their hand to the left at once. Then you may trash a card from your hand."};
     }
 
     @Override

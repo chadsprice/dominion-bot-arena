@@ -29,7 +29,7 @@ public class WishingWell extends Card {
 			if (namedCard == revealedCard) {
 				player.addToHand(revealedCard);
 				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it into your hand");
-				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it into his hand");
+				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it into their hand");
 			} else {
 				player.putOnDraw(revealedCard);
 				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it back");
@@ -37,7 +37,7 @@ public class WishingWell extends Card {
 			}
 		} else {
 			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "his deck is empty");
+			game.messageOpponents(player, "their deck is empty");
 		}
 	}
 

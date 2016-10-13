@@ -29,14 +29,14 @@ public class GhostShip extends Card {
 				target.removeFromHand(toPutOnDeck);
 				target.putOnDraw(toPutOnDeck);
 				game.message(target, "You put " + Card.numCards(toPutOnDeck.size()) + " on top of your deck");
-				game.messageOpponents(target, target.username + " puts " + Card.numCards(toPutOnDeck.size()) + " on top of his deck");
+				game.messageOpponents(target, target.username + " puts " + Card.numCards(toPutOnDeck.size()) + " on top of their deck");
 			}
 		}
 	}
 
 	@Override
 	public String[] description() {
-		return new String[] {"+2 Cards", "Each other player with 4 or more cards in hand puts cards from his hand on top of his deck until he has 3 cards in his hand."};
+		return new String[] {"+2 Cards", "Each other player with 4 or more cards in hand puts cards from their hand on top of their deck until they have 3 cards in their hand."};
 	}
 
 	@Override

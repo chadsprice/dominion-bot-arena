@@ -23,10 +23,11 @@ public class Adventurer extends Card {
 		List<Card> revealed = new ArrayList<Card>();
 		List<Card> treasures = new ArrayList<Card>();
 		List<Card> setAside = new ArrayList<Card>();
-		// draw at most 2 treasures
+		// reveal cards from the draw until 2 treasures have been revealed, or the draw runs out
 		while (treasures.size() < 2) {
 			List<Card> drawn = player.takeFromDraw(1);
 			if (drawn.isEmpty()) {
+				// the draw has run out
 				break;
 			}
 			Card card = drawn.get(0);
@@ -37,16 +38,24 @@ public class Adventurer extends Card {
 				setAside.add(card);
 			}
 		}
-		// put drawn treasures in the hand
-		if (!treasures.isEmpty()) {
-			player.addToHand(treasures);
+		if (!revealed.isEmpty()) {
+			game.messageAll("revealing " + Card.htmlList(revealed));
+			String treasuresStr = treasures.isEmpty() ? "nothing" : Card.htmlList(treasures);
+			String setAsideStr = setAside.isEmpty() ? "" : " and discarding the rest";
+			game.message(player, "putting " + treasuresStr + " into your hand" + setAsideStr);
+			game.messageOpponents(player, "putting " + treasuresStr + " into their hand" + setAsideStr);
+			// put drawn treasures in the hand
+			if (!treasures.isEmpty()) {
+				player.addToHand(treasures);
+			}
+			// put the rest in the discard
+			if (!setAside.isEmpty()) {
+				player.addToDiscard(setAside);
+			}
+		} else {
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "their deck is empty");
 		}
-		// put the rest in the discard
-		if (!setAside.isEmpty()) {
-			player.addToDiscard(setAside);
-		}
-		game.messageAll("revealing " + Card.htmlList(revealed));
-		game.messageAll("drawing " + Card.htmlList(treasures));
 	}
 
 	@Override

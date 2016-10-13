@@ -19,15 +19,12 @@ public class City extends Card {
 	public void onPlay(Player player, Game game) {
 		int numEmptySupplyPiles = game.numEmptySupplyPiles();
 		if (numEmptySupplyPiles == 0) {
-			// no empty supply piles
 			plusCards(player, game, 1);
 			plusActions(player, game, 2);
 		} else if (numEmptySupplyPiles == 1) {
-			// 1 empty supply piles
 			plusCards(player, game, 2);
 			plusActions(player, game, 2);
 		} else {
-			// 2 or more empty supply piles
 			plusCards(player, game, 2);
 			plusActions(player, game, 2);
 			plusCoins(player, game, 1);

@@ -56,7 +56,7 @@ public class Mountebank extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+$2", "Each other player may discard a Curse. If he doesn't, he gains a Curse and a Copper."};
+		return new String[] {"+$2", "Each other player may discard a Curse. If they don't, they gain a Curse and a Copper."};
 	}
 
 	@Override

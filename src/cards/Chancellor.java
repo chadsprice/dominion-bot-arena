@@ -24,7 +24,7 @@ public class Chancellor extends Card {
 			if (choice == 0) {
 				player.addToDiscard(player.takeFromDraw(player.getDraw().size()));
 				game.message(player, "putting your deck into your discard pile immediately");
-				game.messageOpponents(player, "putting his deck into his discard pile immediately");
+				game.messageOpponents(player, "putting their deck into their discard pile immediately");
 			}
 		}
 	}

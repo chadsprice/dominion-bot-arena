@@ -29,7 +29,7 @@ public class Tactician extends Card {
 			return true;
 		} else {
 			game.message(player, "but your hand is empty");
-			game.messageOpponents(player, "but his hand is empty");
+			game.messageOpponents(player, "but their hand is empty");
 			return false;
 		}
 	}

@@ -37,7 +37,7 @@ public class Expand extends Card {
 				game.messageAll("gaining nothing");
 			}
 		} else {
-			game.messageAll("trashing nothing");
+			game.messageAll("having no card to trash");
 		}
 	}
 

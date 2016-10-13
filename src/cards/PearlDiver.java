@@ -26,14 +26,14 @@ public class PearlDiver extends Card {
 			if (choice == 0) {
 				player.putOnDraw(player.takeFromBottomOfDeck());
 				game.message(player, "putting the " + card.htmlNameRaw() + " on top of your deck");
-				game.messageOpponents(player, "putting the card at the bottom of his deck on top");
+				game.messageOpponents(player, "putting the card at the bottom of their deck on top");
 			} else {
 				game.message(player, "leaving the " + card.htmlNameRaw() + " at the bottom of your deck");
-				game.messageOpponents(player, "leaving the card at the bottom of his deck");
+				game.messageOpponents(player, "leaving the card at the bottom of their deck");
 			}
 		} else {
 			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "his deck is empty");
+			game.messageOpponents(player, "their deck is empty");
 		}
 	}
 

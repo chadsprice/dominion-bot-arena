@@ -56,7 +56,7 @@ public class Tribute extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"The player to your left reveals then discards the top 2 cards of his deck.", "For each differently named card revealed, if it is an...", "Action Card, +2 Actions", "Treasure Card, +$2", "Victory Card, +2 Cards"};
+		return new String[] {"The player to your left reveals then discards the top 2 cards of their deck.", "For each differently named card revealed, if it is an...", "Action Card, +2 Actions", "Treasure Card, +$2", "Victory Card, +2 Cards"};
 	}
 
 	@Override

@@ -22,35 +22,25 @@ public class Ironworks extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// gain a card costing up to $4
-		Set<Card> gainable = new HashSet<Card>();
-		Card toGain = null;
-		for (Map.Entry<Card, Integer> entry : game.supply.entrySet()) {
-			Card card = entry.getKey();
-			int count = entry.getValue();
-			if (card.cost(game) <= 4 && count > 0) {
-				gainable.add(card);
+		Set<Card> gainable = game.cardsCostingAtMost(4);
+		if (!gainable.isEmpty()) {
+			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Ironworks: Choose a card to gain.");
+			game.messageAll("gaining " + toGain.htmlName());
+			game.gain(player, toGain);
+			// action -> +1 action
+			if (toGain.isAction) {
+				plusActions(player, game, 1);
 			}
-		}
-		if (gainable.size() == 0) {
-			game.messageAll("gaining nothing");
-			return;
+			// treasure -> +$1
+			if (toGain.isTreasure) {
+				plusCoins(player, game, 1);
+			}
+			// victory -> +1 card
+			if (toGain.isVictory) {
+				plusCards(player, game, 1);
+			}
 		} else {
-			toGain = game.promptChooseGainFromSupply(player, gainable, "Ironworks: Choose a card to gain");
-		}
-		// gain card
-		game.messageAll("gaining " + toGain.htmlName());
-		game.gain(player, toGain);
-		// action -> +1 action
-		if (toGain.isAction) {
-			plusActions(player, game, 1);
-		}
-		// treasure -> +$1
-		if (toGain.isTreasure) {
-			plusCoins(player, game, 1);
-		}
-		// victory -> +1 card
-		if (toGain.isVictory) {
-			plusCards(player, game, 1);
+			game.messageAll("gaining nothing");
 		}
 	}
 

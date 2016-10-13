@@ -274,7 +274,7 @@ public class Game implements Runnable {
 					}
 					player.sendPlay();
 					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
-					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of his deck");
+					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of their deck");
 				}
 			}
 		}
@@ -742,14 +742,14 @@ public class Game implements Runnable {
 				choice = promptMultipleChoice(player, "Watchtower: Trash the " + card.htmlNameRaw() + " or put it on top of your deck?", "reactionPrompt", new String[] {"Trash", "Put on top of deck"});
 				if (choice == 0) {
 					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
-					messageOpponents(player, player.username + " uses his " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
+					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					takeFromSupply(card);
 					addToTrash(card);
 					messageIndent--;
 					return true;
 				} else {
 					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
-					messageOpponents(player, player.username + " uses his " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of his deck");
+					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
 					gainToTopOfDeck(player, card);
 					messageIndent--;
 					return true;
@@ -761,7 +761,7 @@ public class Game implements Runnable {
 			if (choice == 0) {
 				messageIndent++;
 				message(player, "you use your " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
-				messageOpponents(player, player.username + " uses his " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of his deck");
+				messageOpponents(player, player.username + " uses their " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
 				gainToTopOfDeck(player, card);
 				messageIndent--;
 				return true;
@@ -1168,9 +1168,9 @@ public class Game implements Runnable {
 				if (player == toHurryUp) {
 					message(player, "<span class=\"hurryUp\">" + sender.username + " asks you to hurry up! You will automatically forfeit in " + SECONDS_AFTER_HURRY_UP + " seconds!</span>");
 				} else if (player == sender) {
-					message(player, "<span class=\"hurryUp\">" + "You ask " + toHurryUp.username + " to hurry up! He will automatically forfeit in " + SECONDS_AFTER_HURRY_UP + " seconds!</span>");
+					message(player, "<span class=\"hurryUp\">" + "You ask " + toHurryUp.username + " to hurry up! They will automatically forfeit in " + SECONDS_AFTER_HURRY_UP + " seconds!</span>");
 				} else {
-					message(player, "<span class=\"hurryUp\">" + sender.username + " asks " + toHurryUp.username + " to hurry up! He will automatically forfeit in " + SECONDS_AFTER_HURRY_UP + " seconds!</span>");
+					message(player, "<span class=\"hurryUp\">" + sender.username + " asks " + toHurryUp.username + " to hurry up! They will automatically forfeit in " + SECONDS_AFTER_HURRY_UP + " seconds!</span>");
 				}
 			}
 			issueCommandsToAllPlayers();
@@ -1728,33 +1728,24 @@ public class Game implements Runnable {
 			// ignore incorrect responses
 		}
 		// parse response
-		boolean valid = true;
-		List<Card> discarded = null;
 		if (response != null) {
-			discarded = parseJsonCardList(response);
-		}
-		// verify response
-		if (discarded == null || (isMandatory && discarded.size() != number)) {
-			valid = false;
-		} else {
-			// make sure hand has all chosen cards
-			List<Card> handCopy = new ArrayList<>(player.getHand());
-			for (Card card : discarded) {
-				if (!handCopy.remove(card)) {
-					valid = false;
-					break;
-				}
+			List<Card> toDiscard = parseJsonCardList(response);
+			// if the client send back a valid list,
+			// and it's either exactly the right number or less but not mandatory,
+			// and they actually have those cards in hand
+			if (toDiscard != null &&
+					(toDiscard.size() == number || (!isMandatory && toDiscard.size() < number)) &&
+					player.handContains(toDiscard)) {
+				return toDiscard;
 			}
 		}
-		if (valid) {
-			return discarded;
+		// the response was invalid, so
+		if (isMandatory) {
+			// if mandatory, just discard the first few in hand
+			return new ArrayList<Card>(player.getHand().subList(0, number));
 		} else {
-			if (isMandatory) {
-				// if the response is invalid, just discard the first few in hand
-				return new ArrayList<Card>(player.getHand().subList(0, number));
-			} else {
-				return new ArrayList<Card>();
-			}
+			// otherwise discard nothing
+			return new ArrayList<Card>();
 		}
 	}
 

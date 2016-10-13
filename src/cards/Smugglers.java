@@ -40,7 +40,7 @@ public class Smugglers extends Card {
 		} else {
 			List<Player> opponents = game.getOpponents(player);
 			Player playerOnRight = opponents.get(opponents.size() - 1);
-			game.messageAll("but " + playerOnRight.username + " gained no cards costing $6 or less on his last turn");
+			game.messageAll("but " + playerOnRight.username + " gained no cards costing $6 or less on their last turn");
 		}
 	}
 
@@ -64,7 +64,7 @@ public class Smugglers extends Card {
 	}
 
 	private Set<Card> choosable(Player player, Game game) {
-		// get the set of cards that the player to the right gained on his last turn
+		// get the set of cards that the player to the right gained on their last turn
 		List<Player> opponents = game.getOpponents(player);
 		Player playerOnRight = opponents.get(opponents.size() - 1);
 		Set<Card> gained = playerOnRight.cardsGainedDuringTurn;
@@ -85,7 +85,7 @@ public class Smugglers extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Gain a copy of a card costing up to $6 that the player to your right gained on his last turn."};
+		return new String[] {"Gain a copy of a card costing up to $6 that the player to your right gained on their last turn."};
 	}
 
 	@Override

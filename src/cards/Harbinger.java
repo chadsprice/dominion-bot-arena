@@ -35,13 +35,14 @@ public class Harbinger extends Card {
                 Card chosenCard = cardsInDiscardSorted.get(choice);
                 player.removeFromDiscard(chosenCard, 1);
                 player.putOnDraw(chosenCard);
-                game.messageAll("putting " + chosenCard.htmlName() + " on top of his deck");
+                game.messageAll("putting " + chosenCard.htmlName() + " on top of their deck");
             } else {
-                game.messageAll("putting nothing from his discard on top of his deck");
+                game.message(player, "your discard is empty");
+                game.messageOpponents(player, "their discard is empty");
             }
         } else {
             game.message(player, "your discard is empty");
-            game.messageOpponents(player, "his discard is empty");
+            game.messageOpponents(player, "their discard is empty");
         }
     }
 

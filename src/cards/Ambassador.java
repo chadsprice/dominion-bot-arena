@@ -23,12 +23,7 @@ public class Ambassador extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		if (!player.getHand().isEmpty()) {
 			Card card = game.promptChoosePassToOpponent(player, new HashSet<Card>(player.getHand()), "Ambassador: Choose a card to reveal from your hand.", "actionPrompt");
-			int numInHand = 0;
-			for (Card cardInHand : player.getHand()) {
-				if (cardInHand == card) {
-					numInHand++;
-				}
-			}
+			int numInHand = player.numberInHand(card);
 			String[] choices;
 			if (numInHand >= 2) {
 				choices = new String[] {"0", "1", "2"};
@@ -39,8 +34,8 @@ public class Ambassador extends Card {
 			for (int i = 0; i < numToReturn; i++) {
 				player.removeFromHand(card);
 			}
-			game.returnToSupply(card, numToReturn);
 			game.messageAll("returning " + card.htmlName(numToReturn) + " to the supply");
+			game.returnToSupply(card, numToReturn);
 			for (Player target : targets) {
 				if (game.supply.get(card) > 0) {
 					game.message(target, "You gain " + card.htmlName());
@@ -49,8 +44,8 @@ public class Ambassador extends Card {
 				}
 			}
 		} else {
-			game.message(player, "having no card to reveal from your hand");
-			game.messageOpponents(player, "having no card to reveal from his hand");
+			game.message(player, "your hand is empty");
+			game.messageOpponents(player, "their hand is empty");
 		}
 	}
 

@@ -41,7 +41,7 @@ public class Vassal extends Card {
             }
         } else {
             game.message(player, "your deck is empty");
-            game.messageOpponents(player, "his deck is empty");
+            game.messageOpponents(player, "their deck is empty");
         }
     }
 

@@ -40,7 +40,7 @@ public class Mine extends Card {
 				if (!gainable.isEmpty()) {
 					Card toGain = game.promptChooseGainFromSupply(player, gainable, "Mine: Choose a treasure to gain");
 					game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
-					game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
+					game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into their hand");
 					game.gainToHand(player, toGain);
 				} else {
 					game.messageAll("gaining nothing");

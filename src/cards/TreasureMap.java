@@ -30,16 +30,16 @@ public class TreasureMap extends Card {
 			player.removeFromHand(this);
 			game.addToTrash(this);
 			game.message(player, "trashing " + this.htmlName() + " from your hand");
-			game.messageOpponents(player, "trashing " + this.htmlName() + " from his hand");
+			game.messageOpponents(player, "trashing " + this.htmlName() + " from their hand");
 			// only if both treasure maps were trashed
 			if (movedToTrash) {
-				// gain up to 4 golds, putting them on top of the deck
+				// gain up to 4 golds, putting them on top of your deck
 				int goldsToGain = Math.min(4, game.supply.get(Card.GOLD));
 				for (int i = 0; i < goldsToGain; i++) {
 					game.gainToTopOfDeck(player, Card.GOLD);
 				}
 				game.message(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of your deck");
-				game.messageOpponents(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of his deck");
+				game.messageOpponents(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of their deck");
 			}
 		} else {
 			game.messageAll("having no treasure map in hand");

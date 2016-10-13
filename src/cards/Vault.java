@@ -53,7 +53,7 @@ public class Vault extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+2 Cards", "Discard any number of cards.", "+$1 per card discarded.", "Each other player may discard 2 cards. If he does, he draws a card."};
+		return new String[] {"+2 Cards", "Discard any number of cards.", "+$1 per card discarded.", "Each other player may discard 2 cards. If they do, they draw a card."};
 	}
 
 	@Override

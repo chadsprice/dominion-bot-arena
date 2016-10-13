@@ -33,13 +33,13 @@ public class Scout extends Card {
 			if (victoryCards.size() > 0) {
 				player.addToHand(victoryCards);
 				game.message(player, "putting " + Card.htmlList(victoryCards) + " into your hand");
-				game.messageOpponents(player, "putting " + Card.htmlList(victoryCards) + " into his hand");
+				game.messageOpponents(player, "putting " + Card.htmlList(victoryCards) + " into their hand");
 			}
 			// put the rest on top of your deck in any order
 			putOnDeckInAnyOrder(player, game, revealed, "Scout: Put the remaining cards on top of your deck");
 		} else {
 			game.message(player, "revealing nothing because your deck is empty");
-			game.messageOpponents(player, "revealing nothing because his deck is empty");
+			game.messageOpponents(player, "revealing nothing because their deck is empty");
 		}
 	}
 

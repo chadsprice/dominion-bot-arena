@@ -35,7 +35,7 @@ public class Embargo extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+$2", "Trash this card. Put an Embargo token on top of a Supply pile.", "When a player buys a card, he gains a Curse card per Embargo token on that pile."};
+		return new String[] {"+$2", "Trash this card. Put an Embargo token on top of a Supply pile.", "When a player buys a card, they gains a Curse card per Embargo token on that pile."};
 	}
 
 	@Override

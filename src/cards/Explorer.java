@@ -24,14 +24,14 @@ public class Explorer extends Card {
 			if (choice == 0) {
 				revealedProvince = true;
 				game.message(player, "revealing " + Card.PROVINCE.htmlName() + " from your hand");
-				game.messageOpponents(player, "revealing " + Card.PROVINCE.htmlName() + " from his hand");
+				game.messageOpponents(player, "revealing " + Card.PROVINCE.htmlName() + " from their hand");
 			}
 		}
 		// gain the respective card, putting it into your hand
 		Card toGain = revealedProvince ? Card.GOLD : Card.SILVER;
 		if (game.supply.get(toGain) > 0) {
 			game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
-			game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into his hand");
+			game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into their hand");
 			game.gainToHand(player, toGain);
 		} else {
 			game.messageAll("gaining nothing");

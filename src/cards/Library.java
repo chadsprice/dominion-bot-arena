@@ -27,7 +27,7 @@ public class Library extends Card {
 			List<Card> drawn = player.takeFromDraw(1);
 			if (drawn.size() == 0) {
 				game.message(player, "your deck is empty");
-				game.messageOpponents(player, "his deck is empty");
+				game.messageOpponents(player, "their deck is empty");
 				break;
 			}
 			Card card = drawn.get(0);

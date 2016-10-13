@@ -30,7 +30,7 @@ public class Feast extends Card {
 		// gain a card costing up to $5
 		Set<Card> gainable = game.cardsCostingAtMost(5);
 		if (!gainable.isEmpty()) {
-			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain");
+			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Feast: Choose a card to gain.");
 			game.messageAll("gaining " + toGain.htmlName());
 			game.gain(player, toGain);
 		} else {

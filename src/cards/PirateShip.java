@@ -61,7 +61,7 @@ public class PirateShip extends Card {
 			if (trashedTreasure) {
 				player.addPirateShipToken();
 				game.message(player, "You place a coin token on your pirate ship mat");
-				game.messageOpponents(player, player.username + " places a coin token on his pirate ship mat");
+				game.messageOpponents(player, player.username + " places a coin token on their pirate ship mat");
 			}
 		} else {
 			player.addCoins(player.getPirateShipTokens());
@@ -71,7 +71,7 @@ public class PirateShip extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Choose one: Each other player reveals the top 2 cards his deck, trashes a revealed Treaure that you choose, discards the rest, and if anyone trashed a Treasure you take a coin token; or, +$1 per coin token you've taken with Pirate Ships this game."};
+		return new String[] {"Choose one: Each other player reveals the top 2 cards their deck, trashes a revealed Treaure that you choose, discards the rest, and if anyone trashed a Treasure you take a coin token; or, +$1 per coin token you've taken with Pirate Ships this game."};
 	}
 
 	@Override

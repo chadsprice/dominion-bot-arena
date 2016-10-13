@@ -47,7 +47,7 @@ public class Saboteur extends Card {
 				target.addToDiscard(revealed);
 				// target may gain a card costing at most 2 less
 				int cost = toTrash.cost(game) - 2;
-				Card toGain = game.promptChooseGainFromSupply(target, game.cardsCostingAtMost(cost), "Saboteur: You trash " + toTrash.htmlName() + ". You may gain a card costing at most $2 less than it", "attackPrompt", false, "Gain nothing");
+				Card toGain = game.promptChooseGainFromSupply(target, game.cardsCostingAtMost(cost), "Saboteur: You trash " + toTrash.htmlName() + ". You may gain a card costing at most $2 less than it.", "attackPrompt", false, "Gain nothing");
 				if (toGain != null) {
 					game.message(target, "You gain " + toGain.htmlName());
 					game.messageOpponents(target, target.username + " gains " + toGain.htmlName());
@@ -70,7 +70,7 @@ public class Saboteur extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Each other player reveals cards from the top of his deck until revealing one costing $3 or more. He trashes that card and may gain a card costing at most $2 less than it. He discards the other revealed cards."};
+		return new String[] {"Each other player reveals cards from the top of their deck until revealing one costing $3 or more. They trash that card and may gain a card costing at most $2 less than it. They discard the other revealed cards."};
 	}
 
 	@Override

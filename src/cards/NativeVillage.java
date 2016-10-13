@@ -28,20 +28,20 @@ public class NativeVillage extends Card {
 				Card card = drawn.get(0);
 				player.putOnNativeVillageMat(card);
 				game.message(player, "putting " + card.htmlName() + " on your native village mat");
-				game.messageOpponents(player, "putting the top card of his deck on his native village mat");
+				game.messageOpponents(player, "putting the top card of their deck on their native village mat");
 			} else {
 				game.message(player, "putting nothing on your native village mat because your deck is empty");
-				game.messageOpponents(player, "putting nothing on his native village mat because his deck is empty");
+				game.messageOpponents(player, "putting nothing on their native village mat because their deck is empty");
 			}
 		} else {
 			List<Card> taken = player.takeAllFromNativeVillageMat();
 			if (!taken.isEmpty()) {
 				player.addToHand(taken);
 				game.message(player, "putting " + Card.htmlList(taken) + " into your hand");
-				game.messageOpponents(player, "putting all " + Card.numCards(taken.size()) + " from his native village mat into his hand");
+				game.messageOpponents(player, "putting all " + Card.numCards(taken.size()) + " from their native village mat into their hand");
 			} else {
 				game.message(player, "putting nothing into your hand because your native village mat is empty");
-				game.messageOpponents(player, "putting nothing into his hand because his native village mat is empty");
+				game.messageOpponents(player, "putting nothing into their hand because their native village mat is empty");
 			}
 		}
 	}

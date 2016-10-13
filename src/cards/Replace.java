@@ -35,7 +35,7 @@ public class Replace extends Card {
                 // if it is an action or treasure, put it on top of your deck
                 if (toGain.isAction || toGain.isTreasure) {
                     game.message(player, "gaining " + toGain.htmlName() + ", putting it on top of your deck");
-                    game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it on top of his deck");
+                    game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it on top of their deck");
                     game.gainToTopOfDeck(player, toGain);
                 } else {
                     game.messageAll("gaining " + toGain.htmlName());

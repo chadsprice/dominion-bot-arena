@@ -22,7 +22,7 @@ public class Thief extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// each other player reveals the top 2 cards of his deck
+		// each other player reveals the top 2 cards of their deck
 		for (Player target : targets) {
 			List<Card> top = target.takeFromDraw(2);
 			game.message(target, "You reveal " + Card.htmlList(top));
@@ -63,7 +63,7 @@ public class Thief extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"Each other player reveals the top 2 cards of his deck.", "If they revealed any Treasure cards, they trash one of them that you choose.", "You may gain any or all of these trashed cards. They discard the other revealed cards."};
+		return new String[] {"Each other player reveals the top 2 cards of their deck.", "If they revealed any Treasure cards, they trash one of them that you choose.", "You may gain any or all of these trashed cards. They discard the other revealed cards."};
 	}
 
 	@Override

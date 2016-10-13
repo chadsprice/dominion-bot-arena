@@ -69,7 +69,7 @@ public class Rabble extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+3 Cards", "Each other player reveals the top 3 cards of his deck, discards the revealed Actions and Treasures, and puts the rest back on top in any order he chooses."};
+		return new String[] {"+3 Cards", "Each other player reveals the top 3 cards of their deck, discards the revealed Actions and Treasures, and puts the rest back on top in any order they choose."};
 	}
 
 	@Override

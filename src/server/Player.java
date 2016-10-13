@@ -349,6 +349,26 @@ public class Player {
 		return hand;
 	}
 
+	public int numberInHand(Card card) {
+		int num = 0;
+		for (Card inHand : hand) {
+			if (inHand == card) {
+				num++;
+			}
+		}
+		return num;
+	}
+
+	public boolean handContains(List<Card> cards) {
+		List<Card> handCopy = new ArrayList<>(hand);
+		for (Card card : cards) {
+			if (!handCopy.remove(card)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	// the order of stacks displayed in the player's hand.
 	// newly drawn cards that do not already have a stack are always placed at the end.
 	// this prevents the hand from being drastically rearranged in the middle of the player's turn
@@ -442,6 +462,11 @@ public class Player {
 	public void putFromHandIntoDiscard(List<Card> cards) {
 		removeFromHand(cards);
 		addToDiscard(cards);
+	}
+
+	public void putFromHandOntoDraw(Card card) {
+		removeFromHand(card);
+		putOnDraw(card);
 	}
 
 	public List<Card> getDiscard() {

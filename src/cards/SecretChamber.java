@@ -46,7 +46,7 @@ public class SecretChamber extends Card {
 			discarded = new ArrayList<Card>();
 		}
 		game.message(player, "putting " + Card.htmlList(discarded) + " on top of your deck");
-		game.messageOpponents(player, "putting " + Card.numCards(drawn.size()) + " on top of his deck");
+		game.messageOpponents(player, "putting " + Card.numCards(drawn.size()) + " on top of their deck");
 		return false;
 	}
 

@@ -46,11 +46,11 @@ public class Navigator extends Card {
 				}
 				player.putOnDraw(toPutOnDeck);
 				game.message(player, "putting them back on top of your deck");
-				game.messageOpponents(player, "putting them back on top of his deck");
+				game.messageOpponents(player, "putting them back on top of their deck");
 			}
 		} else {
 			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "his deck is empty");
+			game.messageOpponents(player, "their deck is empty");
 		}
 	}
 

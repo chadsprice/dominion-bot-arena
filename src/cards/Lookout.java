@@ -53,7 +53,7 @@ public class Lookout extends Card {
 		if (!drawn.isEmpty()) {
 			Card toPutOnDeck = drawn.get(0);
 			game.message(player, "putting the " + toPutOnDeck.htmlNameRaw() + " on top of your deck");
-			game.messageOpponents(player, "putting a card on top of his deck");
+			game.messageOpponents(player, "putting a card on top of their deck");
 			player.putOnDraw(toPutOnDeck);
 		}
 	}

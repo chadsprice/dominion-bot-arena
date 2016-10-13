@@ -31,18 +31,18 @@ public class Island extends Card {
 			player.removeFromPlay(this);
 			player.putOnIslandMat(this);
 			game.message(player, "putting the " + this.htmlNameRaw() + " on your island mat");
-			game.messageOpponents(player, "putting the " + this.htmlNameRaw() + " on his island mat");
+			game.messageOpponents(player, "putting the " + this.htmlNameRaw() + " on their island mat");
 			movedToIsland = true;
 		}
 		if (!player.getHand().isEmpty()) {
-			Card card = game.promptChooseIslandFromHand(player, new HashSet<Card>(player.getHand()), "Island: Choose a card to set aside on your island mat");
+			Card card = game.promptChooseIslandFromHand(player, new HashSet<Card>(player.getHand()), "Island: Choose a card to set aside on your island mat.");
 			player.removeFromHand(card);
 			player.putOnIslandMat(card);
 			game.message(player, "putting " + card.htmlName() + " on your island mat");
-			game.messageOpponents(player, "putting " + card.htmlName() + " on his island mat");
+			game.messageOpponents(player, "putting " + card.htmlName() + " on their island mat");
 		} else {
-			game.message(player, "having no cards to put on your island mat");
-			game.messageOpponents(player, "having no cards to put on his island mat");
+			game.message(player, "putting nothing else on your island mat because your hand is empty");
+			game.messageOpponents(player, "putting nothing else on their island mat because their hand is empty");
 		}
 		return movedToIsland;
 	}

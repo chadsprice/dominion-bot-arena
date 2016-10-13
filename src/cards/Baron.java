@@ -17,19 +17,19 @@ public class Baron extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// +1 buy
-		player.addBuys(1);
-		game.messageAll("getting +1 buy");
+		plusBuys(player, game, 1);
 		// may discard an estate
 		boolean discardingEstate = false;
 		if (player.getHand().contains(Card.ESTATE)) {
-			int choice = game.promptMultipleChoice(player, "Baron: Discard " + Card.ESTATE.htmlName() + "?", new String[] {"Yes", "No"});
-			discardingEstate = (choice == 0);
+			int choice = game.promptMultipleChoice(player, "Baron: Discard " + Card.ESTATE.htmlName() + " for +$4?", new String[] {"Yes", "No"});
+			if (choice == 0) {
+				discardingEstate = true;
+			}
 		}
 		if (discardingEstate) {
+			game.messageAll("discarding " + Card.ESTATE.htmlName() + " for +$4");
 			player.putFromHandIntoDiscard(Card.ESTATE);
 			player.addCoins(4);
-			game.messageAll("discarding " + Card.ESTATE.htmlName() + " for +$4");
 		} else {
 			if (game.supply.get(Card.ESTATE) > 0) {
 				game.messageAll("gaining " + Card.ESTATE.htmlName());

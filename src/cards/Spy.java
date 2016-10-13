@@ -34,7 +34,7 @@ public class Spy extends Card {
 				if (target == player) {
 					choice = game.promptMultipleChoice(player, "Spy: You reveal " + card.htmlName(), new String[] {"Keep it", "Discard it"});
 				} else {
-					choice = game.promptMultipleChoice(player, "Spy: " + target.username + " reveals " + card.htmlName(), new String[] {"He keeps it", "He discards it"});
+					choice = game.promptMultipleChoice(player, "Spy: " + target.username + " reveals " + card.htmlName(), new String[] {"They keep it", "They discard it"});
 				}
 				if (choice == 0) {
 					target.putOnDraw(card);
@@ -54,7 +54,7 @@ public class Spy extends Card {
 
 	@Override
 	public String[] description() {
-		return new String[] {"+1 Card", "+1 Action", "Each player (including you) reveals the top card of his deck and either discards it or puts it back, your choice."};
+		return new String[] {"+1 Card", "+1 Action", "Each player (including you) reveals the top card of their deck and either discards it or puts it back, your choice."};
 	}
 
 	@Override

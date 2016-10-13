@@ -32,13 +32,13 @@ public class CountingHouse extends Card {
 			int toTake = numCoppersInDiscard - choice;
 			if (toTake != 0) {
 				game.message(player, "revealing " + Card.COPPER.htmlName(toTake) + " from your discard and putting them into your hand");
-				game.messageOpponents(player, "revealing " + Card.COPPER.htmlName(toTake) + " from his discard and putting them into your hand");
+				game.messageOpponents(player, "revealing " + Card.COPPER.htmlName(toTake) + " from their discard and putting them into your hand");
 				player.removeFromDiscard(Card.COPPER, toTake);
 				player.addToHand(Card.COPPER, toTake);
 			}
 		} else {
 			game.message(player, "having no " + Card.COPPER.htmlNameRaw() + " in your discard");
-			game.messageOpponents(player, "having no " + Card.COPPER.htmlNameRaw() + " in his discard");
+			game.messageOpponents(player, "having no " + Card.COPPER.htmlNameRaw() + " in their discard");
 		}
 	}
 

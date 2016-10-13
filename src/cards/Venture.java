@@ -39,7 +39,7 @@ public class Venture extends Card {
 		}
 		if (revealed.isEmpty()) {
 			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "his deck is empty");
+			game.messageOpponents(player, "their deck is empty");
 			return;
 		}
 		game.messageAll("revealing " + Card.htmlList(revealed));

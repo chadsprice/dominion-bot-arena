@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -22,11 +20,8 @@ public class Conspirator extends Card {
 		plusCoins(player, game, 2);
 		// if you played at least 3 actions this turn, +1 card, +1 action
 		if (game.actionsPlayedThisTurn >= 3) {
-			List<Card> drawn = player.drawIntoHand(1);
-			game.message(player, "drawing " + Card.htmlList(drawn));
-			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
-			player.addActions(1);
-			game.messageAll("getting +1 action");
+			plusCards(player, game, 1);
+			plusActions(player, game, 1);
 		}
 	}
 

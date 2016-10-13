@@ -45,7 +45,7 @@ public class SecretPassage extends Card {
             }
             // put it at that position
             game.message(player, "putting " + card.htmlName() + " " + choiceStr + " of your deck");
-            game.messageOpponents(player, "putting a card " + choiceStr + " of his deck");
+            game.messageOpponents(player, "putting a card " + choiceStr + " of their deck");
             player.removeFromHand(card);
             player.putInDraw(card, choice);
         } else {
