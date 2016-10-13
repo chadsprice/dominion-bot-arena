@@ -23,7 +23,7 @@ public class Artisan extends Card {
         // gain a card costing up to $5, putting it into your hand
         Set<Card> gainable = game.cardsCostingAtMost(5);
         if (!gainable.isEmpty()) {
-            Card toGain = game.promptChooseGainFromSupply(player, gainable, "Artisan: Choose a card to gain to your hand");
+            Card toGain = game.promptChooseGainFromSupply(player, gainable, "Artisan: Choose a card to gain to your hand.");
             game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
             game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into their hand");
             game.gainToHand(player, toGain);

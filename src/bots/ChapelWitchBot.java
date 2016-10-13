@@ -11,9 +11,9 @@ import java.util.Set;
 
 public class ChapelWitchBot extends Bot {
 
-	public ChapelWitchBot() {
-		super();
-		setName("ChapelWitch");
+	@Override
+	public String botName() {
+		return "ChapelWitch";
 	}
 
 	@Override

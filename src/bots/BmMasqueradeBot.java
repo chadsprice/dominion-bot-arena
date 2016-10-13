@@ -11,9 +11,9 @@ import java.util.Set;
 
 public class BmMasqueradeBot extends Bot {
 
-	public BmMasqueradeBot() {
-		super();
-		setName("BM Masquerade");
+	@Override
+	public String botName() {
+		return "BM Masquerade";
 	}
 
 	@Override

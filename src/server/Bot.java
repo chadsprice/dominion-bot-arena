@@ -1,18 +1,50 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
+import bots.*;
 import org.json.simple.JSONObject;
 
 import cards.Smugglers;
 
 public class Bot extends Player {
+
+	public static Map<String, Class<? extends Bot>> botsByName = new HashMap<String, Class<? extends Bot>>();
+
+	public static void initializeBots() {
+		include(Bot.class);
+		include(BankWharfBot.class);
+		include(BmLibraryBot.class);
+		include(BmMasqueradeBot.class);
+		include(ChapelWitchBot.class);
+		include(MimicBot.class);
+	}
+
+	private static void include(Class<? extends Bot> botClass) {
+		try {
+			botsByName.put(botClass.newInstance().botName(), botClass);
+		} catch (IllegalAccessException e) {
+			throw new IllegalStateException();
+		} catch (InstantiationException e) {
+			throw new IllegalStateException();
+		}
+	}
+
+	public static Bot newBotFromName(String botName) {
+		if (botsByName.containsKey(botName)) {
+			try {
+				return botsByName.get(botName).newInstance();
+			} catch (IllegalAccessException e) {
+				throw new IllegalStateException();
+			} catch (InstantiationException e) {
+				throw new IllegalStateException();
+			}
+		} else {
+			// when given an unknown bot, default to BigMoney
+			return new Bot();
+		}
+	}
 
 	private static final Comparator<Card> COST_ORDER_COMPARATOR = new Comparator<Card>() {
 		@Override
@@ -30,11 +62,15 @@ public class Bot extends Player {
 
 	public Bot() {
 		super(null);
-		setName("BigMoney");
+		setName();
 	}
 
-	protected void setName(String name) {
-		username = "<span class=\"botName\">" + name + "[Bot]</span>";
+	public String botName() {
+		return "BigMoney";
+	}
+
+	protected void setName() {
+		username = "<span class=\"botName\">" + botName() + "[Bot]</span>";
 	}
 
 	public Card chooseBuy(Set<Card> choiceSet) {

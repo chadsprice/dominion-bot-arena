@@ -11,9 +11,9 @@ import java.util.Set;
 
 public class BankWharfBot extends Bot {
 
-	public BankWharfBot() {
-		super();
-		setName("BankWharf");
+	@Override
+	public String botName() {
+		return "BigMoney";
 	}
 
 	@Override

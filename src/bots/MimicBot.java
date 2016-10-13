@@ -11,9 +11,9 @@ public class MimicBot extends Bot {
 
 	private List<Card> gainStrategy;
 
-	public MimicBot() {
-		super();
-		setName("Mimic");
+	@Override
+	public String botName() {
+		return "Mimic";
 	}
 
 	public void setStrategy(List<Card> gainStrategy) {

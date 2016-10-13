@@ -403,19 +403,7 @@ public class GameServer {
 		}
 		List<Player> bots = new ArrayList<Player>();
 		for (String botName : botNames) {
-			if ("Mimic".equals(botName)) {
-				bots.add(new MimicBot());
-			} else if ("BankWharf".equals(botName)) {
-				bots.add(new BankWharfBot());
-			} else if ("BM Library".equals(botName)) {
-				bots.add(new BmLibraryBot());
-			} else if ("BM Masquerade".equals(botName)) {
-				bots.add(new BmMasqueradeBot());
-			} else if ("ChapelWitch".equals(botName)) {
-				bots.add(new ChapelWitchBot());
-			} else { // "BigMoney"
-				bots.add(new Bot());
-			}
+			bots.add(Bot.newBotFromName(botName));
 		}
 		// create the lobby
 		GameLobby lobby = new GameLobby(name, numPlayers, sets, requiredCards, forbiddenCards, bots);
@@ -757,13 +745,14 @@ public class GameServer {
 			gameListings.add(gameLobbyToJson(lobby));
 		}
 		// send all available bots
+		List<String> availableBotNames = new ArrayList<String>(Bot.botsByName.keySet());
+		// first, order bots alphabetically
+		Collections.sort(availableBotNames);
+		// then, put BigMoney first for convenience
+		availableBotNames.remove("BigMoney");
+		availableBotNames.add(0, "BigMoney");
 		JSONArray availableBots = new JSONArray();
-		availableBots.add("BigMoney");
-		availableBots.add("BankWharf");
-		availableBots.add("BM Library");
-		availableBots.add("BM Masquerade");
-		availableBots.add("ChapelWitch");
-		availableBots.add("Mimic");
+		availableBots.addAll(availableBotNames);
 		// send command to enter lobby
 		JSONObject command = new JSONObject();
 		command.put("command", "enterLobby");
@@ -969,6 +958,7 @@ public class GameServer {
 
 	public static void main(String[] args) {
 		Card.initializeCardSets();
+		Bot.initializeBots();
 
 		INSTANCE = new GameServer();
 		INSTANCE.run();
