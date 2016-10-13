@@ -1,4 +1,7 @@
-package server;
+package bots;
+
+import server.Bot;
+import server.Card;
 
 import java.util.ArrayList;
 import java.util.Arrays;

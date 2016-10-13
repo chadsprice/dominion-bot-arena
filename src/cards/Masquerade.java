@@ -40,7 +40,7 @@ public class Masquerade extends Card {
 				if (eachPlayer.getHand().size() > 0) {
 					Player playerOnLeft = passOrder.get((i + 1) % passOrder.size());
 					String promptType = (eachPlayer == player) ? "actionPrompt" : "attackPrompt";
-					Card toPass = game.promptChoosePassToOpponent(eachPlayer, new HashSet<Card>(eachPlayer.getHand()), "Masquerade: Pass a card from your hand to " + playerOnLeft.username, promptType);
+					Card toPass = game.promptChoosePassToOpponent(eachPlayer, new HashSet<Card>(eachPlayer.getHand()), "Masquerade: Pass a card from your hand to " + playerOnLeft.username + ".", promptType);
 					cardsToPass.add(toPass);
 				} else {
 					cardsToPass.add(null);

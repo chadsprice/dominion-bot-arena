@@ -218,10 +218,10 @@ public class Bot extends Player {
 		}
 		if (card == Card.CELLAR) {
 			// Cellar has no benefit if you do not want to discard anything
-			return wantToDiscard(getHand()) == null;
+			return chooseToDiscard(getHand()) == null;
 		} else if (card == Card.CHAPEL) {
 			// Chapel has no benefit if you do not want to trash anything
-			return wantToTrash(new HashSet<Card>(getHand())) == null;
+			return chooseToTrash(new HashSet<Card>(getHand())) == null;
 		} else if (card == Card.MONEYLENDER) {
 			// Moneylender has no benefit if you have no copper
 			return !getHand().contains(Card.COPPER);
@@ -253,7 +253,7 @@ public class Bot extends Player {
 			return getHand().size() < 3;
 		} else if (card == Card.AMBASSADOR) {
 			// Ambassador has no benefit if you do not want to trash anything
-			return wantToTrash(new HashSet<Card>(getHand())) == null;
+			return chooseToTrash(new HashSet<Card>(getHand())) == null;
 		} else if (card == Card.SMUGGLERS) {
 			// Smugglers has no benefit if you can't smuggle anything you want
 			Smugglers SMUGGLERS = (Smugglers) Card.SMUGGLERS;
@@ -291,7 +291,7 @@ public class Bot extends Player {
 
 	public Card chooseTrashFromHand(Set<Card> choiceSet, boolean isMandatory) {
 		// trash a card willingly
-		Card card = wantToTrash(choiceSet);
+		Card card = chooseToTrash(choiceSet);
 		if (card != null) {
 			return card;
 		} else if (!isMandatory) {
@@ -338,8 +338,8 @@ public class Bot extends Player {
 		List<Card> toDiscard = new ArrayList<Card>();
 		List<Card> handCopy = new ArrayList<Card>(getHand());
 		// discard some cards willingly
-		while (toDiscard.size() < number && wantToDiscard(handCopy) != null) {
-			Card card = wantToDiscard(handCopy);
+		while (toDiscard.size() < number && chooseToDiscard(handCopy) != null) {
+			Card card = chooseToDiscard(handCopy);
 			handCopy.remove(card);
 			toDiscard.add(card);
 		}
@@ -353,7 +353,7 @@ public class Bot extends Player {
 		return toDiscard;
 	}
 
-	public Card wantToDiscard(List<Card> cards) {
+	public Card chooseToDiscard(List<Card> cards) {
 		for (Card card : cards) {
 			if (card == Card.CURSE || card.isVictory) {
 				return card;
@@ -366,8 +366,8 @@ public class Bot extends Player {
 		List<Card> toTrash = new ArrayList<Card>();
 		List<Card> handCopy = new ArrayList<Card>(getHand());
 		// trash some cards willingly
-		while (toTrash.size() < number && wantToTrash(new HashSet<Card>(handCopy)) != null) {
-			Card card = wantToTrash(new HashSet<Card>(handCopy));
+		while (toTrash.size() < number && chooseToTrash(new HashSet<Card>(handCopy)) != null) {
+			Card card = chooseToTrash(new HashSet<Card>(handCopy));
 			handCopy.remove(card);
 			toTrash.add(card);
 		}
@@ -381,13 +381,17 @@ public class Bot extends Player {
 		return toTrash;
 	}
 
-	public Card wantToTrash(Set<Card> choiceSet) {
+	public Card chooseToTrash(Set<Card> choiceSet) {
 		for (Card card : trashPriority()) {
 			if (choiceSet.contains(card)) {
 				return card;
 			}
 		}
 		return null;
+	}
+
+	public boolean wantToTrash(Card card) {
+		return trashPriority().contains(card);
 	}
 
 	public List<Card> trashPriority() {
@@ -423,6 +427,16 @@ public class Bot extends Player {
 			}
 		}
 		throw new IllegalStateException();
+	}
+
+	// card-specific decisions
+
+	public int ambassadorNumToReturn(Card revealed, int maximum) {
+		if (wantToTrash(revealed)) {
+			return maximum;
+		} else {
+			return 0;
+		}
 	}
 
 }

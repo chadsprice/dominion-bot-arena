@@ -24,12 +24,12 @@ public class Lurker extends Card {
         if (choice == 0) {
             Set<Card> trashable = actions(game.supply.keySet());
             if (!trashable.isEmpty()) {
-                Card toTrash = game.promptChooseGainFromSupply(player, trashable, "Lurker: Choose an action card from the supply to trash");
+                Card toTrash = game.promptChooseGainFromSupply(player, trashable, "Lurker: Choose an action card from the supply to trash.");
                 game.messageAll("trashing " + toTrash.htmlName() + " from the supply");
                 game.takeFromSupply(toTrash);
                 game.addToTrash(toTrash);
             } else {
-                game.messageAll("but there are no action cards in the supply to trash");
+                game.messageAll("there are no action cards in the supply to trash");
             }
         } else {
             List<Card> gainableSorted = new ArrayList<Card>(actions(game.getTrash()));
@@ -39,7 +39,7 @@ public class Lurker extends Card {
                 for (int i = 0; i < gainableSorted.size(); i++) {
                     choices[i] = gainableSorted.get(i).toString();
                 }
-                choice = game.promptMultipleChoice(player, "Lurker: Choose an action card to gain from the trash", choices);
+                choice = game.promptMultipleChoice(player, "Lurker: Choose an action card to gain from the trash.", choices);
                 Card toGain = gainableSorted.get(choice);
                 game.messageAll("gaining " + toGain.htmlName() + " from the trash");
                 game.gainFromTrash(player, toGain);
