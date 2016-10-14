@@ -561,6 +561,12 @@ body {
   font-size: 120%;
 }
 
+#legal {
+  text-align: center;
+  font-size: 75%;
+  padding-bottom: 0.5em;
+}
+
 #lobbyBody {
   display: flex;
   flex-direction: row;
