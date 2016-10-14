@@ -10,7 +10,7 @@ Implemented Sets:
 * Prosperity
 
 ## Running
-You can run the server yourself by downloading [dominion-bot-arena.zip](https://github.com/chadsprice/dominion-bot-arena/raw/master/dominion-bot-arena.zip). Extract the contents and execute `java -jar server.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.
+You can run the server yourself by downloading [dominion-bot-arena.zip](https://github.com/chadsprice/dominion-bot-arena/raw/master/dominion-bot-arena.zip). Extract the contents and execute `java -jar dominion-bot-arena.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.
 
 ## Legal
 The original Dominion card game is created by Donald X. Vaccarino and published by Rio Grande Games. This fan project is in no way affiliated with either.
