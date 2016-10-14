@@ -43,23 +43,13 @@ public class Sentry extends Card {
             }
             if (!toPutBack.isEmpty()) {
                 if (toPutBack.size() == 1) {
+                    // automatically put the remaining card back (no need to prompt the user for the order)
                     Card card = toPutBack.get(0);
                     game.message(player, "putting " + card.htmlName() + " back on top");
                     game.messageOpponents(player, "putting 1 card back on top");
+                    player.putOnDraw(card);
                 } else { // toPutBack.size() == 2
-                    // put the rest back in any order
-                    List<Card> putBackCopy = new ArrayList<Card>(toPutBack);
-                    while (!toPutBack.isEmpty()) {
-                        String[] choices = new String[toPutBack.size()];
-                        for (int i = 0; i < toPutBack.size(); i++) {
-                            choices[i] = toPutBack.get(i).toString();
-                        }
-                        int choice = game.promptMultipleChoice(player, "Sentry: Put the remaining cards on top of your deck (the first card you choose will be on top of your deck)", choices);
-                        Card card = toPutBack.remove(choice);
-                        player.putOnDraw(card);
-                    }
-                    game.message(player, "putting " + Card.htmlList(putBackCopy) + " back on top");
-                    game.messageOpponents(player, "putting 2 cards back on top");
+                    putOnDeckInAnyOrder(player, game, toPutBack, "Sentry: Put the remaining cards on top of your deck");
                 }
             }
         } else {
