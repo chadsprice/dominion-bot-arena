@@ -13,7 +13,7 @@ public class BankWharfBot extends Bot {
 
 	@Override
 	public String botName() {
-		return "BigMoney";
+		return "BankWharf";
 	}
 
 	@Override
