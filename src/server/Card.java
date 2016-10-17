@@ -154,6 +154,8 @@ public class Card {
 	// prosperity basic cards
 	public static final Card PLATINUM = new Platinum();
 	public static final Card COLONY = new Colony();
+	// cornucopia expansion
+	public static final Card HAMLET = new Hamlet();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -165,6 +167,7 @@ public class Card {
 	public static Set<Card> SEASIDE_SET = new HashSet<Card>();
 	public static Set<Card> PROSPERITY_SET = new HashSet<Card>();
 	public static Set<Card> PROSPERITY_BASIC_CARDS = new HashSet<Card>();
+	public static Set<Card> CORNUCOPIA_SET = new HashSet<Card>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
 	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
@@ -323,6 +326,8 @@ public class Card {
 		// prosperity basic cards
 		include(PLATINUM, PROSPERITY_BASIC_CARDS);
 		include(COLONY, PROSPERITY_BASIC_CARDS);
+		// cornucopia expansion
+		include(HAMLET, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

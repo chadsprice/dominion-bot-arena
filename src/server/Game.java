@@ -1540,7 +1540,7 @@ public class Game implements Runnable {
 	 * Prompts a human player to choose a card from their hand.
 	 */
 	@SuppressWarnings("unchecked")
-	private Card sendPromptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
+	public Card sendPromptChooseFromHand(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
 		if (player instanceof Bot) {
 			throw new IllegalStateException();
 		}

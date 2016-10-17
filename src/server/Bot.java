@@ -345,7 +345,7 @@ public class Bot extends Player {
 	public Card chooseIslandFromHand(Set<Card> choiceSet) {
 		// island any plain victory card
 		for (Card card : choiceSet) {
-			if (card.isVictory && !card.isAction) {
+			if (isPlainVictory(card)) {
 				return card;
 			}
 		}
@@ -354,6 +354,10 @@ public class Bot extends Player {
 		Collections.sort(choiceList, COST_ORDER_COMPARATOR);
 		Collections.reverse(choiceList);
 		return choiceList.get(0);
+	}
+
+	private boolean isPlainVictory(Card card) {
+		return card.isVictory && !card.isAction && !card.isVictory;
 	}
 
 	public Card choosePutOnDeck(Set<Card> choiceSet) {
@@ -475,6 +479,36 @@ public class Bot extends Player {
 		} else {
 			return 0;
 		}
+	}
+
+	public Card hamletDiscardForAction() {
+		int numActions = 0;
+		for (Card card : getHand()) {
+			if (card.isAction) {
+				numActions++;
+			}
+		}
+		// if you have more action cards than actions
+		if (numActions < getActions()) {
+			// discard a curse or plain victory card for +1 action
+			for (Card card : getHand()) {
+				if (card == Card.CURSE || isPlainVictory(card)) {
+					return card;
+				}
+			}
+			return null;
+		}
+		return null;
+	}
+
+	public Card hamletDiscardForCard() {
+		// discard a curse or plain victory card for +1 card
+		for (Card card : getHand()) {
+			if (card == Card.CURSE || isPlainVictory(card)) {
+				return card;
+			}
+		}
+		return null;
 	}
 
 }
