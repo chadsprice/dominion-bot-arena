@@ -156,6 +156,7 @@ public class Card {
 	public static final Card COLONY = new Colony();
 	// cornucopia expansion
 	public static final Card HAMLET = new Hamlet();
+	public static final Card FORTUNE_TELLER = new FortuneTeller();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -328,6 +329,7 @@ public class Card {
 		include(COLONY, PROSPERITY_BASIC_CARDS);
 		// cornucopia expansion
 		include(HAMLET, CORNUCOPIA_SET);
+		include(FORTUNE_TELLER, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
