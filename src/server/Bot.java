@@ -501,13 +501,8 @@ public class Bot extends Player {
 		return null;
 	}
 
-	public Card hamletDiscardForCard() {
-		// discard a curse or plain victory card for +1 card
-		for (Card card : getHand()) {
-			if (card == Card.CURSE || isPlainVictory(card)) {
-				return card;
-			}
-		}
+	public Card hamletDiscardForBuy() {
+		// TODO: find identifiable scenario for taking this tradeoff
 		return null;
 	}
 

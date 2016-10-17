@@ -31,13 +31,13 @@ public class Hamlet extends Card {
                 player.addActions(1);
             }
         }
-        // you may discard a card for +1 action
+        // you may discard a card for +1 buy
         if (!player.getHand().isEmpty()) {
             Card toDiscard = chooseDiscardForBenefit(player, game, false);
             if (toDiscard != null) {
-                game.messageAll("discarding " + toDiscard.htmlName() + " for +1 card");
+                game.messageAll("discarding " + toDiscard.htmlName() + " for +1 buy");
                 player.putFromHandIntoDiscard(toDiscard);
-                plusCards(player, game, 1);
+                player.addBuys(1);
             }
         }
     }
@@ -47,17 +47,17 @@ public class Hamlet extends Card {
             if (benefitIsAction) {
                 return ((Bot) player).hamletDiscardForAction();
             } else {
-                return ((Bot) player).hamletDiscardForCard();
+                return ((Bot) player).hamletDiscardForBuy();
             }
         } else {
-            String benefitStr = benefitIsAction ? "+1 action" : "+1 card";
+            String benefitStr = benefitIsAction ? "+1 action" : "+1 buy";
             return game.sendPromptChooseFromHand(player, new HashSet<Card>(player.getHand()), "Hamlet: You may discard a card for " + benefitStr + ".", "actionPrompt", false, "Discard nothing");
         }
     }
 
     @Override
     public String[] description() {
-        return new String[] {"+1 Card", "+1 Action", "You may discard a card;", "if you do, +1 Action.", "You may discard a card;", "if you do, +1 Card."};
+        return new String[] {"+1 Card", "+1 Action", "You may discard a card;", "if you do, +1 Action.", "You may discard a card;", "if you do, +1 Buy."};
     }
 
     @Override
