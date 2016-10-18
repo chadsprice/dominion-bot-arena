@@ -166,6 +166,7 @@ public class Card {
 	public static final Card HARVEST = new Harvest();
 	public static final Card HORN_OF_PLENTY = new HornOfPlenty();
 	public static final Card HUNTING_PARTY = new HuntingParty();
+	public static final Card JESTER = new Jester();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -346,6 +347,7 @@ public class Card {
 		include(HARVEST, CORNUCOPIA_SET);
 		include(HORN_OF_PLENTY, CORNUCOPIA_SET);
 		include(HUNTING_PARTY, CORNUCOPIA_SET);
+		include(JESTER, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -506,10 +508,10 @@ public class Card {
 		}
 		if (!revealed.isEmpty()) {
 			if (!isTarget) {
-				game.messageAll("revealing " + Card.htmlList(revealed));
+				game.messageAll("drawing " + Card.htmlList(revealed));
 			} else {
-				game.message(player, "You reveal " + Card.htmlList(revealed));
-				game.messageOpponents(player, player.username + " reveals " + Card.htmlList(revealed));
+				game.message(player, "You draw " + Card.htmlList(revealed));
+				game.messageOpponents(player, player.username + " draws " + Card.htmlList(revealed));
 				game.messageIndent++;
 			}
 			if (found != null) {

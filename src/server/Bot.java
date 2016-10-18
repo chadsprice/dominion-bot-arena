@@ -506,4 +506,9 @@ public class Bot extends Player {
 		return null;
 	}
 
+	public boolean jesterGainInsteadOfOpponent(Card card) {
+		// gain any card that you wouldn't trash
+		return !trashPriority().contains(card);
+	}
+
 }
