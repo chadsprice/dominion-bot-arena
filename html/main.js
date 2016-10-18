@@ -165,7 +165,7 @@ function cardArtSrc(cardName) {
     cardName = cardName.substring(0, cardName.length - suffix.length);
   }
   cardName = cardName.toLowerCase();
-  cardName = cardName.replace(' ', '_');
+  cardName = cardName.split(' ').join('_');
   return 'card_art/' + cardName + '.jpg';
 }
 

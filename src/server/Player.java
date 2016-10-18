@@ -304,7 +304,11 @@ public class Player {
 	}
 
 	public boolean isAutoplayingTreasures() {
-		return !hand.contains(Card.QUARRY) && !hand.contains(Card.CONTRABAND) && !hand.contains(Card.VENTURE) && !(game.supply.containsKey(Card.GRAND_MARKET) && hand.contains(Card.COPPER));
+		return !hand.contains(Card.QUARRY) &&
+				!hand.contains(Card.CONTRABAND) &&
+				!hand.contains(Card.VENTURE) &&
+				!(game.supply.containsKey(Card.GRAND_MARKET) && hand.contains(Card.COPPER)) &&
+				!hand.contains(Card.HORN_OF_PLENTY);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -585,6 +589,15 @@ public class Player {
 			sendPlay();
 		}
 		return treasures;
+	}
+
+	public List<Card> allCardsInPlay() {
+		List<Card> cardsInPlay = new ArrayList<Card>();
+		cardsInPlay.addAll(play);
+		for (Duration duration : durations) {
+			cardsInPlay.add(duration.durationCard);
+		}
+		return cardsInPlay;
 	}
 
 	public void removeFromDiscard(Card card, int count) {

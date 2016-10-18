@@ -67,7 +67,7 @@ public class Game implements Runnable {
 			int c1Type = type(c1);
 			int c2Type = type(c2);
 			if (c1Type != c2Type) {
-				// contraband < other treasures cards < bank 
+				// contraband < other treasures cards < horn of plenty < bank
 				return c1Type - c2Type;
 			} else {
 				// order alphabetically
@@ -78,9 +78,12 @@ public class Game implements Runnable {
 			if (card == Card.CONTRABAND) {
 				// play contraband first so opponents don't know how much coin you have exactly when they prohibit you from buying something
 				return 0;
+			} else if (card == Card.HORN_OF_PLENTY) {
+				// play horn of plenty late to maximize its potential
+				return 2;
 			} else if (card == Card.BANK) {
 				// play bank last to maximize its value
-				return 2;
+				return 3;
 			} else {
 				return 1;
 			}
