@@ -161,6 +161,7 @@ public class Card {
 	public static final Card FARMING_VILLAGE = new FarmingVillage();
 	public static final Card HORSE_TRADERS = new HorseTraders();
 	public static final Card REMAKE = new Remake();
+	public static final Card HARVEST = new Harvest();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -338,6 +339,7 @@ public class Card {
 		include(FARMING_VILLAGE, CORNUCOPIA_SET);
 		include(HORSE_TRADERS, CORNUCOPIA_SET);
 		include(REMAKE, CORNUCOPIA_SET);
+		include(HARVEST, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
