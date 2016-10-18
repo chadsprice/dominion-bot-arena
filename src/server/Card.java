@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import cards.*;
 
@@ -163,6 +165,7 @@ public class Card {
 	public static final Card REMAKE = new Remake();
 	public static final Card HARVEST = new Harvest();
 	public static final Card HORN_OF_PLENTY = new HornOfPlenty();
+	public static final Card HUNTING_PARTY = new HuntingParty();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -342,6 +345,7 @@ public class Card {
 		include(REMAKE, CORNUCOPIA_SET);
 		include(HARVEST, CORNUCOPIA_SET);
 		include(HORN_OF_PLENTY, CORNUCOPIA_SET);
+		include(HUNTING_PARTY, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -470,6 +474,75 @@ public class Card {
 			game.message(player, "putting " + Card.htmlList(toPutOnDeck) + " on top of your deck");
 			game.messageOpponents(player, "putting " + Card.numCards(toPutOnDeck.size()) + " on top of their deck");
 		}
+	}
+
+	protected void revealHand(Player player, Game game) {
+		if (!player.getHand().isEmpty()) {
+			game.message(player, "revealing your hand: " + Card.htmlList(player.getHand()));
+			game.messageOpponents(player, "revealing their hand: " + Card.htmlList(player.getHand()));
+		} else {
+			game.messageAll("revealing an empty hand");
+		}
+	}
+
+	protected void revealUntil(Player player, Game game, Predicate<Card> condition, Consumer<Card> onFound) {
+		revealUntil(player, game, condition, onFound, false);
+	}
+
+	protected void revealUntil(Player player, Game game, Predicate<Card> condition, Consumer<Card> onFound, boolean isTarget) {
+		List<Card> revealed = new ArrayList<Card>();
+		Card found = null;
+		for (;;) {
+			List<Card> drawn = player.takeFromDraw(1);
+			if (drawn.isEmpty()) {
+				break;
+			}
+			Card card = drawn.get(0);
+			revealed.add(card);
+			if (condition.test(card)) {
+				found = card;
+				break;
+			}
+		}
+		if (!revealed.isEmpty()) {
+			if (!isTarget) {
+				game.messageAll("revealing " + Card.htmlList(revealed));
+			} else {
+				game.message(player, "You reveal " + Card.htmlList(revealed));
+				game.messageOpponents(player, player.username + " reveals " + Card.htmlList(revealed));
+				game.messageIndent++;
+			}
+			if (found != null) {
+				revealed.remove(found);
+				onFound.accept(found);
+			}
+			if (!revealed.isEmpty()) {
+				game.messageAll("discarding the rest");
+				player.addToDiscard(revealed);
+			}
+			if (isTarget) {
+				game.messageIndent--;
+			}
+		} else {
+			if (!isTarget) {
+				game.message(player, "your deck is empty");
+				game.messageOpponents(player, "their deck is empty");
+			} else {
+				game.message(player, "Your deck is empty");
+				game.messageOpponents(player, player.username + "'s deck is empty");
+			}
+		}
+	}
+
+	protected void putRevealedIntoHand(Player player, Game game, Card card) {
+		game.message(player, "putting the " + card.htmlNameRaw() + " into your hand");
+		game.messageOpponents(player, "putting the " + card.htmlNameRaw() + " into their hand");
+		player.addToHand(card);
+	}
+
+	protected void putRevealedOnDeck(Player player, Game game, Card card) {
+		game.messageAll("putting the " + card.htmlNameRaw() + " back on top");
+		player.putOnDraw(card);
 	}
 
 	public String htmlClass() {

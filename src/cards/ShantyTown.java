@@ -21,7 +21,7 @@ public class ShantyTown extends Card {
 	public void onPlay(Player player, Game game) {
 		plusActions(player, game, 2);
 		// reveal your hand
-		game.messageAll("revealing " + Card.htmlList(player.getHand()));
+		revealHand(player, game);
 		// if no actions, +2 cards
 		if (!handContainsActions(player)) {
 			List<Card> drawn = player.drawIntoHand(2);
