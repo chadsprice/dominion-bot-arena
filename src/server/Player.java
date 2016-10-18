@@ -55,9 +55,9 @@ public class Player {
 	};
 
 	public PlayerWebSocketHandler conn;
-	public List<JSONObject> commands;
+	public List<JSONObject> commands = new ArrayList<JSONObject>();
 
-	public BlockingQueue<Object> responses;
+	public BlockingQueue<Object> responses = new LinkedBlockingQueue<Object>();
 	public boolean forfeit;
 
 	public void sendCommand(JSONObject command){
@@ -109,19 +109,19 @@ public class Player {
 
 	public Game game;
 
-	private List<Card> draw;
-	private List<Card> hand;
-	private List<Card> play;
-	private List<Card> discard;
+	private List<Card> draw = new ArrayList<Card>();
+	private List<Card> hand = new ArrayList<Card>();
+	private List<Card> play = new ArrayList<Card>();
+	private List<Card> discard = new ArrayList<Card>();
 
-	private List<Card> nativeVillageMat;
-	private List<Card> islandMat;
-	private int pirateShipTokens;
+	private List<Card> nativeVillageMat = new ArrayList<Card>();
+	private List<Card> islandMat = new ArrayList<Card>();
+	private int pirateShipTokens = 0;
 
-	private int victoryTokens;
+	private int victoryTokens = 0;
 
-	private List<Duration> durations;
-	private List<Card> resolvedDurationCards;
+	private List<Duration> durations = new ArrayList<Duration>();
+	private List<Card> resolvedDurationCards = new ArrayList<Card>();
 
 	private int actions;
 	private int buys;
@@ -130,21 +130,10 @@ public class Player {
 	public int turns;
 
 	// keep track of gained cards for Smugglers
-	public Set<Card> cardsGainedDuringTurn;
+	public Set<Card> cardsGainedDuringTurn = new HashSet<Card>();
 
 	public Player(PlayerWebSocketHandler conn) {
 		this.conn = conn;
-		commands = new ArrayList<JSONObject>();
-		responses = new LinkedBlockingQueue<Object>();
-		draw = new ArrayList<Card>();
-		hand = new ArrayList<Card>();
-		play = new ArrayList<Card>();
-		discard = new ArrayList<Card>();
-		nativeVillageMat = new ArrayList<Card>();
-		islandMat = new ArrayList<Card>();
-		durations = new ArrayList<Duration>();
-		resolvedDurationCards = new ArrayList<Card>();
-		cardsGainedDuringTurn = new HashSet<Card>();
 	}
 
 	public void startGame() {
@@ -697,15 +686,13 @@ public class Player {
 		return durations;
 	}
 
-	public void durationsResolved() {
-		for (Duration duration : durations) {
+	public void durationResolved(Duration duration) {
+		if (duration.durationCard != null) {
 			resolvedDurationCards.add(duration.durationCard);
-			if (duration.modifier != null) {
-				resolvedDurationCards.add(duration.modifier);
-			}
 		}
-		durations.clear();
-		sendDurations();
+		if (duration.modifier != null) {
+			resolvedDurationCards.add(duration.modifier);
+		}
 	}
 
 	public void addDuration(Duration duration) {

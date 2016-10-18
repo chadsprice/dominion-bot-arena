@@ -285,7 +285,8 @@ public class Game implements Runnable {
 	}
 
 	private void resolveDurations(Player player) {
-		for (Duration duration : player.getDurations()) {
+		for (Iterator<Duration> iter = player.getDurations().iterator(); iter.hasNext(); ) {
+			Duration duration = iter.next();
 			// if the duration is modified (except for havens, outposts, and tacticians)
 			if ((duration.modifier == Card.THRONE_ROOM || duration.modifier == Card.THRONE_ROOM_FIRST_EDITION) && duration.durationCard != Card.HAVEN && duration.durationCard != Card.OUTPOST && duration.durationCard != Card.TACTICIAN) {
 				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect twice");
@@ -309,8 +310,10 @@ public class Game implements Runnable {
 				duration.durationCard.onDurationEffect(player, this, duration);
 				messageIndent--;
 			}
+			iter.remove();
+			player.durationResolved(duration);
 		}
-		player.durationsResolved();
+		player.sendDurations();
 	}
 
 	public void playTreasure(Player player, Card treasure) {
@@ -499,7 +502,8 @@ public class Game implements Runnable {
 					reactions = getAttackReactions(player);
 					// don't allow the same reaction to be played twice in a row
 					// (they are designed so that playing them twice in a row gives no new benefit, with the exception of Diplomat)
-					if (choice != Card.DIPLOMAT) {
+					// (also exempt reaction cards that move themselves, like Horse Traders)
+					if (choice != Card.DIPLOMAT && choice != Card.HORSE_TRADERS) {
 						reactions.remove(choice);
 					}
 				} else {
