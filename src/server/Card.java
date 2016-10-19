@@ -173,6 +173,7 @@ public class Card {
 	public static final Card BAG_OF_GOLD = new BagOfGold();
 	public static final Card DIADEM = new Diadem();
 	public static final Card FOLLOWERS = new Followers();
+	public static final Card PRINCESS = new Princess();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -360,6 +361,7 @@ public class Card {
 		include(BAG_OF_GOLD, CORNUCOPIA_SET);
 		include(DIADEM, CORNUCOPIA_SET);
 		include(FOLLOWERS, CORNUCOPIA_SET);
+		include(PRINCESS, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -404,8 +406,9 @@ public class Card {
 		int computedCost = cost();
 		computedCost -=  game.cardCostReduction;
 		if (isAction) {
-			computedCost -= 2 * game.numberInPlay(Card.QUARRY);
+			computedCost -= 2 * game.numberInPlay(QUARRY);
 		}
+		computedCost -= 2 * game.numberInPlay(PRINCESS);
 		// cost can never be less than zero
 		return Math.max(computedCost, 0);
 	}

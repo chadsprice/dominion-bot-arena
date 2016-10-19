@@ -106,7 +106,7 @@ public class Game implements Runnable {
 	// various bits of game state required by individual card rules
 	public boolean playedSilverThisTurn;
 	public int cardCostReduction;
-	public boolean quarryPlayedLastTurn;
+	public boolean costModifierPlayedLastTurn;
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
 	public Map<Card, Integer> embargoTokens;
@@ -185,8 +185,8 @@ public class Game implements Runnable {
 
 	private void takeTurn(Player player) {
 		player.startNewTurn();
-		if (cardCostReduction > 0 || quarryPlayedLastTurn) {
-			quarryPlayedLastTurn = false;
+		if (cardCostReduction > 0 || costModifierPlayedLastTurn) {
+			costModifierPlayedLastTurn = false;
 			setCardCostReduction(0);
 		}
 		playedSilverThisTurn = false;

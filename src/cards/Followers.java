@@ -45,7 +45,7 @@ public class Followers extends Card {
 
     @Override
     public String[] description() {
-        return new String[] {"+2 Cards", "Gain an Estate. Each other player gains a Curse and discards down to 3 cards in hand.", "(This is not in the supply.)"};
+        return new String[] {"+2 Cards", "Gain an Estate. Each other player gains a Curse and discards down to 3 cards in hand.", "(This is not in the Supply.)"};
     }
 
     @Override
