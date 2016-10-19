@@ -171,6 +171,8 @@ public class Card {
 	public static final Card FAIRGROUNDS = new Fairgrounds();
 	// cornucopia prizes
 	public static final Card BAG_OF_GOLD = new BagOfGold();
+	public static final Card DIADEM = new Diadem();
+	public static final Card FOLLOWERS = new Followers();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -356,6 +358,8 @@ public class Card {
 		include(FAIRGROUNDS, CORNUCOPIA_SET);
 		// cornucopia prizes
 		include(BAG_OF_GOLD, CORNUCOPIA_SET);
+		include(DIADEM, CORNUCOPIA_SET);
+		include(FOLLOWERS, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

@@ -299,6 +299,10 @@ public class Player {
 			if (play.contains(Card.MERCHANT) && !game.playedSilverThisTurn && hand.contains(Card.SILVER)) {
 				usableCoins += numberInPlay(Card.MERCHANT);
 			}
+			// handle diadem +$1 per unused action
+			if (hand.contains(Card.DIADEM)) {
+				usableCoins += actions;
+			}
 			return usableCoins;
 		}
 	}

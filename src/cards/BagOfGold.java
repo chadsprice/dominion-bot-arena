@@ -34,4 +34,9 @@ public class BagOfGold extends Card {
         return "Bag of Gold";
     }
 
+    @Override
+    public String htmlType() {
+        return "Action-Prize";
+    }
+
 }
