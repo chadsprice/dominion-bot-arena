@@ -96,6 +96,7 @@ public class Game implements Runnable {
 	public List<Player> players;
 
 	public List<Card> kingdomCards;
+	public Card baneCard;
 	public List<Card> basicCards;
 	public Map<Card, Integer> supply;
 	private List<Card> trash;
@@ -117,10 +118,11 @@ public class Game implements Runnable {
 
 	public int messageIndent;
 
-	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Set<Card> basicSet) {
+	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Card baneCard, Set<Card> basicSet) {
 		this.server = server;
 		kingdomCards = new ArrayList<>(kingdomSet);
 		Collections.sort(kingdomCards, KINGDOM_ORDER_COMPARATOR);
+		this.baneCard = baneCard;
 		basicCards = new ArrayList<>(basicSet);
 		Collections.sort(basicCards, BASIC_ORDER_COMPARATOR);
 		players = new ArrayList<Player>(playerSet);
@@ -968,6 +970,9 @@ public class Game implements Runnable {
 				description.add(line);
 			}
 			card.put("description", description);
+			if (kingdomCard == baneCard) {
+				card.put("isBane", true);
+			}
 			cards.add(card);
 		}
 		setKingdomCards.put("cards", cards);

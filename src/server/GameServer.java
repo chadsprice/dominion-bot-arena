@@ -912,9 +912,49 @@ public class GameServer {
 			Collections.shuffle(fillerList);
 			chosen.addAll(fillerList.subList(0, 10 - chosen.size()));
 		}
-		if (chosen.size() != 10) {
-			// there should always be 10 unique kingdom cards
-			throw new IllegalStateException();
+		// if Young Witch is in the supply, choose a bane card
+		Card baneCard = null;
+		if (chosen.contains(Card.YOUNG_WITCH)) {
+			// search through each set looking for a bane card
+			List<Set<Card>> potentialBaneSets = new ArrayList<Set<Card>>();
+			// start with the requested sets
+			potentialBaneSets.add(available);
+			// if a bane card can't be found in the requested sets, just find one from another set
+			potentialBaneSets.add(Card.BASE_SET);
+			potentialBaneSets.add(Card.INTRIGUE_SET);
+			potentialBaneSets.add(Card.SEASIDE_SET);
+			potentialBaneSets.add(Card.PROSPERITY_SET);
+			potentialBaneSets.add(Card.CORNUCOPIA_SET);
+			for (Set<Card> baneSet : potentialBaneSets) {
+				Set<Card> baneChoices = new HashSet<Card>(baneSet);
+				// make sure the bane card is a new 11th card
+				baneChoices.removeAll(chosen);
+				// make sure the bane card costs 2 or 3
+				for (Iterator<Card> iter = baneChoices.iterator(); iter.hasNext(); ) {
+					try {
+						int baseCost = iter.next().cost();
+						if (!(baseCost == 2 || baseCost == 3)) {
+							iter.remove();
+						}
+					} catch (UnsupportedOperationException e) {
+						// reject cards with context-dependent costs, like Peddler
+						iter.remove();
+					}
+				}
+				// if there are any potential bane cards
+				if (!baneChoices.isEmpty()) {
+					// choose one at random
+					List<Card> baneChoiceList = new ArrayList<Card>(baneChoices);
+					Collections.shuffle(baneChoiceList);
+					baneCard = baneChoiceList.get(0);
+					break;
+				}
+			}
+			if (baneCard == null) {
+				throw new IllegalStateException();
+			}
+			// add the bane card to the kingdom cards
+			chosen.add(baneCard);
 		}
 		// basic cards
 		Set<Card> basicSet = new HashSet<Card>();
@@ -937,7 +977,7 @@ public class GameServer {
 			basicSet.add(Card.COLONY);
 		}
 		// initialize the game with this kingdom and basic set
-		game.init(this, players, chosen, basicSet);
+		game.init(this, players, chosen, baneCard, basicSet);
 	}
 
 	private boolean containsMimicBot(Set<Player> players) {

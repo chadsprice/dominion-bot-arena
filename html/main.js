@@ -280,6 +280,12 @@ function setKingdomCards(cards) {
     nameParagraph.className = cards[i].className;
     nameParagraph.innerHTML = cards[i].name;
     nameDiv.appendChild(nameParagraph);
+    var baneParagraph = document.createElement('p');
+    if (cards[i].isBane) {
+      baneParagraph.className = 'bane';
+      baneParagraph.innerHTML = '(Bane)';
+      nameDiv.appendChild(baneParagraph);
+    }
     kingdomPile.appendChild(nameDiv);
     // set status (cost & pile size)
     var status = document.createElement('div');

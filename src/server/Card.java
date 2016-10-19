@@ -163,6 +163,7 @@ public class Card {
 	public static final Card FARMING_VILLAGE = new FarmingVillage();
 	public static final Card HORSE_TRADERS = new HorseTraders();
 	public static final Card REMAKE = new Remake();
+	public static final Card YOUNG_WITCH = new YoungWitch();
 	public static final Card HARVEST = new Harvest();
 	public static final Card HORN_OF_PLENTY = new HornOfPlenty();
 	public static final Card HUNTING_PARTY = new HuntingParty();
@@ -345,6 +346,7 @@ public class Card {
 		include(FARMING_VILLAGE, CORNUCOPIA_SET);
 		include(HORSE_TRADERS, CORNUCOPIA_SET);
 		include(REMAKE, CORNUCOPIA_SET);
+		include(YOUNG_WITCH, CORNUCOPIA_SET);
 		include(HARVEST, CORNUCOPIA_SET);
 		include(HORN_OF_PLENTY, CORNUCOPIA_SET);
 		include(HUNTING_PARTY, CORNUCOPIA_SET);

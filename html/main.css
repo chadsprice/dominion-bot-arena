@@ -91,6 +91,11 @@ body {
   white-space: nowrap;
 }
 
+.kingdomPile > .name > .bane {
+  font-size: 80%;
+  text-align: center;
+}
+
 .kingdomPile {
   display: flex;
   flex-direction: row;

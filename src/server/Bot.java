@@ -506,6 +506,11 @@ public class Bot extends Player {
 		return null;
 	}
 
+	public boolean youngWitchRevealBane() {
+		// always reveal a bane card instead of gaining a Curse
+		return true;
+	}
+
 	public boolean jesterGainInsteadOfOpponent(Card card) {
 		// gain any card that you wouldn't trash
 		return !trashPriority().contains(card);
