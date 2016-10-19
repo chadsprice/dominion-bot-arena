@@ -167,6 +167,7 @@ public class Card {
 	public static final Card HORN_OF_PLENTY = new HornOfPlenty();
 	public static final Card HUNTING_PARTY = new HuntingParty();
 	public static final Card JESTER = new Jester();
+	public static final Card FAIRGROUNDS = new Fairgrounds();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -348,6 +349,7 @@ public class Card {
 		include(HORN_OF_PLENTY, CORNUCOPIA_SET);
 		include(HUNTING_PARTY, CORNUCOPIA_SET);
 		include(JESTER, CORNUCOPIA_SET);
+		include(FAIRGROUNDS, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
