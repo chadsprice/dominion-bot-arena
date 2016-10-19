@@ -516,4 +516,9 @@ public class Bot extends Player {
 		return !trashPriority().contains(card);
 	}
 
+	public int[] trustySteedBenefits() {
+		// +2 cards and +$2 is pretty safe for big money
+		return new int[] {0, 2};
+	}
+
 }

@@ -174,6 +174,7 @@ public class Card {
 	public static final Card DIADEM = new Diadem();
 	public static final Card FOLLOWERS = new Followers();
 	public static final Card PRINCESS = new Princess();
+	public static final Card TRUSTY_STEED = new TrustySteed();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -362,6 +363,7 @@ public class Card {
 		include(DIADEM, CORNUCOPIA_SET);
 		include(FOLLOWERS, CORNUCOPIA_SET);
 		include(PRINCESS, CORNUCOPIA_SET);
+		include(TRUSTY_STEED, CORNUCOPIA_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

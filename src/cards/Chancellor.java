@@ -22,9 +22,9 @@ public class Chancellor extends Card {
 		if (!player.getDraw().isEmpty()) {
 			int choice = game.promptMultipleChoice(player, "Chancellor: Put your deck into your discard pile immediately?", new String[]{"Yes", "No"});
 			if (choice == 0) {
-				player.addToDiscard(player.takeFromDraw(player.getDraw().size()));
 				game.message(player, "putting your deck into your discard pile immediately");
 				game.messageOpponents(player, "putting their deck into their discard pile immediately");
+				player.addToDiscard(player.takeFromDraw(player.getDraw().size()));
 			}
 		}
 	}
