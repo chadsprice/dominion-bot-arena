@@ -202,6 +202,7 @@ public class Card {
 		include(INTRIGUE_SET_FIRST_EDITION, "IntrigueFirstEdition");
 		include(SEASIDE_SET, "Seaside");
 		include(PROSPERITY_SET, "Prosperity");
+		include(CORNUCOPIA_SET, "Cornucopia");
 
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);
