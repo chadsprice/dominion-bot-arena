@@ -132,6 +132,9 @@ public class Player {
 	// keep track of gained cards for Smugglers
 	public Set<Card> cardsGainedDuringTurn = new HashSet<Card>();
 
+	// keep track of Fool's Golds played
+	public int foolsGoldsPlayedThisTurn;
+
 	public Player(PlayerWebSocketHandler conn) {
 		this.conn = conn;
 	}
@@ -163,6 +166,7 @@ public class Player {
 		actions = 1;
 		buys = 1;
 		coins = 0;
+		foolsGoldsPlayedThisTurn = 0;
 		// reset UI state
 		resetHandOrder();
 		// drawing a new hand automatically sends the player their hand and coins
@@ -274,12 +278,17 @@ public class Player {
 			int usableCoins = getCoins();
 			int numTreasuresInPlay = 0;
 			int numBanks = 0;
-			// add the value of all unplayed non-bank treasures
+			int numFoolsGolds = 0;
+			// add the value of all unplayed non-bank, non-fools-gold treasures
 			for (Card card : hand) {
 				if (card == Card.BANK) {
 					numBanks++;
 				} else if (card.isTreasure) {
-					usableCoins += card.treasureValue(game);
+					if (card == Card.FOOLS_GOLD) {
+						numFoolsGolds++;
+					} else {
+						usableCoins += card.treasureValue(game);
+					}
 					numTreasuresInPlay++;
 				}
 			}
@@ -289,19 +298,29 @@ public class Player {
 					numTreasuresInPlay++;
 				}
 			}
-			// add the value of all banks
+			// add the value of all Banks
 			while (numBanks != 0) {
 				usableCoins += (numTreasuresInPlay + 1);
 				numBanks--;
 				numTreasuresInPlay++;
 			}
-			// handle merchant +$1 on first silver
+			// handle Merchant +$1 on first Silver
 			if (play.contains(Card.MERCHANT) && !game.playedSilverThisTurn && hand.contains(Card.SILVER)) {
 				usableCoins += numberInPlay(Card.MERCHANT);
 			}
-			// handle diadem +$1 per unused action
+			// handle Diadem +$1 per unused action
 			if (hand.contains(Card.DIADEM)) {
 				usableCoins += actions;
+			}
+			// handle Fool's Gold
+			if (numFoolsGolds != 0) {
+				// if no Fool's Golds have been played yet this turn
+				if (foolsGoldsPlayedThisTurn == 0) {
+					// $1 for the first Fool's Gold, then $4 for each additional
+					usableCoins += 1 + 4 * (numFoolsGolds - 1);
+				} else {
+					usableCoins += 4 * numFoolsGolds;
+				}
 			}
 			return usableCoins;
 		}

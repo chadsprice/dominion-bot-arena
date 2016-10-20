@@ -179,6 +179,7 @@ public class Card {
 	// hinterlands expansion
 	public static final Card CROSSROADS = new Crossroads();
 	public static final Card DUCHESS = new Duchess();
+	public static final Card FOOLS_GOLD = new FoolsGold();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -375,6 +376,7 @@ public class Card {
 		// hinterlands expansion
 		include(CROSSROADS, HINTERLANDS_SET);
 		include(DUCHESS, HINTERLANDS_SET);
+		include(FOOLS_GOLD, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

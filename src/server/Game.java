@@ -676,6 +676,10 @@ public class Game implements Runnable {
 		}
 	}
 
+	public Player currentPlayer() {
+		return players.get(playerIndex);
+	}
+
 	public List<Player> getOpponents(Player player) {
 		List<Player> opponents = new ArrayList<Player>();
 		for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
@@ -815,6 +819,33 @@ public class Game implements Runnable {
 				messageIndent--;
 			}
 		}
+		// handle Fool's Gold effect on gaining a Province
+		if (card == Card.PROVINCE) {
+			messageIndent++;
+			for (Player opponent : getOpponents(player)) {
+				int numFoolsGolds = opponent.numberInHand(Card.FOOLS_GOLD);
+				for (int i = 0; i < numFoolsGolds; i++) {
+					if (chooseRevealFoolsGold(opponent)) {
+						if (supply.get(Card.GOLD) != 0) {
+							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD + " onto your deck");
+							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains " + Card.GOLD + " onto their deck");
+							player.removeFromHand(Card.FOOLS_GOLD);
+							addToTrash(Card.FOOLS_GOLD);
+							gainToTopOfDeck(opponent, Card.GOLD);
+						} else {
+							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain nothing");
+							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains nothing");
+							player.removeFromHand(Card.FOOLS_GOLD);
+							addToTrash(Card.FOOLS_GOLD);
+						}
+					} else {
+						// if the player stops trashing Fool's Golds, stop asking, even if they have more Fool's Golds
+						break;
+					}
+				}
+			}
+			messageIndent--;
+		}
 	}
 
 	private boolean chooseGainDuchessOnGainingDuchy(Player player) {
@@ -822,6 +853,14 @@ public class Game implements Runnable {
 			return ((Bot) player).duchessChooseGainDuchessOnGainingDuchy();
 		}
 		int choice = promptMultipleChoice(player, "Duchess: Gain " + Card.DUCHESS.htmlName() + "?", new String[] {"Gain Duchess", "Don't"});
+		return (choice == 0);
+	}
+
+	private boolean chooseRevealFoolsGold(Player player) {
+		if (player instanceof Bot) {
+			return ((Bot) player).foolsGoldReveal();
+		}
+		int choice = promptMultipleChoice(player, "Fool's Gold: Trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD.htmlName() + " onto your deck?", "reactionPrompt", new String[] {"Yes", "No"});
 		return (choice == 0);
 	}
 

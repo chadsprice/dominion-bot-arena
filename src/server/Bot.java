@@ -540,4 +540,9 @@ public class Bot extends Player {
 		return false;
 	}
 
+	public boolean foolsGoldReveal() {
+		// BigMoney should prefer Gold to Fool's Gold
+		return true;
+	}
+
 }
