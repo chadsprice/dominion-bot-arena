@@ -70,8 +70,18 @@ body {
 }
 
 #prizes {
+  margin-bottom: 1em;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
+}
+
+#prizes p {
+  margin: 0;
+}
+
+#prizes .name {
+  margin-right: 1em;
 }
 
 #supply {
