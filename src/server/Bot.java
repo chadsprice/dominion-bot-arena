@@ -506,6 +506,11 @@ public class Bot extends Player {
 		return null;
 	}
 
+	public boolean tournamentRevealProvince() {
+		// revealing a Province is pretty much always advantageous
+		return true;
+	}
+
 	public boolean youngWitchRevealBane() {
 		// always reveal a bane card instead of gaining a Curse
 		return true;

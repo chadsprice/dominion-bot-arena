@@ -69,6 +69,11 @@ body {
   justify-content: flex-end;
 }
 
+#prizes {
+  display: flex;
+  flex-direction: column;
+}
+
 #supply {
   display: flex;
   flex-direction: row;

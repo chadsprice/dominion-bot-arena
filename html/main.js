@@ -326,6 +326,58 @@ function setKingdomCards(cards) {
   }
 }
 
+function setPrizeCards(cards) {
+  // set prize card colors
+  for (var i = 0; i < cards.length; i++) {
+    supplyCardClassNames[cards[i].name] = cards[i].className;
+  }
+  // remove previous prize card UI elements
+  var prizes = document.getElementById('prizes');
+  removeAllChildNodes(prizes);
+  // for each prize card
+  for (var i = 0; i < cards.length; i++) {
+    // add popup description to cardDescriptions
+    addCardDescription(cards[i]);
+    // add a pile for this card
+    var kingdomPile = document.createElement('div');
+    kingdomPile.className = 'kingdomPile';
+    registerPopup(kingdomPile, cards[i].name);
+    // set name
+    var nameDiv = document.createElement('div');
+    nameDiv.className = 'name';
+    var nameParagraph = document.createElement('p');
+    nameParagraph.className = cards[i].className;
+    nameParagraph.innerHTML = cards[i].name;
+    nameDiv.appendChild(nameParagraph);
+    kingdomPile.appendChild(nameDiv);
+    // add visuals for this pile
+    var cardArt = document.createElement('div');
+    cardArt.className = 'cardArt';
+    // add cross image to indicate when this pile is empty (initially hidden)
+    var cross = createPileCross();
+    cross.style.display = 'none';
+    cardArt.appendChild(cross);
+    // add plus image to indicate when this pile can be gained (initially hidden)
+    var plus = createPilePlus();
+    plus.style.display = 'none';
+    cardArt.appendChild(plus);
+    // add card art
+    var img = document.createElement('img');
+    img.src = cardArtSrc(cards[i].name);
+    cardArt.appendChild(img);
+    kingdomPile.appendChild(cardArt);
+    prizes.appendChild(kingdomPile);
+    supplyCardElems[cards[i].name] = {'pile':kingdomPile, 'cross':cross, 'plus':plus, 'img':img};
+  }
+}
+
+function setPrizeCardRemoved(cardName) {
+  // make the image partially transparent
+  supplyCardElems[cardName].img.style.opacity = '0.3';
+  // show the cross image
+  supplyCardElems[cardName].cross.style.display = 'block';
+}
+
 /*
 Takes an array of objects containing the names, colors, descriptions, types, costs of the basic cards.
 [{name:'card name', className:'action', description:['line 1', 'line 2', ...], type:'Human-Readable-Type', cost:integer}, ...]
@@ -1290,6 +1342,8 @@ function enterGame() {
   // clear seaside UI
   setArea('victoryTokenMat');
   setArea('tradeRouteMat');
+  // clear prizes
+  setPrizeCards([]);
   // hide popup
   document.getElementById('cardPopupContainer').style.display = 'none';
   // hide "more"
@@ -1411,6 +1465,12 @@ function executeCommand(command) {
       break;
     case 'setKingdomCards':
       setKingdomCards(command.cards);
+      break;
+    case 'setPrizeCards':
+      setPrizeCards(command.cards);
+      break;
+    case 'setPrizeCardRemoved':
+      setPrizeCardRemoved(command.cardName);
       break;
     case 'setBasicCards':
       setBasicCards(command.cards);

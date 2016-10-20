@@ -379,7 +379,7 @@ public class GameServer {
 				}
 				// simplify name to ignore capitalization and punctuation
 				Card card = Card.fromName(Card.simplifiedName(cardName));
-				if (card != null && !Card.BASIC_CARDS.contains(card) && !Card.PROSPERITY_BASIC_CARDS.contains(card)) {
+				if (card != null && !Card.BASIC_CARDS.contains(card) && !Card.PROSPERITY_BASIC_CARDS.contains(card) && !Card.PRIZE_CARDS.contains(card)) {
 					if (isForbidden) {
 						forbiddenCards.add(card);
 					} else {
@@ -931,13 +931,8 @@ public class GameServer {
 				baneChoices.removeAll(chosen);
 				// make sure the bane card costs 2 or 3
 				for (Iterator<Card> iter = baneChoices.iterator(); iter.hasNext(); ) {
-					try {
-						int baseCost = iter.next().cost();
-						if (!(baseCost == 2 || baseCost == 3)) {
-							iter.remove();
-						}
-					} catch (UnsupportedOperationException e) {
-						// reject cards with context-dependent costs, like Peddler
+					int baseCost = iter.next().cost();
+					if (!(baseCost == 2 || baseCost == 3)) {
 						iter.remove();
 					}
 				}
@@ -955,6 +950,11 @@ public class GameServer {
 			}
 			// add the bane card to the kingdom cards
 			chosen.add(baneCard);
+		}
+		// if tournament is in the supply, add prize cards
+		Set<Card> prizeCards = new HashSet<Card>();
+		if (chosen.contains(Card.TOURNAMENT)) {
+			prizeCards.addAll(Card.PRIZE_CARDS);
 		}
 		// basic cards
 		Set<Card> basicSet = new HashSet<Card>();
@@ -977,7 +977,7 @@ public class GameServer {
 			basicSet.add(Card.COLONY);
 		}
 		// initialize the game with this kingdom and basic set
-		game.init(this, players, chosen, baneCard, basicSet);
+		game.init(this, players, chosen, baneCard, prizeCards, basicSet);
 	}
 
 	private boolean containsMimicBot(Set<Player> players) {

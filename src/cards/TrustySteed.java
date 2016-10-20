@@ -78,4 +78,8 @@ public class TrustySteed extends Card {
         return "Trusty Steed";
     }
 
+    @Override
+    public String htmlType() {
+        return "Action-Prize";
+    }
 }

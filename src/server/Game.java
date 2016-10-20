@@ -97,6 +97,7 @@ public class Game implements Runnable {
 
 	public List<Card> kingdomCards;
 	public Card baneCard;
+	public Set<Card> prizeCards;
 	public List<Card> basicCards;
 	public Map<Card, Integer> supply;
 	private List<Card> trash;
@@ -118,11 +119,12 @@ public class Game implements Runnable {
 
 	public int messageIndent;
 
-	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Card baneCard, Set<Card> basicSet) {
+	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Card baneCard, Set<Card> prizeCards, Set<Card> basicSet) {
 		this.server = server;
 		kingdomCards = new ArrayList<>(kingdomSet);
 		Collections.sort(kingdomCards, KINGDOM_ORDER_COMPARATOR);
 		this.baneCard = baneCard;
+		this.prizeCards = prizeCards;
 		basicCards = new ArrayList<>(basicSet);
 		Collections.sort(basicCards, BASIC_ORDER_COMPARATOR);
 		players = new ArrayList<Player>(playerSet);
@@ -172,6 +174,9 @@ public class Game implements Runnable {
 		Collections.shuffle(players);
 		for (Player player : players) {
 			setKingdomCards(player);
+			if (!prizeCards.isEmpty()) {
+				sendPrizeCards(player);
+			}
 			setBasicCards(player);
 			sendTradeRouteTokenedPiles(player);
 			setPileSizes(player, supply);
@@ -685,6 +690,12 @@ public class Game implements Runnable {
 	}
 
 	public void takeFromSupply(Card card) {
+		// if it is a prize card, remove it from the prizes
+		if (prizeCards.contains(card)) {
+			prizeCards.remove(card);
+			sendPrizeCardRemoved(card);
+			return;
+		}
 		// update supply
 		supply.put(card, supply.get(card) - 1);
 		Map<Card, Integer> newSize = new HashMap<Card, Integer>();
@@ -715,6 +726,9 @@ public class Game implements Runnable {
 	}
 
 	public void gainToTopOfDeck(Player player, Card card) {
+		if (gainRedirect(player, card)) {
+			return;
+		}
 		takeFromSupply(card);
 		// put card on top of player's deck
 		player.putOnDraw(card);
@@ -978,6 +992,38 @@ public class Game implements Runnable {
 		setKingdomCards.put("cards", cards);
 
 		player.sendCommand(setKingdomCards);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendPrizeCards(Player player) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setPrizeCards");
+		JSONArray cards = new JSONArray();
+		for (Card prizeCard : prizeCards) {
+			JSONObject card = new JSONObject();
+			card.put("name", prizeCard.toString());
+			card.put("cost", prizeCard.cost());
+			card.put("className", prizeCard.htmlClass());
+			card.put("type", prizeCard.htmlType());
+			JSONArray description = new JSONArray();
+			for (String line : prizeCard.description()) {
+				description.add(line);
+			}
+			card.put("description", description);
+			cards.add(card);
+		}
+		command.put("cards", cards);
+		player.sendCommand(command);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendPrizeCardRemoved(Card card) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setPrizeCardRemoved");
+		command.put("cardName", card.toString());
+		for (Player player : players) {
+			player.sendCommand(command);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

@@ -163,6 +163,7 @@ public class Card {
 	public static final Card FARMING_VILLAGE = new FarmingVillage();
 	public static final Card HORSE_TRADERS = new HorseTraders();
 	public static final Card REMAKE = new Remake();
+	public static final Card TOURNAMENT = new Tournament();
 	public static final Card YOUNG_WITCH = new YoungWitch();
 	public static final Card HARVEST = new Harvest();
 	public static final Card HORN_OF_PLENTY = new HornOfPlenty();
@@ -187,6 +188,7 @@ public class Card {
 	public static Set<Card> PROSPERITY_SET = new HashSet<Card>();
 	public static Set<Card> PROSPERITY_BASIC_CARDS = new HashSet<Card>();
 	public static Set<Card> CORNUCOPIA_SET = new HashSet<Card>();
+	public static Set<Card> PRIZE_CARDS = new HashSet<Card>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
 	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
@@ -352,6 +354,7 @@ public class Card {
 		include(FARMING_VILLAGE, CORNUCOPIA_SET);
 		include(HORSE_TRADERS, CORNUCOPIA_SET);
 		include(REMAKE, CORNUCOPIA_SET);
+		include(TOURNAMENT, CORNUCOPIA_SET);
 		include(YOUNG_WITCH, CORNUCOPIA_SET);
 		include(HARVEST, CORNUCOPIA_SET);
 		include(HORN_OF_PLENTY, CORNUCOPIA_SET);
@@ -359,11 +362,11 @@ public class Card {
 		include(JESTER, CORNUCOPIA_SET);
 		include(FAIRGROUNDS, CORNUCOPIA_SET);
 		// cornucopia prizes
-		include(BAG_OF_GOLD, CORNUCOPIA_SET);
-		include(DIADEM, CORNUCOPIA_SET);
-		include(FOLLOWERS, CORNUCOPIA_SET);
-		include(PRINCESS, CORNUCOPIA_SET);
-		include(TRUSTY_STEED, CORNUCOPIA_SET);
+		include(BAG_OF_GOLD, PRIZE_CARDS);
+		include(DIADEM, PRIZE_CARDS);
+		include(FOLLOWERS, PRIZE_CARDS);
+		include(PRINCESS, PRIZE_CARDS);
+		include(TRUSTY_STEED, PRIZE_CARDS);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
