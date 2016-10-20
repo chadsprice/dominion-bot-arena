@@ -116,6 +116,7 @@ public class Game implements Runnable {
 	public Set<Card> tradeRouteTokenedPiles;
 	public int tradeRouteMat;
 	public boolean inBuyPhase;
+	public boolean playedCrossroadsThisTurn;
 
 	public int messageIndent;
 
@@ -198,6 +199,7 @@ public class Game implements Runnable {
 		actionsPlayedThisTurn = 0;
 		boughtVictoryCardThisTurn = false;
 		contrabandProhibited.clear();
+		playedCrossroadsThisTurn = false;
 		newTurnMessage(player);
 		messageIndent++;
 		player.sendActions();

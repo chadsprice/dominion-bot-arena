@@ -176,6 +176,8 @@ public class Card {
 	public static final Card FOLLOWERS = new Followers();
 	public static final Card PRINCESS = new Princess();
 	public static final Card TRUSTY_STEED = new TrustySteed();
+	// hinterlands expansion
+	public static final Card CROSSROADS = new Crossroads();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -189,6 +191,7 @@ public class Card {
 	public static Set<Card> PROSPERITY_BASIC_CARDS = new HashSet<Card>();
 	public static Set<Card> CORNUCOPIA_SET = new HashSet<Card>();
 	public static Set<Card> PRIZE_CARDS = new HashSet<Card>();
+	public static Set<Card> HINTERLANDS_SET = new HashSet<Card>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
 	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
@@ -368,6 +371,8 @@ public class Card {
 		include(FOLLOWERS, PRIZE_CARDS);
 		include(PRINCESS, PRIZE_CARDS);
 		include(TRUSTY_STEED, PRIZE_CARDS);
+		// hinterlands expansion
+		include(CROSSROADS, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
