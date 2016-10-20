@@ -806,6 +806,23 @@ public class Game implements Runnable {
 			sendTradeRouteToken(card);
 			sendTradeRouteMat();
 		}
+		// handle Duchess effect on gaining a Duchy
+		if (card == Card.DUCHY && supply.containsKey(Card.DUCHESS) && supply.get(Card.DUCHESS) != 0) {
+			if (chooseGainDuchessOnGainingDuchy(player)) {
+				messageIndent++;
+				messageAll("gaining " + Card.DUCHESS.htmlName());
+				gain(player, Card.DUCHESS);
+				messageIndent--;
+			}
+		}
+	}
+
+	private boolean chooseGainDuchessOnGainingDuchy(Player player) {
+		if (player instanceof Bot) {
+			return ((Bot) player).duchessChooseGainDuchessOnGainingDuchy();
+		}
+		int choice = promptMultipleChoice(player, "Duchess: Gain " + Card.DUCHESS.htmlName() + "?", new String[] {"Gain Duchess", "Don't"});
+		return (choice == 0);
 	}
 
 	public List<Card> getTrash() {

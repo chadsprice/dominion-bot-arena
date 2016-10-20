@@ -397,11 +397,15 @@ public class Bot extends Player {
 
 	public Card chooseToDiscard(List<Card> cards) {
 		for (Card card : cards) {
-			if (card == Card.CURSE || card.isVictory) {
+			if (wantToDiscard(card)) {
 				return card;
 			}
 		}
 		return null;
+	}
+
+	public boolean wantToDiscard(Card card) {
+		return card == Card.CURSE || card.isVictory;
 	}
 
 	public List<Card> trashNumber(int number, boolean isMandatory) {
@@ -524,6 +528,16 @@ public class Bot extends Player {
 	public int[] trustySteedBenefits() {
 		// +2 cards and +$2 is pretty safe for big money
 		return new int[] {0, 2};
+	}
+
+	public boolean duchessChooseDiscardTopOfDeck(Card card) {
+		// discard the top card of the deck if you know would discard it if it were in your hand
+		return wantToDiscard(card);
+	}
+
+	public boolean duchessChooseGainDuchessOnGainingDuchy() {
+		// BigMoney should not gain actions, even free Duchesses
+		return false;
 	}
 
 }
