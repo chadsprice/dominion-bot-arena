@@ -29,7 +29,7 @@ public class Duchess extends Card {
             if (!drawn.isEmpty()) {
                 Card card = drawn.get(0);
                 if (chooseDiscardTopOfDeck(eachPlayer, game, card)) {
-                    game.message(eachPlayer, "You discard the " + card.htmlNameRaw() + " from the top of your deck");
+                    game.message(eachPlayer, "You discard " + card.htmlName() + " from the top of your deck");
                     game.messageOpponents(eachPlayer, eachPlayer.username + " discards " + card.htmlName() + " from the top of their deck");
                     eachPlayer.addToDiscard(card);
                 } else {
@@ -46,7 +46,7 @@ public class Duchess extends Card {
 
     private boolean chooseDiscardTopOfDeck(Player player, Game game, Card card) {
         if (player instanceof Bot) {
-            return ((Bot) player).duchessChooseDiscardTopOfDeck(card);
+            return ((Bot) player).duchessDiscardTopOfDeck(card);
         }
         int choice = game.promptMultipleChoice(player, "Duchess: The top card of your deck is " + card.htmlName() + ". Discard it, or leave it on top?", new String[] {"Discard", "Leave on top"});
         return (choice == 0);

@@ -889,7 +889,7 @@ public class Game implements Runnable {
 
 	private boolean chooseGainDuchessOnGainingDuchy(Player player) {
 		if (player instanceof Bot) {
-			return ((Bot) player).duchessChooseGainDuchessOnGainingDuchy();
+			return ((Bot) player).duchessGainDuchessOnGainingDuchy();
 		}
 		int choice = promptMultipleChoice(player, "Duchess: Gain " + Card.DUCHESS.htmlName() + "?", new String[] {"Gain Duchess", "Don't"});
 		return (choice == 0);

@@ -530,12 +530,12 @@ public class Bot extends Player {
 		return new int[] {0, 2};
 	}
 
-	public boolean duchessChooseDiscardTopOfDeck(Card card) {
-		// discard the top card of the deck if you know would discard it if it were in your hand
+	public boolean duchessDiscardTopOfDeck(Card card) {
+		// discard the top card of your deck if you know would discard it if it were in your hand
 		return wantToDiscard(card);
 	}
 
-	public boolean duchessChooseGainDuchessOnGainingDuchy() {
+	public boolean duchessGainDuchessOnGainingDuchy() {
 		// BigMoney should not gain actions, even free Duchesses
 		return false;
 	}
@@ -563,6 +563,17 @@ public class Bot extends Player {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	protected boolean chooseRevealTunnel() {
+		// revealing Tunnel is pretty much always advantageous
+		return true;
+	}
+
+	public boolean jackOfAllTradesDiscardTopOfDeck(Card card) {
+		// discard the top card of your deck if you know would discard it if it were in your hand
+		return wantToDiscard(card);
 	}
 
 }
