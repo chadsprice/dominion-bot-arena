@@ -581,4 +581,9 @@ public class Bot extends Player {
 		return true;
 	}
 
+	public boolean spiceMerchantFirstBenefit() {
+		// the second benefit, +$2 and +1 buy, is probably better for BigMoney
+		return false;
+	}
+
 }
