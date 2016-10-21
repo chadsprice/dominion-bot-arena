@@ -188,6 +188,7 @@ public class Card {
 	public static final Card JACK_OF_ALL_TRADES = new JackOfAllTrades();
 	public static final Card NOBLE_BRIGAND = new NobleBrigand();
 	public static final Card NOMAD_CAMP = new NomadCamp();
+	public static final Card SILK_ROAD = new SilkRoad();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -393,6 +394,7 @@ public class Card {
 		include(JACK_OF_ALL_TRADES, HINTERLANDS_SET);
 		include(NOBLE_BRIGAND, HINTERLANDS_SET);
 		include(NOMAD_CAMP, HINTERLANDS_SET);
+		include(SILK_ROAD, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
