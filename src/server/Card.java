@@ -187,6 +187,7 @@ public class Card {
 	public static final Card TUNNEL = new Tunnel();
 	public static final Card JACK_OF_ALL_TRADES = new JackOfAllTrades();
 	public static final Card NOBLE_BRIGAND = new NobleBrigand();
+	public static final Card NOMAD_CAMP = new NomadCamp();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -391,6 +392,7 @@ public class Card {
 		include(TUNNEL, HINTERLANDS_SET);
 		include(JACK_OF_ALL_TRADES, HINTERLANDS_SET);
 		include(NOBLE_BRIGAND, HINTERLANDS_SET);
+		include(NOMAD_CAMP, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

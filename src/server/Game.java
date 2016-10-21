@@ -825,11 +825,23 @@ public class Game implements Runnable {
 				} else {
 					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
 					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
-					gainToTopOfDeck(player, card);
+					takeFromSupply(card);
+					player.putOnDraw(card);
+					onGained(player, card);
 					messageIndent--;
 					return true;
 				}
 			}
+		}
+		if (card == Card.NOMAD_CAMP) {
+			messageIndent++;
+			message(player, "putting in on top of your deck");
+			messageOpponents(player, "putting in on top of their deck");
+			takeFromSupply(card);
+			player.putOnDraw(card);
+			onGained(player, card);
+			messageIndent--;
+			return true;
 		}
 		if (player.getPlay().contains(Card.ROYAL_SEAL)) {
 			int choice = promptMultipleChoice(player, "Royal Seal: Put the " + card.htmlNameRaw() + " on top of your deck?", new String[] {"Yes", "No"});
@@ -837,7 +849,9 @@ public class Game implements Runnable {
 				messageIndent++;
 				message(player, "you use your " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
 				messageOpponents(player, player.username + " uses their " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
-				gainToTopOfDeck(player, card);
+				takeFromSupply(card);
+				player.putOnDraw(card);
+				onGained(player, card);
 				messageIndent--;
 				return true;
 			}
