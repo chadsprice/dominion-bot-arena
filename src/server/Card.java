@@ -182,6 +182,7 @@ public class Card {
 	public static final Card FOOLS_GOLD = new FoolsGold();
 	public static final Card DEVELOP = new Develop();
 	public static final Card OASIS = new Oasis();
+	public static final Card ORACLE = new Oracle();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -381,6 +382,7 @@ public class Card {
 		include(FOOLS_GOLD, HINTERLANDS_SET);
 		include(DEVELOP, HINTERLANDS_SET);
 		include(OASIS, HINTERLANDS_SET);
+		include(ORACLE, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -506,9 +508,9 @@ public class Card {
 			toPutOnDeck.add(cards.remove(choice));
 		}
 		if (!toPutOnDeck.isEmpty()) {
-			player.putOnDraw(toPutOnDeck);
 			game.message(player, "putting " + Card.htmlList(toPutOnDeck) + " on top of your deck");
 			game.messageOpponents(player, "putting " + Card.numCards(toPutOnDeck.size()) + " on top of their deck");
+			player.putOnDraw(toPutOnDeck);
 		}
 	}
 

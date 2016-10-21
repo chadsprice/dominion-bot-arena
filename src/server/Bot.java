@@ -545,4 +545,24 @@ public class Bot extends Player {
 		return true;
 	}
 
+	public boolean oracleDiscardSelf(List<Card> cards) {
+		// if there are any you want to discard, discard both
+		for (Card card : cards) {
+			if (wantToDiscard(card)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean oracleDiscardOppponent(List<Card> cards) {
+		// if there are any you wouldn't discard, discard both
+		for (Card card : cards) {
+			if (!wantToDiscard(card)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }
