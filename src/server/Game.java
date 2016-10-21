@@ -766,7 +766,7 @@ public class Game implements Runnable {
 		}
 		takeFromSupply(card);
 		// put card in player's discard
-		player.addToDiscard(card);
+		player.addToDiscard(card, false);
 		onGained(player, card);
 	}
 
@@ -796,7 +796,7 @@ public class Game implements Runnable {
 		}
 		removeFromTrash(card);
 		// put card in player's discard
-		player.addToDiscard(card);
+		player.addToDiscard(card, false);
 		onGained(player, card);
 	}
 

@@ -184,6 +184,7 @@ public class Card {
 	public static final Card OASIS = new Oasis();
 	public static final Card ORACLE = new Oracle();
 	public static final Card SCHEME = new Scheme();
+	public static final Card TUNNEL = new Tunnel();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -385,6 +386,7 @@ public class Card {
 		include(OASIS, HINTERLANDS_SET);
 		include(ORACLE, HINTERLANDS_SET);
 		include(SCHEME, HINTERLANDS_SET);
+		include(TUNNEL, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

@@ -45,7 +45,8 @@ public class TrustySteed extends Card {
                     }
                     game.message(player, "putting your deck into your discard pile");
                     game.messageOpponents(player, "putting their deck into their discard pile");
-                    player.addToDiscard(player.takeFromDraw(player.getDraw().size()));
+                    // this does not trigger the Tunnel reaction
+                    player.addToDiscard(player.takeFromDraw(player.getDraw().size()), false);
             }
         }
     }

@@ -26,9 +26,9 @@ public class Militia extends Card {
 			if (target.getHand().size() > 3) {
 				int count = target.getHand().size() - 3;
 				List<Card> discarded = game.promptDiscardNumber(target, count, "Militia", "attackPrompt");
-				target.putFromHandIntoDiscard(discarded);
 				game.message(target, "You discard " + Card.htmlList(discarded));
 				game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
+				target.putFromHandIntoDiscard(discarded);
 			}
 		}
 	}

@@ -490,13 +490,46 @@ public class Player {
 	}
 
 	public void addToDiscard(Card card) {
+		addToDiscard(card, true);
+	}
+
+	public void addToDiscard(Card card, boolean triggersTunnelReaction) {
+		if (triggersTunnelReaction && card == Card.TUNNEL) {
+			handleDiscardedTunnels(1);
+		}
 		discard.add(card);
 		sendDiscardSize();
 	}
 
 	public void addToDiscard(List<Card> cards) {
+		addToDiscard(cards, true);
+	}
+
+	public void addToDiscard(List<Card> cards, boolean triggersTunnelReaction) {
+		if (triggersTunnelReaction && cards.contains(Card.TUNNEL)) {
+			int numTunnels = (int) cards.stream().filter(c -> c == Card.TUNNEL).count();
+			handleDiscardedTunnels(numTunnels);
+		}
 		discard.addAll(cards);
 		sendDiscardSize();
+	}
+
+	private void handleDiscardedTunnels(int numTunnels) {
+		game.messageIndent++;
+		for (int i = 0; i < numTunnels && game.supply.get(Card.GOLD) != 0; i++) {
+			if (chooseRevealTunnel()) {
+				game.messageAll("revealing the " + Card.TUNNEL.htmlNameRaw() + " and gaining " + Card.GOLD.htmlName());
+				game.gain(this, Card.GOLD);
+			} else {
+				break;
+			}
+		}
+		game.messageIndent--;
+	}
+
+	protected boolean chooseRevealTunnel() {
+		int choice = game.promptMultipleChoice(this, "Tunnel: Reveal the " + Card.TUNNEL.htmlNameRaw() + " and gain " + Card.GOLD.htmlName() + "?", "reactionPrompt", new String[] {"Yes", "No"});
+		return (choice == 0);
 	}
 
 	public List<Card> getDraw() {

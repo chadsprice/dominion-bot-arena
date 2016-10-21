@@ -463,7 +463,7 @@ body {
 }
 
 /* Card name background colors */
-.action-victory, .treasure-victory, .treasure-reaction, .reaction, .duration, .action, .treasure, .victory, .curse {
+.action-victory, .treasure-victory, .treasure-reaction, .victory-reaction, .reaction, .duration, .action, .treasure, .victory, .curse {
   padding-left: 0.25em;
   padding-right: 0.25em;
 }
@@ -478,6 +478,10 @@ body {
 
 .treasure-reaction {
   background: linear-gradient(#ffd54f 50%, #64b5f6 50%);
+}
+
+.victory-reaction {
+  background: linear-gradient(#66bb6a 50%, #64b5f6 50%);
 }
 
 .reaction {

@@ -24,7 +24,8 @@ public class Chancellor extends Card {
 			if (choice == 0) {
 				game.message(player, "putting your deck into your discard pile immediately");
 				game.messageOpponents(player, "putting their deck into their discard pile immediately");
-				player.addToDiscard(player.takeFromDraw(player.getDraw().size()));
+				// this does not trigger the Tunnel reaction
+				player.addToDiscard(player.takeFromDraw(player.getDraw().size()), false);
 			}
 		}
 	}
