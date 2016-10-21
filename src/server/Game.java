@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -117,6 +118,7 @@ public class Game implements Runnable {
 	public int tradeRouteMat;
 	public boolean inBuyPhase;
 	public boolean playedCrossroadsThisTurn;
+	public int schemesPlayedThisTurn;
 
 	public int messageIndent;
 
@@ -200,6 +202,7 @@ public class Game implements Runnable {
 		boughtVictoryCardThisTurn = false;
 		contrabandProhibited.clear();
 		playedCrossroadsThisTurn = false;
+		schemesPlayedThisTurn = 0;
 		newTurnMessage(player);
 		messageIndent++;
 		player.sendActions();
@@ -261,38 +264,7 @@ public class Game implements Runnable {
 		if (!givenBuyPrompt) {
 			promptMultipleChoice(player, "There are no cards that you can buy this turn", new String[] {"End Turn"});
 		}
-		// handle treasuries
-		if (!boughtVictoryCardThisTurn) {
-			int numTreasuries = 0;
-			for (Card card : player.getPlay()) {
-				if (card == Card.TREASURY) {
-					numTreasuries++;
-				}
-			}
-			if (numTreasuries > 0) {
-				String[] choices = new String[numTreasuries + 1];
-				for (int i = 0; i <= numTreasuries; i++) {
-					choices[i] = (numTreasuries - i) + "";
-				}
-				int choice = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
-				int numToPutOnDeck = numTreasuries - choice;
-				if (numToPutOnDeck > 0) {
-					for (Iterator<Card> iter = player.getPlay().iterator(); numToPutOnDeck > 0 && iter.hasNext(); ) {
-						if (iter.next() == Card.TREASURY) {
-							iter.remove();
-							player.putOnDraw(Card.TREASURY);
-							numToPutOnDeck--;
-						}
-					}
-					player.sendPlay();
-					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
-					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of their deck");
-				}
-			}
-		}
-		// cleanup and redraw
-		player.cleanup();
-		player.turns++;
+		cleanup(player);
 		messageIndent--;
 	}
 
@@ -554,6 +526,73 @@ public class Game implements Runnable {
 		if (supply.keySet().contains(Card.PEDDLER)) {
 			sendCardCost(Card.PEDDLER);
 		}
+	}
+
+	private void cleanup(Player player) {
+		// handle scheme
+		if (schemesPlayedThisTurn != 0) {
+			List<Card> schemed = new ArrayList<Card>();
+			while (schemesPlayedThisTurn != 0) {
+				Set<Card> schemeable = player.getPlay().stream().filter(c -> c.isAction).collect(Collectors.toSet());
+				if (schemeable.isEmpty()) {
+					break;
+				}
+				List<Card> schemeableList = new ArrayList<Card>(schemeable);
+				Collections.sort(schemeableList, Player.HAND_ORDER_COMPARATOR);
+				String[] choices = new String[schemeableList.size() + 1];
+				for (int i = 0; i < schemeableList.size(); i++) {
+					choices[i] = schemeableList.get(i).toString();
+				}
+				choices[choices.length - 1] = "None";
+				int choice = promptMultipleChoice(player, "Scheme: You may choose " + schemesPlayedThisTurn + " action card(s) in play to put on your deck (the first card you choose will be on top of your deck)", choices);
+				if (choice == choices.length - 1) {
+					// chose none
+					break;
+				} else {
+					Card toScheme = schemeableList.get(choice);
+					player.removeFromPlay(toScheme);
+					schemed.add(toScheme);
+				}
+				schemesPlayedThisTurn--;
+			}
+			if (!schemed.isEmpty()) {
+				message(player, "You put " + Card.htmlList(schemed) + " on top of your deck because of " + Card.SCHEME.htmlName());
+				messageOpponents(player, player.username + " puts " + Card.numCards(schemed.size()) + " on top of their deck because of " + Card.SCHEME.htmlNameRaw());
+				player.putOnDraw(schemed);
+			}
+		}
+		// handle treasuries
+		if (!boughtVictoryCardThisTurn) {
+			int numTreasuries = 0;
+			for (Card card : player.getPlay()) {
+				if (card == Card.TREASURY) {
+					numTreasuries++;
+				}
+			}
+			if (numTreasuries > 0) {
+				String[] choices = new String[numTreasuries + 1];
+				for (int i = 0; i <= numTreasuries; i++) {
+					choices[i] = (numTreasuries - i) + "";
+				}
+				int choice = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
+				int numToPutOnDeck = numTreasuries - choice;
+				if (numToPutOnDeck > 0) {
+					for (Iterator<Card> iter = player.getPlay().iterator(); numToPutOnDeck > 0 && iter.hasNext(); ) {
+						if (iter.next() == Card.TREASURY) {
+							iter.remove();
+							player.putOnDraw(Card.TREASURY);
+							numToPutOnDeck--;
+						}
+					}
+					player.sendPlay();
+					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
+					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of their deck");
+				}
+			}
+		}
+		// cleanup and redraw
+		player.cleanup();
+		player.turns++;
 	}
 
 	private boolean gameOverConditionMet() {
