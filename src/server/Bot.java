@@ -576,4 +576,9 @@ public class Bot extends Player {
 		return wantToDiscard(card);
 	}
 
+	public boolean nobleBrigandTrashGoldOverSilver() {
+		// making opponents trash Gold over Silver is better for BigMoney
+		return true;
+	}
+
 }

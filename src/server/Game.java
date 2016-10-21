@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import cards.NobleBrigand;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -407,6 +408,12 @@ public class Game implements Runnable {
 			messageIndent++;
 			messageAll("gaining +" + numGoons + " VP because of " + Card.GOONS.htmlNameRaw());
 			player.addVictoryTokens(numGoons);
+			messageIndent--;
+		}
+		// if the card is Noble Brigand, do on-buy effect
+		if (card == Card.NOBLE_BRIGAND) {
+			messageIndent++;
+			((NobleBrigand) Card.NOBLE_BRIGAND).onBuyOrPlay(player, this, getOpponents(player));
 			messageIndent--;
 		}
 	}
