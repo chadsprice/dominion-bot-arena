@@ -966,13 +966,24 @@ public class Game implements Runnable {
 			}
 			messageIndent--;
 		}
-		// handle gaining Cache
+		// on gaining Cache, gain 2 Coppers
 		if (card == Card.CACHE) {
 			messageIndent++;
 			int numCoppers = Math.min(2, supply.get(Card.COPPER));
 			messageAll("gaining " + Card.COPPER.htmlName(numCoppers));
 			for (int i = 0; i < numCoppers; i++) {
 				gain(player, Card.COPPER);
+			}
+			messageIndent--;
+		}
+		// on gaining Embassy, each other player gains a Silver
+		if (card == Card.EMBASSY) {
+			messageIndent++;
+			for (Player opponent : getOpponents(player)) {
+				if (supply.get(Card.SILVER) != 0) {
+					message(opponent, "You gain " + Card.SILVER + " because of " + Card.EMBASSY.htmlNameRaw());
+					messageOpponents(opponent, opponent.username + " gains " + Card.SILVER + " because of " + Card.EMBASSY.htmlNameRaw());
+				}
 			}
 			messageIndent--;
 		}
