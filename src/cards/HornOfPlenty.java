@@ -30,8 +30,9 @@ public class HornOfPlenty extends Card {
         if (!gainable.isEmpty()) {
             Card toGain = game.promptChooseGainFromSupply(player, gainable, "Horn of Plenty: Choose a card to gain (if it's a Victory card, you will trash the " + this.htmlNameRaw() + ")");
             game.messageAll("gaining " + toGain.htmlName());
-            game.gain(player, toGain);
-            if (toGain.isVictory) {
+            // if the gained card was replaced, do not trash this
+            boolean replaced = game.gain(player, toGain);
+            if (toGain.isVictory && !replaced) {
                 game.messageAll("trashing the " + this.htmlNameRaw());
                 player.removeFromPlay(this);
                 game.addToTrash(this);

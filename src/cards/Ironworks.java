@@ -26,7 +26,11 @@ public class Ironworks extends Card {
 		if (!gainable.isEmpty()) {
 			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Ironworks: Choose a card to gain.");
 			game.messageAll("gaining " + toGain.htmlName());
-			game.gain(player, toGain);
+			boolean replaced = game.gain(player, toGain);
+			if (replaced) {
+				// if the gained card is replaced, you get no benefit
+				return;
+			}
 			// action -> +1 action
 			if (toGain.isAction) {
 				plusActions(player, game, 1);

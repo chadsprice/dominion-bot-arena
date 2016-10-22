@@ -769,17 +769,21 @@ public class Game implements Runnable {
 
 	private enum GainDestination {DISCARD, DRAW, HAND};
 
-	public void gain(Player player, Card card) {
+	/**
+	 * Returns true if the gained card has been replaced, e.g. replaced with a Silver via Trader.
+	 */
+	public boolean gain(Player player, Card card) {
 		if (gainReplace(player, card, GainDestination.DISCARD)) {
-			return;
+			return true;
 		}
 		if (gainRedirect(player, card)) {
-			return;
+			return false;
 		}
 		takeFromSupply(card);
 		// put card in player's discard
 		player.addToDiscard(card, false);
 		onGained(player, card);
+		return false;
 	}
 
 	public void gainToTopOfDeck(Player player, Card card) {
