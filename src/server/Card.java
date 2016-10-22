@@ -192,6 +192,7 @@ public class Card {
 	public static final Card SPICE_MERCHANT = new SpiceMerchant();
 	public static final Card TRADER = new Trader();
 	public static final Card CACHE = new Cache();
+	public static final Card CARTOGRAPHER = new Cartographer();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -401,6 +402,7 @@ public class Card {
 		include(SPICE_MERCHANT, HINTERLANDS_SET);
 		include(TRADER, HINTERLANDS_SET);
 		include(CACHE, HINTERLANDS_SET);
+		include(CARTOGRAPHER, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

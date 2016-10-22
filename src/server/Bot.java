@@ -2,6 +2,7 @@ package server;
 
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import bots.*;
 import org.json.simple.JSONObject;
@@ -589,6 +590,11 @@ public class Bot extends Player {
 	public boolean traderReplaceWithSilver(Card card) {
 		// if it is a card that you would trash, gain a Silver instead
 		return wantToTrash(card);
+	}
+
+	public List<Card> cartographerDiscardAnyNumber(List<Card> cards) {
+		// discard any that you would discard if they were in your hand
+		return cards.stream().filter(c -> wantToDiscard(c)).collect(Collectors.toList());
 	}
 
 }
