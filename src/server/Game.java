@@ -767,7 +767,12 @@ public class Game implements Runnable {
 		}
 	}
 
+	private enum GainDestination {DISCARD, DRAW, HAND};
+
 	public void gain(Player player, Card card) {
+		if (gainReplace(player, card, GainDestination.DISCARD)) {
+			return;
+		}
 		if (gainRedirect(player, card)) {
 			return;
 		}
@@ -778,6 +783,9 @@ public class Game implements Runnable {
 	}
 
 	public void gainToTopOfDeck(Player player, Card card) {
+		if (gainReplace(player, card, GainDestination.DRAW)) {
+			return;
+		}
 		if (gainRedirect(player, card)) {
 			return;
 		}
@@ -788,6 +796,9 @@ public class Game implements Runnable {
 	}
 
 	public void gainToHand(Player player, Card card) {
+		if (gainReplace(player, card, GainDestination.HAND)) {
+			return;
+		}
 		if (gainRedirect(player, card)) {
 			return;
 		}
@@ -798,6 +809,9 @@ public class Game implements Runnable {
 	}
 
 	public void gainFromTrash(Player player, Card card) {
+		if (gainReplace(player, card, GainDestination.DISCARD)) {
+			return;
+		}
 		if (gainRedirect(player, card)) {
 			return;
 		}
@@ -805,6 +819,47 @@ public class Game implements Runnable {
 		// put card in player's discard
 		player.addToDiscard(card, false);
 		onGained(player, card);
+	}
+
+	private boolean gainReplace(Player player, Card card, GainDestination dst) {
+		// handle Trader's reaction to replace gained cards with Silver, but only for non-Silvers
+		if (card != Card.SILVER && player.getHand().contains(Card.TRADER) && chooseRevealTrader(player, card)) {
+			messageIndent++;
+			if (supply.get(Card.SILVER) == 0) {
+				// if there are no Silvers to gain, gain nothing
+				message(player, "revealing " + Card.TRADER.htmlName() + " and gaining nothing instead");
+				return true;
+			}
+			message(player, "revealing " + Card.TRADER.htmlName() + " and gaining " + Card.SILVER.htmlName() + " instead");
+			messageIndent--;
+			card = Card.SILVER;
+			// still allow the gain to be redirected
+			if (gainRedirect(player, card)) {
+				return true;
+			}
+			// if not redirected, put the Silver where the card it replaced was going
+			takeFromSupply(card);
+			switch (dst) {
+				case DISCARD:
+					player.addToDiscard(card, false);
+					break;
+				case DRAW:
+					player.putOnDraw(card);
+					break;
+				default: // HAND
+					player.addToHand(card);
+			}
+			return true;
+		}
+		return false;
+	}
+
+	private boolean chooseRevealTrader(Player player, Card card) {
+		if (player instanceof Bot) {
+			return ((Bot) player).traderReplaceWithSilver(card);
+		}
+		int choice = promptMultipleChoice(player, "Trader: Reveal " + Card.TRADER.htmlName() + " and gain " + Card.SILVER.htmlName() + " instead of " + card.htmlName() + "?", "reactionPrompt", new String[] {"Yes", "No"});
+		return (choice == 0);
 	}
 
 	private boolean gainRedirect(Player player, Card card) {

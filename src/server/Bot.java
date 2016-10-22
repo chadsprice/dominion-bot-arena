@@ -586,4 +586,9 @@ public class Bot extends Player {
 		return false;
 	}
 
+	public boolean traderReplaceWithSilver(Card card) {
+		// if it is a card that you would trash, gain a Silver instead
+		return wantToTrash(card);
+	}
+
 }
