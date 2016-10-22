@@ -194,6 +194,7 @@ public class Card {
 	public static final Card CACHE = new Cache();
 	public static final Card CARTOGRAPHER = new Cartographer();
 	public static final Card EMBASSY = new Embassy();
+	public static final Card HAGGLER = new Haggler();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -405,6 +406,7 @@ public class Card {
 		include(CACHE, HINTERLANDS_SET);
 		include(CARTOGRAPHER, HINTERLANDS_SET);
 		include(EMBASSY, HINTERLANDS_SET);
+		include(HAGGLER, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

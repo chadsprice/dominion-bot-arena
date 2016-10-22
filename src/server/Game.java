@@ -347,18 +347,17 @@ public class Game implements Runnable {
 	}
 
 	private void onBuy(Player player, Card card) {
+		messageIndent++;
 		if (card.isVictory) {
 			boughtVictoryCardThisTurn = true;
 		}
 		// if that card's pile was embargoed
 		if (embargoTokens.get(card) > 0 && supply.get(Card.CURSE) > 0) {
 			int cursesToGain = Math.min(embargoTokens.get(card), supply.get(Card.CURSE));
-			messageIndent++;
 			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
 			for (int i = 0; i < cursesToGain; i++) {
 				gain(player, Card.CURSE);
 			}
-			messageIndent--;
 		}
 		// if the purchase can be affected by talisman
 		if (card.cost(this) <= 4 && !card.isVictory && supply.get(card) > 0) {
@@ -366,7 +365,6 @@ public class Game implements Runnable {
 			// if the player has talismans in play
 			if (numTalismans > 0) {
 				int copiesToGain = Math.min(numTalismans, supply.get(card));
-				messageIndent++;
 				if (copiesToGain == 1) {
 					messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
 				} else {
@@ -375,7 +373,6 @@ public class Game implements Runnable {
 				for (int i = 0; i < copiesToGain; i++) {
 					gain(player, card);
 				}
-				messageIndent--;
 			}
 		}
 		// if the purchase can be affected by hoard
@@ -384,38 +381,45 @@ public class Game implements Runnable {
 			// if the player has hoards in play
 			if (numHoards > 0) {
 				int goldsToGain = Math.min(numHoards, supply.get(Card.GOLD));
-				messageIndent++;
 				messageAll("gaining " + Card.GOLD.htmlName(goldsToGain) + " because of " + Card.HOARD.htmlNameRaw());
 				for (int i = 0; i < goldsToGain; i++) {
 					gain(player, Card.GOLD);
 				}
-				messageIndent--;
 			}
 		}
-		// if the purchase was a mint, trash all treasures in play
+		// if the purchase was a Mint, trash all treasures in play
 		if (card == Card.MINT) {
 			List<Card> treasures = player.removeAllTreasuresFromPlay();
 			if (!treasures.isEmpty()) {
-				messageIndent++;
 				messageAll("trashing " + Card.htmlList(treasures) + " from play");
-				messageIndent--;
 				addToTrash(treasures);
 			}
 		}
-		// if the purchase can be affected by goons
+		// if the purchase can be affected by Goons
 		int numGoons = numberInPlay(Card.GOONS);
 		if (numGoons > 0) {
-			messageIndent++;
 			messageAll("gaining +" + numGoons + " VP because of " + Card.GOONS.htmlNameRaw());
 			player.addVictoryTokens(numGoons);
-			messageIndent--;
+		}
+		// if the purchase can be affected by Hagglers
+		int numHagglers = numberInPlay(Card.HAGGLER);
+		for (int i = 0; i < numHagglers; i++) {
+			// gain card costing less than the purchased card that is not a victory card
+			Set<Card> gainable = cardsCostingAtMost(card.cost(this) - 1);
+			gainable = gainable.stream().filter(c -> !c.isVictory).collect(Collectors.toSet());
+			if (!gainable.isEmpty()) {
+				Card toGain = promptChooseGainFromSupply(player, gainable, "Haggler: Choose a card to gain.");
+				messageAll("gaining " + toGain.htmlName() + " because of " + Card.HAGGLER.htmlNameRaw());
+				gain(player, toGain);
+			} else {
+				break;
+			}
 		}
 		// if the card is Noble Brigand, do on-buy effect
 		if (card == Card.NOBLE_BRIGAND) {
-			messageIndent++;
 			((NobleBrigand) Card.NOBLE_BRIGAND).onBuyOrPlay(player, this, getOpponents(player));
-			messageIndent--;
 		}
+		messageIndent--;
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
