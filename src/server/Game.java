@@ -853,6 +853,7 @@ public class Game implements Runnable {
 				default: // HAND
 					player.addToHand(card);
 			}
+			onGained(player, card);
 			return true;
 		}
 		return false;
@@ -962,6 +963,16 @@ public class Game implements Runnable {
 						break;
 					}
 				}
+			}
+			messageIndent--;
+		}
+		// handle gaining Cache
+		if (card == Card.CACHE) {
+			messageIndent++;
+			int numCoppers = Math.min(2, supply.get(Card.COPPER));
+			messageAll("gaining " + Card.COPPER.htmlName(numCoppers));
+			for (int i = 0; i < numCoppers; i++) {
+				gain(player, Card.COPPER);
 			}
 			messageIndent--;
 		}
