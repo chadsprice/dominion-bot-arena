@@ -17,7 +17,7 @@ public class FoolsGold extends Card {
 
     @Override
     public int treasureValue(Game game) {
-        if (game.currentPlayer().foolsGoldsPlayedThisTurn == 1) {
+        if (game.currentPlayer().playedFoolsGoldThisTurn) {
             return 1;
         } else {
             return 4;
@@ -26,7 +26,7 @@ public class FoolsGold extends Card {
 
     @Override
     public void onPlay(Player player, Game game) {
-        player.foolsGoldsPlayedThisTurn++;
+        player.playedFoolsGoldThisTurn = true;
     }
 
     @Override

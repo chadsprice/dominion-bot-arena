@@ -302,9 +302,11 @@ public class Game implements Runnable {
 	}
 
 	public void playTreasure(Player player, Card treasure) {
+		messageIndent++;
 		player.putFromHandIntoPlay(treasure);
-		treasure.onPlay(player, this);
 		player.addCoins(treasure.treasureValue(this));
+		treasure.onPlay(player, this);
+		messageIndent--;
 	}
 
 	private void playAllTreasures(Player player) {
@@ -924,28 +926,24 @@ public class Game implements Runnable {
 	}
 
 	private void onGained(Player player, Card card) {
+		messageIndent++;
 		player.cardsGainedDuringTurn.add(card);
 		if (tradeRouteTokenedPiles.contains(card)) {
 			tradeRouteTokenedPiles.remove(card);
 			tradeRouteMat++;
-			messageIndent++;
 			messageAll("the trade route token on " + card.htmlNameRaw() + " moves to the trade route mat");
-			messageIndent--;
 			sendTradeRouteToken(card);
 			sendTradeRouteMat();
 		}
 		// handle Duchess effect on gaining a Duchy
 		if (card == Card.DUCHY && supply.containsKey(Card.DUCHESS) && supply.get(Card.DUCHESS) != 0) {
 			if (chooseGainDuchessOnGainingDuchy(player)) {
-				messageIndent++;
 				messageAll("gaining " + Card.DUCHESS.htmlName());
 				gain(player, Card.DUCHESS);
-				messageIndent--;
 			}
 		}
 		// handle Fool's Gold effect on gaining a Province
 		if (card == Card.PROVINCE) {
-			messageIndent++;
 			for (Player opponent : getOpponents(player)) {
 				int numFoolsGolds = opponent.numberInHand(Card.FOOLS_GOLD);
 				for (int i = 0; i < numFoolsGolds; i++) {
@@ -968,29 +966,36 @@ public class Game implements Runnable {
 					}
 				}
 			}
-			messageIndent--;
 		}
 		// on gaining Cache, gain 2 Coppers
 		if (card == Card.CACHE) {
-			messageIndent++;
 			int numCoppers = Math.min(2, supply.get(Card.COPPER));
 			messageAll("gaining " + Card.COPPER.htmlName(numCoppers));
 			for (int i = 0; i < numCoppers; i++) {
 				gain(player, Card.COPPER);
 			}
-			messageIndent--;
 		}
 		// on gaining Embassy, each other player gains a Silver
 		if (card == Card.EMBASSY) {
-			messageIndent++;
 			for (Player opponent : getOpponents(player)) {
 				if (supply.get(Card.SILVER) != 0) {
-					message(opponent, "You gain " + Card.SILVER + " because of " + Card.EMBASSY.htmlNameRaw());
-					messageOpponents(opponent, opponent.username + " gains " + Card.SILVER + " because of " + Card.EMBASSY.htmlNameRaw());
+					message(opponent, "You gain " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
+					messageOpponents(opponent, opponent.username + " gains " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
+					gain(opponent, Card.SILVER);
 				}
 			}
-			messageIndent--;
 		}
+		// on gaining Ill-Gotten Gains, each other player gains a Curse
+		if (card == Card.ILL_GOTTEN_GAINS) {
+			for (Player opponent : getOpponents(player)) {
+				if (supply.get(Card.CURSE) != 0) {
+					message(opponent, "You gain " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
+					messageOpponents(opponent, opponent.username + " gains " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
+					gain(opponent, Card.CURSE);
+				}
+			}
+		}
+		messageIndent--;
 	}
 
 	private boolean chooseGainDuchessOnGainingDuchy(Player player) {

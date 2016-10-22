@@ -1777,6 +1777,10 @@ function init() {
   document.getElementById('automatch3Checkbox').checked = true;
   document.getElementById('automatch4Checkbox').checked = true;
   document.getElementById('baseCheckbox').checked = true;
+  document.getElementById('intrigueCheckbox').checked = true;
+  document.getElementById('seasideCheckbox').checked = true;
+  document.getElementById('prosperityCheckbox').checked = true;
+  document.getElementById('cornucopiaCheckbox').checked = true;
 
   // set up lobby log in button
   document.getElementById('changeLoginButton').onclick = changeLogin;

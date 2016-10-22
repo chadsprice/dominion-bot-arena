@@ -133,7 +133,7 @@ public class Player {
 	public Set<Card> cardsGainedDuringTurn = new HashSet<Card>();
 
 	// keep track of Fool's Golds played
-	public int foolsGoldsPlayedThisTurn;
+	public boolean playedFoolsGoldThisTurn;
 
 	public Player(PlayerWebSocketHandler conn) {
 		this.conn = conn;
@@ -166,7 +166,7 @@ public class Player {
 		actions = 1;
 		buys = 1;
 		coins = 0;
-		foolsGoldsPlayedThisTurn = 0;
+		playedFoolsGoldThisTurn = false;
 		// reset UI state
 		resetHandOrder();
 		// drawing a new hand automatically sends the player their hand and coins
@@ -315,7 +315,7 @@ public class Player {
 			// handle Fool's Gold
 			if (numFoolsGolds != 0) {
 				// if no Fool's Golds have been played yet this turn
-				if (foolsGoldsPlayedThisTurn == 0) {
+				if (playedFoolsGoldThisTurn) {
 					// $1 for the first Fool's Gold, then $4 for each additional
 					usableCoins += 1 + 4 * (numFoolsGolds - 1);
 				} else {
@@ -331,7 +331,8 @@ public class Player {
 				!hand.contains(Card.CONTRABAND) &&
 				!hand.contains(Card.VENTURE) &&
 				!(game.supply.containsKey(Card.GRAND_MARKET) && hand.contains(Card.COPPER)) &&
-				!hand.contains(Card.HORN_OF_PLENTY);
+				!hand.contains(Card.HORN_OF_PLENTY) &&
+				!hand.contains(Card.ILL_GOTTEN_GAINS);
 	}
 
 	@SuppressWarnings("unchecked")

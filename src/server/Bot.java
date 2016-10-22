@@ -597,4 +597,9 @@ public class Bot extends Player {
 		return cards.stream().filter(c -> wantToDiscard(c)).collect(Collectors.toList());
 	}
 
+	public boolean illGottenGainsGainCopper() {
+		// gaining a Copper is rarely beneficial for BigMoney
+		return false;
+	}
+
 }
