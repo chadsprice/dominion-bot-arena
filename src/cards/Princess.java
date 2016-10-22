@@ -18,7 +18,7 @@ public class Princess extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         plusBuys(player, game, 1);
-        game.messageAll("cards cost $2 less this turn");
+        game.messageAll("cards cost $2 less while this is in play");
         game.costModifierPlayedLastTurn = true;
         game.sendCardCosts();
     }

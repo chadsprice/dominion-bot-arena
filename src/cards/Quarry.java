@@ -17,7 +17,7 @@ public class Quarry extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		game.messageAll("action cards cost $2 less this turn");
+		game.messageAll("action cards cost $2 less while this is in play");
 		game.costModifierPlayedLastTurn = true;
 		game.sendCardCosts();
 	}

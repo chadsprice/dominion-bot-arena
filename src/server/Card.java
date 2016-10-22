@@ -195,6 +195,7 @@ public class Card {
 	public static final Card CARTOGRAPHER = new Cartographer();
 	public static final Card EMBASSY = new Embassy();
 	public static final Card HAGGLER = new Haggler();
+	public static final Card HIGHWAY = new Highway();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -407,6 +408,7 @@ public class Card {
 		include(CARTOGRAPHER, HINTERLANDS_SET);
 		include(EMBASSY, HINTERLANDS_SET);
 		include(HAGGLER, HINTERLANDS_SET);
+		include(HIGHWAY, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -454,6 +456,7 @@ public class Card {
 			computedCost -= 2 * game.numberInPlay(QUARRY);
 		}
 		computedCost -= 2 * game.numberInPlay(PRINCESS);
+		computedCost -= game.numberInPlay(HIGHWAY);
 		// cost can never be less than zero
 		return Math.max(computedCost, 0);
 	}
