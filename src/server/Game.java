@@ -995,6 +995,19 @@ public class Game implements Runnable {
 				}
 			}
 		}
+		// on gaining Inn, shuffle any number of action cards from your discard back into your deck
+		if (card == Card.INN) {
+			List<Card> innable = player.getDiscard().stream().filter(c -> c.isAction).collect(Collectors.toList());
+			if (!innable.isEmpty()) {
+				List<Card> toInn = chooseInn(player, new ArrayList<Card>(innable));
+				if (!toInn.isEmpty()) {
+					message(player, "shuffling " + Card.htmlList(toInn) + " into your deck");
+					messageOpponents(player, "shuffling " + Card.htmlList(toInn) + " into their deck");
+					player.removeFromDiscard(toInn);
+					player.shuffleIntoDraw(toInn);
+				}
+			}
+		}
 		messageIndent--;
 	}
 
@@ -1012,6 +1025,44 @@ public class Game implements Runnable {
 		}
 		int choice = promptMultipleChoice(player, "Fool's Gold: Trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD.htmlName() + " onto your deck?", "reactionPrompt", new String[] {"Yes", "No"});
 		return (choice == 0);
+	}
+
+	private List<Card> chooseInn(Player player, List<Card> innable) {
+		if (player instanceof Bot) {
+			List<Card> toInn = ((Bot) player).innShuffleIntoDeck(new ArrayList<Card>(innable));
+			// check the bot's response
+			for (Card eachToInn : toInn) {
+				if (!innable.remove(eachToInn)) {
+					throw new IllegalStateException();
+				}
+			}
+			return toInn;
+		}
+		List<Card> toInn = new ArrayList<Card>();
+		while (!innable.isEmpty()) {
+			Card nextToInn = sendPromptInn(player, innable);
+			if (nextToInn != null) {
+				innable.remove(nextToInn);
+				toInn.add(nextToInn);
+			} else {
+				break;
+			}
+		}
+		return toInn;
+	}
+
+	private Card sendPromptInn(Player player, List<Card> innable) {
+		String[] choices = new String[innable.size() + 1];
+		for (int i = 0; i < innable.size(); i++) {
+			choices[i] = innable.get(i).toString();
+		}
+		choices[choices.length - 1] = "Done";
+		int choice = promptMultipleChoice(player, "Inn: Choose any number of action cards in your discard to shuffle into your deck", choices);
+		if (choice == choices.length - 1) {
+			return null;
+		} else {
+			return innable.get(choice);
+		}
 	}
 
 	public List<Card> getTrash() {

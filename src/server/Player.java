@@ -551,6 +551,12 @@ public class Player {
 		sendDrawSize();
 	}
 
+	public void shuffleIntoDraw(List<Card> cards) {
+		draw.addAll(cards);
+		Collections.shuffle(draw);
+		sendDrawSize();
+	}
+
 	public List<Card> takeFromDraw(int n) {
 		List<Card> drawn = new ArrayList<Card>();
 		// if draw pile is too small, take all of it and replace it with shuffled discard pile
@@ -655,6 +661,13 @@ public class Player {
 			cardsInPlay.add(duration.durationCard);
 		}
 		return cardsInPlay;
+	}
+
+	public void removeFromDiscard(List<Card> cards) {
+		for (Card card : cards) {
+			discard.remove(card);
+		}
+		sendDiscardSize();
 	}
 
 	public void removeFromDiscard(Card card, int count) {

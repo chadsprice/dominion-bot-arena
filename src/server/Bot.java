@@ -602,4 +602,9 @@ public class Bot extends Player {
 		return false;
 	}
 
+	public List<Card> innShuffleIntoDeck(List<Card> innable) {
+		// BigMoney shouldn't want more actions in its deck
+		return new ArrayList<Card>();
+	}
+
 }
