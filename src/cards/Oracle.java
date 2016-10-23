@@ -43,7 +43,7 @@ public class Oracle extends Card {
                     target.addToDiscard(drawn);
                 } else {
                     game.messageAll("putting them back");
-                    putRevealedBackInAnyOrder(player, game, target, drawn);
+                    putOnDeckInAnyOrder(player, game, drawn, "Oracle: Put the revealed cards back on your deck in any order");
                 }
                 game.messageIndent--;
             } else {
@@ -68,26 +68,6 @@ public class Oracle extends Card {
         }
         int choice = game.promptMultipleChoice(player, "Oracle: " + opponent.username + " reveals " + Card.htmlList(cards) + ". Will they discard them or put them back?", new String[] {"Discard", "Put back"});
         return (choice == 0);
-    }
-
-    private void putRevealedBackInAnyOrder(Player player, Game game, Player target, List<Card> revealed) {
-        // don't bother asking the order to return the cards if there are not multiple, or if this is the player that
-        // played Oracle (since they will just draw these cards next, regardless of order)
-        if (revealed.size() > 1 && target != player) {
-            Collections.sort(revealed, Player.HAND_ORDER_COMPARATOR);
-            List<Card> toPutOnDeck = new ArrayList<Card>();
-            while (!revealed.isEmpty()) {
-                String[] choices = new String[revealed.size()];
-                for (int i = 0; i < revealed.size(); i++) {
-                    choices[i] = revealed.get(i).toString();
-                }
-                int choice = game.promptMultipleChoice(target, "Oracle: Put the revealed cards back on your deck (the first card you choose will be on top of your deck)", "attackPrompt", choices);
-                toPutOnDeck.add(revealed.remove(choice));
-            }
-            player.putOnDraw(toPutOnDeck);
-        } else {
-            player.putOnDraw(revealed);
-        }
     }
 
     @Override

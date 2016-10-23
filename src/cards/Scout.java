@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import server.Card;
 import server.Game;
@@ -27,33 +28,25 @@ public class Scout extends Card {
 		List<Card> revealed = player.takeFromDraw(4);
 		if (!revealed.isEmpty()) {
 			// reveal top 4 cards
-			game.messageAll("revealing " + Card.htmlList(revealed));
-			List<Card> victoryCards = removeVictoryCards(revealed);
+			game.messageAll("drawing " + Card.htmlList(revealed));
+			List<Card> victoryCards = revealed.stream().filter(c -> c.isVictory).collect(Collectors.toList());
+			List<Card> nonVictoryCards = revealed.stream().filter(c -> !c.isVictory).collect(Collectors.toList());
 			// add revealed victory cards to hand
-			if (victoryCards.size() > 0) {
-				player.addToHand(victoryCards);
+			if (!victoryCards.isEmpty()) {
 				game.message(player, "putting " + Card.htmlList(victoryCards) + " into your hand");
 				game.messageOpponents(player, "putting " + Card.htmlList(victoryCards) + " into their hand");
+				player.addToHand(victoryCards);
 			}
 			// put the rest on top of your deck in any order
-			putOnDeckInAnyOrder(player, game, revealed, "Scout: Put the remaining cards on top of your deck");
-		} else {
-			game.message(player, "revealing nothing because your deck is empty");
-			game.messageOpponents(player, "revealing nothing because their deck is empty");
-		}
-	}
-
-	private List<Card> removeVictoryCards(List<Card> cards) {
-		List<Card> victoryCards = new ArrayList<Card>();
-		Iterator<Card> iter = cards.iterator();
-		while (iter.hasNext()) {
-			Card card = iter.next();
-			if (card.isVictory) {
-				iter.remove();
-				victoryCards.add(card);
+			if (!nonVictoryCards.isEmpty()) {
+				game.message(player, "putting the rest on top of your deck");
+				game.messageOpponents(player, "putting the rest on top of their deck");
+				putOnDeckInAnyOrder(player, game, revealed, "Scout: Put the remaining cards on top of your deck");
 			}
+		} else {
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "their deck is empty");
 		}
-		return victoryCards;
 	}
 
 	@Override

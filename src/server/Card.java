@@ -198,6 +198,7 @@ public class Card {
 	public static final Card HIGHWAY = new Highway();
 	public static final Card ILL_GOTTEN_GAINS = new IllGottenGains();
 	public static final Card INN = new Inn();
+	public static final Card MANDARIN = new Mandarin();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -413,6 +414,7 @@ public class Card {
 		include(HIGHWAY, HINTERLANDS_SET);
 		include(ILL_GOTTEN_GAINS, HINTERLANDS_SET);
 		include(INN, HINTERLANDS_SET);
+		include(MANDARIN, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -528,19 +530,25 @@ public class Card {
 	}
 
 	protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt) {
-		Collections.sort(cards, Player.HAND_ORDER_COMPARATOR);
-		List<Card> toPutOnDeck = new ArrayList<Card>();
-		while (!cards.isEmpty()) {
-			String[] choices = new String[cards.size()];
-			for (int i = 0; i < cards.size(); i++) {
-				choices[i] = cards.get(i).toString();
+		List<Card> toPutOnDeck;
+		// if there is no order to decide
+		if (new HashSet<Card>(cards).size() < 2) {
+			// put them on the deck as-is
+			toPutOnDeck = cards;
+		} else {
+			// otherwise, prompt the user for the order
+			toPutOnDeck = new ArrayList<Card>();
+			Collections.sort(cards, Player.HAND_ORDER_COMPARATOR);
+			while (!cards.isEmpty()) {
+				String[] choices = new String[cards.size()];
+				for (int i = 0; i < cards.size(); i++) {
+					choices[i] = cards.get(i).toString();
+				}
+				int choice = game.promptMultipleChoice(player, prompt + " (the first card you choose will be on top of your deck)", choices);
+				toPutOnDeck.add(cards.remove(choice));
 			}
-			int choice = game.promptMultipleChoice(player, prompt + " (the first card you choose will be on top of your deck)", choices);
-			toPutOnDeck.add(cards.remove(choice));
 		}
 		if (!toPutOnDeck.isEmpty()) {
-			game.message(player, "putting " + Card.htmlList(toPutOnDeck) + " on top of your deck");
-			game.messageOpponents(player, "putting " + Card.numCards(toPutOnDeck.size()) + " on top of their deck");
 			player.putOnDraw(toPutOnDeck);
 		}
 	}

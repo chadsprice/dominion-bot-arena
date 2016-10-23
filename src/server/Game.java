@@ -232,21 +232,22 @@ public class Game implements Runnable {
 			BuyPhaseChoice choice = promptBuyPhase(player);
 			if (choice.toBuy != null) {
 				// autoplay treasures
-				if (player.isAutoplayingTreasures()) {
+				if (player.getCoins() < choice.toBuy.cost(this) && player.isAutoplayingTreasures()) {
 					playAllTreasures(player);
 					// if the coin prediction was wrong and we let the user choose something that they couldn't actually buy 
 					if (!buyableCards(player).contains(choice.toBuy)) {
 						throw new IllegalStateException();
 					}
 				}
+				// update player status
+				player.addBuys(-1);
+				player.addCoins(-choice.toBuy.cost(this));
 				// gain purchased card
 				message(player, "You purchase " + choice.toBuy.htmlName());
 				messageOpponents(player, player.username + " purchases " + choice.toBuy.htmlName());
 				gain(player, choice.toBuy);
 				onBuy(player, choice.toBuy);
-				// update player status
-				player.addBuys(-1);
-				player.addCoins(-choice.toBuy.cost(this));
+				// record purchases for MimicBot
 				recordPlayerGained(player, choice.toBuy);
 			} else if (choice.toPlay != null) {
 				message(player, "You play " + choice.toPlay.htmlName());
@@ -1007,6 +1008,14 @@ public class Game implements Runnable {
 					player.shuffleIntoDraw(toInn);
 				}
 			}
+		}
+		// on gaining Mandarin, put all treasures you have in play on top of your deck in any order
+		if (card == Card.MANDARIN) {
+			List<Card> treasuresInPlay = player.getPlay().stream().filter(c -> c.isTreasure).collect(Collectors.toList());
+			player.removeFromPlay(treasuresInPlay);
+			message(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of your deck");
+			messageOpponents(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of their deck");
+			Card.MANDARIN.putOnDeckInAnyOrder(player, this, treasuresInPlay, "Mandarin: Put all Treasures you have in play on top of your deck in any order");
 		}
 		messageIndent--;
 	}

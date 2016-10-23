@@ -41,16 +41,10 @@ public class Sentry extends Card {
                     toPutBack.add(card);
                 }
             }
+            // put the rest back on top
             if (!toPutBack.isEmpty()) {
-                if (toPutBack.size() == 1) {
-                    // automatically put the remaining card back (no need to prompt the user for the order)
-                    Card card = toPutBack.get(0);
-                    game.message(player, "putting " + card.htmlName() + " back on top");
-                    game.messageOpponents(player, "putting 1 card back on top");
-                    player.putOnDraw(card);
-                } else { // toPutBack.size() == 2
-                    putOnDeckInAnyOrder(player, game, toPutBack, "Sentry: Put the remaining cards on top of your deck");
-                }
+                game.messageAll("putting the rest back on top");
+                putOnDeckInAnyOrder(player, game, toPutBack, "Sentry: Put the rest back on top in any order");
             }
         } else {
             game.message(player, "your deck is empty");

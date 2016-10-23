@@ -639,6 +639,13 @@ public class Player {
 		sendPlay();
 	}
 
+	public void removeFromPlay(List<Card> cards) {
+		for (Card card : cards) {
+			play.remove(card);
+		}
+		sendPlay();
+	}
+
 	public List<Card> removeAllTreasuresFromPlay() {
 		List<Card> treasures = new ArrayList<Card>();
 		for (Iterator<Card> iter = play.iterator(); iter.hasNext(); ) {

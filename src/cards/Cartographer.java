@@ -27,6 +27,8 @@ public class Cartographer extends Card {
         // look at the top 4 cards of your deck
         List<Card> top = player.takeFromDraw(4);
         if (!top.isEmpty()) {
+            game.message(player, "drawing " + Card.htmlList(top));
+            game.messageOpponents(player, "drawing " + Card.numCards(top.size()));
             // discard any number of them
             List<Card> toDiscard = chooseDiscardAnyNumber(player, game, new ArrayList<Card>(top));
             if (!toDiscard.isEmpty()) {
@@ -37,6 +39,7 @@ public class Cartographer extends Card {
                 player.addToDiscard(toDiscard);
             }
             if (!top.isEmpty()) {
+                game.messageAll("putting the rest back on top");
                 putOnDeckInAnyOrder(player, game, top, "Cartographer: Put the rest back on top in any order");
             }
         } else {
