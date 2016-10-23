@@ -202,6 +202,7 @@ public class Card {
 	public static final Card MARGRAVE = new Margrave();
 	public static final Card STABLES = new Stables();
 	public static final Card BORDER_VILLAGE = new BorderVillage();
+	public static final Card FARMLAND = new Farmland();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -421,6 +422,7 @@ public class Card {
 		include(MARGRAVE, HINTERLANDS_SET);
 		include(STABLES, HINTERLANDS_SET);
 		include(BORDER_VILLAGE, HINTERLANDS_SET);
+		include(FARMLAND, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

@@ -422,6 +422,23 @@ public class Game implements Runnable {
 		if (card == Card.NOBLE_BRIGAND) {
 			((NobleBrigand) Card.NOBLE_BRIGAND).onBuyOrPlay(player, this, getOpponents(player));
 		}
+		// on buying Farmland, trash a card and gain one costing exactly $2 more
+		if (card == Card.FARMLAND) {
+			if (!player.getHand().isEmpty()) {
+				Card toTrash = promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Farmland: Choose a card to trash and gain a card costing exactly $2 more.");
+				messageAll("trashing " + toTrash.htmlName() + " because of " + Card.FARMLAND.htmlNameRaw());
+				player.removeFromHand(toTrash);
+				addToTrash(toTrash);
+				Set<Card> gainable = cardsCostingExactly(toTrash.cost(this) + 2);
+				if (!gainable.isEmpty()) {
+					Card toGain = promptChooseGainFromSupply(player, gainable, "Farmland: Choose a card to gain.");
+					messageIndent++;
+					messageAll("gaining " + toGain.htmlName());
+					gain(player, toGain);
+					messageIndent--;
+				}
+			}
+		}
 		messageIndent--;
 	}
 
