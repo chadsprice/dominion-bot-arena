@@ -8,6 +8,8 @@ Implemented Sets:
 * Intrigue (1st and 2nd ed.)
 * Seaside
 * Prosperity
+* Cornucopia
+* Hinterlands
 
 ## Running
 You can run the server yourself by downloading [dominion-bot-arena.zip](https://github.com/chadsprice/dominion-bot-arena/raw/master/dominion-bot-arena.zip). Extract the contents and execute `java -jar dominion-bot-arena.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.

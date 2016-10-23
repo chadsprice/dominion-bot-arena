@@ -1224,6 +1224,9 @@ function createCustomGame() {
   if (document.getElementById('cornucopiaCheckbox').checked) {
     sets.push('Cornucopia');
   }
+  if (document.getElementById('hinterlandsCheckbox').checked) {
+    sets.push('Hinterlands');
+  }
   var cards = document.getElementById('customGameCards').value;
   var bots = getBots();
   socket.send(JSON.stringify({'type':'createCustomGame', 'name':name, 'numPlayers':numPlayers, 'sets':sets, 'cards':cards, 'bots':bots}));
@@ -1781,6 +1784,7 @@ function init() {
   document.getElementById('seasideCheckbox').checked = true;
   document.getElementById('prosperityCheckbox').checked = true;
   document.getElementById('cornucopiaCheckbox').checked = true;
+  document.getElementById('hinterlandsCheckbox').checked = true;
 
   // set up lobby log in button
   document.getElementById('changeLoginButton').onclick = changeLogin;

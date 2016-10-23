@@ -231,6 +231,7 @@ public class Card {
 		include(SEASIDE_SET, "Seaside");
 		include(PROSPERITY_SET, "Prosperity");
 		include(CORNUCOPIA_SET, "Cornucopia");
+		include(HINTERLANDS_SET, "Hinterlands");
 
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);
