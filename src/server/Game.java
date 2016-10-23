@@ -1017,6 +1017,15 @@ public class Game implements Runnable {
 			messageOpponents(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of their deck");
 			Card.MANDARIN.putOnDeckInAnyOrder(player, this, treasuresInPlay, "Mandarin: Put all Treasures you have in play on top of your deck in any order");
 		}
+		// on gaining Border Village, gain a card costing less than it
+		if (card == Card.BORDER_VILLAGE) {
+			Set<Card> gainable = cardsCostingAtMost(Card.BORDER_VILLAGE.cost(this) - 1);
+			if (!gainable.isEmpty()) {
+				Card toGain = promptChooseGainFromSupply(player, gainable, "Border Village: Choose a card to gain.");
+				messageAll("gaining " + toGain.htmlName() + " because of " + Card.BORDER_VILLAGE.htmlNameRaw());
+				gain(player, toGain);
+			}
+		}
 		messageIndent--;
 	}
 
