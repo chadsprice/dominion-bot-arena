@@ -607,4 +607,13 @@ public class Bot extends Player {
 		return new ArrayList<Card>();
 	}
 
+	public Card stablesDiscard(Set<Card> treasures) {
+		// discarding a Copper for +3 cards is probably beneficial for BigMoney
+		if (treasures.contains(Card.COPPER)) {
+			return Card.COPPER;
+		} else {
+			return null;
+		}
+	}
+
 }
