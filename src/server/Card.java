@@ -199,6 +199,7 @@ public class Card {
 	public static final Card ILL_GOTTEN_GAINS = new IllGottenGains();
 	public static final Card INN = new Inn();
 	public static final Card MANDARIN = new Mandarin();
+	public static final Card MARGRAVE = new Margrave();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -415,6 +416,7 @@ public class Card {
 		include(ILL_GOTTEN_GAINS, HINTERLANDS_SET);
 		include(INN, HINTERLANDS_SET);
 		include(MANDARIN, HINTERLANDS_SET);
+		include(MARGRAVE, HINTERLANDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
