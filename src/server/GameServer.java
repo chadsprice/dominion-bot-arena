@@ -379,7 +379,11 @@ public class GameServer {
 				}
 				// simplify name to ignore capitalization and punctuation
 				Card card = Card.fromName(Card.simplifiedName(cardName));
-				if (card != null && !Card.BASIC_CARDS.contains(card) && !Card.PROSPERITY_BASIC_CARDS.contains(card) && !Card.PRIZE_CARDS.contains(card)) {
+				if (card != null &&
+						!Card.BASIC_CARDS.contains(card) &&
+						!Card.PROSPERITY_BASIC_CARDS.contains(card) &&
+						!Card.PRIZE_CARDS.contains(card) &&
+						!Card.RUINS_CARDS.contains(card)) {
 					if (isForbidden) {
 						forbiddenCards.add(card);
 					} else {

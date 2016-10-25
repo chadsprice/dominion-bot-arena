@@ -616,4 +616,14 @@ public class Bot extends Player {
 		}
 	}
 
+	public boolean survivorsDiscard(List<Card> cards) {
+		// if you would discard either of them, discard all of them
+		for (Card card : cards) {
+			if (wantToDiscard(card)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

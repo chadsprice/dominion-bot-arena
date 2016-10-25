@@ -203,6 +203,12 @@ public class Card {
 	public static final Card STABLES = new Stables();
 	public static final Card BORDER_VILLAGE = new BorderVillage();
 	public static final Card FARMLAND = new Farmland();
+	// dark ages ruins
+	public static final Card ABANDONED_MINE = new AbandonedMine();
+	public static final Card RUINED_LIBRARY = new RuinedLibrary();
+	public static final Card RUINED_MARKET = new RuinedMarket();
+	public static final Card RUINED_VILLAGE = new RuinedVillage();
+	public static final Card SURVIVORS = new Survivors();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -217,6 +223,7 @@ public class Card {
 	public static Set<Card> CORNUCOPIA_SET = new HashSet<Card>();
 	public static Set<Card> PRIZE_CARDS = new HashSet<Card>();
 	public static Set<Card> HINTERLANDS_SET = new HashSet<Card>();
+	public static Set<Card> RUINS_CARDS = new HashSet<Card>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
 	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
@@ -424,6 +431,12 @@ public class Card {
 		include(STABLES, HINTERLANDS_SET);
 		include(BORDER_VILLAGE, HINTERLANDS_SET);
 		include(FARMLAND, HINTERLANDS_SET);
+		// dark ages ruins
+		include(ABANDONED_MINE, RUINS_CARDS);
+		include(RUINED_LIBRARY, RUINS_CARDS);
+		include(RUINED_MARKET, RUINS_CARDS);
+		include(RUINED_VILLAGE, RUINS_CARDS);
+		include(SURVIVORS, RUINS_CARDS);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -455,6 +468,7 @@ public class Card {
 	public boolean isAttack;
 	public boolean isAttackReaction;
 	public boolean isDuration;
+	public boolean isRuins;
 
 	public int startingSupply(int numPlayers) {
 		if (isVictory) {
@@ -640,6 +654,8 @@ public class Card {
 			return "reaction";
 		} else if (isDuration) {
 			return "duration";
+		} else if (isRuins) {
+			return "ruins";
 		} else if (isAction) {
 			return "action";
 		} else if (isTreasure) {
@@ -733,6 +749,8 @@ public class Card {
 				return "Action-Attack";
 			} else if (isDuration) {
 				return "Action-Duration";
+			} else if (isRuins) {
+				return "Action-Ruins";
 			} else {
 				return "Action";
 			}
