@@ -101,6 +101,7 @@ public class Game implements Runnable {
 	public List<Card> kingdomCards;
 	public Card baneCard;
 	public Set<Card> prizeCards;
+	public boolean usingShelters;
 	public List<Card> basicCards;
 	public Map<Card, Integer> supply;
 	private List<Card> trash;
@@ -124,12 +125,13 @@ public class Game implements Runnable {
 
 	public int messageIndent;
 
-	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Card baneCard, Set<Card> prizeCards, Set<Card> basicSet) {
+	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Card baneCard, Set<Card> prizeCards, boolean usingShelters, Set<Card> basicSet) {
 		this.server = server;
 		kingdomCards = new ArrayList<>(kingdomSet);
 		Collections.sort(kingdomCards, KINGDOM_ORDER_COMPARATOR);
 		this.baneCard = baneCard;
 		this.prizeCards = prizeCards;
+		this.usingShelters = usingShelters;
 		basicCards = new ArrayList<>(basicSet);
 		Collections.sort(basicCards, BASIC_ORDER_COMPARATOR);
 		players = new ArrayList<Player>(playerSet);
@@ -182,10 +184,13 @@ public class Game implements Runnable {
 			if (!prizeCards.isEmpty()) {
 				sendPrizeCards(player);
 			}
+			if (usingShelters) {
+				sendShelterDescriptions(player);
+			}
 			setBasicCards(player);
 			sendTradeRouteTokenedPiles(player);
 			setPileSizes(player, supply);
-			player.startGame();
+			player.startGame(usingShelters);
 			clearActions(player);
 			clearBuys(player);
 		}
@@ -1344,6 +1349,28 @@ public class Game implements Runnable {
 		for (Player player : players) {
 			player.sendCommand(command);
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendShelterDescriptions(Player player) {
+		JSONObject command = new JSONObject();
+		command.put("command", "addCardDescriptions");
+		JSONArray cards = new JSONArray();
+		for (Card shelter : Card.SHELTER_CARDS) {
+			JSONObject card = new JSONObject();
+			card.put("name", shelter.toString());
+			card.put("cost", shelter.cost());
+			card.put("className", shelter.htmlClass());
+			card.put("type", shelter.htmlType());
+			JSONArray description = new JSONArray();
+			for (String line : shelter.description()) {
+				description.add(line);
+			}
+			card.put("description", description);
+			cards.add(card);
+		}
+		command.put("cards", cards);
+		player.sendCommand(command);
 	}
 
 	@SuppressWarnings("unchecked")

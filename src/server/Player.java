@@ -139,7 +139,7 @@ public class Player {
 		this.conn = conn;
 	}
 
-	public void startGame() {
+	public void startGame(boolean usingShelters) {
 		draw.clear();
 		hand.clear();
 		play.clear();
@@ -152,8 +152,14 @@ public class Player {
 		resolvedDurationCards.clear();
 		turns = 0;
 		cardsGainedDuringTurn.clear();
-		for (int i = 0; i < 3; i++) {
-			draw.add(Card.ESTATE);
+		if (usingShelters) {
+			draw.add(Card.HOVEL);
+			draw.add(Card.NECROPOLIS);
+			draw.add(Card.OVERGROWN_ESTATE);
+		} else {
+			for (int i = 0; i < 3; i++) {
+				draw.add(Card.ESTATE);
+			}
 		}
 		for (int i = 0; i < 7; i++) {
 			draw.add(Card.COPPER);
@@ -315,7 +321,7 @@ public class Player {
 			// handle Fool's Gold
 			if (numFoolsGolds != 0) {
 				// if no Fool's Golds have been played yet this turn
-				if (playedFoolsGoldThisTurn) {
+				if (!playedFoolsGoldThisTurn) {
 					// $1 for the first Fool's Gold, then $4 for each additional
 					usableCoins += 1 + 4 * (numFoolsGolds - 1);
 				} else {

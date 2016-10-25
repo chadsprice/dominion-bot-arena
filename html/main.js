@@ -378,6 +378,18 @@ function setPrizeCardRemoved(cardName) {
   supplyCardElems[cardName].cross.style.display = 'block';
 }
 
+function addCardDescriptions(cards) {
+  // set card colors
+  for (var i = 0; i < cards.length; i++) {
+    supplyCardClassNames[cards[i].name] = cards[i].className;
+  }
+  // for each card
+  for (var i = 0; i < cards.length; i++) {
+    // add popup description to cardDescriptions
+    addCardDescription(cards[i]);
+  }
+}
+
 /*
 Takes an array of objects containing the names, colors, descriptions, types, costs of the basic cards.
 [{name:'card name', className:'action', description:['line 1', 'line 2', ...], type:'Human-Readable-Type', cost:integer}, ...]
@@ -1478,6 +1490,9 @@ function executeCommand(command) {
     case 'setPrizeCardRemoved':
       setPrizeCardRemoved(command.cardName);
       break;
+    case 'addCardDescriptions':
+      addCardDescriptions(command.cards);
+      break;
     case 'setBasicCards':
       setBasicCards(command.cards);
       break;
@@ -1590,9 +1605,9 @@ function scrollToBottomOfGame() {
 Receives a string from the server, executing it as a list of commands.
 */
 function receiveServerCommands(text) {
-  // print all commands for debugging
-  console.log(text);
   commands = JSON.parse(text);
+  // print all commands for debugging
+  console.log(JSON.stringify(commands, null, 2));
   // remember if the user was scrolled to the bottom of the game screen
   var lockToBottomOfGame = isOnBottomOfGame();
   // execute commands

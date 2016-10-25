@@ -383,7 +383,8 @@ public class GameServer {
 						!Card.BASIC_CARDS.contains(card) &&
 						!Card.PROSPERITY_BASIC_CARDS.contains(card) &&
 						!Card.PRIZE_CARDS.contains(card) &&
-						!Card.RUINS_CARDS.contains(card)) {
+						!Card.RUINS_CARDS.contains(card) &&
+						!Card.SHELTER_CARDS.contains(card)) {
 					if (isForbidden) {
 						forbiddenCards.add(card);
 					} else {
@@ -846,7 +847,7 @@ public class GameServer {
 	}
 
 	private void setupGame(Game game, Set<Set<Card>> sets, Set<Card> required, Set<Card> forbidden, Set<Player> players) {
-		if (containsMimicBot(players)) {
+		if (players.stream().anyMatch(c -> c instanceof MimicBot)) {
 			// if there is no available strategy, replace all Mimic bots
 			if (winningStrategies.keySet().isEmpty()) {
 				int numToReplace = 0;
@@ -970,27 +971,24 @@ public class GameServer {
 		basicSet.add(Card.COPPER);
 		basicSet.add(Card.CURSE);
 		// somewhat-randomly choose whether to include platinum and colony
-		int numProsperityCards = 0;
-		for (Card card : chosen) {
-			if (Card.PROSPERITY_SET.contains(card)) {
-				numProsperityCards++;
-			}
-		}
-		if ((int) (Math.random() * chosen.size()) < numProsperityCards) {
+		if (proportionDeterminedSufficient(chosen, Card.PROSPERITY_SET)) {
 			basicSet.add(Card.PLATINUM);
 			basicSet.add(Card.COLONY);
 		}
+		// somewhat-randomly choose whether to play with shelters
+		boolean usingShelters = proportionDeterminedSufficient(chosen, Card.DARK_AGES_SET);
 		// initialize the game with this kingdom and basic set
-		game.init(this, players, chosen, baneCard, prizeCards, basicSet);
+		game.init(this, players, chosen, baneCard, prizeCards, usingShelters, basicSet);
 	}
 
-	private boolean containsMimicBot(Set<Player> players) {
-		for (Player player : players) {
-			if (player instanceof MimicBot) {
-				return true;
-			}
-		}
-		return false;
+	/**
+	 * Returns true if the there are enough of the given card set's cards in the kingdom to use that set's custom rules.
+	 * This is always true if all cards in the kingdom are from that set, always false if none are, and random with
+	 * probability equal to the proportion of cards from that set otherwise.
+	 */
+	public boolean proportionDeterminedSufficient(Set<Card> kingdomCards, Set<Card> cardSet) {
+		int numFromSet = (int) kingdomCards.stream().filter(c -> cardSet.contains(c)).count();
+		return (int) (Math.random() * kingdomCards.size()) < numFromSet;
 	}
 
 	// record successful strategies that can be used by MimicBot

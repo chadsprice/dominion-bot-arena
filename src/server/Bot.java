@@ -444,6 +444,7 @@ public class Bot extends Player {
 	public List<Card> trashPriority() {
 		List<Card> priority = new ArrayList<Card>();
 		priority.add(Card.CURSE);
+		priority.add(Card.OVERGROWN_ESTATE);
 		if (gainsToEndGame() > 4) {
 			priority.add(Card.ESTATE);
 		}
