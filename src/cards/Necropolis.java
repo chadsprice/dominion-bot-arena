@@ -8,6 +8,7 @@ public class Necropolis extends Card {
 
     public Necropolis() {
         isAction = true;
+        isShelter = true;
     }
 
     @Override

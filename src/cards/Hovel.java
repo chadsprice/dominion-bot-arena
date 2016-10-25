@@ -7,6 +7,10 @@ import server.Player;
 
 public class Hovel extends Card {
 
+    public Hovel() {
+        isShelter = true;
+    }
+
     @Override
     public int cost() {
         return 1;

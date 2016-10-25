@@ -207,6 +207,7 @@ public class Card {
 	public static final Card POOR_HOUSE = new PoorHouse();
 	public static final Card BEGGAR = new Beggar();
 	public static final Card SQUIRE = new Squire();
+	public static final Card VAGRANT = new Vagrant();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -445,6 +446,7 @@ public class Card {
 		include(POOR_HOUSE, DARK_AGES_SET);
 		include(BEGGAR, DARK_AGES_SET);
 		include(SQUIRE, DARK_AGES_SET);
+		include(VAGRANT, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
@@ -487,6 +489,7 @@ public class Card {
 	public boolean isAttackReaction;
 	public boolean isDuration;
 	public boolean isRuins;
+	public boolean isShelter;
 
 	public int startingSupply(int numPlayers) {
 		if (isVictory) {

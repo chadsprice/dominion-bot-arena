@@ -10,6 +10,7 @@ public class OvergrownEstate extends Card {
 
     public OvergrownEstate() {
         isVictory = true;
+        isShelter = true;
     }
 
     @Override
