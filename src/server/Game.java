@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import cards.Hovel;
 import cards.NobleBrigand;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -437,6 +438,17 @@ public class Game implements Runnable {
 					gain(player, toGain);
 					messageIndent--;
 				}
+			}
+		}
+		// when you buy a victory card, you may trash Hovel
+		while (card.isVictory && player.getHand().contains(Card.HOVEL)) {
+			if (((Hovel) Card.HOVEL).chooseTrash(player, this)) {
+				message(player, "trashing " + Card.HOVEL.htmlName() + " from your hand");
+				messageOpponents(player, "trashing " + Card.HOVEL.htmlName() + " from their hand");
+				player.removeFromHand(Card.HOVEL);
+				addToTrash(player, Card.HOVEL);
+			} else {
+				break;
 			}
 		}
 		messageIndent--;

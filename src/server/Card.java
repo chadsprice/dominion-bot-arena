@@ -213,6 +213,8 @@ public class Card {
 	public static final Card RUINED_MARKET = new RuinedMarket();
 	public static final Card RUINED_VILLAGE = new RuinedVillage();
 	public static final Card SURVIVORS = new Survivors();
+	// dark ages shelters
+	public static final Card HOVEL = new Hovel();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -229,6 +231,7 @@ public class Card {
 	public static Set<Card> HINTERLANDS_SET = new HashSet<Card>();
 	public static Set<Card> DARK_AGES_SET = new HashSet<Card>();
 	public static Set<Card> RUINS_CARDS = new HashSet<Card>();
+	public static Set<Card> SHELTER_CARDS = new HashSet<Card>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
 	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
@@ -446,6 +449,8 @@ public class Card {
 		include(RUINED_MARKET, RUINS_CARDS);
 		include(RUINED_VILLAGE, RUINS_CARDS);
 		include(SURVIVORS, RUINS_CARDS);
+		// dark ages shelters
+		include(HOVEL, SHELTER_CARDS);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {

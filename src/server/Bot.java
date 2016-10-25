@@ -631,4 +631,9 @@ public class Bot extends Player {
 		return 2;
 	}
 
+	public boolean hovelChooseTrash() {
+		// trashing a Hovel is advantageous for BigMoney
+		return true;
+	}
+
 }

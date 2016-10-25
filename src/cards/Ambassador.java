@@ -25,21 +25,25 @@ public class Ambassador extends Card {
 		if (!player.getHand().isEmpty()) {
 			// reveal a card
 			Card revealed = game.promptChoosePassToOpponent(player, new HashSet<Card>(player.getHand()), "Ambassador: Choose a card to reveal from your hand.", "actionPrompt");
-			// return up to 2 of it to the supply
-			int numInHand = player.numberInHand(revealed);
-			int numToReturn = chooseNumToReturn(player, game, revealed);
-			game.messageAll("returning " + revealed.htmlName(numToReturn) + " to the supply");
-			for (int i = 0; i < numToReturn; i++) {
-				player.removeFromHand(revealed);
-			}
-			game.returnToSupply(revealed, numToReturn);
-			// each other player gains a copy
-			for (Player target : targets) {
-				if (game.supply.get(revealed) > 0) {
-					game.message(target, "You gain " + revealed.htmlName());
-					game.messageOpponents(target, target.username + " gains " + revealed.htmlName());
-					game.gain(target, revealed);
+			if (game.supply.containsKey(revealed)) {
+				// return up to 2 of it to the supply
+				int numInHand = player.numberInHand(revealed);
+				int numToReturn = chooseNumToReturn(player, game, revealed);
+				game.messageAll("returning " + revealed.htmlName(numToReturn) + " to the supply");
+				for (int i = 0; i < numToReturn; i++) {
+					player.removeFromHand(revealed);
 				}
+				game.returnToSupply(revealed, numToReturn);
+				// each other player gains a copy
+				for (Player target : targets) {
+					if (game.supply.get(revealed) != 0) {
+						game.message(target, "You gain " + revealed.htmlName());
+						game.messageOpponents(target, target.username + " gains " + revealed.htmlName());
+						game.gain(target, revealed);
+					}
+				}
+			} else {
+				game.messageAll("revealing " + revealed.htmlName());
 			}
 		} else {
 			game.message(player, "your hand is empty");
