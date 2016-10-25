@@ -215,6 +215,8 @@ public class Card {
 	public static final Card SURVIVORS = new Survivors();
 	// dark ages shelters
 	public static final Card HOVEL = new Hovel();
+	public static final Card NECROPOLIS = new Necropolis();
+	public static final Card OVERGROWN_ESTATE = new OvergrownEstate();
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
@@ -451,6 +453,8 @@ public class Card {
 		include(SURVIVORS, RUINS_CARDS);
 		// dark ages shelters
 		include(HOVEL, SHELTER_CARDS);
+		include(NECROPOLIS, SHELTER_CARDS);
+		include(OVERGROWN_ESTATE, SHELTER_CARDS);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
