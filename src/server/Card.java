@@ -203,6 +203,8 @@ public class Card {
 	public static final Card STABLES = new Stables();
 	public static final Card BORDER_VILLAGE = new BorderVillage();
 	public static final Card FARMLAND = new Farmland();
+	// dark ages expansion
+	public static final Card POOR_HOUSE = new PoorHouse();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -223,6 +225,7 @@ public class Card {
 	public static Set<Card> CORNUCOPIA_SET = new HashSet<Card>();
 	public static Set<Card> PRIZE_CARDS = new HashSet<Card>();
 	public static Set<Card> HINTERLANDS_SET = new HashSet<Card>();
+	public static Set<Card> DARK_AGES_SET = new HashSet<Card>();
 	public static Set<Card> RUINS_CARDS = new HashSet<Card>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
@@ -431,6 +434,8 @@ public class Card {
 		include(STABLES, HINTERLANDS_SET);
 		include(BORDER_VILLAGE, HINTERLANDS_SET);
 		include(FARMLAND, HINTERLANDS_SET);
+		// dark ages expansion
+		include(POOR_HOUSE, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
