@@ -50,7 +50,7 @@ public class NobleBrigand extends Card {
                     game.message(targetOpponent, target.username + " trashes the " + toTrash.htmlNameRaw() + " and " + gainStr);
                 }
                 top.remove(toTrash);
-                game.addToTrash(toTrash);
+                game.addToTrash(target, toTrash);
                 // attacker gains the trashed cards
                 game.gainFromTrash(player, toTrash);
             }

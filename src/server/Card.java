@@ -206,6 +206,7 @@ public class Card {
 	// dark ages expansion
 	public static final Card POOR_HOUSE = new PoorHouse();
 	public static final Card BEGGAR = new Beggar();
+	public static final Card SQUIRE = new Squire();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -438,6 +439,7 @@ public class Card {
 		// dark ages expansion
 		include(POOR_HOUSE, DARK_AGES_SET);
 		include(BEGGAR, DARK_AGES_SET);
+		include(SQUIRE, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
@@ -536,6 +538,8 @@ public class Card {
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		throw new UnsupportedOperationException();
 	}
+
+	public void onTrash(Player player, Game game) {}
 
 	protected void plusCards(Player player, Game game, int numCards) {
 		List<Card> drawn = player.drawIntoHand(numCards);

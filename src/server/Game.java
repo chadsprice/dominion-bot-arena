@@ -395,7 +395,7 @@ public class Game implements Runnable {
 			List<Card> treasures = player.removeAllTreasuresFromPlay();
 			if (!treasures.isEmpty()) {
 				messageAll("trashing " + Card.htmlList(treasures) + " from play");
-				addToTrash(treasures);
+				addToTrash(player, treasures);
 			}
 		}
 		// if the purchase can be affected by Goons
@@ -428,7 +428,7 @@ public class Game implements Runnable {
 				Card toTrash = promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Farmland: Choose a card to trash and gain a card costing exactly $2 more.");
 				messageAll("trashing " + toTrash.htmlName() + " because of " + Card.FARMLAND.htmlNameRaw());
 				player.removeFromHand(toTrash);
-				addToTrash(toTrash);
+				addToTrash(player, toTrash);
 				Set<Card> gainable = cardsCostingExactly(toTrash.cost(this) + 2);
 				if (!gainable.isEmpty()) {
 					Card toGain = promptChooseGainFromSupply(player, gainable, "Farmland: Choose a card to gain.");
@@ -903,7 +903,7 @@ public class Game implements Runnable {
 					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					takeFromSupply(card);
-					addToTrash(card);
+					addToTrash(player, card);
 					messageIndent--;
 					return true;
 				} else {
@@ -970,13 +970,13 @@ public class Game implements Runnable {
 							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD + " onto your deck");
 							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains " + Card.GOLD + " onto their deck");
 							player.removeFromHand(Card.FOOLS_GOLD);
-							addToTrash(Card.FOOLS_GOLD);
+							addToTrash(player, Card.FOOLS_GOLD);
 							gainToTopOfDeck(opponent, Card.GOLD);
 						} else {
 							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain nothing");
 							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains nothing");
 							player.removeFromHand(Card.FOOLS_GOLD);
-							addToTrash(Card.FOOLS_GOLD);
+							addToTrash(player, Card.FOOLS_GOLD);
 						}
 					} else {
 						// if the player stops trashing Fool's Golds, stop asking, even if they have more Fool's Golds
@@ -1104,14 +1104,28 @@ public class Game implements Runnable {
 		return trash;
 	}
 
-	public void addToTrash(Card card) {
+	public void addToTrash(Player player, Card card) {
+		addToTrash(player, card, true);
+	}
+
+	public void addToTrash(Player player, Card card, boolean triggersMarketSquare) {
 		trash.add(card);
+		onTrash(player, card, triggersMarketSquare);
 		sendTrash();
 	}
 
-	public void addToTrash(List<Card> cards) {
-		trash.addAll(cards);
+	public void addToTrash(Player player, List<Card> cards) {
+		for (Card card : cards) {
+			trash.add(card);
+			onTrash(player, card, true);
+		}
 		sendTrash();
+	}
+
+	private void onTrash(Player player, Card card, boolean triggersMarketSquare) {
+		messageIndent++;
+		card.onTrash(player, this);
+		messageIndent--;
 	}
 
 	public void removeFromTrash(Card card) {

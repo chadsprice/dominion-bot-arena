@@ -24,7 +24,7 @@ public class Salvager extends Card {
 		if (!player.getHand().isEmpty()) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Salvager: Choose a card to trash for +$ equal to its cost");
 			player.removeFromHand(toTrash);
-			game.addToTrash(toTrash);
+			game.addToTrash(player, toTrash);
 			int cost = toTrash.cost(game);
 			player.addCoins(cost);
 			game.messageAll("trashing " + toTrash.htmlName() + " for +$" + cost);

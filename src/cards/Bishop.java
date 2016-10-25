@@ -25,7 +25,7 @@ public class Bishop extends Card {
 		if (!player.getHand().isEmpty()) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Bishop: Choose a card to trash for +VP equal to half its cost rounded down.");
 			player.removeFromHand(toTrash);
-			game.addToTrash(toTrash);
+			game.addToTrash(player, toTrash);
 			int victoryTokensToGain = toTrash.cost(game) / 2;
 			player.addVictoryTokens(victoryTokensToGain);
 			game.messageAll("trashing " + toTrash.htmlName() + " for +" + victoryTokensToGain + " VP");
@@ -39,7 +39,7 @@ public class Bishop extends Card {
 				if (choice == 0) {
 					Card toTrash = game.promptChooseTrashFromHand(opponent, new HashSet<Card>(player.getHand()), "Bishop: Choose a card to trash.");
 					opponent.removeFromHand(toTrash);
-					game.addToTrash(toTrash);
+					game.addToTrash(opponent, toTrash);
 					game.message(opponent, "you trash " + toTrash.htmlName());
 					game.messageOpponents(opponent, opponent.username + " trashes " + toTrash.htmlName());
 				}

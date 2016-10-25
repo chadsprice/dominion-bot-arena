@@ -24,7 +24,7 @@ public class MiningVillage extends Card {
 			int choice = game.promptMultipleChoice(player, "Mining Village: Trash the " + this.htmlName() + " for +$2?", new String[] {"Trash", "Keep"});
 			if (choice == 0) {
 				player.removeFromPlay(this);
-				game.addToTrash(this);
+				game.addToTrash(player, this);
 				player.addCoins(2);
 				game.messageAll("trashing the " + this.htmlNameRaw() + " for +$2");
 				return true;

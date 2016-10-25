@@ -66,7 +66,7 @@ public class MasqueradeFirstEdition extends Card {
             if (choice == 0) {
                 Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Masquerade (1st ed.): Trash a card from your hand");
                 player.removeFromHand(toTrash);
-                game.addToTrash(toTrash);
+                game.addToTrash(player, toTrash);
                 game.messageAll("trashing " + toTrash.htmlName());
             }
         }

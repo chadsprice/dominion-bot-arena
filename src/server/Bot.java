@@ -626,4 +626,9 @@ public class Bot extends Player {
 		return false;
 	}
 
+	public int squireBenefit() {
+		// gaining a Silver is the safest choice for BigMoney
+		return 2;
+	}
+
 }

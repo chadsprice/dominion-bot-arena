@@ -24,14 +24,14 @@ public class Upgrade extends Card {
 		plusActions(player, game, 1);
 		// trash a card from your hand
 		if (player.getHand().size() > 0) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand.");
 			player.removeFromHand(toTrash);
-			game.addToTrash(toTrash);
+			game.addToTrash(player, toTrash);
 			game.messageAll("trashing " + toTrash.htmlName());
 			Set<Card> gainable = game.cardsCostingExactly(toTrash.cost(game) + 1);
 			// if there are cards that can be gained
 			if (gainable.size() > 0) {
-				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Upgrade: Choose a card to gain");
+				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Upgrade: Choose a card to gain.");
 				game.messageAll("gaining " + toGain.htmlName());
 				game.gain(player, toGain);
 			} else {

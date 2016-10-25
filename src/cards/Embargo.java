@@ -22,7 +22,7 @@ public class Embargo extends Card {
 		if (!hasMoved) {
 			// trash this
 			player.removeFromPlay(this);
-			game.addToTrash(this);
+			game.addToTrash(player, this);
 			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}

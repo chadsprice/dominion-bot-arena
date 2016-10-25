@@ -30,7 +30,7 @@ public class Remake extends Card {
             Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Remake: Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
-            game.addToTrash(toTrash);
+            game.addToTrash(player, toTrash);
             // gain a card costing exactly $1 more
             Set<Card> gainable = game.cardsCostingExactly(toTrash.cost(game) + 1);
             if (!gainable.isEmpty()) {
