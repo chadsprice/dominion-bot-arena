@@ -205,6 +205,7 @@ public class Card {
 	public static final Card FARMLAND = new Farmland();
 	// dark ages expansion
 	public static final Card POOR_HOUSE = new PoorHouse();
+	public static final Card BEGGAR = new Beggar();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -436,6 +437,7 @@ public class Card {
 		include(FARMLAND, HINTERLANDS_SET);
 		// dark ages expansion
 		include(POOR_HOUSE, DARK_AGES_SET);
+		include(BEGGAR, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);

@@ -518,7 +518,7 @@ public class Game implements Runnable {
 					// don't allow the same reaction to be played twice in a row
 					// (they are designed so that playing them twice in a row gives no new benefit, with the exception of Diplomat)
 					// (also exempt reaction cards that move themselves, like Horse Traders)
-					if (choice != Card.DIPLOMAT && choice != Card.HORSE_TRADERS) {
+					if (choice != Card.DIPLOMAT && choice != Card.HORSE_TRADERS && choice != Card.BEGGAR) {
 						reactions.remove(choice);
 					}
 				} else {
