@@ -104,7 +104,7 @@ public class Game implements Runnable {
 	public Set<Card> prizeCards;
 	private boolean usingShelters;
 	public Map<Card, Integer> supply = new HashMap<>();
-	private List<Card> ruinsPile;
+	private Map<String, List<Card>> mixedPiles = new HashMap<>();
 	private List<Card> trash = new ArrayList<>();
 
 	boolean isGameOver;
@@ -192,7 +192,7 @@ public class Game implements Runnable {
 	}
 
 	private void initRuinsPile() {
-		ruinsPile = new ArrayList<>();
+		List<Card> ruinsPile = new ArrayList<>();
 		// add 10 of each ruins card
 		for (Card ruinsCard : Card.RUINS_CARDS) {
 			for (int i = 0; i < 10; i++) {
@@ -202,6 +202,7 @@ public class Game implements Runnable {
 		// shuffle and take 10 for a 2 players, 20 for 3 player, etc.
 		Collections.shuffle(ruinsPile);
 		ruinsPile = new ArrayList<>(ruinsPile.subList(0, 10 * (players.size() - 1)));
+		mixedPiles.put("Ruins", ruinsPile);
 	}
 
 	private void takeTurn(Player player) {
@@ -476,6 +477,7 @@ public class Game implements Runnable {
 
 	public boolean isAvailableInSupply(Card card) {
 		if (card.isRuins) {
+			List<Card> ruinsPile = mixedPiles.get("Ruins");
 			return ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0) == card;
 		}
 		return supply.containsKey(card) && supply.get(card) != 0;
@@ -807,8 +809,8 @@ public class Game implements Runnable {
 		}
 		// if it is a ruins card, remove it from the ruins pile
 		if (card.isRuins) {
-			ruinsPile.remove(0);
-			sendRuinsPile();
+			mixedPiles.get("Ruins").remove(0);
+			sendMixedPile("Ruins");
 			return;
 		}
 		// update supply
@@ -823,9 +825,9 @@ public class Game implements Runnable {
 	public void returnToSupply(Card card, int count) {
 		if (card.isRuins) {
 			for (int i = 0; i < count; i++) {
-				ruinsPile.add(0, card);
+				mixedPiles.get("Ruins").add(0, card);
 			}
-			sendRuinsPile();
+			sendMixedPile("Ruins");
 			return;
 		}
 		// update supply
@@ -1233,8 +1235,10 @@ public class Game implements Runnable {
 				cards.add(card);
 			}
 		}
-		if (ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0).cost(this) == cost) {
-			cards.add(ruinsPile.get(0));
+		for (List<Card> mixedPile : mixedPiles.values()) {
+			if (!mixedPile.isEmpty() && mixedPile.get(0).cost(this) == cost) {
+				cards.add(mixedPile.get(0));
+			}
 		}
 		return cards;
 	}
@@ -1248,8 +1252,10 @@ public class Game implements Runnable {
 				cards.add(card);
 			}
 		}
-		if (ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0).cost(this) <= cost) {
-			cards.add(ruinsPile.get(0));
+		for (List<Card> mixedPile : mixedPiles.values()) {
+			if (!mixedPile.isEmpty() && mixedPile.get(0).cost(this) <= cost) {
+				cards.add(mixedPile.get(0));
+			}
 		}
 		return cards;
 	}
@@ -1284,8 +1290,10 @@ public class Game implements Runnable {
 				numEmptyPiles++;
 			}
 		}
-		if (ruinsPile != null && ruinsPile.isEmpty()) {
-			numEmptyPiles++;
+		for (List<Card> mixedPile : mixedPiles.values()) {
+			if (mixedPile.isEmpty()) {
+				numEmptyPiles++;
+			}
 		}
 		return numEmptyPiles;
 	}
@@ -1327,8 +1335,8 @@ public class Game implements Runnable {
 	@SuppressWarnings("unchecked")
 	public void sendKingdomCards(Player player) {
 		List<Card> kingdomCardsSorted = new ArrayList<>(kingdomCards);
-		if (ruinsPile != null) {
-			kingdomCardsSorted.add(ruinsPile.get(0));
+		for (List<Card> mixedPile : mixedPiles.values()) {
+			kingdomCardsSorted.add(mixedPile.get(0));
 		}
 		Collections.sort(kingdomCardsSorted, KINGDOM_ORDER_COMPARATOR);
 		JSONObject setKingdomCards = new JSONObject();
@@ -1348,8 +1356,8 @@ public class Game implements Runnable {
 			if (kingdomCard == baneCard) {
 				card.put("isBane", true);
 			}
-			if (kingdomCard.isRuins) {
-				card.put("isRuins", true);
+			if (kingdomCard.inMixedPile()) {
+				card.put("pileId", kingdomCard.mixedPileId());
 			}
 			cards.add(card);
 		}
@@ -1396,8 +1404,8 @@ public class Game implements Runnable {
 		if (usingShelters) {
 			additionalCards.addAll(Card.SHELTER_CARDS);
 		}
-		if (ruinsPile != null) {
-			additionalCards.addAll(Card.RUINS_CARDS);
+		for (List<Card> mixedPile : mixedPiles.values()) {
+			additionalCards.addAll(mixedPile);
 		}
 		JSONObject command = new JSONObject();
 		command.put("command", "addCardDescriptions");
@@ -1446,8 +1454,8 @@ public class Game implements Runnable {
 
 	public void sendPileSizes(Player player) {
 		sendPileSizes(player, supply);
-		if (ruinsPile != null) {
-			sendRuinsPile(player);
+		for (String pileId : mixedPiles.keySet()) {
+			sendMixedPile(player, pileId);
 		}
 	}
 
@@ -1463,20 +1471,21 @@ public class Game implements Runnable {
 		player.sendCommand(command);
 	}
 
-	public void sendRuinsPile() {
+	public void sendMixedPile(String pileId) {
 		for (Player player : players) {
-			sendRuinsPile(player);
+			sendMixedPile(player, pileId);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendRuinsPile(Player player) {
+	public void sendMixedPile(Player player, String pileId) {
+		List<Card> mixedPile = mixedPiles.get(pileId);
 		JSONObject command = new JSONObject();
 		command.put("command", "setRuinsPile");
 		JSONObject pile = new JSONObject();
-		pile.put("size", ruinsPile.size());
-		if (!ruinsPile.isEmpty()) {
-			pile.put("topCardName", ruinsPile.get(0).toString());
+		pile.put("size", mixedPile.size());
+		if (!mixedPile.isEmpty()) {
+			pile.put("topCardName", mixedPile.get(0).toString());
 		}
 		command.put("pile", pile);
 		player.sendCommand(command);
@@ -2350,8 +2359,10 @@ public class Game implements Runnable {
 
 	public Set<Card> cardsAvailableInSupply() {
 		Set<Card> availableInSupply = new HashSet<>(supply.keySet());
-		if (ruinsPile != null && !ruinsPile.isEmpty()) {
-			ruinsPile.add(ruinsPile.get(0));
+		for (List<Card> mixedPile : mixedPiles.values()) {
+			if (!mixedPile.isEmpty()) {
+				availableInSupply.add(mixedPile.get(0));
+			}
 		}
 		return availableInSupply;
 	}

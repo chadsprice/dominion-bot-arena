@@ -799,4 +799,31 @@ public class Card {
 		return other instanceof Card && this.toString().equals(other.toString());
 	}
 
+	public enum MixedPileId {
+		RUINS("Ruins");
+
+		private String str;
+
+		MixedPileId(String str) {
+			this.str = str;
+		}
+
+		@Override
+		public String toString() {
+			return str;
+		}
+	}
+
+	public boolean inMixedPile() {
+		return mixedPileId() != null;
+	}
+
+	public MixedPileId mixedPileId() {
+		if (isRuins) {
+			return MixedPileId.RUINS;
+		} else {
+			return null;
+		}
+	}
+
 }
