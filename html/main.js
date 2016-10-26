@@ -2,8 +2,9 @@
 var socket;
 
 // a map from the name of a card in the supply to its UI elements
-// 'card name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
+// 'pile name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
 var supplyCardElems = {};
+var ruinsPile;
 // a map from the name of a card to the className of its span when displayed
 // 'card name' -> 'action', or 'treasure', or 'victory', etc.
 var supplyCardClassNames = {};
@@ -280,11 +281,15 @@ function setKingdomCards(cards) {
     nameParagraph.className = cards[i].className;
     nameParagraph.innerHTML = cards[i].name;
     nameDiv.appendChild(nameParagraph);
-    var baneParagraph = document.createElement('p');
-    if (cards[i].isBane) {
-      baneParagraph.className = 'bane';
-      baneParagraph.innerHTML = '(Bane)';
-      nameDiv.appendChild(baneParagraph);
+    if (cards[i].isBane || cards[i].isRuins) {
+      var subtitleParagraph = document.createElement('p');
+      subtitleParagraph.className = 'subtitle';
+      if (cards[i].isBane) {
+        subtitleParagraph.innerHTML = '(Bane)';
+      } else {
+        subtitleParagraph.innerHTML = '(Ruins)';
+      }
+      nameDiv.appendChild(subtitleParagraph);
     }
     kingdomPile.appendChild(nameDiv);
     // set status (cost & pile size)
@@ -322,7 +327,10 @@ function setKingdomCards(cards) {
     cardArt.appendChild(img);
     kingdomPile.appendChild(cardArt);
     kingdom.appendChild(kingdomPile);
-    supplyCardElems[cards[i].name] = {'pile':kingdomPile, 'cost':costParagraph, 'pileSize':pileSizeParagraph, 'cross':cross, 'plus':plus, 'img':img};
+    supplyCardElems[cards[i].name] = {'pile':kingdomPile, 'name':nameParagraph, 'cost':costParagraph, 'pileSize':pileSizeParagraph, 'cross':cross, 'plus':plus, 'img':img};
+    if (cards[i].isRuins) {
+      ruinsPile = supplyCardElems[cards[i].name];
+    }
   }
 }
 
@@ -469,6 +477,25 @@ function setPileSizes(piles) {
         supplyCardElems[cardName].cross.style.display = 'block';
       }
     }
+  }
+}
+
+function setRuinsPile(pile) {
+  // set the size
+  ruinsPile.pileSize.innerHTML = '(' + pile.size.toString() + ')';
+  // if the pile is empty
+  if (pile.size == 0) {
+    // make the image partially transparent
+    ruinsPile.img.style.opacity = '0.3';
+    // show the cross image
+    ruinsPile.cross.style.display = 'block';
+  }
+  if (pile.topCardName) {
+    ruinsPile.name.innerHTML = pile.topCardName;
+    ruinsPile.img.src = cardArtSrc(pile.topCardName);
+    supplyCardElems[pile.topCardName] = ruinsPile;
+  } else {
+    ruinsPile.name.innerHTML = '';
   }
 }
 
@@ -1498,6 +1525,9 @@ function executeCommand(command) {
       break;
     case 'setPileSizes':
       setPileSizes(command.piles);
+      break;
+    case 'setRuinsPile':
+      setRuinsPile(command.pile);
       break;
     case 'setEmbargoTokens':
       setEmbargoTokens(command.card, command.numTokens);

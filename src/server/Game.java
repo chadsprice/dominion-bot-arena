@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -98,13 +97,14 @@ public class Game implements Runnable {
 	private int playerIndex;
 	public List<Player> players;
 
-	public List<Card> kingdomCards;
+	public Set<Card> kingdomCards;
 	public Card baneCard;
 	public Set<Card> prizeCards;
 	public boolean usingShelters;
-	public List<Card> basicCards;
-	public Map<Card, Integer> supply;
-	private List<Card> trash;
+	public Set<Card> basicCards;
+	public Map<Card, Integer> supply = new HashMap<Card, Integer>();
+	public List<Card> ruinsPile;
+	private List<Card> trash = new ArrayList<Card>();
 
 	public boolean isGameOver;
 
@@ -114,7 +114,8 @@ public class Game implements Runnable {
 	public boolean costModifierPlayedLastTurn;
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
-	public Map<Card, Integer> embargoTokens;
+	public Map<Card, Integer> embargoTokens = new HashMap<>();
+	public int embargoTokensOnRuinsPile;
 	public boolean boughtVictoryCardThisTurn;
 	public Set<Card> contrabandProhibited;
 	public Set<Card> tradeRouteTokenedPiles;
@@ -125,18 +126,14 @@ public class Game implements Runnable {
 
 	public int messageIndent;
 
-	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomSet, Card baneCard, Set<Card> prizeCards, boolean usingShelters, Set<Card> basicSet) {
+	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters, Set<Card> basicCards) {
 		this.server = server;
-		kingdomCards = new ArrayList<>(kingdomSet);
-		Collections.sort(kingdomCards, KINGDOM_ORDER_COMPARATOR);
+		this.kingdomCards = kingdomCards;
 		this.baneCard = baneCard;
 		this.prizeCards = prizeCards;
 		this.usingShelters = usingShelters;
-		basicCards = new ArrayList<>(basicSet);
-		Collections.sort(basicCards, BASIC_ORDER_COMPARATOR);
+		this.basicCards = basicCards;
 		players = new ArrayList<Player>(playerSet);
-		supply = new HashMap<Card, Integer>();
-		trash = new ArrayList<Card>();
 	}
 
 	@Override
@@ -153,16 +150,17 @@ public class Game implements Runnable {
 	}
 
 	public void setup() {
-		// add kingdom cards to supply
+		// initialize kingdom piles
 		for (Card card : kingdomCards) {
 			supply.put(card, card.startingSupply(players.size()));
 		}
-		// add basic cards to supply
+		// initialize ruins pile
+		initRuinsPile();
+		// initialize basic piles
 		for (Card card : basicCards) {
 			supply.put(card, card.startingSupply(players.size()));
 		}
 		// initialize embargo tokens
-		embargoTokens = new HashMap<Card, Integer>();
 		for (Card cardInSupply : supply.keySet()) {
 			embargoTokens.put(cardInSupply, 0);
 		}
@@ -170,7 +168,7 @@ public class Game implements Runnable {
 		contrabandProhibited = new HashSet<Card>();
 		// initialize trade route token piles
 		tradeRouteTokenedPiles = new HashSet<Card>();
-		if (supply.keySet().contains(Card.TRADE_ROUTE)) {
+		if (supply.containsKey(Card.TRADE_ROUTE)) {
 			for (Card card : supply.keySet()) {
 				if (card.isVictory) {
 					tradeRouteTokenedPiles.add(card);
@@ -180,22 +178,33 @@ public class Game implements Runnable {
 		// randomize turn order
 		Collections.shuffle(players);
 		for (Player player : players) {
-			setKingdomCards(player);
+			sendKingdomCards(player);
 			if (!prizeCards.isEmpty()) {
 				sendPrizeCards(player);
 			}
-			if (usingShelters) {
-				sendShelterDescriptions(player);
-			}
-			setBasicCards(player);
+			sendAdditionalDescriptions(player);
+			sendBasicCards(player);
 			sendTradeRouteTokenedPiles(player);
-			setPileSizes(player, supply);
+			sendPileSizes(player);
 			player.startGame(usingShelters);
 			clearActions(player);
 			clearBuys(player);
 		}
 		// start recording gain strategies
 		initRecords();
+	}
+
+	private void initRuinsPile() {
+		ruinsPile = new ArrayList<>();
+		// add 10 of each ruins card
+		for (Card ruinsCard : Card.RUINS_CARDS) {
+			for (int i = 0; i < 10; i++) {
+				ruinsPile.add(ruinsCard);
+			}
+		}
+		// shuffle and take 10 for a 2 players, 20 for 3 player, etc.
+		Collections.shuffle(ruinsPile);
+		ruinsPile = new ArrayList<>(ruinsPile.subList(0, 10 * (players.size() - 1)));
 	}
 
 	private void takeTurn(Player player) {
@@ -361,7 +370,7 @@ public class Game implements Runnable {
 			boughtVictoryCardThisTurn = true;
 		}
 		// if that card's pile was embargoed
-		if (embargoTokens.get(card) > 0 && supply.get(Card.CURSE) > 0) {
+		if (embargoTokensOn(card) > 0 && supply.get(Card.CURSE) > 0) {
 			int cursesToGain = Math.min(embargoTokens.get(card), supply.get(Card.CURSE));
 			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
 			for (int i = 0; i < cursesToGain; i++) {
@@ -369,18 +378,25 @@ public class Game implements Runnable {
 			}
 		}
 		// if the purchase can be affected by talisman
-		if (card.cost(this) <= 4 && !card.isVictory && supply.get(card) > 0) {
+		if (card.cost(this) <= 4 && !card.isVictory && isAvailableInSupply(card)) {
 			int numTalismans = numberInPlay(Card.TALISMAN);
 			// if the player has talismans in play
 			if (numTalismans > 0) {
-				int copiesToGain = Math.min(numTalismans, supply.get(card));
-				if (copiesToGain == 1) {
-					messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
+				if (supply.containsKey(card)) {
+					int copiesToGain = Math.min(numTalismans, supply.get(card));
+					if (copiesToGain == 1) {
+						messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
+					} else {
+						messageAll("gaining another " + card.htmlName(copiesToGain) + " because of " + Card.TALISMAN.htmlNameRaw());
+					}
+					for (int i = 0; i < copiesToGain; i++) {
+						gain(player, card);
+					}
 				} else {
-					messageAll("gaining another " + card.htmlName(copiesToGain) + " because of " + Card.TALISMAN.htmlNameRaw());
-				}
-				for (int i = 0; i < copiesToGain; i++) {
-					gain(player, card);
+					for (int i = 0; i < numTalismans && isAvailableInSupply(card); i++) {
+						messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
+						gain(player, card);
+					}
 				}
 			}
 		}
@@ -457,6 +473,20 @@ public class Game implements Runnable {
 			}
 		}
 		messageIndent--;
+	}
+
+	public int embargoTokensOn(Card card) {
+		if (card.isRuins) {
+			return embargoTokensOnRuinsPile;
+		}
+		return embargoTokens.get(card);
+	}
+
+	public boolean isAvailableInSupply(Card card) {
+		if (card.isRuins) {
+			return ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0) == card;
+		}
+		return supply.containsKey(card) && supply.get(card) != 0;
 	}
 
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
@@ -657,13 +687,7 @@ public class Game implements Runnable {
 			return true;
 		}
 		// check if three supply piles are empty
-		int emptyPiles = 0;
-		for (Integer count : supply.values()) {
-			if (count == 0) {
-				emptyPiles++;
-			}
-		}
-		return emptyPiles >= 3;
+		return numEmptySupplyPiles() >= 3;
 	}
 
 	private void announceWinner() {
@@ -789,22 +813,35 @@ public class Game implements Runnable {
 			sendPrizeCardRemoved(card);
 			return;
 		}
+		// if it is a ruins card, remove it from the ruins pile
+		if (card.isRuins) {
+			ruinsPile.remove(0);
+			sendRuinsPile();
+			return;
+		}
 		// update supply
 		supply.put(card, supply.get(card) - 1);
 		Map<Card, Integer> newSize = new HashMap<Card, Integer>();
 		newSize.put(card, supply.get(card));
 		for (Player eachPlayer : players) {
-			setPileSizes(eachPlayer, newSize);
+			sendPileSizes(eachPlayer, newSize);
 		}
 	}
 
 	public void returnToSupply(Card card, int count) {
+		if (card.isRuins) {
+			for (int i = 0; i < count; i++) {
+				ruinsPile.add(0, card);
+			}
+			sendRuinsPile();
+			return;
+		}
 		// update supply
 		supply.put(card, supply.get(card) + count);
 		Map<Card, Integer> newSize = new HashMap<Card, Integer>();
 		newSize.put(card, supply.get(card));
 		for (Player eachPlayer : players) {
-			setPileSizes(eachPlayer, newSize);
+			sendPileSizes(eachPlayer, newSize);
 		}
 	}
 
@@ -1174,22 +1211,15 @@ public class Game implements Runnable {
 	}
 
 	private Set<Card> buyableCards(Player player) {
-		Set<Card> cards = new HashSet<Card>();
 		int usableCoins = player.getUsableCoins();
-		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
-			Card card = pile.getKey();
-			Integer count = pile.getValue();
-			if (card.cost(this) <= usableCoins && count > 0) {
-				cards.add(card);
-			}
-		}
+		Set<Card> buyable = cardsCostingAtMost(usableCoins);
 		// remove cards prohibited by contraband
-		cards.removeAll(contrabandProhibited);
+		buyable.removeAll(contrabandProhibited);
 		// remove grand market if the player has a copper in play
-		if (cards.contains(Card.GRAND_MARKET) && player.getPlay().contains(Card.COPPER)) {
-			cards.remove(Card.GRAND_MARKET);
+		if (buyable.contains(Card.GRAND_MARKET) && player.getPlay().contains(Card.COPPER)) {
+			buyable.remove(Card.GRAND_MARKET);
 		}
-		return cards;
+		return buyable;
 	}
 
 	private Set<Card> playableTreasures(Player player) {
@@ -1211,6 +1241,9 @@ public class Game implements Runnable {
 				cards.add(card);
 			}
 		}
+		if (ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0).cost(this) == cost) {
+			cards.add(ruinsPile.get(0));
+		}
 		return cards;
 	}
 
@@ -1222,6 +1255,9 @@ public class Game implements Runnable {
 			if (card.cost(this) <= cost && count > 0) {
 				cards.add(card);
 			}
+		}
+		if (ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0).cost(this) <= cost) {
+			cards.add(ruinsPile.get(0));
 		}
 		return cards;
 	}
@@ -1250,13 +1286,16 @@ public class Game implements Runnable {
 	}
 
 	public int numEmptySupplyPiles() {
-		int num = 0;
-		for (Entry<Card, Integer> supplyPile : supply.entrySet()) {
-			if (supplyPile.getValue() == 0) {
-				num++;
+		int numEmptyPiles = 0;
+		for (Integer count : supply.values()) {
+			if (count == 0) {
+				numEmptyPiles++;
 			}
 		}
-		return num;
+		if (ruinsPile != null && ruinsPile.isEmpty()) {
+			numEmptyPiles++;
+		}
+		return numEmptyPiles;
 	}
 
 	public void sendCardCosts() {
@@ -1294,11 +1333,16 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setKingdomCards(Player player) {
+	public void sendKingdomCards(Player player) {
+		List<Card> kingdomCardsSorted = new ArrayList<>(kingdomCards);
+		if (ruinsPile != null) {
+			kingdomCardsSorted.add(ruinsPile.get(0));
+		}
+		Collections.sort(kingdomCardsSorted, KINGDOM_ORDER_COMPARATOR);
 		JSONObject setKingdomCards = new JSONObject();
 		setKingdomCards.put("command", "setKingdomCards");
 		JSONArray cards = new JSONArray();
-		for (Card kingdomCard : kingdomCards) {
+		for (Card kingdomCard : kingdomCardsSorted) {
 			JSONObject card = new JSONObject();
 			card.put("name", kingdomCard.toString());
 			card.put("cost", kingdomCard.cost());
@@ -1311,6 +1355,9 @@ public class Game implements Runnable {
 			card.put("description", description);
 			if (kingdomCard == baneCard) {
 				card.put("isBane", true);
+			}
+			if (kingdomCard.isRuins) {
+				card.put("isRuins", true);
 			}
 			cards.add(card);
 		}
@@ -1352,18 +1399,25 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendShelterDescriptions(Player player) {
+	private void sendAdditionalDescriptions(Player player) {
+		Set<Card> additionalCards = new HashSet<>();
+		if (usingShelters) {
+			additionalCards.addAll(Card.SHELTER_CARDS);
+		}
+		if (ruinsPile != null) {
+			additionalCards.addAll(Card.RUINS_CARDS);
+		}
 		JSONObject command = new JSONObject();
 		command.put("command", "addCardDescriptions");
 		JSONArray cards = new JSONArray();
-		for (Card shelter : Card.SHELTER_CARDS) {
+		for (Card addtionalCard : additionalCards) {
 			JSONObject card = new JSONObject();
-			card.put("name", shelter.toString());
-			card.put("cost", shelter.cost());
-			card.put("className", shelter.htmlClass());
-			card.put("type", shelter.htmlType());
+			card.put("name", addtionalCard.toString());
+			card.put("cost", addtionalCard.cost());
+			card.put("className", addtionalCard.htmlClass());
+			card.put("type", addtionalCard.htmlType());
 			JSONArray description = new JSONArray();
-			for (String line : shelter.description()) {
+			for (String line : addtionalCard.description()) {
 				description.add(line);
 			}
 			card.put("description", description);
@@ -1374,11 +1428,13 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setBasicCards(Player player) {
+	public void sendBasicCards(Player player) {
+		List<Card> basicCardsSorted = new ArrayList<>(basicCards);
+		Collections.sort(basicCardsSorted, BASIC_ORDER_COMPARATOR);
 		JSONObject setBasicCards = new JSONObject();
 		setBasicCards.put("command", "setBasicCards");
 		JSONArray cards = new JSONArray();
-		for (Card basicCard : basicCards) {
+		for (Card basicCard : basicCardsSorted) {
 			JSONObject card = new JSONObject();
 			card.put("name", basicCard.toString());
 			card.put("cost", basicCard.cost());
@@ -1396,17 +1452,42 @@ public class Game implements Runnable {
 		player.sendCommand(setBasicCards);
 	}
 
+	public void sendPileSizes(Player player) {
+		sendPileSizes(player, supply);
+		if (ruinsPile != null) {
+			sendRuinsPile(player);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
-	public void setPileSizes(Player player, Map<Card, Integer> sizes) {
-		JSONObject setPileSizes = new JSONObject();
-		setPileSizes.put("command", "setPileSizes");
+	public void sendPileSizes(Player player, Map<Card, Integer> sizes) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setPileSizes");
 		JSONObject piles = new JSONObject();
 		for (Map.Entry<Card, Integer> size : sizes.entrySet()) {
 			piles.put(size.getKey(), size.getValue());
 		}
-		setPileSizes.put("piles", piles);
+		command.put("piles", piles);
+		player.sendCommand(command);
+	}
 
-		player.sendCommand(setPileSizes);
+	public void sendRuinsPile() {
+		for (Player player : players) {
+			sendRuinsPile(player);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public void sendRuinsPile(Player player) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setRuinsPile");
+		JSONObject pile = new JSONObject();
+		pile.put("size", ruinsPile.size());
+		if (!ruinsPile.isEmpty()) {
+			pile.put("topCardName", ruinsPile.get(0).toString());
+		}
+		command.put("pile", pile);
+		player.sendCommand(command);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2233,11 +2314,11 @@ public class Game implements Runnable {
 	}
 
 	public Card promptNameACard(Player player, String cause, String prompt) {
-		Card namedCard = promptChooseGainFromSupply(player, supply.keySet(), cause + ": " + prompt, false, "Name a card that is not in the supply");
+		Card namedCard = promptChooseGainFromSupply(player, cardsAvailableInSupply(), cause + ": " + prompt, false, "Name a card that is not in the supply");
 		if (namedCard == null) {
 			// find all cards not in the supply
 			Set<Card> cardsNotInSupply = new HashSet<Card>(Card.cardsByName.values());
-			cardsNotInSupply.removeAll(supply.keySet());
+			cardsNotInSupply.removeAll(cardsAvailableInSupply());
 			// create an alphabet of only the first letters of cards not in the supply
 			Set<Character> letters = new HashSet<Character>();
 			for (Card cardNotInSupply : cardsNotInSupply) {
@@ -2265,6 +2346,14 @@ public class Game implements Runnable {
 			namedCard = Card.fromName(chosenName);
 		}
 		return namedCard;
+	}
+
+	public Set<Card> cardsAvailableInSupply() {
+		Set<Card> availableInSupply = new HashSet<>(supply.keySet());
+		if (ruinsPile != null && !ruinsPile.isEmpty()) {
+			ruinsPile.add(ruinsPile.get(0));
+		}
+		return availableInSupply;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -2339,7 +2428,7 @@ public class Game implements Runnable {
 	private void recordPlayerWin(Player player) {
 		List<Card> gainRecord = gainRecords.get(player);
 		if (!gainRecord.isEmpty()) {
-			server.recordWinningStrategy(new HashSet<Card>(this.kingdomCards), gainRecord);
+			server.recordWinningStrategy(kingdomCards, gainRecord);
 		}
 	}
 

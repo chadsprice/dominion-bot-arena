@@ -106,7 +106,7 @@ body {
   white-space: nowrap;
 }
 
-.kingdomPile > .name > .bane {
+.kingdomPile > .name > .subtitle {
   font-size: 80%;
   text-align: center;
 }
