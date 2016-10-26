@@ -2,7 +2,7 @@
 var socket;
 
 // a map from the name of a card in the supply to its UI elements
-// 'pile name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
+// 'card name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
 var supplyCardElems = {};
 var ruinsPile;
 // a map from the name of a card to the className of its span when displayed
@@ -499,8 +499,8 @@ function setRuinsPile(pile) {
   }
 }
 
-function setEmbargoTokens(card, numTokens) {
-  var pileTokensDiv = getPileTokensDiv(card);
+function setEmbargoTokens(card, isRuins, numTokens) {
+  var pileTokensDiv = getPileTokensDiv(card, isRuins);
   // remove previous embargo tokens
   while (pileTokensDiv.getElementsByClassName('embargoTokens').length != 0) {
     pileTokensDiv.removeChild(pileTokensDiv.getElementsByClassName('embargoTokens')[0]);
@@ -527,8 +527,14 @@ function setTradeRouteToken(card, hasToken) {
   }
 }
 
-function getPileTokensDiv(card) {
-  var cardArtDiv = supplyCardElems[card].pile.getElementsByClassName('cardArt')[0];
+function getPileTokensDiv(card, isRuins) {
+  var pile;
+  if (isRuins) {
+    pile = ruinsPile.pile;
+  } else {
+    pile = supplyCardElems[card].pile;
+  }
+  var cardArtDiv = pile.getElementsByClassName('cardArt')[0];
   var pileTokensDiv;
   if (cardArtDiv.getElementsByClassName('pileTokens').length != 0) {
     // return the existing pile tokens div
@@ -1530,7 +1536,7 @@ function executeCommand(command) {
       setRuinsPile(command.pile);
       break;
     case 'setEmbargoTokens':
-      setEmbargoTokens(command.card, command.numTokens);
+      setEmbargoTokens(command.card, command.numTokens, command.isRuins);
       break;
     case 'setTradeRouteToken':
       setTradeRouteToken(command.card, command.hasToken);

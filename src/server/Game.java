@@ -78,10 +78,11 @@ public class Game implements Runnable {
 		}
 		private int type(Card card) {
 			if (card == Card.CONTRABAND) {
-				// play contraband first so opponents don't know how much coin you have exactly when they prohibit you from buying something
+				// play contraband first so opponents don't know exactly how much coin you have when they prohibit you
+				// from buying something
 				return 0;
 			} else if (card == Card.HORN_OF_PLENTY) {
-				// play horn of plenty late to maximize its potential
+				// play horn of plenty late to maximize its gaining potential
 				return 2;
 			} else if (card == Card.BANK) {
 				// play bank last to maximize its value
@@ -94,31 +95,31 @@ public class Game implements Runnable {
 
 	private GameServer server;
 
-	private int playerIndex;
 	public List<Player> players;
+	private int currentPlayerIndex;
 
-	public Set<Card> kingdomCards;
+	private Set<Card> kingdomCards;
+	private Set<Card> basicCards;
 	public Card baneCard;
 	public Set<Card> prizeCards;
-	public boolean usingShelters;
-	public Set<Card> basicCards;
-	public Map<Card, Integer> supply = new HashMap<Card, Integer>();
-	public List<Card> ruinsPile;
-	private List<Card> trash = new ArrayList<Card>();
+	private boolean usingShelters;
+	public Map<Card, Integer> supply = new HashMap<>();
+	private List<Card> ruinsPile;
+	private List<Card> trash = new ArrayList<>();
 
-	public boolean isGameOver;
+	boolean isGameOver;
 
 	// various bits of game state required by individual card rules
 	public boolean playedSilverThisTurn;
-	public int cardCostReduction;
+	int cardCostReduction;
 	public boolean costModifierPlayedLastTurn;
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
-	public Map<Card, Integer> embargoTokens = new HashMap<>();
-	public int embargoTokensOnRuinsPile;
-	public boolean boughtVictoryCardThisTurn;
+	private Map<Card, Integer> embargoTokens = new HashMap<>();
+	private int embargoTokensOnRuinsPile;
+	private boolean boughtVictoryCardThisTurn;
 	public Set<Card> contrabandProhibited;
-	public Set<Card> tradeRouteTokenedPiles;
+	private Set<Card> tradeRouteTokenedPiles;
 	public int tradeRouteMat;
 	public boolean inBuyPhase;
 	public boolean playedCrossroadsThisTurn;
@@ -126,13 +127,13 @@ public class Game implements Runnable {
 
 	public int messageIndent;
 
-	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters, Set<Card> basicCards) {
+	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
 		this.server = server;
 		this.kingdomCards = kingdomCards;
+		this.basicCards = basicCards;
 		this.baneCard = baneCard;
 		this.prizeCards = prizeCards;
 		this.usingShelters = usingShelters;
-		this.basicCards = basicCards;
 		players = new ArrayList<Player>(playerSet);
 	}
 
@@ -140,9 +141,9 @@ public class Game implements Runnable {
 	public void run() {
 		setup();
 		while (!gameOverConditionMet()) {
-			takeTurn(players.get(playerIndex));
-			if (!players.get(playerIndex).hasExtraTurn()) {
-				playerIndex = (playerIndex + 1) % players.size();
+			takeTurn(currentPlayer());
+			if (!currentPlayer().hasExtraTurn()) {
+				currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
 			}
 		}
 		announceWinner();
@@ -165,15 +166,11 @@ public class Game implements Runnable {
 			embargoTokens.put(cardInSupply, 0);
 		}
 		// initialize contraband prohibited cards
-		contrabandProhibited = new HashSet<Card>();
+		contrabandProhibited = new HashSet<>();
 		// initialize trade route token piles
-		tradeRouteTokenedPiles = new HashSet<Card>();
+		tradeRouteTokenedPiles = new HashSet<>();
 		if (supply.containsKey(Card.TRADE_ROUTE)) {
-			for (Card card : supply.keySet()) {
-				if (card.isVictory) {
-					tradeRouteTokenedPiles.add(card);
-				}
-			}
+			tradeRouteTokenedPiles = supply.keySet().stream().filter(c -> c.isVictory).collect(Collectors.toSet());
 		}
 		// randomize turn order
 		Collections.shuffle(players);
@@ -228,7 +225,7 @@ public class Game implements Runnable {
 		while (player.getActions() > 0 && player.hasPlayableAction()) {
 			// action phase
 			Set<Card> choices = playableActions(player);
-			Card choice = promptChoosePlay(player, choices, "Action Phase: Choose an action to play", false, "No Action");
+			Card choice = promptChoosePlay(player, choices, "Action Phase: Choose an action to play.", false, "No Action");
 			if (choice == null) {
 				break;
 			}
@@ -279,7 +276,7 @@ public class Game implements Runnable {
 		exitBuyPhase();
 		// if the player couldn't buy anything, notify them that their turn is over
 		if (!givenBuyPrompt) {
-			promptMultipleChoice(player, "There are no cards that you can buy this turn", new String[] {"End Turn"});
+			promptMultipleChoice(player, "There are no cards that you can buy this turn.", new String[] {"End Turn"});
 		}
 		cleanup(player);
 		messageIndent--;
@@ -326,12 +323,7 @@ public class Game implements Runnable {
 	}
 
 	private void playAllTreasures(Player player) {
-		List<Card> treasures = new ArrayList<Card>();
-		for (Card card : player.getHand()) {
-			if (card.isTreasure) {
-				treasures.add(card);
-			}
-		}
+		List<Card> treasures = player.getHand().stream().filter(c -> c.isTreasure).collect(Collectors.toList());
 		if (!treasures.isEmpty()) {
 			message(player, "You play " + Card.htmlList(treasures));
 			messageOpponents(player, player.username + " plays " + Card.htmlList(treasures));
@@ -346,7 +338,7 @@ public class Game implements Runnable {
 
 	public int numTreasuresInPlay() {
 		int num = 0;
-		for (Card card : players.get(playerIndex).getPlay()) {
+		for (Card card : currentPlayer().getPlay()) {
 			if (card.isTreasure) {
 				num++;
 			}
@@ -356,7 +348,7 @@ public class Game implements Runnable {
 
 	public int numActionsInPlay() {
 		int num = 0;
-		for (Card card : players.get(playerIndex).getPlay()) {
+		for (Card card : currentPlayer().getPlay()) {
 			if (card.isAction) {
 				num++;
 			}
@@ -788,7 +780,7 @@ public class Game implements Runnable {
 	}
 
 	public Player currentPlayer() {
-		return players.get(playerIndex);
+		return players.get(currentPlayerIndex);
 	}
 
 	public List<Player> getOpponents(Player player) {
@@ -1282,7 +1274,7 @@ public class Game implements Runnable {
 	}
 
 	public int numberInPlay(Card card) {
-		return players.get(playerIndex).numberInPlay(card);
+		return currentPlayer().numberInPlay(card);
 	}
 
 	public int numEmptySupplyPiles() {
@@ -1548,7 +1540,11 @@ public class Game implements Runnable {
 	}
 
 	public void addEmbargoToken(Card card) {
-		embargoTokens.put(card, embargoTokens.get(card) + 1);
+		if (card.isRuins) {
+			embargoTokensOnRuinsPile++;
+		} else {
+			embargoTokens.put(card, embargoTokens.get(card) + 1);
+		}
 		sendEmbargoTokens(card);
 	}
 
@@ -1556,7 +1552,11 @@ public class Game implements Runnable {
 	private void sendEmbargoTokens(Card card) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setEmbargoTokens");
-		command.put("card", card.toString());
+		if (card.isRuins) {
+			command.put("isRuins", true);
+		} else {
+			command.put("card", card.toString());
+		}
 		command.put("numTokens", embargoTokens.get(card));
 		for (Player player : players) {
 			player.sendCommand(command);

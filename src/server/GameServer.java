@@ -978,7 +978,7 @@ public class GameServer {
 		// somewhat-randomly choose whether to play with shelters
 		boolean usingShelters = proportionDeterminedSufficient(chosen, Card.DARK_AGES_SET);
 		// initialize the game with this kingdom and basic set
-		game.init(this, players, chosen, baneCard, prizeCards, usingShelters, basicSet);
+		game.init(this, players, chosen, basicSet, baneCard, prizeCards, usingShelters);
 	}
 
 	/**
