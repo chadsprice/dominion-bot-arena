@@ -632,9 +632,14 @@ public class Bot extends Player {
 		return 2;
 	}
 
-	public boolean hovelChooseTrash() {
+	public boolean hovelTrash() {
 		// trashing a Hovel is advantageous for BigMoney
 		return true;
+	}
+
+	public boolean marketSquareDiscard() {
+		// only discard a market square if your will gain a gold
+		return game.supply.get(Card.GOLD) != 0;
 	}
 
 }

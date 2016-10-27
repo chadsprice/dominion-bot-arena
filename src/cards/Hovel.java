@@ -18,7 +18,7 @@ public class Hovel extends Card {
 
     public boolean chooseTrash(Player player, Game game) {
         if (player instanceof Bot) {
-            return ((Bot) player).hovelChooseTrash();
+            return ((Bot) player).hovelTrash();
         }
         int choice = game.promptMultipleChoice(player, "Hovel: Trash " + this.htmlName() + " from your hand?", "reactionPrompt", new String[] {"Trash", "Don't"});
         return (choice == 0);

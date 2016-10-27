@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import cards.Hovel;
+import cards.MarketSquare;
 import cards.NobleBrigand;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -1176,8 +1177,23 @@ public class Game implements Runnable {
 
 	private void onTrash(Player player, Card card, boolean triggersMarketSquare) {
 		messageIndent++;
+		// Market Square can react before or after the trashed card's on-trash effect
+		if (triggersMarketSquare) {
+			allowMarketSquareReaction(player);
+		}
 		card.onTrash(player, this);
+		if (triggersMarketSquare) {
+			allowMarketSquareReaction(player);
+		}
 		messageIndent--;
+	}
+
+	private void allowMarketSquareReaction(Player player) {
+		while (player.getHand().contains(Card.MARKET_SQUARE)) {
+			if (!((MarketSquare) Card.MARKET_SQUARE).onCardTrashed(player, this)) {
+				break;
+			}
+		}
 	}
 
 	public void removeFromTrash(Card card) {
