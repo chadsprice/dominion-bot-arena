@@ -4,7 +4,9 @@ var socket;
 // a map from the name of a card in the supply to its UI elements
 // 'card name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
 var supplyCardElems = {};
-var ruinsPile;
+// a map from the id of a mixed pile to its UI elements
+// 'pile id' -> {...}
+var mixedPiles = {};
 // a map from the name of a card to the className of its span when displayed
 // 'card name' -> 'action', or 'treasure', or 'victory', etc.
 var supplyCardClassNames = {};
@@ -281,13 +283,13 @@ function setKingdomCards(cards) {
     nameParagraph.className = cards[i].className;
     nameParagraph.innerHTML = cards[i].name;
     nameDiv.appendChild(nameParagraph);
-    if (cards[i].isBane || cards[i].isRuins) {
+    if (cards[i].isBane || cards[i].pileId) {
       var subtitleParagraph = document.createElement('p');
       subtitleParagraph.className = 'subtitle';
       if (cards[i].isBane) {
         subtitleParagraph.innerHTML = '(Bane)';
       } else {
-        subtitleParagraph.innerHTML = '(Ruins)';
+        subtitleParagraph.innerHTML = '(' + cards[i].pileId + ')';
       }
       nameDiv.appendChild(subtitleParagraph);
     }
@@ -328,8 +330,8 @@ function setKingdomCards(cards) {
     kingdomPile.appendChild(cardArt);
     kingdom.appendChild(kingdomPile);
     supplyCardElems[cards[i].name] = {'pile':kingdomPile, 'name':nameParagraph, 'cost':costParagraph, 'pileSize':pileSizeParagraph, 'cross':cross, 'plus':plus, 'img':img};
-    if (cards[i].isRuins) {
-      ruinsPile = supplyCardElems[cards[i].name];
+    if (cards[i].pileId) {
+      mixedPiles[cards[i].pileId] = supplyCardElems[cards[i].name];
     }
   }
 }
@@ -480,27 +482,29 @@ function setPileSizes(piles) {
   }
 }
 
-function setRuinsPile(pile) {
+function setMixedPile(status) {
+  pile = mixedPiles[status.pileId];
   // set the size
-  ruinsPile.pileSize.innerHTML = '(' + pile.size.toString() + ')';
+  pile.pileSize.innerHTML = '(' + status.size.toString() + ')';
   // if the pile is empty
-  if (pile.size == 0) {
+  if (status.size == 0) {
     // make the image partially transparent
-    ruinsPile.img.style.opacity = '0.3';
+    pile.img.style.opacity = '0.3';
     // show the cross image
-    ruinsPile.cross.style.display = 'block';
+    pile.cross.style.display = 'block';
   }
-  if (pile.topCardName) {
-    ruinsPile.name.innerHTML = pile.topCardName;
-    ruinsPile.img.src = cardArtSrc(pile.topCardName);
-    supplyCardElems[pile.topCardName] = ruinsPile;
+  if (status.topCardName) {
+    pile.name.innerHTML = status.topCardName;
+    pile.img.src = cardArtSrc(status.topCardName);
+    supplyCardElems[status.topCardName] = pile;
+    registerPopup(pile.pile, status.topCardName);
   } else {
-    ruinsPile.name.innerHTML = '';
+    pile.name.innerHTML = '';
   }
 }
 
-function setEmbargoTokens(card, isRuins, numTokens) {
-  var pileTokensDiv = getPileTokensDiv(card, isRuins);
+function setEmbargoTokens(card, pileId, numTokens) {
+  var pileTokensDiv = getPileTokensDiv(card, pileId);
   // remove previous embargo tokens
   while (pileTokensDiv.getElementsByClassName('embargoTokens').length != 0) {
     pileTokensDiv.removeChild(pileTokensDiv.getElementsByClassName('embargoTokens')[0]);
@@ -527,10 +531,10 @@ function setTradeRouteToken(card, hasToken) {
   }
 }
 
-function getPileTokensDiv(card, isRuins) {
+function getPileTokensDiv(card, pileId) {
   var pile;
-  if (isRuins) {
-    pile = ruinsPile.pile;
+  if (pileId) {
+    pile = mixedPiles[pileId].pile;
   } else {
     pile = supplyCardElems[card].pile;
   }
@@ -1532,11 +1536,11 @@ function executeCommand(command) {
     case 'setPileSizes':
       setPileSizes(command.piles);
       break;
-    case 'setRuinsPile':
-      setRuinsPile(command.pile);
+    case 'setMixedPile':
+      setMixedPile(command.status);
       break;
     case 'setEmbargoTokens':
-      setEmbargoTokens(command.card, command.numTokens, command.isRuins);
+      setEmbargoTokens(command.card, command.pileId, command.numTokens);
       break;
     case 'setTradeRouteToken':
       setTradeRouteToken(command.card, command.hasToken);

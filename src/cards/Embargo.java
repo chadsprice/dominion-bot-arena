@@ -29,7 +29,7 @@ public class Embargo extends Card {
 		// put an embargo token on top of a supply pile
 		// TODO: allow mixed piles to be embargoed
 		Card toEmbargo = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Embargo: Put an embargo token on a supply pile.");
-		game.addEmbargoToken(toEmbargo);
+		game.addEmbargoToken(toEmbargo, null);
 		game.messageAll("putting an embargo token on the " + toEmbargo.htmlName() + " pile");
 		return movedToTrash;
 	}

@@ -104,7 +104,7 @@ public class Game implements Runnable {
 	public Set<Card> prizeCards;
 	private boolean usingShelters;
 	public Map<Card, Integer> supply = new HashMap<>();
-	private Map<String, List<Card>> mixedPiles = new HashMap<>();
+	private Map<Card.MixedPileId, List<Card>> mixedPiles = new HashMap<>();
 	private List<Card> trash = new ArrayList<>();
 
 	boolean isGameOver;
@@ -116,7 +116,7 @@ public class Game implements Runnable {
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
 	private Map<Card, Integer> embargoTokens = new HashMap<>();
-	private int embargoTokensOnRuinsPile;
+	private Map<Card.MixedPileId, Integer> mixedPileEmbargoTokens = new HashMap<>();
 	private boolean boughtVictoryCardThisTurn;
 	public Set<Card> contrabandProhibited;
 	private Set<Card> tradeRouteTokenedPiles;
@@ -165,6 +165,9 @@ public class Game implements Runnable {
 		for (Card cardInSupply : supply.keySet()) {
 			embargoTokens.put(cardInSupply, 0);
 		}
+		for (Card.MixedPileId pileId : mixedPiles.keySet()) {
+			mixedPileEmbargoTokens.put(pileId, 0);
+		}
 		// initialize contraband prohibited cards
 		contrabandProhibited = new HashSet<>();
 		// initialize trade route token piles
@@ -202,7 +205,7 @@ public class Game implements Runnable {
 		// shuffle and take 10 for a 2 players, 20 for 3 player, etc.
 		Collections.shuffle(ruinsPile);
 		ruinsPile = new ArrayList<>(ruinsPile.subList(0, 10 * (players.size() - 1)));
-		mixedPiles.put("Ruins", ruinsPile);
+		mixedPiles.put(Card.MixedPileId.RUINS, ruinsPile);
 	}
 
 	private void takeTurn(Player player) {
@@ -469,15 +472,16 @@ public class Game implements Runnable {
 	}
 
 	public int embargoTokensOn(Card card) {
-		if (card.isRuins) {
-			return embargoTokensOnRuinsPile;
+		if (card.inMixedPile()) {
+			return mixedPileEmbargoTokens.get(card.mixedPileId());
+		} else {
+			return embargoTokens.get(card);
 		}
-		return embargoTokens.get(card);
 	}
 
 	public boolean isAvailableInSupply(Card card) {
 		if (card.isRuins) {
-			List<Card> ruinsPile = mixedPiles.get("Ruins");
+			List<Card> ruinsPile = mixedPiles.get(Card.MixedPileId.RUINS);
 			return ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0) == card;
 		}
 		return supply.containsKey(card) && supply.get(card) != 0;
@@ -807,10 +811,10 @@ public class Game implements Runnable {
 			sendPrizeCardRemoved(card);
 			return;
 		}
-		// if it is a ruins card, remove it from the ruins pile
-		if (card.isRuins) {
-			mixedPiles.get("Ruins").remove(0);
-			sendMixedPile("Ruins");
+		// if it is in a mixed pile, remove the top card
+		if (card.inMixedPile()) {
+			mixedPiles.get(card.mixedPileId()).remove(0);
+			sendMixedPile(card.mixedPileId());
 			return;
 		}
 		// update supply
@@ -823,11 +827,11 @@ public class Game implements Runnable {
 	}
 
 	public void returnToSupply(Card card, int count) {
-		if (card.isRuins) {
+		if (card.inMixedPile()) {
 			for (int i = 0; i < count; i++) {
-				mixedPiles.get("Ruins").add(0, card);
+				mixedPiles.get(card.mixedPileId()).add(0, card);
 			}
-			sendMixedPile("Ruins");
+			sendMixedPile(card.mixedPileId());
 			return;
 		}
 		// update supply
@@ -1357,7 +1361,7 @@ public class Game implements Runnable {
 				card.put("isBane", true);
 			}
 			if (kingdomCard.inMixedPile()) {
-				card.put("pileId", kingdomCard.mixedPileId());
+				card.put("pileId", kingdomCard.mixedPileId().toString());
 			}
 			cards.add(card);
 		}
@@ -1454,7 +1458,7 @@ public class Game implements Runnable {
 
 	public void sendPileSizes(Player player) {
 		sendPileSizes(player, supply);
-		for (String pileId : mixedPiles.keySet()) {
+		for (Card.MixedPileId pileId : mixedPiles.keySet()) {
 			sendMixedPile(player, pileId);
 		}
 	}
@@ -1471,23 +1475,24 @@ public class Game implements Runnable {
 		player.sendCommand(command);
 	}
 
-	public void sendMixedPile(String pileId) {
+	public void sendMixedPile(Card.MixedPileId pileId) {
 		for (Player player : players) {
 			sendMixedPile(player, pileId);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendMixedPile(Player player, String pileId) {
+	public void sendMixedPile(Player player, Card.MixedPileId pileId) {
 		List<Card> mixedPile = mixedPiles.get(pileId);
 		JSONObject command = new JSONObject();
-		command.put("command", "setRuinsPile");
-		JSONObject pile = new JSONObject();
-		pile.put("size", mixedPile.size());
+		command.put("command", "setMixedPile");
+		JSONObject status = new JSONObject();
+		status.put("pileId", pileId.toString());
+		status.put("size", mixedPile.size());
 		if (!mixedPile.isEmpty()) {
-			pile.put("topCardName", mixedPile.get(0).toString());
+			status.put("topCardName", mixedPile.get(0).toString());
 		}
-		command.put("pile", pile);
+		command.put("status", status);
 		player.sendCommand(command);
 	}
 
@@ -1548,25 +1553,26 @@ public class Game implements Runnable {
 		}
 	}
 
-	public void addEmbargoToken(Card card) {
-		if (card.isRuins) {
-			embargoTokensOnRuinsPile++;
+	public void addEmbargoToken(Card card, Card.MixedPileId pileId) {
+		if (pileId != null) {
+			mixedPileEmbargoTokens.put(pileId, mixedPileEmbargoTokens.get(pileId) + 1);
 		} else {
 			embargoTokens.put(card, embargoTokens.get(card) + 1);
 		}
-		sendEmbargoTokens(card);
+		sendEmbargoTokens(card, pileId);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendEmbargoTokens(Card card) {
+	private void sendEmbargoTokens(Card card, Card.MixedPileId pileId) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setEmbargoTokens");
-		if (card.isRuins) {
-			command.put("isRuins", true);
+		if (pileId != null) {
+			command.put("pileId", pileId.toString());
+			command.put("numTokens", mixedPileEmbargoTokens.get(pileId));
 		} else {
 			command.put("card", card.toString());
+			command.put("numTokens", embargoTokens.get(card));
 		}
-		command.put("numTokens", embargoTokens.get(card));
 		for (Player player : players) {
 			player.sendCommand(command);
 		}
