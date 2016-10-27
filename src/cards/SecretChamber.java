@@ -23,10 +23,14 @@ public class SecretChamber extends Card {
 	public void onPlay(Player player, Game game) {
 		// discard any number of cards
 		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Secret Chamber");
-		player.putFromHandIntoDiscard(discarded);
-		// +$1 per card discarded
-		player.addCoins(discarded.size());
-		game.messageAll("discarding " + Card.htmlList(discarded) + " for +$" + discarded.size());
+		if (!discarded.isEmpty()) {
+			game.messageAll("discarding " + Card.htmlList(discarded) + " for +$" + discarded.size());
+			player.putFromHandIntoDiscard(discarded);
+			// +$1 per card discarded
+			player.addCoins(discarded.size());
+		} else {
+			game.messageAll("discarding nothing");
+		}
 	}
 
 	@Override

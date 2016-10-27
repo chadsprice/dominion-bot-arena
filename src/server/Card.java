@@ -211,6 +211,7 @@ public class Card {
 	public static final Card FORAGER = new Forager();
 	public static final Card MARKET_SQUARE = new MarketSquare();
 	public static final Card SAGE = new Sage();
+	public static final Card STOREROOM = new Storeroom();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -453,6 +454,7 @@ public class Card {
 		include(FORAGER, DARK_AGES_SET);
 		include(MARKET_SQUARE, DARK_AGES_SET);
 		include(SAGE, DARK_AGES_SET);
+		include(STOREROOM, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);

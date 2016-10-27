@@ -1177,13 +1177,13 @@ public class Game implements Runnable {
 
 	private void onTrash(Player player, Card card, boolean triggersMarketSquare) {
 		messageIndent++;
-		// Market Square can react before or after the trashed card's on-trash effect
 		if (triggersMarketSquare) {
+			// Market Square can react before or after the trashed card's on-trash effect
 			allowMarketSquareReaction(player);
-		}
-		card.onTrash(player, this);
-		if (triggersMarketSquare) {
+			card.onTrash(player, this);
 			allowMarketSquareReaction(player);
+		} else {
+			card.onTrash(player, this);
 		}
 		messageIndent--;
 	}
