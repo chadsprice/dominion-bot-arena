@@ -22,7 +22,7 @@ public class Workshop extends Card {
 		// gain a card costing up to $4
 		Set<Card> gainable = game.cardsCostingAtMost(4);
 		if (!gainable.isEmpty()) {
-			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain");
+			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain.");
 			game.messageAll("gaining " + toGain.htmlName());
 			game.gain(player, toGain);
 		} else {
