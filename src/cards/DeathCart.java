@@ -53,7 +53,7 @@ public class DeathCart extends Card {
             List<Card> ruins = game.mixedPiles.get(MixedPileId.RUINS);
             if (!ruins.isEmpty()) {
                 List<Card> toGain = ruins.subList(0, Math.min(2, ruins.size()));
-                game.messageAll("gaining " + Card.htmlList(toGain));
+                game.messageAll("gaining " + Card.htmlList(toGain) + " because of " + this.htmlNameRaw());
                 for (int i = 0; i < 2 && !game.mixedPiles.get(MixedPileId.RUINS).isEmpty(); i++) {
                     game.gain(player, game.mixedPiles.get(MixedPileId.RUINS).get(0));
                 }
