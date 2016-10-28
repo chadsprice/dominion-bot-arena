@@ -213,6 +213,7 @@ public class Card {
 	public static final Card SAGE = new Sage();
 	public static final Card STOREROOM = new Storeroom();
 	public static final Card ARMORY = new Armory();
+	public static final Card DEATH_CART = new DeathCart();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -226,20 +227,20 @@ public class Card {
 
 	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
 
-	public static Set<Card> BASIC_CARDS = new HashSet<Card>();
-	public static Set<Card> BASE_SET = new HashSet<Card>();
-	public static Set<Card> BASE_SET_FIRST_EDITION = new HashSet<Card>();
-	public static Set<Card> INTRIGUE_SET = new HashSet<Card>();
-	public static Set<Card> INTRIGUE_SET_FIRST_EDITION = new HashSet<Card>();
-	public static Set<Card> SEASIDE_SET = new HashSet<Card>();
-	public static Set<Card> PROSPERITY_SET = new HashSet<Card>();
-	public static Set<Card> PROSPERITY_BASIC_CARDS = new HashSet<Card>();
-	public static Set<Card> CORNUCOPIA_SET = new HashSet<Card>();
-	public static Set<Card> PRIZE_CARDS = new HashSet<Card>();
-	public static Set<Card> HINTERLANDS_SET = new HashSet<Card>();
-	public static Set<Card> DARK_AGES_SET = new HashSet<Card>();
-	public static Set<Card> RUINS_CARDS = new HashSet<Card>();
-	public static Set<Card> SHELTER_CARDS = new HashSet<Card>();
+	static Set<Card> BASIC_CARDS = new HashSet<>();
+	static Set<Card> BASE_SET = new HashSet<>();
+	static Set<Card> BASE_SET_FIRST_EDITION = new HashSet<>();
+	static Set<Card> INTRIGUE_SET = new HashSet<>();
+	static Set<Card> INTRIGUE_SET_FIRST_EDITION = new HashSet<>();
+	static Set<Card> SEASIDE_SET = new HashSet<>();
+	static Set<Card> PROSPERITY_SET = new HashSet<>();
+	static Set<Card> PROSPERITY_BASIC_CARDS = new HashSet<>();
+	static Set<Card> CORNUCOPIA_SET = new HashSet<>();
+	static Set<Card> PRIZE_CARDS = new HashSet<>();
+	static Set<Card> HINTERLANDS_SET = new HashSet<>();
+	static Set<Card> DARK_AGES_SET = new HashSet<>();
+	static Set<Card> RUINS_CARDS = new HashSet<>();
+	static Set<Card> SHELTER_CARDS = new HashSet<>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
 	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
@@ -457,6 +458,7 @@ public class Card {
 		include(SAGE, DARK_AGES_SET);
 		include(STOREROOM, DARK_AGES_SET);
 		include(ARMORY, DARK_AGES_SET);
+		include(DEATH_CART, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
@@ -500,6 +502,7 @@ public class Card {
 	public boolean isDuration;
 	public boolean isRuins;
 	public boolean isShelter;
+	public boolean isLooter;
 
 	public int startingSupply(int numPlayers) {
 		if (isVictory) {
@@ -560,6 +563,8 @@ public class Card {
 	public void onDurationEffect(Player player, Game game, Duration duration) {
 		throw new UnsupportedOperationException();
 	}
+
+	public void onGain(Player player, Game game) {}
 
 	public void onTrash(Player player, Game game) {}
 

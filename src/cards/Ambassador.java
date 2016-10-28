@@ -24,8 +24,8 @@ public class Ambassador extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		if (!player.getHand().isEmpty()) {
 			// reveal a card
-			Card revealed = game.promptChoosePassToOpponent(player, new HashSet<Card>(player.getHand()), "Ambassador: Choose a card to reveal from your hand.", "actionPrompt");
-			if (game.supply.containsKey(revealed)) {
+			Card revealed = game.promptChoosePassToOpponent(player, new HashSet<>(player.getHand()), "Ambassador: Choose a card to reveal from your hand.", "actionPrompt");
+			if (game.canReturnToSupply(revealed)) {
 				// return up to 2 of it to the supply
 				int numInHand = player.numberInHand(revealed);
 				int numToReturn = chooseNumToReturn(player, game, revealed);
@@ -35,13 +35,13 @@ public class Ambassador extends Card {
 				}
 				game.returnToSupply(revealed, numToReturn);
 				// each other player gains a copy
-				for (Player target : targets) {
-					if (game.supply.get(revealed) != 0) {
+				targets.forEach(target -> {
+					if (game.isAvailableInSupply(revealed)) {
 						game.message(target, "You gain " + revealed.htmlName());
 						game.messageOpponents(target, target.username + " gains " + revealed.htmlName());
 						game.gain(target, revealed);
 					}
-				}
+				});
 			} else {
 				game.messageAll("revealing " + revealed.htmlName());
 			}

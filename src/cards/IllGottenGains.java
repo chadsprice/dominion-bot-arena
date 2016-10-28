@@ -39,6 +39,18 @@ public class IllGottenGains extends Card {
     }
 
     @Override
+    public void onGain(Player player, Game game) {
+        // each other player gains a Curse
+        game.getOpponents(player).forEach(opponent -> {
+            if (game.supply.get(Card.CURSE) != 0) {
+                game.message(opponent, "You gain " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
+                game.messageOpponents(opponent, opponent.username + " gains " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
+                game.gain(opponent, Card.CURSE);
+            }
+        });
+    }
+
+    @Override
     public String[] description() {
         return new String[] {"$1", "When you play this, you may gain a Copper, putting it into your hand.", "When you gain this, each other player gains a Curse."};
     }

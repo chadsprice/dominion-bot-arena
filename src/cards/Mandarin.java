@@ -5,6 +5,8 @@ import server.Game;
 import server.Player;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class Mandarin extends Card {
 
@@ -26,6 +28,16 @@ public class Mandarin extends Card {
             game.messageOpponents(player, "putting a card on top of their deck");
             player.putFromHandOntoDraw(toPutOnDeck);
         }
+    }
+
+    @Override
+    public void onGain(Player player, Game game) {
+        // put all treasures you have in play on top of your deck in any order
+        List<Card> treasuresInPlay = player.getPlay().stream().filter(c -> c.isTreasure).collect(Collectors.toList());
+        player.removeFromPlay(treasuresInPlay);
+        game.message(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of your deck");
+        game.messageOpponents(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of their deck");
+        putOnDeckInAnyOrder(player, game, treasuresInPlay, "Mandarin: Put all Treasures you have in play on top of your deck in any order");
     }
 
     @Override

@@ -28,6 +28,18 @@ public class Embassy extends Card {
     }
 
     @Override
+    public void onGain(Player player, Game game) {
+        // each other player gains a Silver
+        game.getOpponents(player).forEach(opponent -> {
+            if (game.supply.get(Card.SILVER) != 0) {
+                game.message(opponent, "You gain " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
+                game.messageOpponents(opponent, opponent.username + " gains " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
+                game.gain(opponent, Card.SILVER);
+            }
+        });
+    }
+
+    @Override
     public String[] description() {
         return new String[] {"+5 Cards", "Discard 3 cards.", "When you gain this, each other player gains a Silver."};
     }

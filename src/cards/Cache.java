@@ -1,6 +1,8 @@
 package cards;
 
 import server.Card;
+import server.Game;
+import server.Player;
 
 public class Cache extends Card {
 
@@ -16,6 +18,16 @@ public class Cache extends Card {
     @Override
     public int treasureValue() {
         return 3;
+    }
+
+    @Override
+    public void onGain(Player player, Game game) {
+        // gain 2 Coppers
+        int numCoppers = Math.min(2, game.supply.get(Card.COPPER));
+        game.messageAll("gaining " + Card.COPPER.htmlName(numCoppers));
+        for (int i = 0; i < numCoppers; i++) {
+            game.gain(player, Card.COPPER);
+        }
     }
 
     @Override

@@ -88,7 +88,7 @@ public class Game implements Runnable {
 	public Set<Card> prizeCards;
 	private boolean usingShelters;
 	public Map<Card, Integer> supply = new HashMap<>();
-	private Map<Card.MixedPileId, List<Card>> mixedPiles = new HashMap<>();
+	public Map<Card.MixedPileId, List<Card>> mixedPiles = new HashMap<>();
 	private List<Card> trash = new ArrayList<>();
 
 	boolean isGameOver;
@@ -462,10 +462,10 @@ public class Game implements Runnable {
 		}
 	}
 
-	private boolean isAvailableInSupply(Card card) {
-		if (card.isRuins) {
-			List<Card> ruinsPile = mixedPiles.get(Card.MixedPileId.RUINS);
-			return ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0) == card;
+	public boolean isAvailableInSupply(Card card) {
+		if (card.inMixedPile()) {
+			List<Card> mixedPile = mixedPiles.get(card.mixedPileId());
+			return !mixedPile.isEmpty() && mixedPile.get(0) == card;
 		}
 		return supply.containsKey(card) && supply.get(card) != 0;
 	}
@@ -797,6 +797,13 @@ public class Game implements Runnable {
 		sendPileSize(card);
 	}
 
+	public boolean canReturnToSupply(Card card) {
+		if (card.inMixedPile()) {
+			return mixedPiles.containsKey(card.mixedPileId());
+		}
+		return supply.containsKey(card);
+	}
+
 	public void returnToSupply(Card card, int count) {
 		if (card.inMixedPile()) {
 			Card.MixedPileId id = card.mixedPileId();
@@ -1006,64 +1013,7 @@ public class Game implements Runnable {
 				}
 			}
 		}
-		// on gaining Cache, gain 2 Coppers
-		if (card == Card.CACHE) {
-			int numCoppers = Math.min(2, supply.get(Card.COPPER));
-			messageAll("gaining " + Card.COPPER.htmlName(numCoppers));
-			for (int i = 0; i < numCoppers; i++) {
-				gain(player, Card.COPPER);
-			}
-		}
-		// on gaining Embassy, each other player gains a Silver
-		if (card == Card.EMBASSY) {
-			getOpponents(player).forEach(opponent -> {
-				if (supply.get(Card.SILVER) != 0) {
-					message(opponent, "You gain " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
-					messageOpponents(opponent, opponent.username + " gains " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
-					gain(opponent, Card.SILVER);
-				}
-			});
-		}
-		// on gaining Ill-Gotten Gains, each other player gains a Curse
-		if (card == Card.ILL_GOTTEN_GAINS) {
-			getOpponents(player).forEach(opponent -> {
-				if (supply.get(Card.CURSE) != 0) {
-					message(opponent, "You gain " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
-					messageOpponents(opponent, opponent.username + " gains " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
-					gain(opponent, Card.CURSE);
-				}
-			});
-		}
-		// on gaining Inn, shuffle any number of action cards from your discard back into your deck
-		if (card == Card.INN) {
-			List<Card> innable = player.getDiscard().stream().filter(c -> c.isAction).collect(Collectors.toList());
-			if (!innable.isEmpty()) {
-				List<Card> toInn = chooseInn(player, new ArrayList<>(innable));
-				if (!toInn.isEmpty()) {
-					message(player, "shuffling " + Card.htmlList(toInn) + " into your deck");
-					messageOpponents(player, "shuffling " + Card.htmlList(toInn) + " into their deck");
-					player.removeFromDiscard(toInn);
-					player.shuffleIntoDraw(toInn);
-				}
-			}
-		}
-		// on gaining Mandarin, put all treasures you have in play on top of your deck in any order
-		if (card == Card.MANDARIN) {
-			List<Card> treasuresInPlay = player.getPlay().stream().filter(c -> c.isTreasure).collect(Collectors.toList());
-			player.removeFromPlay(treasuresInPlay);
-			message(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of your deck");
-			messageOpponents(player, "putting " + Card.htmlList(treasuresInPlay) + " on top of their deck");
-			Card.MANDARIN.putOnDeckInAnyOrder(player, this, treasuresInPlay, "Mandarin: Put all Treasures you have in play on top of your deck in any order");
-		}
-		// on gaining Border Village, gain a card costing less than it
-		if (card == Card.BORDER_VILLAGE) {
-			Set<Card> gainable = cardsCostingAtMost(Card.BORDER_VILLAGE.cost(this) - 1);
-			if (!gainable.isEmpty()) {
-				Card toGain = promptChooseGainFromSupply(player, gainable, "Border Village: Choose a card to gain.");
-				messageAll("gaining " + toGain.htmlName() + " because of " + Card.BORDER_VILLAGE.htmlNameRaw());
-				gain(player, toGain);
-			}
-		}
+		card.onGain(player, this);
 		messageIndent--;
 	}
 
@@ -1081,44 +1031,6 @@ public class Game implements Runnable {
 		}
 		int choice = promptMultipleChoice(player, "Fool's Gold: Trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD.htmlName() + " onto your deck?", "reactionPrompt", new String[] {"Yes", "No"});
 		return (choice == 0);
-	}
-
-	private List<Card> chooseInn(Player player, List<Card> innable) {
-		if (player instanceof Bot) {
-			List<Card> toInn = ((Bot) player).innShuffleIntoDeck(new ArrayList<>(innable));
-			// check the bot's response
-			for (Card eachToInn : toInn) {
-				if (!innable.remove(eachToInn)) {
-					throw new IllegalStateException();
-				}
-			}
-			return toInn;
-		}
-		List<Card> toInn = new ArrayList<>();
-		while (!innable.isEmpty()) {
-			Card nextToInn = sendPromptInn(player, innable);
-			if (nextToInn != null) {
-				innable.remove(nextToInn);
-				toInn.add(nextToInn);
-			} else {
-				break;
-			}
-		}
-		return toInn;
-	}
-
-	private Card sendPromptInn(Player player, List<Card> innable) {
-		String[] choices = new String[innable.size() + 1];
-		for (int i = 0; i < innable.size(); i++) {
-			choices[i] = innable.get(i).toString();
-		}
-		choices[choices.length - 1] = "Done";
-		int choice = promptMultipleChoice(player, "Inn: Choose any number of action cards in your discard to shuffle into your deck", choices);
-		if (choice == choices.length - 1) {
-			return null;
-		} else {
-			return innable.get(choice);
-		}
 	}
 
 	public List<Card> getTrash() {
