@@ -249,6 +249,7 @@ function setSupply(supply) {
   setCardDescriptions(supply.cardDescriptions);
   supplyPiles = {};
   setKingdomPiles(supply.kingdomPiles);
+  setBasicPiles(supply.basicPiles);
 }
 
 function setCardDescriptions(cardDescriptionsArray) {
@@ -267,7 +268,7 @@ function setCardDescriptions(cardDescriptionsArray) {
 /*
 Takes an array of objects containing the names and top cards of the kingdom
 piles.
-[{name:'pile name', topCard:'card name'}, ...]
+[{id:'pile name', topCard:'card name'}, ...]
 Initializes the UI elements for each pile.
 */
 function setKingdomPiles(piles) {
@@ -289,10 +290,10 @@ function setKingdomPiles(piles) {
     nameParagraph.className = card.className;
     nameParagraph.innerHTML = cardName;
     nameDiv.appendChild(nameParagraph);
-    if (card.isBane || piles[i].mixedPileName) {
+    if (piles[i].isBane || piles[i].mixedPileName) {
       var subtitleParagraph = document.createElement('p');
       subtitleParagraph.className = 'subtitle';
-      if (card.isBane) {
+      if (piles[i].isBane) {
         subtitleParagraph.innerHTML = '(Bane)';
       } else {
         subtitleParagraph.innerHTML = '(' + piles[i].mixedPileName + ')';
@@ -387,31 +388,24 @@ function setPrizeCardRemoved(cardName) {
   supplyPiles[cardName].cross.style.display = 'block';
 }
 
-function addCardDescriptions(cards) {
-  // for each card
-  for (var i = 0; i < cards.length; i++) {
-    // add popup description to cardDescriptions
-    addCardDescription(cards[i]);
-  }
-}
-
 /*
-Takes an array of objects containing the names, colors, descriptions, types, costs of the basic cards.
-[{name:'card name', className:'action', description:['line 1', 'line 2', ...], type:'Human-Readable-Type', cost:integer}, ...]
-Sets the basic card UI elements in the supply pile.
+Takes an array of objects containing the names and top cards of the basic
+piles.
+[{id:'pile name', topCard:'card name'}, ...]
+Initializes the UI elements for each pile.
 */
-function setBasicCards(cards) {
-  // remove previous basic cards
+function setBasicPiles(piles) {
   var basic = document.getElementById('basic');
+  // remove previous basic card UI elements
   removeAllChildNodes(basic);
   // for each basic card
-  for (var i = 0; i < cards.length; i++) {
-    // add popup description to cardDescriptions
-    addCardDescription(cards[i]);
+  for (var i = 0; i < piles.length; i++) {
+    var cardName = piles[i].topCard;
+    var card = cardDescriptions[cardName];
     // add a pile for this card
     var basicPile = document.createElement('div');
     basicPile.className = 'basicPile';
-    registerPopup(basicPile, cards[i].name);
+    registerPopup(basicPile, cardName);
     // add visuals for this pile
     var cardArt = document.createElement('div');
     cardArt.className = 'cardArt';
@@ -425,7 +419,7 @@ function setBasicCards(cards) {
     cardArt.appendChild(plus);
     // add card art
     var img = document.createElement('img');
-    img.src = cardArtSrc(cards[i].name);
+    img.src = cardArtSrc(cardName);
     cardArt.appendChild(img);
     basicPile.appendChild(cardArt);
     // add status (cost & pile size)
@@ -435,7 +429,7 @@ function setBasicCards(cards) {
     // add cost
     var cost = document.createElement('span');
     cost.className = 'cost';
-    cost.innerHTML = '$' + cards[i].cost.toString();
+    cost.innerHTML = card.cost;
     p.appendChild(cost);
     p.appendChild(document.createTextNode(' '));
     // add pile size
@@ -446,7 +440,7 @@ function setBasicCards(cards) {
     status.appendChild(p);
     basicPile.appendChild(status);
     basic.appendChild(basicPile);
-    supplyPiles[cards[i].name] = {'pile':basicPile, 'cross':cross, 'plus':plus, 'img':img, 'cost':cost, 'pileSize':pileSize};
+    supplyPiles[piles[i].id] = {'pile':basicPile, 'cross':cross, 'plus':plus, 'img':img, 'cost':cost, 'pileSize':pileSize};
   }
 }
 
