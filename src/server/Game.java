@@ -1076,7 +1076,7 @@ public class Game implements Runnable {
 		}
 	}
 
-	private void removeFromTrash(Card card) {
+	public void removeFromTrash(Card card) {
 		trash.remove(card);
 		sendTrash();
 	}

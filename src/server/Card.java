@@ -215,6 +215,7 @@ public class Card {
 	public static final Card ARMORY = new Armory();
 	public static final Card DEATH_CART = new DeathCart();
 	public static final Card FEODUM = new Feodum();
+	public static final Card FORTRESS = new Fortress();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -461,6 +462,7 @@ public class Card {
 		include(ARMORY, DARK_AGES_SET);
 		include(DEATH_CART, DARK_AGES_SET);
 		include(FEODUM, DARK_AGES_SET);
+		include(FORTRESS, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
