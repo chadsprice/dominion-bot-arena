@@ -250,6 +250,7 @@ function setSupply(supply) {
   supplyPiles = {};
   setKingdomPiles(supply.kingdomPiles);
   setBasicPiles(supply.basicPiles);
+  setPrizeCards(supply.prizeCards);
 }
 
 function setCardDescriptions(cardDescriptionsArray) {
@@ -344,22 +345,26 @@ function setPrizeCards(cards) {
   // remove previous prize card UI elements
   var prizes = document.getElementById('prizes');
   removeAllChildNodes(prizes);
+  // if cards is undefined, there are no prize cards
+  if (!cards) {
+    return;
+  }
   // for each prize card
   for (var i = 0; i < cards.length; i++) {
-    // add popup description to cardDescriptions
-    addCardDescription(cards[i]);
+    var cardName = cards[i];
+    var card = cardDescriptions[cardName];
     // add a pile for this card
-    var kingdomPile = document.createElement('div');
-    kingdomPile.className = 'kingdomPile';
-    registerPopup(kingdomPile, cards[i].name);
+    var pile = document.createElement('div');
+    pile.className = 'kingdomPile';
+    registerPopup(pile, cardName);
     // set name
     var nameDiv = document.createElement('div');
     nameDiv.className = 'name';
     var nameParagraph = document.createElement('p');
-    nameParagraph.className = cards[i].className;
-    nameParagraph.innerHTML = cards[i].name;
+    nameParagraph.className = card.className;
+    nameParagraph.innerHTML = cardName;
     nameDiv.appendChild(nameParagraph);
-    kingdomPile.appendChild(nameDiv);
+    pile.appendChild(nameDiv);
     // add visuals for this pile
     var cardArt = document.createElement('div');
     cardArt.className = 'cardArt';
@@ -373,11 +378,11 @@ function setPrizeCards(cards) {
     cardArt.appendChild(plus);
     // add card art
     var img = document.createElement('img');
-    img.src = cardArtSrc(cards[i].name);
+    img.src = cardArtSrc(cardName);
     cardArt.appendChild(img);
-    kingdomPile.appendChild(cardArt);
-    prizes.appendChild(kingdomPile);
-    supplyPiles[cards[i].name] = {'pile':kingdomPile, 'cross':cross, 'plus':plus, 'img':img};
+    pile.appendChild(cardArt);
+    prizes.appendChild(pile);
+    supplyPiles[cardName] = {'pile':pile, 'cross':cross, 'plus':plus, 'img':img};
   }
 }
 
@@ -445,44 +450,35 @@ function setBasicPiles(piles) {
 }
 
 /*
-Takes an map of card names to pile sizes.
-'card name' -> integer
+Takes an map of pile names to sizes.
+'pile name' -> integer
 Changes the given pile sizes in the UI.
 */
-function setPileSizes(piles) {
+function setPileSizes(sizes) {
   // for each changed pile
-  for (var cardName in piles) {
-    if (piles.hasOwnProperty(cardName)) {
+  for (var id in sizes) {
+    if (sizes.hasOwnProperty(id)) {
       // changed the displayed number
-      var size = piles[cardName];
-      supplyPiles[cardName].pileSize.innerHTML = '(' + size.toString() + ')';
+      var size = sizes[id];
+      supplyPiles[id].pileSize.innerHTML = '(' + size.toString() + ')';
       // if the pile is empty
       if (size == 0) {
         // make the image partially transparent
-        supplyPiles[cardName].img.style.opacity = '0.3';
+        supplyPiles[id].img.style.opacity = '0.3';
         // show the cross image
-        supplyPiles[cardName].cross.style.display = 'block';
+        supplyPiles[id].cross.style.display = 'block';
       }
     }
   }
 }
 
-function setMixedPile(status) {
-  pile = mixedPiles[status.pileId];
-  // set the size
-  pile.pileSize.innerHTML = '(' + status.size.toString() + ')';
-  // if the pile is empty
-  if (status.size == 0) {
-    // make the image partially transparent
-    pile.img.style.opacity = '0.3';
-    // show the cross image
-    pile.cross.style.display = 'block';
-  }
-  if (status.topCardName) {
-    pile.name.innerHTML = status.topCardName;
-    pile.img.src = cardArtSrc(status.topCardName);
-    supplyPiles[status.topCardName] = pile;
-    registerPopup(pile.pile, status.topCardName);
+function setTopCard(id, topCard) {
+  pile = supplyPiles[id];
+  if (topCard) {
+    pile.name.innerHTML = topCard;
+    pile.name.className = cardDescriptions[topCard].className;
+    pile.img.src = cardArtSrc(topCard);
+    registerPopup(pile.pile, topCard);
   } else {
     pile.name.innerHTML = '';
   }
@@ -1519,10 +1515,10 @@ function executeCommand(command) {
       setBasicCards(command.cards);
       break;
     case 'setPileSizes':
-      setPileSizes(command.piles);
+      setPileSizes(command.pileSizes);
       break;
-    case 'setMixedPile':
-      setMixedPile(command.status);
+    case 'setTopCard':
+      setTopCard(command.id, command.topCard);
       break;
     case 'setEmbargoTokens':
       setEmbargoTokens(command.card, command.pileId, command.numTokens);

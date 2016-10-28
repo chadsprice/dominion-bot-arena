@@ -808,9 +808,7 @@ public class Game implements Runnable {
 			Card.MixedPileId id = card.mixedPileId();
 			mixedPiles.get(id).remove(0);
 			sendPileSize(id);
-			if (!mixedPiles.get(id).isEmpty()) {
-				sendTopCard(id);
-			}
+			sendTopCard(id);
 			return;
 		}
 		// update supply
@@ -1445,6 +1443,15 @@ public class Game implements Runnable {
 		}
 	}
 
+	private Card fromJsonPileId(String str) {
+		Card.MixedPileId id = Card.MixedPileId.fromString(str);
+		if (id != null && mixedPiles.containsKey(id) && !mixedPiles.get(id).isEmpty()) {
+			return mixedPiles.get(id).get(0);
+		} else {
+			return Card.fromName(str);
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private JSONArray jsonPrizeCards() {
 		List<String> prizeCardNames = new ArrayList<>();
@@ -1458,49 +1465,33 @@ public class Game implements Runnable {
 
 	@SuppressWarnings("unchecked")
 	private void sendAllPileSizes(Player player) {
-		JSONArray pileSizes = new JSONArray();
-		supply.keySet().forEach(c -> pileSizes.add(jsonPileSize(c)));
-		mixedPiles.keySet().forEach(c -> pileSizes.add(jsonPileSize(c)));
+		JSONObject pileSizes = new JSONObject();
+		supply.keySet().forEach(c -> pileSizes.put(c.toString(), supply.get(c)));
+		mixedPiles.keySet().forEach(id -> pileSizes.put(id.toString(), mixedPiles.get(id).size()));
 		sendPileSizes(player, pileSizes);
 	}
 
 	private void sendPileSize(Card card) {
-		sendPileSize(jsonPileSize(card));
+		sendPileSize(card.toString(), supply.get(card));
 	}
 
 	private void sendPileSize(Card.MixedPileId id) {
-		sendPileSize(jsonPileSize(id));
+		sendPileSize(id.toString(), mixedPiles.get(id).size());
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendPileSize(JSONObject pileSize) {
-		JSONArray pileSizes = new JSONArray();
-		pileSizes.add(pileSize);
+	private void sendPileSize(String id, int size) {
+		JSONObject pileSizes = new JSONObject();
+		pileSizes.put(id, size);
 		players.forEach(p -> sendPileSizes(p, pileSizes));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendPileSizes(Player player, JSONArray pileSizes) {
+	private void sendPileSizes(Player player, JSONObject pileSizes) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setPileSizes");
-		command.put("piles", pileSizes);
+		command.put("pileSizes", pileSizes);
 		player.sendCommand(command);
-	}
-
-	@SuppressWarnings("unchecked")
-	private JSONObject jsonPileSize(Card card) {
-		JSONObject pileSize = new JSONObject();
-		pileSize.put("id", jsonPileId(card));
-		pileSize.put("size", supply.get(card));
-		return pileSize;
-	}
-
-	@SuppressWarnings("unchecked")
-	private JSONObject jsonPileSize(Card.MixedPileId id) {
-		JSONObject pileSize = new JSONObject();
-		pileSize.put("id", id.toString());
-		pileSize.put("size", mixedPiles.get(id).size());
-		return pileSize;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1508,66 +1499,12 @@ public class Game implements Runnable {
 		JSONObject command = new JSONObject();
 		command.put("command", "setTopCard");
 		command.put("id", id.toString());
-		command.put("topCard", mixedPiles.get(id).get(0));
+		if (!mixedPiles.get(id).isEmpty()) {
+			command.put("topCard", mixedPiles.get(id).get(0).toString());
+		}
 		players.forEach(p -> p.sendCommand(command));
 	}
-/*
-	@SuppressWarnings("unchecked")
-	public void sendKingdomCards(Player player) {
-		List<Card> kingdomCardsSorted = new ArrayList<>(kingdomCards);
-		for (List<Card> mixedPile : mixedPiles.values()) {
-			kingdomCardsSorted.add(mixedPile.get(0));
-		}
-		Collections.sort(kingdomCardsSorted, KINGDOM_ORDER_COMPARATOR);
-		JSONObject setKingdomCards = new JSONObject();
-		setKingdomCards.put("command", "setKingdomCards");
-		JSONArray cards = new JSONArray();
-		for (Card kingdomCard : kingdomCardsSorted) {
-			JSONObject card = new JSONObject();
-			card.put("name", kingdomCard.toString());
-			card.put("cost", kingdomCard.cost());
-			card.put("className", kingdomCard.htmlClass());
-			card.put("type", kingdomCard.htmlType());
-			JSONArray description = new JSONArray();
-			for (String line : kingdomCard.description()) {
-				description.add(line);
-			}
-			card.put("description", description);
-			if (kingdomCard == baneCard) {
-				card.put("isBane", true);
-			}
-			if (kingdomCard.inMixedPile()) {
-				card.put("pileId", kingdomCard.mixedPileId().toString());
-			}
-			cards.add(card);
-		}
-		setKingdomCards.put("cards", cards);
 
-		player.sendCommand(setKingdomCards);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void sendPrizeCards(Player player) {
-		JSONObject command = new JSONObject();
-		command.put("command", "setPrizeCards");
-		JSONArray cards = new JSONArray();
-		for (Card prizeCard : prizeCards) {
-			JSONObject card = new JSONObject();
-			card.put("name", prizeCard.toString());
-			card.put("cost", prizeCard.cost());
-			card.put("className", prizeCard.htmlClass());
-			card.put("type", prizeCard.htmlType());
-			JSONArray description = new JSONArray();
-			for (String line : prizeCard.description()) {
-				description.add(line);
-			}
-			card.put("description", description);
-			cards.add(card);
-		}
-		command.put("cards", cards);
-		player.sendCommand(command);
-	}
-*/
 	@SuppressWarnings("unchecked")
 	private void sendPrizeCardRemoved(Card card) {
 		JSONObject command = new JSONObject();
@@ -1577,101 +1514,7 @@ public class Game implements Runnable {
 			player.sendCommand(command);
 		}
 	}
-/*
-	@SuppressWarnings("unchecked")
-	private void sendAdditionalDescriptions(Player player) {
-		Set<Card> additionalCards = new HashSet<>();
-		if (usingShelters) {
-			additionalCards.addAll(Card.SHELTER_CARDS);
-		}
-		for (List<Card> mixedPile : mixedPiles.values()) {
-			additionalCards.addAll(mixedPile);
-		}
-		JSONObject command = new JSONObject();
-		command.put("command", "addCardDescriptions");
-		JSONArray cards = new JSONArray();
-		for (Card addtionalCard : additionalCards) {
-			JSONObject card = new JSONObject();
-			card.put("name", addtionalCard.toString());
-			card.put("cost", addtionalCard.cost());
-			card.put("className", addtionalCard.htmlClass());
-			card.put("type", addtionalCard.htmlType());
-			JSONArray description = new JSONArray();
-			for (String line : addtionalCard.description()) {
-				description.add(line);
-			}
-			card.put("description", description);
-			cards.add(card);
-		}
-		command.put("cards", cards);
-		player.sendCommand(command);
-	}
 
-	@SuppressWarnings("unchecked")
-	public void sendBasicCards(Player player) {
-		List<Card> basicCardsSorted = new ArrayList<>(basicCards);
-		Collections.sort(basicCardsSorted, BASIC_ORDER_COMPARATOR);
-		JSONObject setBasicCards = new JSONObject();
-		setBasicCards.put("command", "setBasicCards");
-		JSONArray cards = new JSONArray();
-		for (Card basicCard : basicCardsSorted) {
-			JSONObject card = new JSONObject();
-			card.put("name", basicCard.toString());
-			card.put("cost", basicCard.cost());
-			card.put("className", basicCard.htmlClass());
-			card.put("type", basicCard.htmlType());
-			JSONArray description = new JSONArray();
-			for (String line : basicCard.description()) {
-				description.add(line);
-			}
-			card.put("description", description);
-			cards.add(card);
-		}
-		setBasicCards.put("cards", cards);
-
-		player.sendCommand(setBasicCards);
-	}
-
-	public void sendPileSizes(Player player) {
-		sendPileSizes(player, supply);
-		for (Card.MixedPileId pileId : mixedPiles.keySet()) {
-			sendMixedPile(player, pileId);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public void sendPileSizes(Player player, Map<Card, Integer> sizes) {
-		JSONObject command = new JSONObject();
-		command.put("command", "setPileSizes");
-		JSONObject piles = new JSONObject();
-		for (Map.Entry<Card, Integer> size : sizes.entrySet()) {
-			piles.put(size.getKey(), size.getValue());
-		}
-		command.put("piles", piles);
-		player.sendCommand(command);
-	}
-
-	public void sendMixedPile(Card.MixedPileId pileId) {
-		for (Player player : players) {
-			sendMixedPile(player, pileId);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	public void sendMixedPile(Player player, Card.MixedPileId pileId) {
-		List<Card> mixedPile = mixedPiles.get(pileId);
-		JSONObject command = new JSONObject();
-		command.put("command", "setMixedPile");
-		JSONObject status = new JSONObject();
-		status.put("pileId", pileId.toString());
-		status.put("size", mixedPile.size());
-		if (!mixedPile.isEmpty()) {
-			status.put("topCardName", mixedPile.get(0).toString());
-		}
-		command.put("status", status);
-		player.sendCommand(command);
-	}
-*/
 	@SuppressWarnings("unchecked")
 	public void clearActions(Player player) {
 		JSONObject setActions = new JSONObject();
@@ -1902,9 +1745,7 @@ public class Game implements Runnable {
 		JSONObject command = new JSONObject();
 		command.put("command", "promptBuyPhase");
 		JSONArray canBuyJSONArray = new JSONArray();
-		for (Card card : canBuy) {
-			canBuyJSONArray.add(card.toString());
-		}
+		canBuy.stream().map(this::jsonPileId).forEach(canBuyJSONArray::add);
 		command.put("canBuy", canBuyJSONArray);
 		command.put("hasUnplayedTreasure", !canPlay.isEmpty());
 		JSONArray canPlayJSONArray = new JSONArray();
@@ -1925,7 +1766,7 @@ public class Game implements Runnable {
 			JSONObject response = (JSONObject) JSONValue.parse(responseString);
 			String responseType = (String) response.get("responseType");
 			if ("buy".equals(responseType)) {
-				Card toBuy = Card.fromName((String) response.get("toBuy"));
+				Card toBuy = fromJsonPileId((String) response.get("toBuy"));
 				// verify response
 				if (!canBuy.contains(toBuy)) {
 					return endTurnChoice();
@@ -2029,9 +1870,7 @@ public class Game implements Runnable {
 		JSONObject prompt = new JSONObject();
 		prompt.put("command", "promptChooseFromSupply");
 		JSONArray choiceArray = new JSONArray();
-		for (Card card : choiceSet) {
-			choiceArray.add(card.toString());
-		}
+		choiceSet.stream().map(this::jsonPileId).forEach(choiceArray::add);
 		prompt.put("choices", choiceArray);
 		prompt.put("message", promptMessage);
 		prompt.put("promptType", promptType);
@@ -2046,7 +1885,7 @@ public class Game implements Runnable {
 			// ignore incorrect responses
 		}
 		// parse response
-		Card chosen = Card.fromName(response);
+		Card chosen = fromJsonPileId(response);
 		// verify response
 		if (choiceSet.contains(chosen)) {
 			return chosen;

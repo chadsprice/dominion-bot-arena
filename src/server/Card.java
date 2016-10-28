@@ -818,6 +818,14 @@ public class Card {
 		public String toString() {
 			return str;
 		}
+
+		public static MixedPileId fromString(String str) {
+			if ("Ruins".equals(str)) {
+				return RUINS;
+			} else {
+				return null;
+			}
+		}
 	}
 
 	public boolean inMixedPile() {
