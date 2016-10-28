@@ -1380,7 +1380,7 @@ public class Game implements Runnable {
 		description.put("name", card.toString());
 		description.put("className", card.htmlClass());
 		description.put("type", card.htmlType());
-		description.put("cost", card.cost());
+		description.put("cost", "$" + card.cost());
 		JSONArray descriptionLines = new JSONArray();
 		descriptionLines.addAll(Arrays.asList(card.description()));
 		description.put("description", descriptionLines);
@@ -1427,9 +1427,11 @@ public class Game implements Runnable {
 		JSONObject pile = new JSONObject();
 		pile.put("id", jsonPileId(card));
 		pile.put("topCard", card.toString());
-		pile.put("cost", card.cost(this));
 		if (card == baneCard) {
 			pile.put("isBane", true);
+		}
+		if (card.inMixedPile()) {
+			pile.put("mixedPileName", card.mixedPileId().toString());
 		}
 		return pile;
 	}

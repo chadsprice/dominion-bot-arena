@@ -1,15 +1,15 @@
 // websocket connection to server
 var socket;
 
-// a map from the name of a card in the supply to its UI elements
-// 'card name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
-var supplyCardElems = {};
-// a map from the id of a mixed pile to its UI elements
-// 'pile id' -> {...}
-var mixedPiles = {};
-// a map from the name of a card to the className of its span when displayed
-// 'card name' -> 'action', or 'treasure', or 'victory', etc.
-var supplyCardClassNames = {};
+// a map from card name to all of the information needed to display a popup describing that card.
+// the type is a string like 'Action', 'Action-Attack', etc.
+// cost is always the base cost (not affected by cards like Bridge)
+// 'card name' -> {className:'action-victory-etc.', description:['line 1', 'line 2', ...], type:'Human-Readable-Type', cost:'$5'}
+var cardDescriptions = {};
+
+// a map from the name of a pile to its UI elements
+// 'pile name' -> {pile:<div>, cost:<p>, pileSize:<p>, cross:<div>, plus:<div>, img:<img>}
+var supplyPiles = {};
 
 // a map from the name of a card to the div displaying its stack in the hand
 // 'card name' -> <div>
@@ -17,12 +17,6 @@ var handCardElems = {};
 // an array containing both the name of the card stack at that position in the hand and the size of that stack
 // [{name:'card name', count:#}, {name:'card name', count:integer}, ...]
 var handCounts = [];
-
-// a map from card name to all of the information needed to display a popup describing that card.
-// the type is a string like 'Action', 'Action-Attack', etc.
-// cost is always the base cost (not affected by cards like Bridge)
-// 'card name' -> {description:['line 1', 'line 2', ...], type:'Human-Readable-Type', cost:'$5'}
-var cardDescriptions = {};
 
 // an array representing the rows in the custom games table.
 // rowDiv is the row element in the DOM.
@@ -81,7 +75,7 @@ function displayPopup(cardName) {
   // get description info
   var description = cardDescriptions[cardName];
   // get the card name's background color
-  var className = supplyCardClassNames[cardName];
+  var className = description.className;
   // set name
   var nameElem = document.getElementById('popupName');
   removeAllChildNodes(nameElem);
@@ -220,7 +214,7 @@ function addStackToHand(cardName, numCards) {
   var handCardName = document.createElement('div');
   handCardName.className = 'handCardName';
   var p = document.createElement('p');
-  var className = supplyCardClassNames[cardName];
+  var className = cardDescriptions[cardName].className;
   p.innerHTML = '<span class="' + className + '">' + cardName + '</span>';
   handCardName.appendChild(p);
   handCard.appendChild(handCardName);
@@ -251,45 +245,57 @@ function createDivContainingImage(divClassName, imgSrc) {
   return div;
 }
 
-/*
-Takes an array of objects containing the names, colors, descriptions, types, costs of the kigdom cards.
-[{name:'card name', className:'action', description:['line 1', 'line 2', ...], type:'Human-Readable-Type', cost:integer}, ...]
-Sets the kindom card UI elements in the supply pile.
-*/
-function setKingdomCards(cards) {
-  // clear all data about supply cards
-  supplyCardElems = {};
-  supplyCardClassNames = {};
+function setSupply(supply) {
+  setCardDescriptions(supply.cardDescriptions);
+  supplyPiles = {};
+  setKingdomPiles(supply.kingdomPiles);
+}
+
+function setCardDescriptions(cardDescriptionsArray) {
   cardDescriptions = {};
-  // set kingdom card colors
-  for (var i = 0; i < cards.length; i++) {
-    supplyCardClassNames[cards[i].name] = cards[i].className;
+  for (var i = 0; i < cardDescriptionsArray.length; i++) {
+    var descriptionEntry = cardDescriptionsArray[i];
+    cardDescriptions[descriptionEntry.name] = {
+      className: descriptionEntry.className,
+      type: descriptionEntry.type,
+      cost: descriptionEntry.cost,
+      description: descriptionEntry.description
+    }
   }
-  // remove previous kingdom card UI elements
+}
+
+/*
+Takes an array of objects containing the names and top cards of the kingdom
+piles.
+[{name:'pile name', topCard:'card name'}, ...]
+Initializes the UI elements for each pile.
+*/
+function setKingdomPiles(piles) {
   var kingdom = document.getElementById('kingdom');
+  // remove previous kingdom card UI elements
   removeAllChildNodes(kingdom);
-  // for each kingdom card
-  for (var i = 0; i < cards.length; i++) {
-    // add popup description to cardDescriptions
-    addCardDescription(cards[i]);
+  // for each kingdom pile
+  for (var i = 0; i < piles.length; i++) {
+    var cardName = piles[i].topCard;
+    var card = cardDescriptions[cardName];
     // add a pile for this card
     var kingdomPile = document.createElement('div');
     kingdomPile.className = 'kingdomPile';
-    registerPopup(kingdomPile, cards[i].name);
+    registerPopup(kingdomPile, cardName);
     // set name
     var nameDiv = document.createElement('div');
     nameDiv.className = 'name';
     var nameParagraph = document.createElement('p');
-    nameParagraph.className = cards[i].className;
-    nameParagraph.innerHTML = cards[i].name;
+    nameParagraph.className = card.className;
+    nameParagraph.innerHTML = cardName;
     nameDiv.appendChild(nameParagraph);
-    if (cards[i].isBane || cards[i].pileId) {
+    if (card.isBane || piles[i].mixedPileName) {
       var subtitleParagraph = document.createElement('p');
       subtitleParagraph.className = 'subtitle';
-      if (cards[i].isBane) {
+      if (card.isBane) {
         subtitleParagraph.innerHTML = '(Bane)';
       } else {
-        subtitleParagraph.innerHTML = '(' + cards[i].pileId + ')';
+        subtitleParagraph.innerHTML = '(' + piles[i].mixedPileName + ')';
       }
       nameDiv.appendChild(subtitleParagraph);
     }
@@ -301,7 +307,7 @@ function setKingdomCards(cards) {
     var costDiv = document.createElement('div');
     costDiv.className = 'cost';
     var costParagraph = document.createElement('p');
-    costParagraph.innerHTML = '$' + cards[i].cost.toString();
+    costParagraph.innerHTML = card.cost;
     costDiv.appendChild(costParagraph);
     status.appendChild(costDiv);
     // set pile size (initially unknown)
@@ -325,22 +331,15 @@ function setKingdomCards(cards) {
     cardArt.appendChild(plus);
     // add card art
     var img = document.createElement('img');
-    img.src = cardArtSrc(cards[i].name);
+    img.src = cardArtSrc(cardName);
     cardArt.appendChild(img);
     kingdomPile.appendChild(cardArt);
     kingdom.appendChild(kingdomPile);
-    supplyCardElems[cards[i].name] = {'pile':kingdomPile, 'name':nameParagraph, 'cost':costParagraph, 'pileSize':pileSizeParagraph, 'cross':cross, 'plus':plus, 'img':img};
-    if (cards[i].pileId) {
-      mixedPiles[cards[i].pileId] = supplyCardElems[cards[i].name];
-    }
+    supplyPiles[piles[i].id] = {'pile':kingdomPile, 'name':nameParagraph, 'cost':costParagraph, 'pileSize':pileSizeParagraph, 'cross':cross, 'plus':plus, 'img':img};
   }
 }
 
 function setPrizeCards(cards) {
-  // set prize card colors
-  for (var i = 0; i < cards.length; i++) {
-    supplyCardClassNames[cards[i].name] = cards[i].className;
-  }
   // remove previous prize card UI elements
   var prizes = document.getElementById('prizes');
   removeAllChildNodes(prizes);
@@ -377,22 +376,18 @@ function setPrizeCards(cards) {
     cardArt.appendChild(img);
     kingdomPile.appendChild(cardArt);
     prizes.appendChild(kingdomPile);
-    supplyCardElems[cards[i].name] = {'pile':kingdomPile, 'cross':cross, 'plus':plus, 'img':img};
+    supplyPiles[cards[i].name] = {'pile':kingdomPile, 'cross':cross, 'plus':plus, 'img':img};
   }
 }
 
 function setPrizeCardRemoved(cardName) {
   // make the image partially transparent
-  supplyCardElems[cardName].img.style.opacity = '0.3';
+  supplyPiles[cardName].img.style.opacity = '0.3';
   // show the cross image
-  supplyCardElems[cardName].cross.style.display = 'block';
+  supplyPiles[cardName].cross.style.display = 'block';
 }
 
 function addCardDescriptions(cards) {
-  // set card colors
-  for (var i = 0; i < cards.length; i++) {
-    supplyCardClassNames[cards[i].name] = cards[i].className;
-  }
   // for each card
   for (var i = 0; i < cards.length; i++) {
     // add popup description to cardDescriptions
@@ -406,10 +401,6 @@ Takes an array of objects containing the names, colors, descriptions, types, cos
 Sets the basic card UI elements in the supply pile.
 */
 function setBasicCards(cards) {
-  // set basic card colors
-  for (var i = 0; i < cards.length; i++) {
-    supplyCardClassNames[cards[i].name] = cards[i].className;
-  }
   // remove previous basic cards
   var basic = document.getElementById('basic');
   removeAllChildNodes(basic);
@@ -455,7 +446,7 @@ function setBasicCards(cards) {
     status.appendChild(p);
     basicPile.appendChild(status);
     basic.appendChild(basicPile);
-    supplyCardElems[cards[i].name] = {'pile':basicPile, 'cross':cross, 'plus':plus, 'img':img, 'cost':cost, 'pileSize':pileSize};
+    supplyPiles[cards[i].name] = {'pile':basicPile, 'cross':cross, 'plus':plus, 'img':img, 'cost':cost, 'pileSize':pileSize};
   }
 }
 
@@ -470,13 +461,13 @@ function setPileSizes(piles) {
     if (piles.hasOwnProperty(cardName)) {
       // changed the displayed number
       var size = piles[cardName];
-      supplyCardElems[cardName].pileSize.innerHTML = '(' + size.toString() + ')';
+      supplyPiles[cardName].pileSize.innerHTML = '(' + size.toString() + ')';
       // if the pile is empty
       if (size == 0) {
         // make the image partially transparent
-        supplyCardElems[cardName].img.style.opacity = '0.3';
+        supplyPiles[cardName].img.style.opacity = '0.3';
         // show the cross image
-        supplyCardElems[cardName].cross.style.display = 'block';
+        supplyPiles[cardName].cross.style.display = 'block';
       }
     }
   }
@@ -496,7 +487,7 @@ function setMixedPile(status) {
   if (status.topCardName) {
     pile.name.innerHTML = status.topCardName;
     pile.img.src = cardArtSrc(status.topCardName);
-    supplyCardElems[status.topCardName] = pile;
+    supplyPiles[status.topCardName] = pile;
     registerPopup(pile.pile, status.topCardName);
   } else {
     pile.name.innerHTML = '';
@@ -536,7 +527,7 @@ function getPileTokensDiv(card, pileId) {
   if (pileId) {
     pile = mixedPiles[pileId].pile;
   } else {
-    pile = supplyCardElems[card].pile;
+    pile = supplyPiles[card].pile;
   }
   var cardArtDiv = pile.getElementsByClassName('cardArt')[0];
   var pileTokensDiv;
@@ -636,7 +627,7 @@ Takes a map from card names to their new costs.
 function setCardCosts(costs) {
   for (var cardName in costs) {
     if (costs.hasOwnProperty(cardName)) {
-      supplyCardElems[cardName].cost.innerHTML = '$' + costs[cardName].toString();
+      supplyPiles[cardName].cost.innerHTML = '$' + costs[cardName].toString();
     }
   }
 }
@@ -713,12 +704,12 @@ function endPrompt() {
   prompt.style.display = 'none';
   removeAllChildNodes(prompt);
   // disable choosing from supply
-  for (var cardName in supplyCardElems) {
-    if (supplyCardElems.hasOwnProperty(cardName)) {
+  for (var cardName in supplyPiles) {
+    if (supplyPiles.hasOwnProperty(cardName)) {
       // hide the plus
-      supplyCardElems[cardName].plus.style.display = 'none';
+      supplyPiles[cardName].plus.style.display = 'none';
       // remove mousedown handlers
-      var pile = supplyCardElems[cardName].pile;
+      var pile = supplyPiles[cardName].pile;
       removeClass(pile, 'clickable');
       pile.onmousedown = null;
     }
@@ -753,9 +744,9 @@ function promptBuyPhase(canBuy, hasUnplayedTreasure, canPlay) {
   // enable buying cards
   for (var i = 0; i < canBuy.length; i++) {
     // show plus icon
-    supplyCardElems[canBuy[i]].plus.style.display = 'block';
+    supplyPiles[canBuy[i]].plus.style.display = 'block';
     // add visual flair when hovering over this pile
-    var pile = supplyCardElems[canBuy[i]].pile;
+    var pile = supplyPiles[canBuy[i]].pile;
     pile.className += ' clickable';
     // choose on mouse down
     sendResponseOnMouseDown(pile, JSON.stringify({'responseType':'buy', 'toBuy':canBuy[i]}));
@@ -781,9 +772,9 @@ function promptChooseFromSupply(choices, message, promptType, isMandatory, noneM
   // enable choosing the supply piles
   for (var i = 0; i < choices.length; i++) {
     // show plus icon
-    supplyCardElems[choices[i]].plus.style.display = 'block';
+    supplyPiles[choices[i]].plus.style.display = 'block';
     // add visual flair when hovering over this pile
-    var pile = supplyCardElems[choices[i]].pile;
+    var pile = supplyPiles[choices[i]].pile;
     pile.className += ' clickable';
     // choose on mouse down
     sendResponseOnMouseDown(pile, choices[i]);
@@ -1518,8 +1509,8 @@ function executeCommand(command) {
       setWaitingOn();
       endGame();
       break;
-    case 'setKingdomCards':
-      setKingdomCards(command.cards);
+    case 'setSupply':
+      setSupply(command.supply);
       break;
     case 'setPrizeCards':
       setPrizeCards(command.cards);
