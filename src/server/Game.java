@@ -2,6 +2,7 @@ package server;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import cards.Hovel;
@@ -13,78 +14,68 @@ import org.json.simple.JSONValue;
 
 public class Game implements Runnable {
 
-	private static final Comparator<Card> KINGDOM_ORDER_COMPARATOR = new Comparator<Card>() {
-		@Override
-		public int compare(Card c1, Card c2) {
-			int c1_cost = c1.cost();
-			int c2_cost = c2.cost();
-			if (c1_cost != c2_cost) {
-				// order by highest cost
-				return c2_cost - c1_cost;
-			} else {
-				// order alphabetically
-				return c1.toString().compareTo(c2.toString());
-			}
-		}
-	};
+	private static final Comparator<Card> KINGDOM_ORDER_COMPARATOR =
+			(c1, c2) -> {
+				int c1_cost = c1.cost();
+				int c2_cost = c2.cost();
+				if (c1_cost != c2_cost) {
+					// order by highest cost
+					return c2_cost - c1_cost;
+				} else {
+					// order alphabetically
+					return c1.toString().compareTo(c2.toString());
+				}
+			};
 
-	private static final Comparator<Card> BASIC_ORDER_COMPARATOR = new Comparator<Card>() {
-		@Override
-		public int compare(Card c1, Card c2) {
-			int c1_type, c2_type;
-			if (c1.isVictory) {
-				c1_type = 1;
-			} else if (c1.isTreasure) {
-				c1_type = 2;
-			} else {
-				c1_type = 3;
-			}
-			if (c2.isVictory) {
-				c2_type = 1;
-			} else if (c2.isTreasure) {
-				c2_type = 2;
-			} else {
-				c2_type = 3;
-			}
-			if (c1_type != c2_type) {
-				// victories < coins < curses 
-				return c1_type - c2_type;
-			} else {
-				// order by cost
-				return c2.cost() - c1.cost();
-			}
+	private static final Comparator<Card> BASIC_ORDER_COMPARATOR =
+			(c1, c2) -> {
+				int c1_type = BASIC_ORDER_TYPE(c1);
+				int c2_type = BASIC_ORDER_TYPE(c2);
+				if (c1_type != c2_type) {
+					// victories < coins < curses
+					return c1_type - c2_type;
+				} else {
+					// order by cost
+					return c2.cost() - c1.cost();
+				}
+			};
+	private static int BASIC_ORDER_TYPE(Card card) {
+		if (card.isVictory) {
+			return 1;
+		} else if (card.isTreasure) {
+			return 2;
+		} else {
+			return 3;
 		}
-	};
+	}
 
-	private static final Comparator<Card> TREASURE_PLAY_ORDER_COMPARATOR = new Comparator<Card>() {
-		@Override
-		public int compare(Card c1, Card c2) {
-			int c1Type = type(c1);
-			int c2Type = type(c2);
-			if (c1Type != c2Type) {
-				// contraband < other treasures cards < horn of plenty < bank
-				return c1Type - c2Type;
-			} else {
-				// order alphabetically
-				return c1.toString().compareTo(c2.toString());
-			}
+	private static final Comparator<Card> TREASURE_PLAY_ORDER_COMPARATOR =
+			(c1, c2) -> {
+				int c1Type = TREASURE_PLAY_ORDER_TYPE(c1);
+				int c2Type = TREASURE_PLAY_ORDER_TYPE(c2);
+				if (c1Type != c2Type) {
+					// contraband < other treasures cards < horn of plenty < bank
+					return c1Type - c2Type;
+				} else {
+					// order alphabetically
+					return c1.toString().compareTo(c2.toString());
+				}
+			};
+	private static int TREASURE_PLAY_ORDER_TYPE(Card card) {
+		if (card == Card.CONTRABAND) {
+			// play contraband first so opponents don't know exactly how much coin you have when they prohibit you
+			// from buying something
+			return 0;
+		} else if (card == Card.HORN_OF_PLENTY) {
+			// play horn of plenty late to maximize its gaining potential
+			return 2;
+		} else if (card == Card.BANK) {
+			// play bank last to maximize its value
+			return 3;
+		} else {
+			return 1;
 		}
-		private int type(Card card) {
-			if (card == Card.CONTRABAND) {
-				// play contraband first so opponents don't know exactly how much coin you have when they prohibit you
-				// from buying something
-				return 0;
-			} else if (card == Card.HORN_OF_PLENTY) {
-				// play horn of plenty late to maximize its gaining potential
-				return 2;
-			} else if (card == Card.BANK) {
-				// play bank last to maximize its value
-				return 3;
-			} else {
-				return 1;
-			}
-		}
-	};
+	}
 
 	private GameServer server;
 
@@ -121,14 +112,14 @@ public class Game implements Runnable {
 	public int messageIndent;
 	public boolean costModifierPlayedLastTurn;
 
-	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
+	void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
 		this.server = server;
 		this.kingdomCards = kingdomCards;
 		this.basicCards = basicCards;
 		this.baneCard = baneCard;
 		this.prizeCards = prizeCards;
 		this.usingShelters = usingShelters;
-		players = new ArrayList<Player>(playerSet);
+		players = new ArrayList<>(playerSet);
 	}
 
 	@Override
@@ -144,7 +135,7 @@ public class Game implements Runnable {
 		endGame();
 	}
 
-	public void setup() {
+	private void setup() {
 		// initialize kingdom piles
 		for (Card card : kingdomCards) {
 			supply.put(card, card.startingSupply(players.size()));
@@ -435,7 +426,7 @@ public class Game implements Runnable {
 		// on buying Farmland, trash a card and gain one costing exactly $2 more
 		if (card == Card.FARMLAND) {
 			if (!player.getHand().isEmpty()) {
-				Card toTrash = promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Farmland: Choose a card to trash and gain a card costing exactly $2 more.");
+				Card toTrash = promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Farmland: Choose a card to trash and gain a card costing exactly $2 more.");
 				messageAll("trashing " + toTrash.htmlName() + " because of " + Card.FARMLAND.htmlNameRaw());
 				player.removeFromHand(toTrash);
 				addToTrash(player, toTrash);
@@ -463,7 +454,7 @@ public class Game implements Runnable {
 		messageIndent--;
 	}
 
-	public int embargoTokensOn(Card card) {
+	private int embargoTokensOn(Card card) {
 		if (card.inMixedPile()) {
 			return mixedPileEmbargoTokens.get(card.mixedPileId());
 		} else {
@@ -471,7 +462,7 @@ public class Game implements Runnable {
 		}
 	}
 
-	public boolean isAvailableInSupply(Card card) {
+	private boolean isAvailableInSupply(Card card) {
 		if (card.isRuins) {
 			List<Card> ruinsPile = mixedPiles.get(Card.MixedPileId.RUINS);
 			return ruinsPile != null && !ruinsPile.isEmpty() && ruinsPile.get(0) == card;
@@ -488,7 +479,7 @@ public class Game implements Runnable {
 		if (!action.isDuration) {
 			if (action.isAttack) {
 				// attack reactions
-				List<Player> targets = new ArrayList<Player>();
+				List<Player> targets = new ArrayList<>();
 				for (Player opponent : getOpponents(player)) {
 					messageIndent++;
 					boolean unaffected = reactToAttack(opponent);
@@ -505,7 +496,7 @@ public class Game implements Runnable {
 			List<Card> toHaven = null;
 			if (!hasMoved) {
 				if (action == Card.HAVEN) {
-					toHaven = new ArrayList<Card>();
+					toHaven = new ArrayList<>();
 				}
 				boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
 				if (willHaveEffect) {
@@ -567,12 +558,7 @@ public class Game implements Runnable {
 	}
 
 	private Set<Card> getAttackReactions(Player player) {
-		Set<Card> reactions = new HashSet<>();
-		for (Card card : player.getHand()) {
-			if (card.isAttackReaction) {
-				reactions.add(card);
-			}
-		}
+		Set<Card> reactions = player.getHand().stream().filter(c -> c.isAttackReaction).collect(Collectors.toSet());
 		// diplomat requires a hand of 5 or more cards in order to be revealable
 		if (player.getHand().size() < 5) {
 			reactions.remove(Card.DIPLOMAT);
@@ -599,13 +585,13 @@ public class Game implements Runnable {
 	private void cleanup(Player player) {
 		// handle scheme
 		if (schemesPlayedThisTurn != 0) {
-			List<Card> schemed = new ArrayList<Card>();
+			List<Card> schemed = new ArrayList<>();
 			while (schemesPlayedThisTurn != 0) {
 				Set<Card> schemeable = player.getPlay().stream().filter(c -> c.isAction).collect(Collectors.toSet());
 				if (schemeable.isEmpty()) {
 					break;
 				}
-				List<Card> schemeableList = new ArrayList<Card>(schemeable);
+				List<Card> schemeableList = new ArrayList<>(schemeable);
 				Collections.sort(schemeableList, Player.HAND_ORDER_COMPARATOR);
 				String[] choices = new String[schemeableList.size() + 1];
 				for (int i = 0; i < schemeableList.size(); i++) {
@@ -682,7 +668,7 @@ public class Game implements Runnable {
 
 	private void announceWinner() {
 		boolean tieBroken = false;
-		Map<Player, VictoryReportCard> reportCards = new HashMap<Player, VictoryReportCard>();
+		Map<Player, VictoryReportCard> reportCards = new HashMap<>();
 		for (Player player : players) {
 			reportCards.put(player, new VictoryReportCard(player));
 		}
@@ -760,19 +746,14 @@ public class Game implements Runnable {
 	}
 
 	private static class VictoryReportCard {
-		public int points;
-		public List<Card> victoryCards;
+		int points;
+		List<Card> victoryCards;
 
-		public VictoryReportCard(Player player) {
-			points = 0;
+		VictoryReportCard(Player player) {
 			List<Card> deck = player.getDeck();
-			victoryCards = new ArrayList<Card>();
-			for (Card card : deck) {
-				if (card.isVictory || card == Card.CURSE) {
-					points += card.victoryValue(deck);
-					victoryCards.add(card);
-				}
-			}
+			victoryCards = deck.stream().filter(c -> c.isVictory || c == Card.CURSE).collect(Collectors.toList());
+			points = 0;
+			victoryCards.forEach(c -> points += c.victoryValue(deck));
 			points += player.getVictoryTokens();
 		}
 	}
@@ -782,7 +763,7 @@ public class Game implements Runnable {
 	}
 
 	public List<Player> getOpponents(Player player) {
-		List<Player> opponents = new ArrayList<Player>();
+		List<Player> opponents = new ArrayList<>();
 		for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
 			if (players.get(playerIndex) == player) {
 				int i = (playerIndex + 1) % players.size();
@@ -831,7 +812,7 @@ public class Game implements Runnable {
 		sendPileSize(card);
 	}
 
-	private enum GainDestination {DISCARD, DRAW, HAND};
+	private enum GainDestination {DISCARD, DRAW, HAND}
 
 	/**
 	 * Returns true if the gained card has been replaced, e.g. replaced with a Silver via Trader.
@@ -1035,29 +1016,29 @@ public class Game implements Runnable {
 		}
 		// on gaining Embassy, each other player gains a Silver
 		if (card == Card.EMBASSY) {
-			for (Player opponent : getOpponents(player)) {
+			getOpponents(player).forEach(opponent -> {
 				if (supply.get(Card.SILVER) != 0) {
 					message(opponent, "You gain " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
 					messageOpponents(opponent, opponent.username + " gains " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
 					gain(opponent, Card.SILVER);
 				}
-			}
+			});
 		}
 		// on gaining Ill-Gotten Gains, each other player gains a Curse
 		if (card == Card.ILL_GOTTEN_GAINS) {
-			for (Player opponent : getOpponents(player)) {
+			getOpponents(player).forEach(opponent -> {
 				if (supply.get(Card.CURSE) != 0) {
 					message(opponent, "You gain " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
 					messageOpponents(opponent, opponent.username + " gains " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
 					gain(opponent, Card.CURSE);
 				}
-			}
+			});
 		}
 		// on gaining Inn, shuffle any number of action cards from your discard back into your deck
 		if (card == Card.INN) {
 			List<Card> innable = player.getDiscard().stream().filter(c -> c.isAction).collect(Collectors.toList());
 			if (!innable.isEmpty()) {
-				List<Card> toInn = chooseInn(player, new ArrayList<Card>(innable));
+				List<Card> toInn = chooseInn(player, new ArrayList<>(innable));
 				if (!toInn.isEmpty()) {
 					message(player, "shuffling " + Card.htmlList(toInn) + " into your deck");
 					messageOpponents(player, "shuffling " + Card.htmlList(toInn) + " into their deck");
@@ -1104,7 +1085,7 @@ public class Game implements Runnable {
 
 	private List<Card> chooseInn(Player player, List<Card> innable) {
 		if (player instanceof Bot) {
-			List<Card> toInn = ((Bot) player).innShuffleIntoDeck(new ArrayList<Card>(innable));
+			List<Card> toInn = ((Bot) player).innShuffleIntoDeck(new ArrayList<>(innable));
 			// check the bot's response
 			for (Card eachToInn : toInn) {
 				if (!innable.remove(eachToInn)) {
@@ -1113,7 +1094,7 @@ public class Game implements Runnable {
 			}
 			return toInn;
 		}
-		List<Card> toInn = new ArrayList<Card>();
+		List<Card> toInn = new ArrayList<>();
 		while (!innable.isEmpty()) {
 			Card nextToInn = sendPromptInn(player, innable);
 			if (nextToInn != null) {
@@ -1183,7 +1164,7 @@ public class Game implements Runnable {
 		}
 	}
 
-	public void removeFromTrash(Card card) {
+	private void removeFromTrash(Card card) {
 		trash.remove(card);
 		sendTrash();
 	}
@@ -1224,69 +1205,50 @@ public class Game implements Runnable {
 	}
 
 	private Set<Card> playableTreasures(Player player) {
-		Set<Card> cards = new HashSet<Card>();
-		for (Card card : player.getHand()) {
-			if (card.isTreasure) {
-				cards.add(card);
-			}
-		}
-		return cards;
+		return player.getHand().stream().filter(c -> c.isTreasure).collect(Collectors.toSet());
 	}
 
 	public Set<Card> cardsCostingExactly(int cost) {
-		Set<Card> cards = new HashSet<Card>();
-		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
-			Card card = pile.getKey();
-			Integer count = pile.getValue();
-			if (card.cost(this) == cost && count > 0) {
-				cards.add(card);
-			}
-		}
-		for (List<Card> mixedPile : mixedPiles.values()) {
-			if (!mixedPile.isEmpty() && mixedPile.get(0).cost(this) == cost) {
-				cards.add(mixedPile.get(0));
-			}
-		}
-		return cards;
+		return cardsInSupplySatisfying(c -> c.cost(this) == cost);
 	}
 
 	public Set<Card> cardsCostingAtMost(int cost) {
-		Set<Card> cards = new HashSet<Card>();
+		return cardsInSupplySatisfying(c -> c.cost(this) <= cost);
+	}
+
+	private Set<Card> cardsInSupplySatisfying(Predicate<Card> predicate) {
+		Set<Card> cards = new HashSet<>();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();
-			if (card.cost(this) <= cost && count > 0) {
+			if (count != 0 && predicate.test(card)) {
 				cards.add(card);
 			}
 		}
-		for (List<Card> mixedPile : mixedPiles.values()) {
-			if (!mixedPile.isEmpty() && mixedPile.get(0).cost(this) <= cost) {
-				cards.add(mixedPile.get(0));
-			}
-		}
+		mixedPiles.values().stream()
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.filter(predicate)
+				.forEach(cards::add);
 		return cards;
 	}
 
 	public Set<Card> playableActions(Player player) {
-		Set<Card> actions = new HashSet<Card>();
-		for (Card card : player.getHand()) {
-			if (card.isAction) {
-				actions.add(card);
-			}
-		}
-		return actions;
+		return player.getHand().stream()
+				.filter(c -> c.isAction)
+				.collect(Collectors.toSet());
 	}
 
 	public void addCardCostReduction(int toAdd) {
 		setCardCostReduction(cardCostReduction + toAdd);
 	}
 
-	public void setCardCostReduction(int reduction) {
+	private void setCardCostReduction(int reduction) {
 		cardCostReduction = reduction;
 		sendCardCosts();
 	}
 
-	public int numberInPlay(Card card) {
+	int numberInPlay(Card card) {
 		return currentPlayer().numberInPlay(card);
 	}
 
@@ -1306,13 +1268,11 @@ public class Game implements Runnable {
 	}
 
 	public void sendCardCosts() {
-		for (Player player : players) {
-			sendCardCosts(player);
-		}
+		players.forEach(this::sendCardCosts);
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendCardCosts(Player player) {
+	private void sendCardCosts(Player player) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setCardCosts");
 		JSONObject costs = new JSONObject();
@@ -1323,14 +1283,14 @@ public class Game implements Runnable {
 		player.sendCommand(command);
 	}
 
-	public void sendCardCost(Card card) {
+	private void sendCardCost(Card card) {
 		for (Player player : players) {
 			sendCardCost(player, card);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendCardCost(Player player, Card card) {
+	private void sendCardCost(Player player, Card card) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setCardCosts");
 		JSONObject costs = new JSONObject();
@@ -1516,7 +1476,7 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void clearActions(Player player) {
+	private void clearActions(Player player) {
 		JSONObject setActions = new JSONObject();
 		setActions.put("command", "setActions");
 		setActions.put("actions", "");
@@ -1524,14 +1484,14 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void clearBuys(Player player) {
+	private void clearBuys(Player player) {
 		JSONObject setBuys = new JSONObject();
 		setBuys.put("command", "setBuys");
 		setBuys.put("buys", "");
 		player.sendCommand(setBuys);
 	}
 
-	public void forfeit(Player player, boolean connectionClosed) {
+	void forfeit(Player player, boolean connectionClosed) {
 		if (isGameOver) {
 			// ignore forfeits if the game is already over
 			return;
@@ -1680,7 +1640,7 @@ public class Game implements Runnable {
 		return response;
 	}
 
-	public void hurryUp(Player sender) {
+	void hurryUp(Player sender) {
 		if (canHurryUp && !hurryingUp) {
 			hurryingUp = true;
 			hurryUpStartTime = System.currentTimeMillis();
@@ -1719,7 +1679,7 @@ public class Game implements Runnable {
 	 * choose to buy anything.
 	 */
 	@SuppressWarnings("unchecked")
-	public BuyPhaseChoice promptBuyPhase(Player player, Set<Card> canBuy, Set<Card> canPlay) {
+	private BuyPhaseChoice promptBuyPhase(Player player, Set<Card> canBuy, Set<Card> canPlay) {
 		BuyPhaseChoice choice = new BuyPhaseChoice();
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
@@ -1749,9 +1709,7 @@ public class Game implements Runnable {
 		command.put("canBuy", canBuyJSONArray);
 		command.put("hasUnplayedTreasure", !canPlay.isEmpty());
 		JSONArray canPlayJSONArray = new JSONArray();
-		for (Card card : canPlay) {
-			canPlayJSONArray.add(card.toString());
-		}
+		canPlay.forEach(c -> canPlayJSONArray.add(c.toString()));
 		command.put("canPlay", canPlayJSONArray);
 		player.sendCommand(command);
 		// wait for response
@@ -1760,6 +1718,9 @@ public class Game implements Runnable {
 			responseString = (String) waitForResponse(player);
 		} catch (ClassCastException e) {
 			// ignore incorrect responses
+		}
+		if (responseString == null) {
+			return endTurnChoice();
 		}
 		// parse response
 		try {
@@ -2022,7 +1983,7 @@ public class Game implements Runnable {
 	 * Returns a card that the player has chosen to reveal as an attack
 	 * reaction, or null if they choose to reveal no reaction.
 	 */
-	public Card promptChooseRevealAttackReaction(Player player, Set<Card> choiceSet) {
+	private Card promptChooseRevealAttackReaction(Player player, Set<Card> choiceSet) {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
 			Card card = bot.chooseRevealAttackReaction(choiceSet);
@@ -2064,9 +2025,7 @@ public class Game implements Runnable {
 		JSONObject prompt = new JSONObject();
 		prompt.put("command", "promptChooseFromHand");
 		JSONArray choiceArray = new JSONArray();
-		for (Card card : choiceSet) {
-			choiceArray.add(card.toString());
-		}
+		choiceSet.forEach(c -> choiceArray.add(c.toString()));
 		prompt.put("choices", choiceArray);
 		prompt.put("message", promptMessage);
 		prompt.put("promptType", promptType);
@@ -2124,7 +2083,7 @@ public class Game implements Runnable {
 			if (isMandatory && toDiscard.size() != number) {
 				throw new IllegalStateException();
 			}
-			List<Card> handCopy = new ArrayList<Card>(bot.getHand());
+			List<Card> handCopy = new ArrayList<>(bot.getHand());
 			for (Card card : toDiscard) {
 				if (!handCopy.remove(card)) {
 					throw new IllegalStateException();
@@ -2155,7 +2114,7 @@ public class Game implements Runnable {
 	/**
 	 * Returns a list of cards that the player has chosen to trash.
 	 */
-	public List<Card> promptTrashNumber(Player player, int number, boolean isMandatory, String cause, String promptType) {
+	private List<Card> promptTrashNumber(Player player, int number, boolean isMandatory, String cause, String promptType) {
 		if (player.getHand().size() < number) {
 			number = player.getHand().size();
 		}
@@ -2166,7 +2125,7 @@ public class Game implements Runnable {
 			if (isMandatory && toTrash.size() != number) {
 				throw new IllegalStateException();
 			}
-			List<Card> handCopy = new ArrayList<Card>(bot.getHand());
+			List<Card> handCopy = new ArrayList<>(bot.getHand());
 			for (Card card : toTrash) {
 				if (!handCopy.remove(card)) {
 					throw new IllegalStateException();
@@ -2203,7 +2162,7 @@ public class Game implements Runnable {
 			if (toPutOnDeck.size() != number) {
 				throw new IllegalStateException();
 			}
-			List<Card> handCopy = new ArrayList<Card>(bot.getHand());
+			List<Card> handCopy = new ArrayList<>(bot.getHand());
 			for (Card card : toPutOnDeck) {
 				if (!handCopy.remove(card)) {
 					throw new IllegalStateException();
@@ -2223,7 +2182,7 @@ public class Game implements Runnable {
 	 * "draw" -> put on top of deck
 	 */
 	@SuppressWarnings("unchecked")
-	public List<Card> sendPromptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String promptType, String destination) {
+	private List<Card> sendPromptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String promptType, String destination) {
 		if (player instanceof Bot) {
 			throw new IllegalStateException();
 		}
@@ -2258,10 +2217,10 @@ public class Game implements Runnable {
 		// the response was invalid, so
 		if (isMandatory) {
 			// if mandatory, just discard the first few in hand
-			return new ArrayList<Card>(player.getHand().subList(0, number));
+			return new ArrayList<>(player.getHand().subList(0, number));
 		} else {
 			// otherwise discard nothing
-			return new ArrayList<Card>();
+			return new ArrayList<>();
 		}
 	}
 
@@ -2285,21 +2244,15 @@ public class Game implements Runnable {
 			if (response < 0 || response >= choices.length) {
 				throw new IllegalStateException();
 			}
-			if (disabledIndexes != null) {
-				for (int i = 0; i < disabledIndexes.length; i++) {
-					if (response == disabledIndexes[i]) {
-						throw new IllegalStateException();
-					}
-				}
+			if (isDisabledChoice(response, disabledIndexes)) {
+				throw new IllegalStateException();
 			}
 			return response;
 		}
 		JSONObject prompt = new JSONObject();
 		prompt.put("command", "promptMultipleChoice");
 		JSONArray choiceArray = new JSONArray();
-		for (String choice : choices) {
-			choiceArray.add(choice);
-		}
+		Arrays.asList(choices).forEach(choiceArray::add);
 		prompt.put("choices", choiceArray);
 		if (disabledIndexes != null) {
 			JSONArray disabledIndexArray = new JSONArray();
@@ -2319,24 +2272,27 @@ public class Game implements Runnable {
 		}
 		int choiceIndex = 0;
 		try {
-			choiceIndex = Integer.parseInt(response);
+			if (response != null) {
+				choiceIndex = Integer.parseInt(response);
+			}
 		} catch (NumberFormatException e) {
 			// default to zero
 		}
 		if (choiceIndex < 0 || choiceIndex >= choices.length) {
 			choiceIndex = 0;
 		}
-		if (disabledIndexes != null) {
-			while (isDisabledChoice(choiceIndex, disabledIndexes)) {
-				choiceIndex = (choiceIndex + 1) % choices.length;
-			}
+		while (isDisabledChoice(choiceIndex, disabledIndexes)) {
+			choiceIndex = (choiceIndex + 1) % choices.length;
 		}
 		return choiceIndex;
 	}
 
 	private boolean isDisabledChoice(int choiceIndex, int[] disabledIndexes) {
-		for (int i = 0; i < disabledIndexes.length; i++) {
-			if (choiceIndex == disabledIndexes[i]) {
+		if (disabledIndexes == null) {
+			return false;
+		}
+		for (Integer disabledIndex : disabledIndexes) {
+			if (choiceIndex == disabledIndex) {
 				return true;
 			}
 		}
@@ -2344,17 +2300,16 @@ public class Game implements Runnable {
 	}
 
 	public Card promptNameACard(Player player, String cause, String prompt) {
-		Card namedCard = promptChooseGainFromSupply(player, cardsAvailableInSupply(), cause + ": " + prompt, false, "Name a card that is not in the supply");
+		Card namedCard = promptChooseGainFromSupply(player, cardsChoosableInSupplyUI(), cause + ": " + prompt, false, "Name a card that is not in the supply");
 		if (namedCard == null) {
 			// find all cards not in the supply
-			Set<Card> cardsNotInSupply = new HashSet<Card>(Card.cardsByName.values());
-			cardsNotInSupply.removeAll(cardsAvailableInSupply());
+			Set<Card> cardsNotInSupply = new HashSet<>(Card.cardsByName.values());
+			cardsNotInSupply.removeAll(cardsChoosableInSupplyUI());
 			// create an alphabet of only the first letters of cards not in the supply
-			Set<Character> letters = new HashSet<Character>();
-			for (Card cardNotInSupply : cardsNotInSupply) {
-				letters.add(cardNotInSupply.toString().charAt(0));
-			}
-			List<Character> orderedLetters = new ArrayList<Character>(letters);
+			Set<Character> letters = cardsNotInSupply.stream()
+					.map(c -> c.toString().charAt(0))
+					.collect(Collectors.toSet());
+			List<Character> orderedLetters = new ArrayList<>(letters);
 			Collections.sort(orderedLetters);
 			String[] choices = new String[orderedLetters.size()];
 			for (int i = 0; i < orderedLetters.size(); i++) {
@@ -2362,7 +2317,7 @@ public class Game implements Runnable {
 			}
 			char chosenLetter = orderedLetters.get(promptMultipleChoice(player, cause + ": Select the first letter of the card you want to name", choices));
 			// find all cards not in the supply starting with the chosen letter
-			List<String> names = new ArrayList<String>();
+			List<String> names = new ArrayList<>();
 			for (Card cardNotInSupply : cardsNotInSupply) {
 				String name = cardNotInSupply.toString();
 				if (name.charAt(0) == chosenLetter) {
@@ -2371,32 +2326,33 @@ public class Game implements Runnable {
 			}
 			Collections.sort(names);
 			choices = new String[names.size()];
-			choices = (String[]) names.toArray(choices);
+			choices = names.toArray(choices);
 			String chosenName = choices[promptMultipleChoice(player, cause + ": Select the card you want to name", choices)];
 			namedCard = Card.fromName(chosenName);
 		}
 		return namedCard;
 	}
 
-	public Set<Card> cardsAvailableInSupply() {
-		Set<Card> availableInSupply = new HashSet<>(supply.keySet());
-		for (List<Card> mixedPile : mixedPiles.values()) {
-			if (!mixedPile.isEmpty()) {
-				availableInSupply.add(mixedPile.get(0));
-			}
-		}
-		return availableInSupply;
+	private Set<Card> cardsChoosableInSupplyUI() {
+		// add any card with a uniform pile (these can be chosen even when empty)
+		Set<Card> cards = new HashSet<>(supply.keySet());
+		// add any top card of a mixed pile
+		mixedPiles.values().stream()
+				.filter(list -> !list.isEmpty())
+				.map(list -> list.get(0))
+				.forEach(cards::add);
+		return cards;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void newTurnMessage(Player player, String str) {
+	private void newTurnMessage(Player player, String str) {
 		JSONObject command = new JSONObject();
 		command.put("command", "newTurnMessage");
 		command.put("text", str);
 		player.sendCommand(command);
 	}
 
-	public void newTurnMessage(Player player) {
+	private void newTurnMessage(Player player) {
 		newTurnMessage(player, "<span class=\"turnTitle\">-- Your Turn " + (player.turns + 1) + " --</span>");
 		for (Player opponent : getOpponents(player)) {
 			newTurnMessage(opponent, "<span class=\"turnTitle\">-- " + player.username + "'s Turn " + (player.turns + 1) + " --</span>");
@@ -2425,7 +2381,7 @@ public class Game implements Runnable {
 	}
 
 	private List<Card> parseJsonCardList(JSONArray array) {
-		List<Card> list = new ArrayList<Card>();
+		List<Card> list = new ArrayList<>();
 		try {
 			for (Object object : array) {
 				String cardName = (String) object;
@@ -2436,18 +2392,18 @@ public class Game implements Runnable {
 				list.add(card);
 			}
 		} catch (Exception e) {
-
+			// ignore formatting issues
 		}
 		return list;
 	}
 
 	// record player choices for later data mining
-	Map<Player, List<Card>> gainRecords;
+	private Map<Player, List<Card>> gainRecords;
 
 	private void initRecords() {
-		gainRecords = new HashMap<Player, List<Card>>();
+		gainRecords = new HashMap<>();
 		for (Player player : players) {
-			gainRecords.put(player, new ArrayList<Card>());
+			gainRecords.put(player, new ArrayList<>());
 		}
 	}
 
