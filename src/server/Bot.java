@@ -642,4 +642,9 @@ public class Bot extends Player {
 		return game.supply.get(Card.GOLD) != 0;
 	}
 
+	public boolean ironmongerDiscardTopOfDeck(Card card) {
+		// discard the top card of your deck if you know would discard it if it were in your hand
+		return wantToDiscard(card);
+	}
+
 }

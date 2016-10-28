@@ -141,7 +141,9 @@ public class Game implements Runnable {
 			supply.put(card, card.startingSupply(players.size()));
 		}
 		// initialize ruins pile
-		initRuinsPile();
+		if (kingdomCards.stream().anyMatch(c -> c.isLooter)) {
+			initRuinsPile();
+		}
 		// initialize basic piles
 		for (Card card : basicCards) {
 			supply.put(card, card.startingSupply(players.size()));
