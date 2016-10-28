@@ -1,14 +1,6 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -113,20 +105,21 @@ public class Game implements Runnable {
 	// various bits of game state required by individual card rules
 	public boolean playedSilverThisTurn;
 	int cardCostReduction;
-	public boolean costModifierPlayedLastTurn;
 	public int actionsPlayedThisTurn;
 	public int coppersmithsPlayedThisTurn;
 	private Map<Card, Integer> embargoTokens = new HashMap<>();
 	private Map<Card.MixedPileId, Integer> mixedPileEmbargoTokens = new HashMap<>();
 	private boolean boughtVictoryCardThisTurn;
-	public Set<Card> contrabandProhibited;
-	private Set<Card> tradeRouteTokenedPiles;
+	public Set<Card> contrabandProhibited = new HashSet<>();
+	private Set<Card> tradeRouteTokenedPiles = new HashSet<>();
 	public int tradeRouteMat;
 	public boolean inBuyPhase;
 	public boolean playedCrossroadsThisTurn;
 	public int schemesPlayedThisTurn;
 
+	// ui state
 	public int messageIndent;
+	public boolean costModifierPlayedLastTurn;
 
 	public void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
 		this.server = server;
@@ -169,24 +162,22 @@ public class Game implements Runnable {
 		for (Card.MixedPileId pileId : mixedPiles.keySet()) {
 			mixedPileEmbargoTokens.put(pileId, 0);
 		}
-		// initialize contraband prohibited cards
-		contrabandProhibited = new HashSet<>();
-		// initialize trade route token piles
-		tradeRouteTokenedPiles = new HashSet<>();
+		// initialize trade route tokens
 		if (supply.containsKey(Card.TRADE_ROUTE)) {
 			tradeRouteTokenedPiles = supply.keySet().stream().filter(c -> c.isVictory).collect(Collectors.toSet());
 		}
 		// randomize turn order
 		Collections.shuffle(players);
 		for (Player player : players) {
-			sendKingdomCards(player);
+			sendSupply(player);
+			/*sendKingdomCards(player);
 			if (!prizeCards.isEmpty()) {
 				sendPrizeCards(player);
 			}
 			sendAdditionalDescriptions(player);
 			sendBasicCards(player);
 			sendTradeRouteTokenedPiles(player);
-			sendPileSizes(player);
+			sendPileSizes(player);*/
 			player.startGame(usingShelters);
 			clearActions(player);
 			clearBuys(player);
@@ -814,34 +805,32 @@ public class Game implements Runnable {
 		}
 		// if it is in a mixed pile, remove the top card
 		if (card.inMixedPile()) {
-			mixedPiles.get(card.mixedPileId()).remove(0);
-			sendMixedPile(card.mixedPileId());
+			Card.MixedPileId id = card.mixedPileId();
+			mixedPiles.get(id).remove(0);
+			sendPileSize(id);
+			if (!mixedPiles.get(id).isEmpty()) {
+				sendTopCard(id);
+			}
 			return;
 		}
 		// update supply
 		supply.put(card, supply.get(card) - 1);
-		Map<Card, Integer> newSize = new HashMap<Card, Integer>();
-		newSize.put(card, supply.get(card));
-		for (Player eachPlayer : players) {
-			sendPileSizes(eachPlayer, newSize);
-		}
+		sendPileSize(card);
 	}
 
 	public void returnToSupply(Card card, int count) {
 		if (card.inMixedPile()) {
+			Card.MixedPileId id = card.mixedPileId();
 			for (int i = 0; i < count; i++) {
-				mixedPiles.get(card.mixedPileId()).add(0, card);
+				mixedPiles.get(id).add(0, card);
 			}
-			sendMixedPile(card.mixedPileId());
+			sendPileSize(id);
+			sendTopCard(id);
 			return;
 		}
 		// update supply
 		supply.put(card, supply.get(card) + count);
-		Map<Card, Integer> newSize = new HashMap<Card, Integer>();
-		newSize.put(card, supply.get(card));
-		for (Player eachPlayer : players) {
-			sendPileSizes(eachPlayer, newSize);
-		}
+		sendPileSize(card);
 	}
 
 	private enum GainDestination {DISCARD, DRAW, HAND};
@@ -1353,6 +1342,175 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
+	private void sendSupply(Player player) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setSupply");
+		command.put("supply", jsonSupply());
+		player.sendCommand(command);
+		// automatically send pile sizes after initializing the piles
+		sendAllPileSizes(player);
+		// automatically send trade route tokens if there are any
+		if (!tradeRouteTokenedPiles.isEmpty()) {
+			sendTradeRouteTokenedPiles(player);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonSupply() {
+		JSONObject jsonSupply = new JSONObject();
+		jsonSupply.put("cardDescriptions", jsonCardDescriptions());
+		jsonSupply.put("kingdomPiles", jsonKingdomPiles());
+		jsonSupply.put("basicPiles", jsonBasicPiles());
+		if (!prizeCards.isEmpty()) {
+			jsonSupply.put("prizeCards", jsonPrizeCards());
+		}
+		return jsonSupply;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONArray jsonCardDescriptions() {
+		JSONArray descriptions = new JSONArray();
+		allCardsInGame().forEach(c -> descriptions.add(jsonCardDescription(c)));
+		return descriptions;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonCardDescription(Card card) {
+		JSONObject description = new JSONObject();
+		description.put("name", card.toString());
+		description.put("className", card.htmlClass());
+		description.put("type", card.htmlType());
+		description.put("cost", card.cost());
+		JSONArray descriptionLines = new JSONArray();
+		descriptionLines.addAll(Arrays.asList(card.description()));
+		description.put("description", descriptionLines);
+		return description;
+	}
+
+	private Set<Card> allCardsInGame() {
+		Set<Card> allCards = new HashSet<>();
+		// cards in normal supply piles
+		allCards.addAll(supply.keySet());
+		// cards in mixed supply piles
+		mixedPiles.values().forEach(allCards::addAll);
+		// prize cards
+		allCards.addAll(prizeCards);
+		// shelters
+		if (usingShelters) {
+			allCards.addAll(Card.SHELTER_CARDS);
+		}
+		return allCards;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONArray jsonKingdomPiles() {
+		List<Card> pileTopCards = new ArrayList<>(kingdomCards);
+		// mixed piles always go in the kingdom column
+		mixedPiles.values().forEach(cardList -> pileTopCards.add(cardList.get(0)));
+		Collections.sort(pileTopCards, KINGDOM_ORDER_COMPARATOR);
+		JSONArray piles = new JSONArray();
+		pileTopCards.forEach(c -> piles.add(jsonPile(c)));
+		return piles;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONArray jsonBasicPiles() {
+		List<Card> pileTopCards = new ArrayList<>(basicCards);
+		Collections.sort(pileTopCards, BASIC_ORDER_COMPARATOR);
+		JSONArray piles = new JSONArray();
+		pileTopCards.forEach(c -> piles.add(jsonPile(c)));
+		return piles;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonPile(Card card) {
+		JSONObject pile = new JSONObject();
+		pile.put("id", jsonPileId(card));
+		pile.put("topCard", card.toString());
+		pile.put("cost", card.cost(this));
+		if (card == baneCard) {
+			pile.put("isBane", true);
+		}
+		return pile;
+	}
+
+	private String jsonPileId(Card card) {
+		if (card.inMixedPile()) {
+			return card.mixedPileId().toString();
+		} else {
+			// for uniform piles, just use the card's name to identify its pile
+			return card.toString();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONArray jsonPrizeCards() {
+		List<String> prizeCardNames = new ArrayList<>();
+		prizeCards.forEach(c -> prizeCardNames.add(c.toString()));
+		// just order prize cards by name
+		Collections.sort(prizeCardNames);
+		JSONArray jsonPrizeCards = new JSONArray();
+		prizeCardNames.forEach(jsonPrizeCards::add);
+		return jsonPrizeCards;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendAllPileSizes(Player player) {
+		JSONArray pileSizes = new JSONArray();
+		supply.keySet().forEach(c -> pileSizes.add(jsonPileSize(c)));
+		mixedPiles.keySet().forEach(c -> pileSizes.add(jsonPileSize(c)));
+		sendPileSizes(player, pileSizes);
+	}
+
+	private void sendPileSize(Card card) {
+		sendPileSize(jsonPileSize(card));
+	}
+
+	private void sendPileSize(Card.MixedPileId id) {
+		sendPileSize(jsonPileSize(id));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendPileSize(JSONObject pileSize) {
+		JSONArray pileSizes = new JSONArray();
+		pileSizes.add(pileSize);
+		players.forEach(p -> sendPileSizes(p, pileSizes));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendPileSizes(Player player, JSONArray pileSizes) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setPileSizes");
+		command.put("piles", pileSizes);
+		player.sendCommand(command);
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonPileSize(Card card) {
+		JSONObject pileSize = new JSONObject();
+		pileSize.put("id", jsonPileId(card));
+		pileSize.put("size", supply.get(card));
+		return pileSize;
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonPileSize(Card.MixedPileId id) {
+		JSONObject pileSize = new JSONObject();
+		pileSize.put("id", id.toString());
+		pileSize.put("size", mixedPiles.get(id).size());
+		return pileSize;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendTopCard(Card.MixedPileId id) {
+		JSONObject command = new JSONObject();
+		command.put("command", "setTopCard");
+		command.put("id", id.toString());
+		command.put("topCard", mixedPiles.get(id).get(0));
+		players.forEach(p -> p.sendCommand(command));
+	}
+/*
+	@SuppressWarnings("unchecked")
 	public void sendKingdomCards(Player player) {
 		List<Card> kingdomCardsSorted = new ArrayList<>(kingdomCards);
 		for (List<Card> mixedPile : mixedPiles.values()) {
@@ -1407,7 +1565,7 @@ public class Game implements Runnable {
 		command.put("cards", cards);
 		player.sendCommand(command);
 	}
-
+*/
 	@SuppressWarnings("unchecked")
 	private void sendPrizeCardRemoved(Card card) {
 		JSONObject command = new JSONObject();
@@ -1417,7 +1575,7 @@ public class Game implements Runnable {
 			player.sendCommand(command);
 		}
 	}
-
+/*
 	@SuppressWarnings("unchecked")
 	private void sendAdditionalDescriptions(Player player) {
 		Set<Card> additionalCards = new HashSet<>();
@@ -1511,7 +1669,7 @@ public class Game implements Runnable {
 		command.put("status", status);
 		player.sendCommand(command);
 	}
-
+*/
 	@SuppressWarnings("unchecked")
 	public void clearActions(Player player) {
 		JSONObject setActions = new JSONObject();
