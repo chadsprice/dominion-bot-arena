@@ -689,4 +689,9 @@ public class Bot extends Player {
 		}
 	}
 
+	public boolean cultistPlayAnotherCultist() {
+		// there is little downside to playing another Cultist
+		return true;
+	}
+
 }
