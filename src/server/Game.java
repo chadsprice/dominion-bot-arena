@@ -949,8 +949,8 @@ public class Game implements Runnable {
 		}
 		if (card == Card.NOMAD_CAMP) {
 			messageIndent++;
-			message(player, "putting in on top of your deck");
-			messageOpponents(player, "putting in on top of their deck");
+			message(player, "putting it on top of your deck");
+			messageOpponents(player, "putting it on top of their deck");
 			takeFromSupply(card);
 			player.putOnDraw(card);
 			onGained(player, card);
