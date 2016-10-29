@@ -43,7 +43,7 @@ public class Oracle extends Card {
                     target.addToDiscard(drawn);
                 } else {
                     game.messageAll("putting them back");
-                    putOnDeckInAnyOrder(player, game, drawn, "Oracle: Put the revealed cards back on your deck in any order");
+                    putOnDeckInAnyOrder(target, game, drawn, "Oracle: Put the revealed cards back on your deck in any order");
                 }
                 game.messageIndent--;
             } else {
