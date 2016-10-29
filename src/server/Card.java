@@ -218,6 +218,7 @@ public class Card {
 	public static final Card FORTRESS = new Fortress();
 	public static final Card IRONMONGER = new Ironmonger();
 	public static final Card RATS = new Rats();
+	public static final Card SCAVENGER = new Scavenger();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -467,6 +468,7 @@ public class Card {
 		include(FORTRESS, DARK_AGES_SET);
 		include(IRONMONGER, DARK_AGES_SET);
 		include(RATS, DARK_AGES_SET);
+		include(SCAVENGER, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);

@@ -647,4 +647,21 @@ public class Bot extends Player {
 		return wantToDiscard(card);
 	}
 
+	public boolean scavengerPutDeckIntoDiscard() {
+		// putting your deck into your discard is better for cycling with BigMoney
+		return true;
+	}
+
+	public Card scavengerPutFromDiscardOntoDeck(Set<Card> cards) {
+		// put the most expensive treasure on top of your deck
+		List<Card> treasuresByCost = cards.stream().filter(c -> c.isTreasure).collect(Collectors.toList());
+		if (!treasuresByCost.isEmpty()) {
+			Collections.sort(treasuresByCost, COST_ORDER_COMPARATOR);
+			return treasuresByCost.get(0);
+		} else {
+			// if no treasures in discard, just pick something
+			return cards.iterator().next();
+		}
+	}
+
 }
