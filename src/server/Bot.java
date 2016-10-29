@@ -669,4 +669,24 @@ public class Bot extends Player {
 		return cards.stream().noneMatch(this::wantToDiscard);
 	}
 
+	public int countFirstBenefit() {
+		// discard 2 cards if you want to (other options aren't great)
+		if (getHand().stream().filter(this::wantToDiscard).count() >= 2) {
+			return 0;
+		} else {
+			// otherwise put a card from your hand on top of your deck
+			return 1;
+		}
+	}
+
+	public int countSecondBenefit() {
+		// trash your entire hand if you want to (unlikely, but very useful if true)
+		if (getHand().stream().allMatch(this::wantToTrash)) {
+			return 1;
+		} else {
+			// otherwise, +$3
+			return 0;
+		}
+	}
+
 }
