@@ -694,4 +694,9 @@ public class Bot extends Player {
 		return true;
 	}
 
+	public boolean graverobberGain() {
+		// only gain Gold from the trash (unlikely)
+		return game.getTrash().stream().anyMatch(c -> c == Card.GOLD);
+	}
+
 }

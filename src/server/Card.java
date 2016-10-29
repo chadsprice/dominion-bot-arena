@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import cards.*;
 
@@ -223,6 +224,7 @@ public class Card {
 	public static final Card CATACOMBS = new Catacombs();
 	public static final Card COUNT = new Count();
 	public static final Card CULTIST = new Cultist();
+	public static final Card GRAVEROBBER = new Graverobber();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -477,6 +479,7 @@ public class Card {
 		include(CATACOMBS, DARK_AGES_SET);
 		include(COUNT, DARK_AGES_SET);
 		include(CULTIST, DARK_AGES_SET);
+		include(GRAVEROBBER, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
@@ -699,6 +702,58 @@ public class Card {
 	protected void putRevealedOnDeck(Player player, Game game, Card card) {
 		game.messageAll("putting the " + card.htmlNameRaw() + " back on top");
 		player.putOnDraw(card);
+	}
+
+	protected void upgradeViaTrashing(Player player, Game game, Set<Card> trashable, int coins, String trashPrompt, String gainPrompt) {
+		if (!trashable.isEmpty()) {
+			Card toTrash = game.promptChooseTrashFromHand(player, trashable, trashPrompt);
+			game.messageAll("trashing " + toTrash.htmlName());
+			player.removeFromHand(toTrash);
+			game.addToTrash(player, toTrash);
+			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + coins);
+			if (!gainable.isEmpty()) {
+				Card toGain = game.promptChooseGainFromSupply(player, gainable, gainPrompt);
+				game.messageAll("gaining " + toGain.htmlName());
+				game.gain(player, toGain);
+			} else {
+				game.messageAll("gaining nothing");
+			}
+		} else {
+			game.messageAll("trashing nothing");
+		}
+	}
+
+	protected void gainFromTrashSatisfying(Player player, Game game, Predicate<Card> predicate, String promptMessage) {
+		gainFromTrashSatisfying(player, game, predicate, promptMessage, false);
+	}
+
+	protected void gainFromTrashSatisfying(Player player, Game game, Predicate<Card> predicate, String promptMessage, boolean toDeck) {
+		Set<Card> gainable = game.getTrash().stream().filter(predicate).collect(Collectors.toSet());
+		if (!gainable.isEmpty()) {
+			Card toGain = chooseGainFromTrash(player, game, gainable, promptMessage);
+			game.messageAll("gaining " + toGain.htmlName() + " from the trash");
+			game.gainFromTrash(player, toGain, toDeck);
+		} else {
+			game.messageAll("gaining nothing");
+		}
+	}
+
+	private Card chooseGainFromTrash(Player player, Game game, Set<Card> gainable, String promptMessage) {
+		if (player instanceof Bot) {
+			Card toGain = ((Bot) player).chooseGainFromSupply(gainable, true);
+			if (!gainable.contains(toGain)) {
+				throw new IllegalStateException();
+			}
+			return toGain;
+		}
+		List<Card> gainableSorted = new ArrayList<>(gainable);
+		Collections.sort(gainableSorted, Player.HAND_ORDER_COMPARATOR);
+		String[] choices = new String[gainableSorted.size()];
+		for (int i = 0; i < gainableSorted.size(); i++) {
+			choices[i] = gainableSorted.get(i).toString();
+		}
+		int choice = game.promptMultipleChoice(player, promptMessage, choices);
+		return gainableSorted.get(choice);
 	}
 
 	public String htmlClass() {

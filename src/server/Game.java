@@ -867,15 +867,22 @@ public class Game implements Runnable {
 	}
 
 	public void gainFromTrash(Player player, Card card) {
-		if (gainReplace(player, card, GainDestination.DISCARD)) {
+		gainFromTrash(player, card, false);
+	}
+
+	public void gainFromTrash(Player player, Card card, boolean toDeck) {
+		if (gainReplace(player, card, toDeck ? GainDestination.DRAW : GainDestination.DISCARD)) {
 			return;
 		}
 		if (gainRedirect(player, card)) {
 			return;
 		}
 		removeFromTrash(card);
-		// put card in player's discard
-		player.addToDiscard(card, false);
+		if (toDeck) {
+			player.putOnDraw(card);
+		} else {
+			player.addToDiscard(card, false);
+		}
 		onGained(player, card);
 	}
 
@@ -1123,26 +1130,29 @@ public class Game implements Runnable {
 	}
 
 	public Set<Card> cardsCostingExactly(int cost) {
-		return cardsInSupplySatisfying(c -> c.cost(this) == cost);
+		return cardsInSupply().stream()
+				.filter(c -> c.cost(this) == cost)
+				.collect(Collectors.toSet());
 	}
 
 	public Set<Card> cardsCostingAtMost(int cost) {
-		return cardsInSupplySatisfying(c -> c.cost(this) <= cost);
+		return cardsInSupply().stream()
+				.filter(c -> c.cost(this) <= cost)
+				.collect(Collectors.toSet());
 	}
 
-	private Set<Card> cardsInSupplySatisfying(Predicate<Card> predicate) {
+	public Set<Card> cardsInSupply() {
 		Set<Card> cards = new HashSet<>();
 		for (Map.Entry<Card, Integer> pile : supply.entrySet()) {
 			Card card = pile.getKey();
 			Integer count = pile.getValue();
-			if (count != 0 && predicate.test(card)) {
+			if (count != 0) {
 				cards.add(card);
 			}
 		}
 		mixedPiles.values().stream()
 				.filter(list -> !list.isEmpty())
 				.map(list -> list.get(0))
-				.filter(predicate)
 				.forEach(cards::add);
 		return cards;
 	}
