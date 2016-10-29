@@ -664,4 +664,9 @@ public class Bot extends Player {
 		}
 	}
 
+	public boolean catacombsPutIntoHand(List<Card> cards) {
+		// put the top 3 cards of your deck into your hand if you wouldn't discard any
+		return cards.stream().noneMatch(this::wantToDiscard);
+	}
+
 }
