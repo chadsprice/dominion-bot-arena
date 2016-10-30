@@ -227,6 +227,7 @@ public class Card {
 	public static final Card GRAVEROBBER = new Graverobber();
 	public static final Card JUNK_DEALER = new JunkDealer();
 	public static final Card MYSTIC = new Mystic();
+	public static final Card REBUILD = new Rebuild();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -484,6 +485,7 @@ public class Card {
 		include(GRAVEROBBER, DARK_AGES_SET);
 		include(JUNK_DEALER, DARK_AGES_SET);
 		include(MYSTIC, DARK_AGES_SET);
+		include(REBUILD, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
