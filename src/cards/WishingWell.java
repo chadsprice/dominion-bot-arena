@@ -21,24 +21,7 @@ public class WishingWell extends Card {
 	public void onPlay(Player player, Game game) {
 		plusCards(player, game, 1);
 		plusActions(player, game, 1);
-		// Name a card
-		List<Card> drawn = player.takeFromDraw(1);
-		if (drawn.size() == 1) {
-			Card namedCard = game.promptNameACard(player, "Wishing Well", "Name a card. If that is the top card of your deck, it will go into your hand");
-			Card revealedCard = drawn.get(0);
-			if (namedCard == revealedCard) {
-				player.addToHand(revealedCard);
-				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it into your hand");
-				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it into their hand");
-			} else {
-				player.putOnDraw(revealedCard);
-				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it back");
-				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it back");
-			}
-		} else {
-			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "their deck is empty");
-		}
+		tryToNameTopCardOfDeck(player, game, "Wishing Well");
 	}
 
 	@Override

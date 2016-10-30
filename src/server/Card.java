@@ -226,6 +226,7 @@ public class Card {
 	public static final Card CULTIST = new Cultist();
 	public static final Card GRAVEROBBER = new Graverobber();
 	public static final Card JUNK_DEALER = new JunkDealer();
+	public static final Card MYSTIC = new Mystic();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -482,6 +483,7 @@ public class Card {
 		include(CULTIST, DARK_AGES_SET);
 		include(GRAVEROBBER, DARK_AGES_SET);
 		include(JUNK_DEALER, DARK_AGES_SET);
+		include(MYSTIC, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
@@ -756,6 +758,26 @@ public class Card {
 		}
 		int choice = game.promptMultipleChoice(player, promptMessage, choices);
 		return gainableSorted.get(choice);
+	}
+
+	protected void tryToNameTopCardOfDeck(Player player, Game game, String cause) {
+		Card namedCard = game.promptNameACard(player, cause, "Name a card. If that is the top card of your deck, it will go into your hand");
+		List<Card> drawn = player.takeFromDraw(1);
+		if (!drawn.isEmpty()) {
+			Card revealedCard = drawn.get(0);
+			if (namedCard == revealedCard) {
+				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it into your hand");
+				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it into their hand");
+				player.addToHand(revealedCard);
+			} else {
+				game.message(player, "naming " + namedCard.htmlName() + " and reveal " + revealedCard.htmlName() + ", putting it back");
+				game.messageOpponents(player, "naming " + namedCard.htmlName() + " and revealing " + revealedCard.htmlName() + ", putting it back");
+				player.putOnDraw(revealedCard);
+			}
+		} else {
+			game.message(player, "your deck is empty");
+			game.messageOpponents(player, "their deck is empty");
+		}
 	}
 
 	public String htmlClass() {
