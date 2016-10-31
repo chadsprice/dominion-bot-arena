@@ -2,7 +2,6 @@ package server;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import cards.Hovel;
@@ -870,7 +869,7 @@ public class Game implements Runnable {
 		gainFromTrash(player, card, false);
 	}
 
-	public void gainFromTrash(Player player, Card card, boolean toDeck) {
+	void gainFromTrash(Player player, Card card, boolean toDeck) {
 		if (gainReplace(player, card, toDeck ? GainDestination.DRAW : GainDestination.DISCARD)) {
 			return;
 		}
@@ -2255,6 +2254,32 @@ public class Game implements Runnable {
 			namedCard = Card.fromName(chosenName);
 		}
 		return namedCard;
+	}
+
+	public Card promptMultipleChoiceCard(Player player, String promptMessage, String promptType, Collection<Card> cards) {
+		return promptMultipleChoiceCard(player, promptMessage, promptType, cards, true, null);
+	}
+
+	public Card promptMultipleChoiceCard(Player player, String promptMessage, String promptType, Collection<Card> cards, String noneMessage) {
+		return promptMultipleChoiceCard(player, promptMessage, promptType, cards, false, noneMessage);
+	}
+
+	private Card promptMultipleChoiceCard(Player player, String promptMessage, String promptType, Collection<Card> cards, boolean isMandatory, String noneMessage) {
+		List<Card> cardsSorted = new ArrayList<>(cards);
+		Collections.sort(cardsSorted, Player.HAND_ORDER_COMPARATOR);
+		String[] choices = new String[isMandatory ? cards.size() : (cards.size() + 1)];
+		for (int i = 0; i < cardsSorted.size(); i++) {
+			choices[i] = cardsSorted.get(i).toString();
+		}
+		if (!isMandatory) {
+			choices[choices.length - 1] = noneMessage;
+		}
+		int choice = promptMultipleChoice(player, promptMessage, promptType, choices);
+		if (!isMandatory && choice == choices.length - 1) {
+			return null;
+		} else {
+			return cardsSorted.get(choice);
+		}
 	}
 
 	private Set<Card> cardsChoosableInSupplyUI() {

@@ -699,4 +699,18 @@ public class Bot extends Player {
 		return game.getTrash().stream().anyMatch(c -> c == Card.GOLD);
 	}
 
+	public Card rogueTrash(Set<Card> trashable) {
+		// if there is a card you want to trash
+		Optional<Card> optionalToTrash = trashable.stream().filter(this::wantToTrash).findFirst();
+		if (optionalToTrash.isPresent()) {
+			// trash it
+			return optionalToTrash.get();
+		} else {
+			// otherwise, trash the cheapest
+			List<Card> trashableByCost = new ArrayList<>(trashable);
+			Collections.sort(trashableByCost, COST_ORDER_COMPARATOR);
+			return trashableByCost.get(trashableByCost.size() - 1);
+		}
+	}
+
 }

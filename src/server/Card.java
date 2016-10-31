@@ -1,13 +1,6 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -228,6 +221,7 @@ public class Card {
 	public static final Card JUNK_DEALER = new JunkDealer();
 	public static final Card MYSTIC = new Mystic();
 	public static final Card REBUILD = new Rebuild();
+	public static final Card ROGUE = new Rogue();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -486,6 +480,7 @@ public class Card {
 		include(JUNK_DEALER, DARK_AGES_SET);
 		include(MYSTIC, DARK_AGES_SET);
 		include(REBUILD, DARK_AGES_SET);
+		include(ROGUE, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);
@@ -744,7 +739,7 @@ public class Card {
 		}
 	}
 
-	private Card chooseGainFromTrash(Player player, Game game, Set<Card> gainable, String promptMessage) {
+	protected Card chooseGainFromTrash(Player player, Game game, Set<Card> gainable, String promptMessage) {
 		if (player instanceof Bot) {
 			Card toGain = ((Bot) player).chooseGainFromSupply(gainable, true);
 			if (!gainable.contains(toGain)) {
