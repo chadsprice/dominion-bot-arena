@@ -83,4 +83,5 @@ public class Rogue extends Card {
     public String toString() {
         return "Rogue";
     }
+
 }
