@@ -223,6 +223,7 @@ public class Card {
 	public static final Card REBUILD = new Rebuild();
 	public static final Card ROGUE = new Rogue();
 	public static final Card ALTAR = new Altar();
+	public static final Card HUNTING_GROUNDS = new HuntingGrounds();
 	// dark ages ruins
 	public static final Card ABANDONED_MINE = new AbandonedMine();
 	public static final Card RUINED_LIBRARY = new RuinedLibrary();
@@ -483,6 +484,7 @@ public class Card {
 		include(REBUILD, DARK_AGES_SET);
 		include(ROGUE, DARK_AGES_SET);
 		include(ALTAR, DARK_AGES_SET);
+		include(HUNTING_GROUNDS, DARK_AGES_SET);
 		// dark ages ruins
 		include(ABANDONED_MINE, RUINS_CARDS);
 		include(RUINED_LIBRARY, RUINS_CARDS);

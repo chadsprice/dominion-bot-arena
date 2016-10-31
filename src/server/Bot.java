@@ -713,4 +713,9 @@ public class Bot extends Player {
 		}
 	}
 
+	public boolean huntingGroundsGainDuchy() {
+		// gain a Duchy if there are any in the supply, otherwise gain 3 Estates
+		return game.supply.get(Card.DUCHY) != 0;
+	}
+
 }
