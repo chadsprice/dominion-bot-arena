@@ -230,6 +230,17 @@ public class Card {
 	public static final Card RUINED_MARKET = new RuinedMarket();
 	public static final Card RUINED_VILLAGE = new RuinedVillage();
 	public static final Card SURVIVORS = new Survivors();
+	// dark ages knights
+	public static final Card DAME_ANNA = new DameAnna();
+	public static final Card DAME_JOSEPHINE = new DameJosephine();
+	public static final Card DAME_MOLLY = new DameMolly();
+	public static final Card DAME_NATALIE = new DameNatalie();
+	public static final Card DAME_SYLVIA = new DameSylvia();
+	public static final Card SIR_BAILEY = new SirBailey();
+	public static final Card SIR_DESTRY = new SirDestry();
+	public static final Card SIR_MARTIN = new SirMartin();
+	public static final Card SIR_MICHAEL = new SirMichael();
+	public static final Card SIR_VANDER = new SirVander();
 	// dark ages shelters
 	public static final Card HOVEL = new Hovel();
 	public static final Card NECROPOLIS = new Necropolis();
@@ -250,6 +261,7 @@ public class Card {
 	static Set<Card> HINTERLANDS_SET = new HashSet<>();
 	static Set<Card> DARK_AGES_SET = new HashSet<>();
 	static Set<Card> RUINS_CARDS = new HashSet<>();
+	static Set<Card> KNIGHT_CARDS = new HashSet<>();
 	static Set<Card> SHELTER_CARDS = new HashSet<>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
@@ -491,6 +503,17 @@ public class Card {
 		include(RUINED_MARKET, RUINS_CARDS);
 		include(RUINED_VILLAGE, RUINS_CARDS);
 		include(SURVIVORS, RUINS_CARDS);
+		// dark ages knights
+		include(DAME_ANNA, KNIGHT_CARDS);
+		include(DAME_JOSEPHINE, KNIGHT_CARDS);
+		include(DAME_MOLLY, KNIGHT_CARDS);
+		include(DAME_NATALIE, KNIGHT_CARDS);
+		include(DAME_SYLVIA, KNIGHT_CARDS);
+		include(SIR_BAILEY, KNIGHT_CARDS);
+		include(SIR_DESTRY, KNIGHT_CARDS);
+		include(SIR_MARTIN, KNIGHT_CARDS);
+		include(SIR_MICHAEL, KNIGHT_CARDS);
+		include(SIR_VANDER, KNIGHT_CARDS);
 		// dark ages shelters
 		include(HOVEL, SHELTER_CARDS);
 		include(NECROPOLIS, SHELTER_CARDS);
@@ -578,6 +601,11 @@ public class Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		throw new UnsupportedOperationException();
 	}
+	public boolean onAttack(Player player, Game game, List<Player> targets, boolean hasMoved) {
+		onAttack(player, game, targets);
+		return false;
+	}
+
 	public boolean onAttackReaction(Player player, Game game) {
 		return false;
 	}
@@ -909,7 +937,8 @@ public class Card {
 	}
 
 	public enum MixedPileId {
-		RUINS("Ruins");
+		RUINS("Ruins"),
+		KNIGHT("Knight");
 
 		private String str;
 
@@ -925,6 +954,8 @@ public class Card {
 		public static MixedPileId fromString(String str) {
 			if ("Ruins".equals(str)) {
 				return RUINS;
+			} else if ("Knight".equals(str)) {
+				return KNIGHT;
 			} else {
 				return null;
 			}

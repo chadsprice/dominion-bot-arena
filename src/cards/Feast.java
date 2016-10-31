@@ -22,9 +22,9 @@ public class Feast extends Card {
 		boolean movedToTrash = false;
 		if (!hasMoved) {
 			// trash this
+			game.messageAll("trashing the " + this.htmlNameRaw());
 			player.removeFromPlay(this);
 			game.addToTrash(player, this);
-			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}
 		// gain a card costing up to $5

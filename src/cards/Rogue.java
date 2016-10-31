@@ -34,7 +34,7 @@ public class Rogue extends Card {
                 List<Card> drawn = target.takeFromDraw(2);
                 if (!drawn.isEmpty()) {
                     game.message(target, "You draw " + Card.htmlList(drawn));
-                    game.messageOpponents(target, target + " draws " + Card.htmlList(drawn));
+                    game.messageOpponents(target, target.username + " draws " + Card.htmlList(drawn));
                     game.messageIndent++;
                     Set<Card> trashable = drawn.stream()
                             .filter(c -> 3 <= c.cost(game) && c.cost(game) <= 6)
@@ -44,7 +44,7 @@ public class Rogue extends Card {
                         if (trashable.size() == 1) {
                             toTrash = trashable.iterator().next();
                         } else {
-                            toTrash = chooseTrash(player, game, trashable);
+                            toTrash = chooseTrash(target, game, trashable);
                         }
                         game.messageAll("trashing the " + toTrash.htmlNameRaw());
                         drawn.remove(toTrash);
@@ -76,7 +76,7 @@ public class Rogue extends Card {
 
     @Override
     public String[] description() {
-        return new String[] {"+$2", "If there are any cards in the trash costing from $3 to $6, gain one of them. Otherwise, each other player reveals the top 2 cards of his deck, trashes one of them costing from $3 to $6, and discards the rest."};
+        return new String[] {"+$2", "If there are any cards in the trash costing from $3 to $6, gain one of them. Otherwise, each other player reveals the top 2 cards of their deck, trashes one of them costing from $3 to $6, and discards the rest."};
     }
 
     @Override

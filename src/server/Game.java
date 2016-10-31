@@ -489,7 +489,7 @@ public class Game implements Runnable {
 						targets.add(opponent);
 					}
 				}
-				action.onAttack(player, this, targets);
+				moves = action.onAttack(player, this, targets, hasMoved);
 			} else {
 				moves = action.onPlay(player, this, hasMoved);
 			}
