@@ -243,6 +243,8 @@ public class Card {
 	public static final Card SIR_MARTIN = new SirMartin();
 	public static final Card SIR_MICHAEL = new SirMichael();
 	public static final Card SIR_VANDER = new SirVander();
+	// dark ages non-supply
+	public static final Card MADMAN = new Madman();
 	// dark ages shelters
 	public static final Card HOVEL = new Hovel();
 	public static final Card NECROPOLIS = new Necropolis();
@@ -264,6 +266,7 @@ public class Card {
 	static Set<Card> DARK_AGES_SET = new HashSet<>();
 	static Set<Card> RUINS_CARDS = new HashSet<>();
 	static Set<Card> KNIGHT_CARDS = new HashSet<>();
+	static Set<Card> DARK_AGES_NON_SUPPLY_CARDS = new HashSet<>();
 	static Set<Card> SHELTER_CARDS = new HashSet<>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<>();
@@ -519,6 +522,8 @@ public class Card {
 		include(SIR_MARTIN, KNIGHT_CARDS);
 		include(SIR_MICHAEL, KNIGHT_CARDS);
 		include(SIR_VANDER, KNIGHT_CARDS);
+		// dark ages non-supply
+		include(MADMAN, DARK_AGES_NON_SUPPLY_CARDS);
 		// dark ages shelters
 		include(HOVEL, SHELTER_CARDS);
 		include(NECROPOLIS, SHELTER_CARDS);

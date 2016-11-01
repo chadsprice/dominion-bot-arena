@@ -88,6 +88,7 @@ public class Game implements Runnable {
 	private boolean usingShelters;
 	public Map<Card, Integer> supply = new HashMap<>();
 	public Map<Card.MixedPileId, List<Card>> mixedPiles = new HashMap<>();
+	private Map<Card, Integer> nonSupply = new HashMap<>();
 	private List<Card> trash = new ArrayList<>();
 
 	boolean isGameOver;
@@ -99,6 +100,7 @@ public class Game implements Runnable {
 	public int coppersmithsPlayedThisTurn;
 	private Map<Card, Integer> embargoTokens = new HashMap<>();
 	private Map<Card.MixedPileId, Integer> mixedPileEmbargoTokens = new HashMap<>();
+	private boolean boughtCardThisTurn;
 	private boolean boughtVictoryCardThisTurn;
 	public Set<Card> contrabandProhibited = new HashSet<>();
 	private Set<Card> tradeRouteTokenedPiles = new HashSet<>();
@@ -144,6 +146,8 @@ public class Game implements Runnable {
 		for (Card card : kingdomCards) {
 			supply.put(card, card.startingSupply(players.size()));
 		}
+		// initialize non-supply piles
+		initNonSupply();
 		// initialize ruins pile
 		if (kingdomCards.stream().anyMatch(c -> c.isLooter)) {
 			initRuinsPile();
@@ -183,7 +187,7 @@ public class Game implements Runnable {
 				ruinsPile.add(ruinsCard);
 			}
 		}
-		// shuffle and take 10 for a 2 players, 20 for 3 player, etc.
+		// shuffle and takeFromSupply 10 for a 2 players, 20 for 3 player, etc.
 		Collections.shuffle(ruinsPile);
 		ruinsPile = new ArrayList<>(ruinsPile.subList(0, 10 * (players.size() - 1)));
 		mixedPiles.put(Card.MixedPileId.RUINS, ruinsPile);
@@ -197,6 +201,12 @@ public class Game implements Runnable {
 		mixedPiles.put(Card.MixedPileId.KNIGHTS, knightPile);
 	}
 
+	private void initNonSupply() {
+		if (kingdomCards.contains(Card.HERMIT)) {
+			nonSupply.put(Card.MADMAN, 10);
+		}
+	}
+
 	private void takeTurn(Player player) {
 		player.startNewTurn();
 		if (cardCostReduction > 0 || costModifierPlayedLastTurn) {
@@ -205,6 +215,7 @@ public class Game implements Runnable {
 		}
 		playedSilverThisTurn = false;
 		actionsPlayedThisTurn = 0;
+		boughtCardThisTurn = false;
 		boughtVictoryCardThisTurn = false;
 		contrabandProhibited.clear();
 		playedCrossroadsThisTurn = false;
@@ -351,6 +362,7 @@ public class Game implements Runnable {
 
 	private void onBuy(Player player, Card card) {
 		messageIndent++;
+		boughtCardThisTurn = true;
 		if (card.isVictory) {
 			boughtVictoryCardThisTurn = true;
 		}
@@ -506,7 +518,7 @@ public class Game implements Runnable {
 				}
 				boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
 				if (willHaveEffect) {
-					// take this action out of normal play and save it as a duration effect
+					// takeFromSupply this action out of normal play and save it as a duration effect
 					player.removeFromPlay(action);
 					Duration duration = new Duration();
 					duration.durationCard = action;
@@ -582,14 +594,14 @@ public class Game implements Runnable {
 
 	private void exitBuyPhase() {
 		inBuyPhase = true;
-		// display current peddler cost
+		// display current Peddler cost
 		if (supply.keySet().contains(Card.PEDDLER)) {
 			sendCardCost(Card.PEDDLER);
 		}
 	}
 
 	private void cleanup(Player player) {
-		// handle scheme
+		// handle Scheme
 		if (schemesPlayedThisTurn != 0) {
 			List<Card> schemed = new ArrayList<>();
 			while (schemesPlayedThisTurn != 0) {
@@ -621,7 +633,7 @@ public class Game implements Runnable {
 				player.putOnDraw(schemed);
 			}
 		}
-		// handle treasuries
+		// handle Treasuries
 		if (!boughtVictoryCardThisTurn) {
 			int numTreasuries = 0;
 			for (Card card : player.getPlay()) {
@@ -647,6 +659,22 @@ public class Game implements Runnable {
 					player.sendPlay();
 					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
 					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of their deck");
+				}
+			}
+		}
+		// handle Hermit
+		if (!boughtCardThisTurn) {
+			int numHermits = (int) player.getPlay().stream().filter(c -> c == Card.HERMIT).count();
+			if (numHermits != 0) {
+				int numMadmen = Math.min(numHermits, nonSupply.get(Card.MADMAN));
+				message(player, "You trash " + Card.HERMIT.htmlName(numHermits) + " and gain " + Card.MADMAN.htmlName(numMadmen));
+				messageOpponents(player, player.username + " trashes " + Card.HERMIT.htmlName(numHermits) + " and gains " + Card.MADMAN.htmlName(numMadmen));
+				for (int i = 0; i < numHermits; i++) {
+					player.removeFromPlay(Card.HERMIT);
+					addToTrash(player, Card.HERMIT);
+					if (nonSupply.get(Card.MADMAN) != 0) {
+						gain(player, Card.MADMAN);
+					}
 				}
 			}
 		}
@@ -788,10 +816,12 @@ public class Game implements Runnable {
 		if (prizeCards.contains(card)) {
 			prizeCards.remove(card);
 			sendPrizeCardRemoved(card);
-			return;
-		}
-		// if it is in a mixed pile, remove the top card
-		if (card.inMixedPile()) {
+		} else if (nonSupply.containsKey(card)) {
+			// if it is a non-supply card, takeFromSupply it from the non-supply piles
+			nonSupply.put(card, nonSupply.get(card) - 1);
+			// TODO: update nonSupply
+		} else if (card.inMixedPile()) {
+			// if it is in a mixed pile, remove the top card
 			Card.MixedPileId id = card.mixedPileId();
 			mixedPiles.get(id).remove(0);
 			sendPileSize(id);
@@ -800,11 +830,11 @@ public class Game implements Runnable {
 			if (!mixedPiles.get(id).isEmpty()) {
 				sendCardCost(mixedPiles.get(id).get(0));
 			}
-			return;
+		} else {
+			// update supply
+			supply.put(card, supply.get(card) - 1);
+			sendPileSize(card);
 		}
-		// update supply
-		supply.put(card, supply.get(card) - 1);
-		sendPileSize(card);
 	}
 
 	public boolean canReturnToSupply(Card card) {
@@ -829,6 +859,11 @@ public class Game implements Runnable {
 		// update supply
 		supply.put(card, supply.get(card) + count);
 		sendPileSize(card);
+	}
+
+	public void returnToNonSupply(Card card) {
+		nonSupply.put(card, nonSupply.get(card) - 1);
+		// TODO: update nonSupply
 	}
 
 	private enum GainDestination {DISCARD, DRAW, HAND}
@@ -1287,6 +1322,8 @@ public class Game implements Runnable {
 		allCards.addAll(supply.keySet());
 		// cards in mixed supply piles
 		mixedPiles.values().forEach(allCards::addAll);
+		// cards in non-supply piles
+		allCards.addAll(nonSupply.keySet());
 		// prize cards
 		allCards.addAll(prizeCards);
 		// shelters

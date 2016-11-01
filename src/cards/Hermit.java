@@ -106,7 +106,7 @@ public class Hermit extends Card {
 
     @Override
     public String[] description() {
-        return new String[] {"Look through your discard pile.", "You may trash a card from your discard pile or hand that is not a Treasure.", "Gain a card costing up to $3."};
+        return new String[] {"Look through your discard pile.", "You may trash a card from your discard pile or hand that is not a Treasure.", "Gain a card costing up to $3.", "When you discard this from play, if you did not buy any cards this turn, trash this and gain a Madman from the Madman pile."};
     }
 
     @Override
