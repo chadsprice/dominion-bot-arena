@@ -69,14 +69,17 @@ body {
   justify-content: flex-end;
 }
 
-#prizes {
+#nonSupply {
   margin-bottom: 1em;
+}
+
+#prizes, #nonSupply {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
 
-#prizes p {
+#prizes p, #nonSupply p {
   margin: 0;
 }
 

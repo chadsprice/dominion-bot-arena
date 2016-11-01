@@ -187,7 +187,7 @@ public class Game implements Runnable {
 				ruinsPile.add(ruinsCard);
 			}
 		}
-		// shuffle and takeFromSupply 10 for a 2 players, 20 for 3 player, etc.
+		// shuffle and take 10 for a 2 players, 20 for 3 player, etc.
 		Collections.shuffle(ruinsPile);
 		ruinsPile = new ArrayList<>(ruinsPile.subList(0, 10 * (players.size() - 1)));
 		mixedPiles.put(Card.MixedPileId.RUINS, ruinsPile);
@@ -518,7 +518,7 @@ public class Game implements Runnable {
 				}
 				boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
 				if (willHaveEffect) {
-					// takeFromSupply this action out of normal play and save it as a duration effect
+					// take this action out of normal play and save it as a duration effect
 					player.removeFromPlay(action);
 					Duration duration = new Duration();
 					duration.durationCard = action;
@@ -819,7 +819,7 @@ public class Game implements Runnable {
 		} else if (nonSupply.containsKey(card)) {
 			// if it is a non-supply card, takeFromSupply it from the non-supply piles
 			nonSupply.put(card, nonSupply.get(card) - 1);
-			// TODO: update nonSupply
+			sendPileSize(card);
 		} else if (card.inMixedPile()) {
 			// if it is in a mixed pile, remove the top card
 			Card.MixedPileId id = card.mixedPileId();
@@ -862,8 +862,8 @@ public class Game implements Runnable {
 	}
 
 	public void returnToNonSupply(Card card) {
-		nonSupply.put(card, nonSupply.get(card) - 1);
-		// TODO: update nonSupply
+		nonSupply.put(card, nonSupply.get(card) + 1);
+		sendPileSize(card);
 	}
 
 	private enum GainDestination {DISCARD, DRAW, HAND}
@@ -1290,6 +1290,7 @@ public class Game implements Runnable {
 		jsonSupply.put("cardDescriptions", jsonCardDescriptions());
 		jsonSupply.put("kingdomPiles", jsonKingdomPiles());
 		jsonSupply.put("basicPiles", jsonBasicPiles());
+		jsonSupply.put("nonSupplyPiles", jsonNonSupplyPiles());
 		if (!prizeCards.isEmpty()) {
 			jsonSupply.put("prizeCards", jsonPrizeCards());
 		}
@@ -1354,6 +1355,16 @@ public class Game implements Runnable {
 	}
 
 	@SuppressWarnings("unchecked")
+	private JSONArray jsonNonSupplyPiles() {
+		List<Card> pileTopCards = new ArrayList<>(nonSupply.keySet());
+		// just order non-supply piles by name
+		Collections.sort(pileTopCards, (a, b) -> a.toString().compareTo(b.toString()));
+		JSONArray piles = new JSONArray();
+		pileTopCards.forEach(c -> piles.add(jsonPile(c)));
+		return piles;
+	}
+
+	@SuppressWarnings("unchecked")
 	private JSONObject jsonPile(Card card) {
 		JSONObject pile = new JSONObject();
 		pile.put("id", jsonPileId(card));
@@ -1401,11 +1412,16 @@ public class Game implements Runnable {
 		JSONObject pileSizes = new JSONObject();
 		supply.keySet().forEach(c -> pileSizes.put(c.toString(), supply.get(c)));
 		mixedPiles.keySet().forEach(id -> pileSizes.put(id.toString(), mixedPiles.get(id).size()));
+		nonSupply.keySet().forEach(c -> pileSizes.put(c.toString(), nonSupply.get(c)));
 		sendPileSizes(player, pileSizes);
 	}
 
 	private void sendPileSize(Card card) {
-		sendPileSize(card.toString(), supply.get(card));
+		if (nonSupply.containsKey(card)) {
+			sendPileSize(card.toString(), nonSupply.get(card));
+		} else {
+			sendPileSize(card.toString(), supply.get(card));
+		}
 	}
 
 	private void sendPileSize(Card.MixedPileId id) {

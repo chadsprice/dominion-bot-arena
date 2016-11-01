@@ -232,6 +232,10 @@ function createPileCross() {
   return createDivContainingImage('cross', 'cross.png');
 }
 
+function createNonSupplyPileCross() {
+  return createDivContainingImage('cross', 'cross_gray.png');
+}
+
 function createPilePlus() {
   return createDivContainingImage('plus', 'plus.png');
 }
@@ -250,6 +254,7 @@ function setSupply(supply) {
   supplyPiles = {};
   setKingdomPiles(supply.kingdomPiles);
   setBasicPiles(supply.basicPiles);
+  setNonSupplyPiles(supply.nonSupplyPiles);
   setPrizeCards(supply.prizeCards);
 }
 
@@ -341,9 +346,65 @@ function setKingdomPiles(piles) {
   }
 }
 
+function setNonSupplyPiles(piles) {
+  var nonSupply = document.getElementById('nonSupply');
+  // remove previous non-supply UI elements
+  removeAllChildNodes(nonSupply);
+  // for each non-supply pile
+  for (var i = 0; i < piles.length; i++) {
+    var cardName = piles[i].topCard;
+    var card = cardDescriptions[cardName];
+    // add a pile for this card
+    var pile = document.createElement('div');
+    pile.className = 'kingdomPile';
+    registerPopup(pile, cardName);
+    // set name
+    var nameDiv = document.createElement('div');
+    nameDiv.className = 'name';
+    var nameParagraph = document.createElement('p');
+    nameParagraph.className = card.className;
+    nameParagraph.innerHTML = cardName;
+    nameDiv.appendChild(nameParagraph);
+    var subtitleParagraph = document.createElement('p');
+    subtitleParagraph.className = 'subtitle';
+    subtitleParagraph.innerHTML = '(Non-Supply)';
+    nameDiv.appendChild(subtitleParagraph);
+    pile.appendChild(nameDiv);
+    // set status (pile size)
+    var status = document.createElement('div');
+    status.className = 'status';
+    // set pile size (initially unknown)
+    var pileSizeDiv = document.createElement('div');
+    pileSizeDiv.className = 'pileSize';
+    var pileSizeParagraph = document.createElement('p');
+    pileSizeParagraph.innerHTML = '(?)';
+    pileSizeDiv.appendChild(pileSizeParagraph);
+    status.appendChild(pileSizeDiv);
+    pile.appendChild(status);
+    // add visuals for this pile
+    var cardArt = document.createElement('div');
+    cardArt.className = 'cardArt';
+    // add cross image to indicate when this pile is empty (initially hidden)
+    var cross = createNonSupplyPileCross();
+    cross.style.display = 'none';
+    cardArt.appendChild(cross);
+    // add plus image to indicate when this pile can be gained (initially hidden)
+    var plus = createPilePlus();
+    plus.style.display = 'none';
+    cardArt.appendChild(plus);
+    // add card art
+    var img = document.createElement('img');
+    img.src = cardArtSrc(cardName);
+    cardArt.appendChild(img);
+    pile.appendChild(cardArt);
+    nonSupply.appendChild(pile);
+    supplyPiles[piles[i].id] = {'pile':pile, 'name':nameParagraph, 'pileSize':pileSizeParagraph, 'cross':cross, 'plus':plus, 'img':img};
+  }
+}
+
 function setPrizeCards(cards) {
-  // remove previous prize card UI elements
   var prizes = document.getElementById('prizes');
+  // remove previous prize card UI elements
   removeAllChildNodes(prizes);
   // if cards is undefined, there are no prize cards
   if (!cards) {
@@ -364,12 +425,16 @@ function setPrizeCards(cards) {
     nameParagraph.className = card.className;
     nameParagraph.innerHTML = cardName;
     nameDiv.appendChild(nameParagraph);
+    var subtitleParagraph = document.createElement('p');
+    subtitleParagraph.className = 'subtitle';
+    subtitleParagraph.innerHTML = '(Prize)';
+    nameDiv.appendChild(subtitleParagraph);
     pile.appendChild(nameDiv);
     // add visuals for this pile
     var cardArt = document.createElement('div');
     cardArt.className = 'cardArt';
     // add cross image to indicate when this pile is empty (initially hidden)
-    var cross = createPileCross();
+    var cross = createNonSupplyPileCross();
     cross.style.display = 'none';
     cardArt.appendChild(cross);
     // add plus image to indicate when this pile can be gained (initially hidden)
@@ -1516,9 +1581,6 @@ function executeCommand(command) {
       break;
     case 'setSupply':
       setSupply(command.supply);
-      break;
-    case 'setPrizeCards':
-      setPrizeCards(command.cards);
       break;
     case 'setPrizeCardRemoved':
       setPrizeCardRemoved(command.cardName);
