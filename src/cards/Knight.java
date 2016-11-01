@@ -64,7 +64,7 @@ public abstract class Knight extends Card {
                 }
                 if (!drawn.isEmpty()) {
                     game.messageAll("discarding the rest");
-                    player.addToDiscard(drawn);
+                    target.addToDiscard(drawn);
                 }
                 game.messageIndent--;
             } else {
