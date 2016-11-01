@@ -102,7 +102,10 @@ public class Player {
 	}
 
 	public void receiveResponse(Object response) {
-		responses.add(response);
+		// blocking queue cannot accept null
+		if (response != null) {
+			responses.add(response);
+		}
 	}
 
 	public String username;

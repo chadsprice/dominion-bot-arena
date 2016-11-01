@@ -790,6 +790,21 @@ function promptChooseFromHand(choices, message, promptType, isMandatory, noneMes
   displayPrompt();
 }
 
+function promptChooseFromHandOrMultipleChoice(handChoices, message, promptType, multipleChoices) {
+  setPromptMessage(message, promptType);
+  // for multiple choice responses, send the number
+  for (var i = 0; i < multipleChoices.length; i++) {
+    sendResponseOnMouseDown(addPromptButton(multipleChoices[i]), i.toString());
+  }
+  // for hand responses, send the card name
+  for (var i = 0; i < handChoices.length; i++) {
+    var stack = handCardElems[handChoices[i]];
+    stack.className += ' clickable';
+    sendResponseOnMouseDown(stack, handChoices[i]);
+  }
+  displayPrompt();
+}
+
 function promptMultipleChoice(message, promptType, choices, disabled) {
   // set message
   setPromptMessage(message, promptType);
@@ -1588,6 +1603,10 @@ function executeCommand(command) {
     case 'promptChooseFromHand':
       setWaitingOn();
       promptChooseFromHand(command.choices, command.message, command.promptType, command.isMandatory, command.noneMessage);
+      break;
+    case 'promptChooseFromHandOrMultipleChoice':
+      setWaitingOn();
+      promptChooseFromHandOrMultipleChoice(command.handChoices, command.message, command.promptType, command.multipleChoices);
       break;
     case 'promptDiscardNumber':
       setWaitingOn();

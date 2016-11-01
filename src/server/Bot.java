@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import bots.*;
+import cards.Hermit;
 import org.json.simple.JSONObject;
 
 import cards.Smugglers;
@@ -716,6 +717,21 @@ public class Bot extends Player {
 	public boolean huntingGroundsGainDuchy() {
 		// gain a Duchy if there are any in the supply, otherwise gain 3 Estates
 		return game.supply.get(Card.DUCHY) != 0;
+	}
+
+	public Hermit.CardFromDiscardOrHand hermitTrash(Set<Card> trashableFromDiscard, Set<Card> trashableFromHand) {
+		// first look for cards to trash in your discard (as cards in hand may still be useful this turn)
+		Optional<Card> optionalToTrash = trashableFromDiscard.stream().filter(this::wantToTrash).findFirst();
+		if (optionalToTrash.isPresent()) {
+			return new Hermit.CardFromDiscardOrHand(optionalToTrash.get(), true);
+		}
+		// then look in your hand
+		optionalToTrash = trashableFromHand.stream().filter(this::wantToTrash).findFirst();
+		if (optionalToTrash.isPresent()) {
+			return new Hermit.CardFromDiscardOrHand(optionalToTrash.get(), false);
+		}
+		// if you don't want to trash any, return none
+		return new Hermit.CardFromDiscardOrHand(null, false);
 	}
 
 }

@@ -1976,7 +1976,10 @@ public class Game implements Runnable {
 			// ignore incorrect responses
 		}
 		// parse response
-		Card chosen = Card.fromName(response);
+		Card chosen = null;
+		if (response != null) {
+			chosen = Card.fromName(response);
+		}
 		// verify response
 		if (choiceSet.contains(chosen)) {
 			return chosen;
@@ -1986,6 +1989,53 @@ public class Game implements Runnable {
 			} else {
 				return null;
 			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object sendPromptChooseFromHandOrMultipleChoice(Player player, Set<Card> handChoices, String promptMessage, String promptType, String[] multipleChoices) {
+		if (player instanceof Bot) {
+			throw new IllegalStateException();
+		}
+		JSONObject command = new JSONObject();
+		command.put("command", "promptChooseFromHandOrMultipleChoice");
+		JSONArray jsonHandChoices = new JSONArray();
+		handChoices.forEach(c -> jsonHandChoices.add(c.toString()));
+		command.put("handChoices", jsonHandChoices);
+		command.put("message", promptMessage);
+		command.put("promptType", promptType);
+		JSONArray jsonMultipleChoices = new JSONArray();
+		Arrays.asList(multipleChoices).forEach(jsonMultipleChoices::add);
+		command.put("multipleChoices", jsonMultipleChoices);
+		player.sendCommand(command);
+		// wait for response
+		String response = null;
+		try {
+			response = (String) waitForResponse(player);
+		} catch (ClassCastException e) {
+			// ignore incorrect responses
+		}
+		// parse response
+		if (response != null) {
+			try {
+				// first, try to parse the response as a multiple choice response, i.e. an integer
+				int chosenIndex = Integer.parseInt(response);
+				if (0 <= chosenIndex && chosenIndex < multipleChoices.length) {
+					return chosenIndex;
+				}
+			} catch (NumberFormatException e) {
+				// if it does not parse as an integer, parse it as a card name
+				Card chosenCard = Card.fromName(response);
+				if (handChoices.contains(chosenCard)) {
+					return chosenCard;
+				}
+			}
+		}
+		// parsing failed, so return either some valid hand choice, or the first multiple choice
+		if (!handChoices.isEmpty()) {
+			return handChoices.iterator().next();
+		} else {
+			return 0;
 		}
 	}
 
