@@ -52,7 +52,7 @@ public class Squire extends Card {
 
     @Override
     public void onTrash(Player player, Game game) {
-        Set<Card> gainable = game.supply.keySet().stream().filter(c -> c.isAttack && game.supply.get(c) != 0).collect(Collectors.toSet());
+        Set<Card> gainable = game.cardsInSupply().stream().filter(c -> c.isAttack).collect(Collectors.toSet());
         if (!gainable.isEmpty()) {
             Card toGain = game.promptChooseGainFromSupply(player, gainable, "Squire: Choose an Attack card to gain.");
             game.messageAll("gaining " + toGain.htmlName() + " because of " + this.htmlNameRaw());
