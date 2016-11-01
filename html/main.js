@@ -617,7 +617,7 @@ Takes a map from card names to their new costs.
 function setCardCosts(costs) {
   for (var cardName in costs) {
     if (costs.hasOwnProperty(cardName)) {
-      supplyPiles[cardName].cost.innerHTML = '$' + costs[cardName].toString();
+      supplyPiles[cardName].cost.innerHTML = costs[cardName];
     }
   }
 }

@@ -219,6 +219,7 @@ public class Card {
 	public static final Card CULTIST = new Cultist();
 	public static final Card GRAVEROBBER = new Graverobber();
 	public static final Card JUNK_DEALER = new JunkDealer();
+	public static final Card KNIGHTS = new Knights();
 	public static final Card MYSTIC = new Mystic();
 	public static final Card REBUILD = new Rebuild();
 	public static final Card ROGUE = new Rogue();
@@ -264,9 +265,9 @@ public class Card {
 	static Set<Card> KNIGHT_CARDS = new HashSet<>();
 	static Set<Card> SHELTER_CARDS = new HashSet<>();
 
-	public static Map<String, Set<Card>> setsByName = new HashMap<String, Set<Card>>();
-	public static List<Set<Card>> setOrder = new ArrayList<Set<Card>>();
-	public static List<String> setNames = new ArrayList<String>();
+	public static Map<String, Set<Card>> setsByName = new HashMap<>();
+	public static List<Set<Card>> setOrder = new ArrayList<>();
+	public static List<String> setNames = new ArrayList<>();
 
 	public static void initializeCardSets() {
 
@@ -278,6 +279,7 @@ public class Card {
 		include(PROSPERITY_SET, "Prosperity");
 		include(CORNUCOPIA_SET, "Cornucopia");
 		include(HINTERLANDS_SET, "Hinterlands");
+		include(DARK_AGES_SET, "DarkAges");
 
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);
@@ -492,6 +494,7 @@ public class Card {
 		include(CULTIST, DARK_AGES_SET);
 		include(GRAVEROBBER, DARK_AGES_SET);
 		include(JUNK_DEALER, DARK_AGES_SET);
+		include(KNIGHTS, DARK_AGES_SET);
 		include(MYSTIC, DARK_AGES_SET);
 		include(REBUILD, DARK_AGES_SET);
 		include(ROGUE, DARK_AGES_SET);
@@ -938,7 +941,7 @@ public class Card {
 
 	public enum MixedPileId {
 		RUINS("Ruins"),
-		KNIGHT("Knight");
+		KNIGHTS("Knights");
 
 		private String str;
 
@@ -954,8 +957,8 @@ public class Card {
 		public static MixedPileId fromString(String str) {
 			if ("Ruins".equals(str)) {
 				return RUINS;
-			} else if ("Knight".equals(str)) {
-				return KNIGHT;
+			} else if ("Knights".equals(str)) {
+				return KNIGHTS;
 			} else {
 				return null;
 			}

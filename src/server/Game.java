@@ -135,6 +135,11 @@ public class Game implements Runnable {
 	}
 
 	private void setup() {
+		// remove Knights placeholder card and set up mixed Knight pile
+		if (kingdomCards.contains(Card.KNIGHTS)) {
+			kingdomCards.remove(Card.KNIGHTS);
+			initKnightPile();
+		}
 		// initialize kingdom piles
 		for (Card card : kingdomCards) {
 			supply.put(card, card.startingSupply(players.size()));
@@ -162,14 +167,6 @@ public class Game implements Runnable {
 		Collections.shuffle(players);
 		for (Player player : players) {
 			sendSupply(player);
-			/*sendKingdomCards(player);
-			if (!prizeCards.isEmpty()) {
-				sendPrizeCards(player);
-			}
-			sendAdditionalDescriptions(player);
-			sendBasicCards(player);
-			sendTradeRouteTokenedPiles(player);
-			sendPileSizes(player);*/
 			player.startGame(usingShelters);
 			clearActions(player);
 			clearBuys(player);
@@ -190,6 +187,14 @@ public class Game implements Runnable {
 		Collections.shuffle(ruinsPile);
 		ruinsPile = new ArrayList<>(ruinsPile.subList(0, 10 * (players.size() - 1)));
 		mixedPiles.put(Card.MixedPileId.RUINS, ruinsPile);
+	}
+
+	private void initKnightPile() {
+		// add one of each Knight
+		List<Card> knightPile = new ArrayList<>(Card.KNIGHT_CARDS);
+		// shuffle
+		Collections.shuffle(knightPile);
+		mixedPiles.put(Card.MixedPileId.KNIGHTS, knightPile);
 	}
 
 	private void takeTurn(Player player) {
@@ -791,6 +796,10 @@ public class Game implements Runnable {
 			mixedPiles.get(id).remove(0);
 			sendPileSize(id);
 			sendTopCard(id);
+			// the next card may not have the same cost, so always update the cost as long as it's not empty
+			if (!mixedPiles.get(id).isEmpty()) {
+				sendCardCost(mixedPiles.get(id).get(0));
+			}
 			return;
 		}
 		// update supply
@@ -813,6 +822,8 @@ public class Game implements Runnable {
 			}
 			sendPileSize(id);
 			sendTopCard(id);
+			// the new card on top may not have the same cost, so always update the cost
+			sendCardCost(mixedPiles.get(id).get(0));
 			return;
 		}
 		// update supply
@@ -1190,36 +1201,38 @@ public class Game implements Runnable {
 		return numEmptyPiles;
 	}
 
-	public void sendCardCosts() {
-		players.forEach(this::sendCardCosts);
-	}
-
 	@SuppressWarnings("unchecked")
-	private void sendCardCosts(Player player) {
-		JSONObject command = new JSONObject();
-		command.put("command", "setCardCosts");
-		JSONObject costs = new JSONObject();
-		for (Card card : supply.keySet()) {
-			costs.put(card.toString(), card.cost(this));
-		}
-		command.put("costs", costs);
-		player.sendCommand(command);
-	}
-
 	private void sendCardCost(Card card) {
-		for (Player player : players) {
-			sendCardCost(player, card);
-		}
+		// send the card cost of an individual card
+		sendCardCosts(jsonCardCost(card));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendCardCost(Player player, Card card) {
+	public void sendCardCosts() {
+		// send the costs of all cards in the supply
+		sendCardCosts(jsonCardCosts(cardsInSupply()));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendCardCosts(JSONObject costs) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setCardCosts");
-		JSONObject costs = new JSONObject();
-		costs.put(card.toString(), card.cost(this));
 		command.put("costs", costs);
-		player.sendCommand(command);
+		players.forEach(player -> player.sendCommand(command));
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonCardCost(Card card) {
+		return jsonCardCosts(Collections.singletonList(card));
+	}
+
+	@SuppressWarnings("unchecked")
+	private JSONObject jsonCardCosts(Collection<Card> cards) {
+		JSONObject costs = new JSONObject();
+		for (Card card : cards) {
+			costs.put(jsonPileId(card), "$" + card.cost(this));
+		}
+		return costs;
 	}
 
 	@SuppressWarnings("unchecked")

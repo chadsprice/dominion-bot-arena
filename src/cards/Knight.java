@@ -19,7 +19,7 @@ public abstract class Knight extends Card {
 
     @Override
     public MixedPileId mixedPileId() {
-        return MixedPileId.KNIGHT;
+        return MixedPileId.KNIGHTS;
     }
 
     @Override
