@@ -3,7 +3,6 @@ package cards;
 import java.util.List;
 
 import server.Card;
-import server.Duration;
 import server.Game;
 import server.Player;
 
@@ -36,7 +35,7 @@ public class Outpost extends Card {
 	}
 
 	@Override
-	public void onDurationEffect(Player player, Game game, Duration duration) {
+	public void onDurationEffect(Player player, Game game) {
 		// outpost has no duration effect beyond the extra turn
 	}
 

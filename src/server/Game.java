@@ -235,7 +235,9 @@ public class Game implements Runnable {
 		resolveDurations(player);
 		while (player.getActions() > 0 && player.hasPlayableAction()) {
 			// action phase
-			Set<Card> choices = playableActions(player);
+			Set<Card> choices = player.getHand().stream()
+					.filter(c -> c.isAction)
+					.collect(Collectors.toSet());
 			Card choice = promptChoosePlay(player, choices, "Action Phase: Choose an action to play.", false, "No Action");
 			if (choice == null) {
 				break;
@@ -294,35 +296,14 @@ public class Game implements Runnable {
 	}
 
 	private void resolveDurations(Player player) {
-		for (Iterator<Duration> iter = player.getDurations().iterator(); iter.hasNext(); ) {
-			Duration duration = iter.next();
-			// if the duration is modified (except for havens, outposts, and tacticians)
-			if ((duration.modifier == Card.THRONE_ROOM || duration.modifier == Card.THRONE_ROOM_FIRST_EDITION) && duration.durationCard != Card.HAVEN && duration.durationCard != Card.OUTPOST && duration.durationCard != Card.TACTICIAN) {
-				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect twice");
-				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect twice");
-				messageIndent++;
-				duration.durationCard.onDurationEffect(player, this, duration);
-				duration.durationCard.onDurationEffect(player, this, duration);
-				messageIndent--;
-			} else if (duration.modifier == Card.KINGS_COURT && duration.durationCard != Card.HAVEN && duration.durationCard != Card.OUTPOST && duration.durationCard != Card.TACTICIAN) {
-				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect three times");
-				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect three times");
-				messageIndent++;
-				duration.durationCard.onDurationEffect(player, this, duration);
-				duration.durationCard.onDurationEffect(player, this, duration);
-				duration.durationCard.onDurationEffect(player, this, duration);
-				messageIndent--;
-			} else {
-				message(player, "Your " + duration.durationCard.htmlNameRaw() + " takes effect");
-				messageOpponents(player, player.username + "'s " + duration.durationCard.htmlNameRaw() + " takes effect");
-				messageIndent++;
-				duration.durationCard.onDurationEffect(player, this, duration);
-				messageIndent--;
-			}
-			iter.remove();
-			player.durationResolved(duration);
+		List<DurationEffect> effects = new ArrayList<>(player.getDurationEffects());
+		for (DurationEffect effect : effects) {
+			messageAll(effect.card.htmlNameRaw() + " takes effect");
+			messageIndent++;
+			effect.card.onDurationEffect(player, this, effect);
+			messageIndent--;
 		}
-		player.sendDurations();
+		player.cleanupDurations();
 	}
 
 	public void playTreasure(Player player, Card treasure) {
@@ -521,27 +502,17 @@ public class Game implements Runnable {
 			}
 		} else {
 			List<Card> toHaven = null;
-			if (!hasMoved) {
-				if (action == Card.HAVEN) {
-					toHaven = new ArrayList<>();
-				}
-				boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
-				if (willHaveEffect) {
-					// take this action out of normal play and save it as a duration effect
-					player.removeFromPlay(action);
-					Duration duration = new Duration();
-					duration.durationCard = action;
-					duration.havenedCards = toHaven;
-					player.addDuration(duration);
-				}
-				moves = willHaveEffect;
-			} else {
-				if (action == Card.HAVEN) {
-					toHaven = player.getLastHaven();
-				}
-				action.onDurationPlay(player, this, toHaven);
-				if (action == Card.HAVEN) {
-					player.sendDurations();
+			if (action == Card.HAVEN) {
+				toHaven = new ArrayList<>();
+			}
+			boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
+			if (willHaveEffect) {
+				// take this action out of normal play and save it as a duration effect
+				player.removeFromPlay(action);
+				player.addDurationEffect(action, toHaven);
+				if (!hasMoved) {
+					player.addDurationSetAside(action);
+					moves = true;
 				}
 			}
 		}
@@ -577,12 +548,11 @@ public class Game implements Runnable {
 	}
 
 	private boolean reactToAttack(Player player) {
-		for (Duration duration : player.getDurations()) {
-			if (duration.durationCard == Card.LIGHTHOUSE) {
-				message(player, "You have " + Card.LIGHTHOUSE.htmlName() + " in play");
-				messageOpponents(player, player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play");
-				return true;
-			}
+		if (player.getDurationEffects().stream()
+				.anyMatch(effect -> effect.card == Card.LIGHTHOUSE)) {
+			message(player, "You have " + Card.LIGHTHOUSE.htmlName() + " in play");
+			messageOpponents(player, player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play");
+			return true;
 		}
 		boolean unaffected = false;
 		Set<Card> reactions = getAttackReactions(player);
@@ -1236,12 +1206,6 @@ public class Game implements Runnable {
 				.map(list -> list.get(0))
 				.forEach(cards::add);
 		return cards;
-	}
-
-	public Set<Card> playableActions(Player player) {
-		return player.getHand().stream()
-				.filter(c -> c.isAction)
-				.collect(Collectors.toSet());
 	}
 
 	public void addCardCostReduction(int toAdd) {

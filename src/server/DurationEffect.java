@@ -2,10 +2,9 @@ package server;
 
 import java.util.List;
 
-public class Duration {
+public class DurationEffect {
 
-	public Card durationCard;
-	public Card modifier;
+	public Card card;
 	public List<Card> havenedCards;
 
 }

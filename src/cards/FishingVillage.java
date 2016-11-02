@@ -1,7 +1,6 @@
 package cards;
 
 import server.Card;
-import server.Duration;
 import server.Game;
 import server.Player;
 
@@ -24,7 +23,7 @@ public class FishingVillage extends Card {
 	}
 
 	@Override
-	public void onDurationEffect(Player player, Game game, Duration duration) {
+	public void onDurationEffect(Player player, Game game) {
 		plusActions(player, game, 1);
 		plusCoins(player, game, 1);
 	}

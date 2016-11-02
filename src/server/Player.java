@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.stream.Collectors;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -123,8 +124,9 @@ public class Player {
 
 	private int victoryTokens = 0;
 
-	private List<Duration> durations = new ArrayList<Duration>();
-	private List<Card> resolvedDurationCards = new ArrayList<Card>();
+	private List<DurationEffect> durationEffects = new ArrayList<>();
+	private List<Card> durationSetAsideCards = new ArrayList<>();
+	private List<Card> resolvedDurationCards = new ArrayList<>();
 
 	private int actions;
 	private int buys;
@@ -151,7 +153,8 @@ public class Player {
 		islandMat.clear();
 		pirateShipTokens = 0;
 		victoryTokens = 0;
-		durations.clear();
+		durationEffects.clear();
+		durationSetAsideCards.clear();
 		resolvedDurationCards.clear();
 		turns = 0;
 		cardsGainedDuringTurn.clear();
@@ -187,12 +190,7 @@ public class Player {
 	}
 
 	public boolean hasExtraTurn() {
-		for (Duration duration : durations) {
-			if (duration.durationCard == Card.OUTPOST) {
-				return true;
-			}
-		}
-		return false;
+		return durationEffects.stream().anyMatch(effect -> effect.card == Card.OUTPOST);
 	}
 
 	public boolean isTakingExtraTurn() {
@@ -672,11 +670,10 @@ public class Player {
 	}
 
 	public List<Card> allCardsInPlay() {
-		List<Card> cardsInPlay = new ArrayList<Card>();
+		List<Card> cardsInPlay = new ArrayList<>();
 		cardsInPlay.addAll(play);
-		for (Duration duration : durations) {
-			cardsInPlay.add(duration.durationCard);
-		}
+		// for Horn of Plenty, duration cards played last turn count as in play (but not their modifiers!)
+		resolvedDurationCards.stream().filter(c -> c.isDuration).forEach(cardsInPlay::add);
 		return cardsInPlay;
 	}
 
@@ -782,21 +779,39 @@ public class Player {
 		sendCommand(command);
 	}
 
-	public List<Duration> getDurations() {
-		return durations;
+	public List<DurationEffect> getDurationEffects() {
+		return durationEffects;
 	}
 
-	public void durationResolved(Duration duration) {
-		if (duration.durationCard != null) {
-			resolvedDurationCards.add(duration.durationCard);
-		}
-		if (duration.modifier != null) {
-			resolvedDurationCards.add(duration.modifier);
-		}
+	public void addDurationEffect(Card card) {
+		addDurationEffect(card, null);
 	}
 
-	public void addDuration(Duration duration) {
-		durations.add(duration);
+	public void addDurationEffect(Card card, List<Card> havenedCards) {
+		DurationEffect effect = new DurationEffect();
+		effect.card = card;
+		effect.havenedCards = havenedCards;
+		if (havenedCards != null) {
+			durationSetAsideCards.addAll(havenedCards);
+		}
+		durationEffects.add(effect);
+		sendDurations();
+	}
+
+	public void addDurationSetAside(Card card) {
+		durationSetAsideCards.add(card);
+		sendDurations();
+	}
+
+	public void removeDurationSetAside(Card card) {
+		durationSetAsideCards.remove(card);
+		sendDurations();
+	}
+
+	public void cleanupDurations() {
+		durationEffects.clear();
+		resolvedDurationCards.addAll(durationSetAsideCards);
+		durationSetAsideCards.clear();
 		sendDurations();
 	}
 
@@ -804,38 +819,8 @@ public class Player {
 	public void sendDurations() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setDurations");
-		command.put("contents", durationsString());
+		command.put("contents", Card.htmlList(durationSetAsideCards));
 		sendCommand(command);
-	}
-
-	private String durationsString() {
-		StringBuilder builder = new StringBuilder();
-		Iterator<Duration> iter = durations.iterator();
-		while (iter.hasNext()) {
-			Duration duration = iter.next();
-			String durationString = duration.durationCard.htmlName();
-			if (duration.havenedCards != null) {
-				durationString += "(" + Card.htmlList(duration.havenedCards) + ")";
-			}
-			if (duration.modifier != null) {
-				durationString = duration.modifier.htmlName() + "(" + durationString + ")";
-			}
-			builder.append(durationString);
-			if (iter.hasNext()) {
-				builder.append(", ");
-			}
-		}
-		return builder.toString();
-	}
-
-	public void setDurationModifier(Card modifier) {
-		removeFromPlay(modifier);
-		durations.get(durations.size() - 1).modifier = modifier;
-		sendDurations();
-	}
-
-	public List<Card> getLastHaven() {
-		return durations.get(durations.size() - 1).havenedCards;
 	}
 
 	public List<Card> getDeck() {
@@ -846,15 +831,7 @@ public class Player {
 		deck.addAll(discard);
 		deck.addAll(nativeVillageMat);
 		deck.addAll(islandMat);
-		for (Duration duration : durations) {
-			deck.add(duration.durationCard);
-			if (duration.modifier != null) {
-				deck.add(duration.modifier);
-			}
-			if (duration.havenedCards != null) {
-				deck.addAll(duration.havenedCards);
-			}
-		}
+		deck.addAll(durationSetAsideCards);
 		deck.addAll(resolvedDurationCards);
 		return deck;
 	}

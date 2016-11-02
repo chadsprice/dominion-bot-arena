@@ -1,7 +1,6 @@
 package cards;
 
 import server.Card;
-import server.Duration;
 import server.Game;
 import server.Player;
 
@@ -35,20 +34,18 @@ public class HorseTraders extends Card {
     public boolean onAttackReaction(Player player, Game game) {
         game.messageAll("setting it aside");
         player.removeFromHand(this);
-        // at the start of your next turn, treat this as a duration card
-        Duration duration = new Duration();
-        duration.durationCard = this;
-        player.addDuration(duration);
+        // at the start of your next turn, treat this as a duration effect
+        player.addDurationEffect(this);
         return false;
     }
 
     @Override
-    public void onDurationEffect(Player player, Game game, Duration duration) {
+    public void onDurationEffect(Player player, Game game) {
         plusCards(player, game, 1);
         // return this card to your hand
         game.message(player, "returning the " + this.htmlNameRaw() + " to your hand");
         game.messageOpponents(player, "returning the " + this.htmlNameRaw() + " to their hand");
-        duration.durationCard = null;
+        player.removeDurationSetAside(this);
         player.addToHand(this);
     }
 

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import server.Card;
-import server.Duration;
 import server.Game;
 import server.Player;
 
@@ -35,7 +34,7 @@ public class Tactician extends Card {
 	}
 
 	@Override
-	public void onDurationEffect(Player player, Game game, Duration duration) {
+	public void onDurationEffect(Player player, Game game) {
 		// +5 cards
 		List<Card> drawn = player.drawIntoHand(5);
 		game.message(player, "drawing " + Card.htmlList(drawn));

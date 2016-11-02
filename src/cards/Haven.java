@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import server.Card;
-import server.Duration;
+import server.DurationEffect;
 import server.Game;
 import server.Player;
 
@@ -26,7 +26,7 @@ public class Haven extends Card {
 		plusActions(player, game, 1);
 		// choose a card to haven
 		if (!player.getHand().isEmpty()) {
-			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Haven: Choose a card to set aside.");
+			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<>(player.getHand()), "Haven: Choose a card to set aside.");
 			player.removeFromHand(toHaven);
 			havened.add(toHaven);
 			game.message(player, "setting aside " + toHaven.htmlName() + " face down");
@@ -42,11 +42,11 @@ public class Haven extends Card {
 	}
 
 	@Override
-	public void onDurationEffect(Player player, Game game, Duration duration) {
-		player.addToHand(duration.havenedCards);
+	public void onDurationEffect(Player player, Game game, DurationEffect duration) {
 		game.message(player, "returning " + Card.htmlList(duration.havenedCards) + " to your hand");
 		game.messageOpponents(player, "returning " + Card.numCards(duration.havenedCards.size()) + " to their hand");
-		duration.havenedCards.clear();
+		duration.havenedCards.forEach(player::removeDurationSetAside);
+		player.addToHand(duration.havenedCards);
 	}
 	
 	@Override

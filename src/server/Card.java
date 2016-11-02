@@ -214,6 +214,7 @@ public class Card {
 	public static final Card FORTRESS = new Fortress();
 	public static final Card IRONMONGER = new Ironmonger();
 	public static final Card MARAUDER = new Marauder();
+	public static final Card PROCESSION = new Procession();
 	public static final Card RATS = new Rats();
 	public static final Card SCAVENGER = new Scavenger();
 	public static final Card WANDERING_MINSTREL = new WanderingMinstrel();
@@ -499,6 +500,7 @@ public class Card {
 		include(FORTRESS, DARK_AGES_SET);
 		include(IRONMONGER, DARK_AGES_SET);
 		include(MARAUDER, DARK_AGES_SET);
+		include(PROCESSION, DARK_AGES_SET);
 		include(RATS, DARK_AGES_SET);
 		include(SCAVENGER, DARK_AGES_SET);
 		include(BANDIT_CAMP, DARK_AGES_SET);
@@ -636,8 +638,11 @@ public class Card {
 		onPlay(player, game);
 		return true;
 	}
-	public void onDurationEffect(Player player, Game game, Duration duration) {
+	public void onDurationEffect(Player player, Game game) {
 		throw new UnsupportedOperationException();
+	}
+	public void onDurationEffect(Player player, Game game, DurationEffect duration) {
+		onDurationEffect(player, game);
 	}
 
 	public void onGain(Player player, Game game) {}
