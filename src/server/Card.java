@@ -217,6 +217,7 @@ public class Card {
 	public static final Card RATS = new Rats();
 	public static final Card SCAVENGER = new Scavenger();
 	public static final Card WANDERING_MINSTREL = new WanderingMinstrel();
+	public static final Card BANDIT_CAMP = new BanditCamp();
 	public static final Card CATACOMBS = new Catacombs();
 	public static final Card COUNT = new Count();
 	public static final Card CULTIST = new Cultist();
@@ -499,6 +500,7 @@ public class Card {
 		include(MARAUDER, DARK_AGES_SET);
 		include(RATS, DARK_AGES_SET);
 		include(SCAVENGER, DARK_AGES_SET);
+		include(BANDIT_CAMP, DARK_AGES_SET);
 		include(WANDERING_MINSTREL, DARK_AGES_SET);
 		include(CATACOMBS, DARK_AGES_SET);
 		include(COUNT, DARK_AGES_SET);

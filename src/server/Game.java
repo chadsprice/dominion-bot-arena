@@ -208,7 +208,7 @@ public class Game implements Runnable {
 		if (kingdomCards.contains(Card.URCHIN)) {
 			nonSupply.put(Card.MERCENARY, 10);
 		}
-		if (kingdomCards.contains(Card.MARAUDER)) {
+		if (kingdomCards.contains(Card.MARAUDER) || kingdomCards.contains(Card.BANDIT_CAMP)) {
 			nonSupply.put(Card.SPOILS, 15);
 		}
 	}
