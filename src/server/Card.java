@@ -221,6 +221,7 @@ public class Card {
 	public static final Card BANDIT_CAMP = new BanditCamp();
 	public static final Card CATACOMBS = new Catacombs();
 	public static final Card COUNT = new Count();
+	public static final Card COUNTERFEIT = new Counterfeit();
 	public static final Card CULTIST = new Cultist();
 	public static final Card GRAVEROBBER = new Graverobber();
 	public static final Card JUNK_DEALER = new JunkDealer();
@@ -507,6 +508,7 @@ public class Card {
 		include(WANDERING_MINSTREL, DARK_AGES_SET);
 		include(CATACOMBS, DARK_AGES_SET);
 		include(COUNT, DARK_AGES_SET);
+		include(COUNTERFEIT, DARK_AGES_SET);
 		include(CULTIST, DARK_AGES_SET);
 		include(GRAVEROBBER, DARK_AGES_SET);
 		include(JUNK_DEALER, DARK_AGES_SET);

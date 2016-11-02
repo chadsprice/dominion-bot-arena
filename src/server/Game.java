@@ -61,18 +61,21 @@ public class Game implements Runnable {
 				}
 			};
 	private static int TREASURE_PLAY_ORDER_TYPE(Card card) {
-		if (card == Card.CONTRABAND) {
-			// play contraband first so opponents don't know exactly how much coin you have when they prohibit you
-			// from buying something
+		if (card == Card.COUNTERFEIT) {
+			// play Couterfeit first because it gives you the opportunity to play other treasures twice
 			return 0;
+		} if (card == Card.CONTRABAND) {
+			// play contraband early so opponents don't know exactly how much coin you have when they prohibit you
+			// from buying something
+			return 1;
 		} else if (card == Card.HORN_OF_PLENTY) {
 			// play horn of plenty late to maximize its gaining potential
-			return 2;
+			return 3;
 		} else if (card == Card.BANK) {
 			// play bank last to maximize its value
-			return 3;
+			return 4;
 		} else {
-			return 1;
+			return 2;
 		}
 	}
 

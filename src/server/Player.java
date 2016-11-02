@@ -340,7 +340,7 @@ public class Player {
 				!(game.supply.containsKey(Card.GRAND_MARKET) && hand.contains(Card.COPPER)) &&
 				!hand.contains(Card.HORN_OF_PLENTY) &&
 				!hand.contains(Card.ILL_GOTTEN_GAINS) &&
-				!hand.contains(Card.SPOILS);
+				!hand.contains(Card.SPOILS) && !hand.contains(Card.COUNTERFEIT);
 	}
 
 	@SuppressWarnings("unchecked")
