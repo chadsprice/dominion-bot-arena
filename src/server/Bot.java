@@ -734,4 +734,9 @@ public class Bot extends Player {
 		return new Hermit.CardFromDiscardOrHand(null, false);
 	}
 
+	public boolean urchinTrashForMercenary() {
+		// Mercenary is likely to be better than Urchin
+		return true;
+	}
+
 }

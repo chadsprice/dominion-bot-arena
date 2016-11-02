@@ -205,6 +205,9 @@ public class Game implements Runnable {
 		if (kingdomCards.contains(Card.HERMIT)) {
 			nonSupply.put(Card.MADMAN, 10);
 		}
+		if (kingdomCards.contains(Card.URCHIN)) {
+			nonSupply.put(Card.MERCENARY, 10);
+		}
 	}
 
 	private void takeTurn(Player player) {
@@ -496,6 +499,8 @@ public class Game implements Runnable {
 		messageIndent++;
 		if (!action.isDuration) {
 			if (action.isAttack) {
+				// handle Urchins before the attack resolves
+				handleUrchins(player, action);
 				// attack reactions
 				List<Player> targets = new ArrayList<>();
 				for (Player opponent : getOpponents(player)) {
@@ -538,6 +543,33 @@ public class Game implements Runnable {
 		}
 		messageIndent--;
 		return moves;
+	}
+
+	private void handleUrchins(Player player, Card trigger) {
+		while (player.getPlay().contains(Card.URCHIN)) {
+			// Urchin cannot trigger itself, even if played multiple times (like via Throne Room)
+			if (trigger == Card.URCHIN && player.getPlay().stream().filter(c -> c == Card.URCHIN).count() == 1) {
+				break;
+			}
+			if (chooseTrashUrchinForMercenary(player)) {
+				messageAll("trashing " + Card.URCHIN + " from play" + (nonSupply.get(Card.MERCENARY) != 0 ? (" and gaining " + Card.MERCENARY.htmlName()) : ""));
+				player.removeFromPlay(Card.URCHIN);
+				addToTrash(player, Card.URCHIN);
+				if (nonSupply.get(Card.MERCENARY) != 0) {
+					gain(player, Card.MERCENARY);
+				}
+			} else {
+				break;
+			}
+		}
+	}
+
+	private boolean chooseTrashUrchinForMercenary(Player player) {
+		if (player instanceof Bot) {
+			return ((Bot) player).urchinTrashForMercenary();
+		}
+		int choice = promptMultipleChoice(player, "Urchin: Trash " + Card.URCHIN.htmlName() + (nonSupply.get(Card.MERCENARY) != 0 ? (" and gain " + Card.MERCENARY.htmlName()) : "") + "?", new String[] {"Yes", "No"});
+		return (choice == 0);
 	}
 
 	private boolean reactToAttack(Player player) {

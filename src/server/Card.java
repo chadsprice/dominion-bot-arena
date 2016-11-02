@@ -207,6 +207,7 @@ public class Card {
 	public static final Card MARKET_SQUARE = new MarketSquare();
 	public static final Card SAGE = new Sage();
 	public static final Card STOREROOM = new Storeroom();
+	public static final Card URCHIN = new Urchin();
 	public static final Card ARMORY = new Armory();
 	public static final Card DEATH_CART = new DeathCart();
 	public static final Card FEODUM = new Feodum();
@@ -245,6 +246,7 @@ public class Card {
 	public static final Card SIR_VANDER = new SirVander();
 	// dark ages non-supply
 	public static final Card MADMAN = new Madman();
+	public static final Card MERCENARY = new Mercenary();
 	// dark ages shelters
 	public static final Card HOVEL = new Hovel();
 	public static final Card NECROPOLIS = new Necropolis();
@@ -486,6 +488,7 @@ public class Card {
 		include(MARKET_SQUARE, DARK_AGES_SET);
 		include(SAGE, DARK_AGES_SET);
 		include(STOREROOM, DARK_AGES_SET);
+		include(URCHIN, DARK_AGES_SET);
 		include(ARMORY, DARK_AGES_SET);
 		include(DEATH_CART, DARK_AGES_SET);
 		include(FEODUM, DARK_AGES_SET);
@@ -524,6 +527,7 @@ public class Card {
 		include(SIR_VANDER, KNIGHT_CARDS);
 		// dark ages non-supply
 		include(MADMAN, DARK_AGES_NON_SUPPLY_CARDS);
+		include(MERCENARY, DARK_AGES_NON_SUPPLY_CARDS);
 		// dark ages shelters
 		include(HOVEL, SHELTER_CARDS);
 		include(NECROPOLIS, SHELTER_CARDS);
