@@ -88,7 +88,7 @@ public class Game implements Runnable {
 	private boolean usingShelters;
 	public Map<Card, Integer> supply = new HashMap<>();
 	public Map<Card.MixedPileId, List<Card>> mixedPiles = new HashMap<>();
-	private Map<Card, Integer> nonSupply = new HashMap<>();
+	public Map<Card, Integer> nonSupply = new HashMap<>();
 	private List<Card> trash = new ArrayList<>();
 
 	boolean isGameOver;
@@ -208,6 +208,9 @@ public class Game implements Runnable {
 		if (kingdomCards.contains(Card.URCHIN)) {
 			nonSupply.put(Card.MERCENARY, 10);
 		}
+		if (kingdomCards.contains(Card.MARAUDER)) {
+			nonSupply.put(Card.SPOILS, 15);
+		}
 	}
 
 	private void takeTurn(Player player) {
@@ -325,7 +328,7 @@ public class Game implements Runnable {
 		messageIndent++;
 		player.putFromHandIntoPlay(treasure);
 		player.addCoins(treasure.treasureValue(this));
-		treasure.onPlay(player, this);
+		treasure.onPlay(player, this, false);
 		messageIndent--;
 	}
 

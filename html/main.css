@@ -80,6 +80,7 @@ body {
 }
 
 #prizes p, #nonSupply p {
+  text-align: center;
   margin: 0;
 }
 

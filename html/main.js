@@ -362,8 +362,7 @@ function setNonSupplyPiles(piles) {
     var nameDiv = document.createElement('div');
     nameDiv.className = 'name';
     var nameParagraph = document.createElement('p');
-    nameParagraph.className = card.className;
-    nameParagraph.innerHTML = cardName;
+    nameParagraph.innerHTML = '<span class="' + card.className + '">' + cardName + '</span>';
     nameDiv.appendChild(nameParagraph);
     var subtitleParagraph = document.createElement('p');
     subtitleParagraph.className = 'subtitle';

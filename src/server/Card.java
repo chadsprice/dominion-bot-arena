@@ -213,6 +213,7 @@ public class Card {
 	public static final Card FEODUM = new Feodum();
 	public static final Card FORTRESS = new Fortress();
 	public static final Card IRONMONGER = new Ironmonger();
+	public static final Card MARAUDER = new Marauder();
 	public static final Card RATS = new Rats();
 	public static final Card SCAVENGER = new Scavenger();
 	public static final Card WANDERING_MINSTREL = new WanderingMinstrel();
@@ -247,6 +248,7 @@ public class Card {
 	// dark ages non-supply
 	public static final Card MADMAN = new Madman();
 	public static final Card MERCENARY = new Mercenary();
+	public static final Card SPOILS = new Spoils();
 	// dark ages shelters
 	public static final Card HOVEL = new Hovel();
 	public static final Card NECROPOLIS = new Necropolis();
@@ -494,6 +496,7 @@ public class Card {
 		include(FEODUM, DARK_AGES_SET);
 		include(FORTRESS, DARK_AGES_SET);
 		include(IRONMONGER, DARK_AGES_SET);
+		include(MARAUDER, DARK_AGES_SET);
 		include(RATS, DARK_AGES_SET);
 		include(SCAVENGER, DARK_AGES_SET);
 		include(WANDERING_MINSTREL, DARK_AGES_SET);
@@ -528,6 +531,7 @@ public class Card {
 		// dark ages non-supply
 		include(MADMAN, DARK_AGES_NON_SUPPLY_CARDS);
 		include(MERCENARY, DARK_AGES_NON_SUPPLY_CARDS);
+		include(SPOILS, DARK_AGES_NON_SUPPLY_CARDS);
 		// dark ages shelters
 		include(HOVEL, SHELTER_CARDS);
 		include(NECROPOLIS, SHELTER_CARDS);
