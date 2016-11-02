@@ -739,4 +739,16 @@ public class Bot extends Player {
 		return true;
 	}
 
+	public Card pillageOpponentDiscard(Set<Card> discardable) {
+		// have opponent discard their most expensive non-victory card
+		List<Card> nonVictory = discardable.stream().filter(c -> !c.isVictory).collect(Collectors.toList());
+		if (!nonVictory.isEmpty()) {
+			Collections.sort(nonVictory, COST_ORDER_COMPARATOR);
+			return nonVictory.get(0);
+		} else {
+			// otherwise, just pick something
+			return discardable.iterator().next();
+		}
+	}
+
 }

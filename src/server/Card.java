@@ -225,6 +225,7 @@ public class Card {
 	public static final Card JUNK_DEALER = new JunkDealer();
 	public static final Card KNIGHTS = new Knights();
 	public static final Card MYSTIC = new Mystic();
+	public static final Card PILLAGE = new Pillage();
 	public static final Card REBUILD = new Rebuild();
 	public static final Card ROGUE = new Rogue();
 	public static final Card ALTAR = new Altar();
@@ -509,6 +510,7 @@ public class Card {
 		include(JUNK_DEALER, DARK_AGES_SET);
 		include(KNIGHTS, DARK_AGES_SET);
 		include(MYSTIC, DARK_AGES_SET);
+		include(PILLAGE, DARK_AGES_SET);
 		include(REBUILD, DARK_AGES_SET);
 		include(ROGUE, DARK_AGES_SET);
 		include(ALTAR, DARK_AGES_SET);

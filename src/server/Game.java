@@ -208,7 +208,8 @@ public class Game implements Runnable {
 		if (kingdomCards.contains(Card.URCHIN)) {
 			nonSupply.put(Card.MERCENARY, 10);
 		}
-		if (kingdomCards.contains(Card.MARAUDER) || kingdomCards.contains(Card.BANDIT_CAMP)) {
+		// Spoils are necessary for Marauder, Bandit Camp, and Pillage
+		if (!Collections.disjoint(kingdomCards, Arrays.asList(Card.MARAUDER, Card.BANDIT_CAMP, Card.PILLAGE))) {
 			nonSupply.put(Card.SPOILS, 15);
 		}
 	}
