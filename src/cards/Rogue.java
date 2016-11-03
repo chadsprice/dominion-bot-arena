@@ -48,7 +48,7 @@ public class Rogue extends Card {
                         }
                         game.messageAll("trashing the " + toTrash.htmlNameRaw());
                         drawn.remove(toTrash);
-                        game.addToTrash(target, toTrash);
+                        game.trash(target, toTrash);
                     }
                     if (!drawn.isEmpty()) {
                         game.messageAll("discarding the rest");

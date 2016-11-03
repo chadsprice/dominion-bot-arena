@@ -24,7 +24,7 @@ public class Embargo extends Card {
 			// trash this
 			game.messageAll("trashing the " + this.htmlNameRaw());
 			player.removeFromPlay(this);
-			game.addToTrash(player, this);
+			game.trash(player, this);
 			movedToTrash = true;
 		}
 		// put an embargo token on top of a supply pile

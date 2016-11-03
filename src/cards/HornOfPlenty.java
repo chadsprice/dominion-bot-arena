@@ -35,7 +35,7 @@ public class HornOfPlenty extends Card {
             if (toGain.isVictory && !replaced) {
                 game.messageAll("trashing the " + this.htmlNameRaw());
                 player.removeFromPlay(this);
-                game.addToTrash(player, this);
+                game.trash(player, this);
             }
         } else {
             game.messageAll("gaining nothing");

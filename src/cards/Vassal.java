@@ -1,10 +1,9 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
-
-import java.util.List;
 
 public class Vassal extends Card {
 
@@ -21,28 +20,29 @@ public class Vassal extends Card {
     public void onPlay(Player player, Game game) {
         plusCoins(player, game, 2);
         // reveal the top card of your deck; if it's an action, you may play it, otherwise discard it
-        List<Card> drawn = player.takeFromDraw(1);
-        if (!drawn.isEmpty()) {
-            Card card = drawn.get(0);
-            boolean playing = false;
-            if (card.isAction) {
-                int choice = game.promptMultipleChoice(player, "Vassal: You draw " + card.htmlName() + ". Play it?", new String[] {"Play", "Discard"});
-                if (choice == 0) {
-                    playing = true;
-                }
-            }
-            if (playing) {
-                game.messageAll("drawing and playing " + card.htmlName());
-                player.putFromHandIntoPlay(card);
-                game.playAction(player, card, false);
+        Card top = topCardOfDeck(player);
+        if (top != null) {
+            game.messageAll("drawing " + top.htmlName());
+            game.messageIndent++;
+            if (top.isAction && choosePlay(player, game, top)) {
+                player.putFromHandIntoPlay(top);
+                game.playAction(player, top, false);
             } else {
-                game.messageAll("drawing and discarding " + card.htmlName());
-                player.addToDiscard(card);
+                game.messageAll("discarding it");
             }
+            game.messageIndent--;
         } else {
             game.message(player, "your deck is empty");
             game.messageOpponents(player, "their deck is empty");
         }
+    }
+
+    private boolean choosePlay(Player player, Game game, Card card) {
+        if (player instanceof Bot) {
+            return ((Bot) player).vassalPlay(card);
+        }
+        int choice = game.promptMultipleChoice(player, "Vassal: You draw " + card.htmlName() + ". Play it?", new String[] {"Play", "Discard"});
+        return (choice == 0);
     }
 
     @Override

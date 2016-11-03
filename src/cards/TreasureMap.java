@@ -21,14 +21,14 @@ public class TreasureMap extends Card {
 		if (!hasMoved) {
 			// trash this
 			player.removeFromPlay(this);
-			game.addToTrash(player, this);
+			game.trash(player, this);
 			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}
 		if (player.getHand().contains(this)) {
 			// trash another copy of treasure map from the hand
 			player.removeFromHand(this);
-			game.addToTrash(player, this);
+			game.trash(player, this);
 			game.message(player, "trashing " + this.htmlName() + " from your hand");
 			game.messageOpponents(player, "trashing " + this.htmlName() + " from their hand");
 			// only if both treasure maps were trashed

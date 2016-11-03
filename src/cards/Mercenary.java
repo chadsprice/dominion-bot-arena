@@ -26,7 +26,7 @@ public class Mercenary extends Card {
             if (toTrash.size() == 2) {
                 game.messageAll("trashing " + Card.htmlList(toTrash));
                 player.removeFromHand(toTrash);
-                game.addToTrash(player, toTrash);
+                game.trash(player, toTrash);
                 // benefits for trashing 2 cards
                 plusCards(player, game, 2);
                 plusCoins(player, game, 2);
@@ -43,7 +43,7 @@ public class Mercenary extends Card {
                 // if you have only one card in hand, you are allowed to trash it
                 game.messageAll("trashing " + Card.htmlList(toTrash));
                 player.removeFromHand(toTrash);
-                game.addToTrash(player, toTrash);
+                game.trash(player, toTrash);
             } else {
                 if (toTrash.size() == 1) {
                     // you tried to trash just one card when you weren't allowed to

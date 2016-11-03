@@ -28,7 +28,7 @@ public class Mine extends Card {
 			if (toTrash != null) {
 				game.messageAll("trashing " + toTrash.htmlName());
 				player.removeFromHand(toTrash);
-				game.addToTrash(player, toTrash);
+				game.trash(player, toTrash);
 				// gain a treasure costing up to 3 more
 				Set<Card> cardsCosting3More = game.cardsCostingAtMost(toTrash.cost(game) + 3);
 				Set<Card> gainable = new HashSet<Card>();

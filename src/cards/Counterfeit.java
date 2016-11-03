@@ -51,7 +51,7 @@ public class Counterfeit extends Card {
                 if (!toPlayMoved) {
                     game.messageAll("trashing the " + toPlay.htmlNameRaw());
                     player.removeFromPlay(toPlay);
-                    game.addToTrash(player, toPlay);
+                    game.trash(player, toPlay);
                 }
             }
         }

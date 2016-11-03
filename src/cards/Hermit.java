@@ -40,12 +40,12 @@ public class Hermit extends Card {
                     game.message(player, "trashing " + toTrash.card.htmlName() + " from your discard");
                     game.messageOpponents(player, "trashing " + toTrash.card.htmlName() + " from their discard");
                     player.removeFromDiscard(toTrash.card, 1);
-                    game.addToTrash(player, toTrash.card);
+                    game.trash(player, toTrash.card);
                 } else {
                     game.message(player, "trashing " + toTrash.card.htmlName() + " from your hand");
                     game.messageOpponents(player, "trashing " + toTrash.card.htmlName() + " from their hand");
                     player.removeFromHand(toTrash.card);
-                    game.addToTrash(player, toTrash.card);
+                    game.trash(player, toTrash.card);
                 }
             } else {
                 game.messageAll("trashing nothing");

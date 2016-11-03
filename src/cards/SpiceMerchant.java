@@ -26,7 +26,7 @@ public class SpiceMerchant extends Card {
             Card toTrash = game.promptChooseTrashFromHand(player, trashable, "Spice Merchant: You may trash a treasure from your hand.", false, "Trash nothing");
             if (toTrash != null) {
                 player.removeFromHand(toTrash);
-                game.addToTrash(player, toTrash);
+                game.trash(player, toTrash);
                 if (chooseFirstBenefit(player, game)) {
                     plusCards(player, game, 2);
                     plusActions(player, game, 1);

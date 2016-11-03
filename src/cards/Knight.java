@@ -49,7 +49,7 @@ public abstract class Knight extends Card {
                     }
                     game.messageAll("trashing the " + toTrash.htmlNameRaw());
                     drawn.remove(toTrash);
-                    game.addToTrash(target, toTrash);
+                    game.trash(target, toTrash);
                     // if another knight was trashed and this hasn't been trashed yet
                     if (toTrash instanceof Knight && !hasMoved && !movedToTrash) {
                         // trash this
@@ -57,7 +57,7 @@ public abstract class Knight extends Card {
                         game.message(player, "You trash " + this.htmlName());
                         game.message(player, player.username + " trashes " + this.htmlName());
                         player.removeFromPlay(this);
-                        game.addToTrash(player, this);
+                        game.trash(player, this);
                         movedToTrash = true;
                         game.messageIndent--;
                     }

@@ -55,7 +55,7 @@ public class JackOfAllTrades extends Card {
             if (toTrash != null) {
                 game.messageAll("trashing " + toTrash.htmlName());
                 player.removeFromHand(toTrash);
-                game.addToTrash(player, toTrash);
+                game.trash(player, toTrash);
             }
         }
     }

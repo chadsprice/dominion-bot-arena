@@ -35,7 +35,7 @@ public class Steward extends Card {
 			if (player.getHand().size() > 0) {
 				toTrash = game.promptTrashNumber(player, 2, true, "Steward");
 				player.removeFromHand(toTrash);
-				game.addToTrash(player, toTrash);
+				game.trash(player, toTrash);
 			} else {
 				toTrash = new ArrayList<Card>();
 			}

@@ -1,8 +1,8 @@
 package cards;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import server.Card;
 import server.Game;
@@ -23,35 +23,23 @@ public class Bureaucrat extends Card {
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// gain a silver card
-		if (game.supply.get(Card.SILVER) > 0) {
-			game.message(player, "gaining " + Card.SILVER.htmlName() + " onto your deck");
-			game.messageOpponents(player, "gaining " + Card.SILVER.htmlName() + " onto their deck");
-			game.gainToTopOfDeck(player, Card.SILVER);
-		}
+		gainOntoDeck(player, game, Card.SILVER);
 		// each other player puts a victory card from their hand on top of their deck or reveals a hand with no victory cards
 		for (Player target : targets) {
-			Set<Card> choices = victoryCardsInHand(target);
-			if (!choices.isEmpty()) {
-				Card choice = game.promptChoosePutOnDeck(target, choices, "Bureaucrat: Choose a victory card to reveal and put on top of your deck.", "attackPrompt");
-				game.message(target, "You reveal " + choice.htmlName() + " and put it on top of your deck");
-				game.messageOpponents(target, target.username + " reveals " + choice.htmlName() + " and puts it on top of their deck");
-				target.putFromHandOntoDraw(choice);
+			Set<Card> victoryCards = target.getHand().stream()
+					.filter(c -> c.isVictory)
+					.collect(Collectors.toSet());
+			if (!victoryCards.isEmpty()) {
+				Card toPutOnDeck = game.promptChoosePutOnDeck(target, victoryCards, "Bureaucrat: Choose a victory card to reveal and put on top of your deck.", "attackPrompt");
+				game.message(target, "You reveal " + toPutOnDeck.htmlName() + " and put it on top of your deck");
+				game.messageOpponents(target, target.username + " reveals " + toPutOnDeck.htmlName() + " and puts it on top of their deck");
+				target.putFromHandOntoDraw(toPutOnDeck);
 			} else {
 				String handString = target.getHand().isEmpty() ? "an empty hand" : Card.htmlList(target.getHand());
 				game.message(target, "You reveal " + handString);
 				game.messageOpponents(target, target.username + " reveals " + handString);
 			}
 		}
-	}
-
-	private Set<Card> victoryCardsInHand(Player player) {
-		Set<Card> victoryCards = new HashSet<Card>();
-		for (Card card : player.getHand()) {
-			if (card.isVictory) {
-				victoryCards.add(card);
-			}
-		}
-		return victoryCards;
 	}
 
 	@Override

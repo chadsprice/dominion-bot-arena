@@ -1,5 +1,6 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -21,29 +22,30 @@ public class Harbinger extends Card {
     public void onPlay(Player player, Game game) {
         plusCards(player, game, 1);
         plusActions(player, game, 1);
+        // you may put a card from your discard onto your deck
         if (!player.getDiscard().isEmpty()) {
-            Set<Card> cardsInDiscard = new HashSet<Card>(player.getDiscard());
-            List<Card> cardsInDiscardSorted = new ArrayList<Card>(cardsInDiscard);
-            Collections.sort(cardsInDiscardSorted, Player.HAND_ORDER_COMPARATOR);
-            String[] choices = new String[cardsInDiscardSorted.size() + 1];
-            for (int i = 0; i < cardsInDiscardSorted.size(); i++) {
-                choices[i] = cardsInDiscardSorted.get(i).toString();
-            }
-            choices[cardsInDiscardSorted.size()] = "None";
-            int choice = game.promptMultipleChoice(player, "Harbinger: Choose a card from your discard to put on top of your deck.", choices);
-            if (choice != cardsInDiscardSorted.size()) {
-                Card chosenCard = cardsInDiscardSorted.get(choice);
-                player.removeFromDiscard(chosenCard, 1);
-                player.putOnDraw(chosenCard);
-                game.messageAll("putting " + chosenCard.htmlName() + " on top of their deck");
-            } else {
-                game.message(player, "your discard is empty");
-                game.messageOpponents(player, "their discard is empty");
+            Card toHarbinger = choosePutFromDiscardOntoDeck(player, game, new HashSet<>(player.getDiscard()));
+            if (toHarbinger != null) {
+                game.message(player, "putting " + toHarbinger.htmlName() + " from your discard onto of your deck");
+                game.messageOpponents(player, "putting " + toHarbinger.htmlName() + " from their discard onto of their deck");
+                player.removeFromDiscard(toHarbinger);
+                player.putOnDraw(toHarbinger);
             }
         } else {
             game.message(player, "your discard is empty");
             game.messageOpponents(player, "their discard is empty");
         }
+    }
+
+    private Card choosePutFromDiscardOntoDeck(Player player, Game game, Set<Card> cards) {
+        if (player instanceof Bot) {
+            Card toHarbinger = ((Bot) player).harbingerPutFromDiscardOntoDeck(cards);
+            if (toHarbinger != null && !cards.contains(toHarbinger)) {
+                throw new IllegalStateException();
+            }
+            return toHarbinger;
+        }
+        return game.promptMultipleChoiceCard(player, "Harbinger: You may put a card from your discard onto your deck.", "actionPrompt", cards, "None");
     }
 
     @Override

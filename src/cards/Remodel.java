@@ -26,7 +26,7 @@ public class Remodel extends Card {
 			// trash card
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);
-			game.addToTrash(player, toTrash);
+			game.trash(player, toTrash);
 			// gain a card costing up to 2 more
 			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 2);
 			if (!gainable.isEmpty()) {

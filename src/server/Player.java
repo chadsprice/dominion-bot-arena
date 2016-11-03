@@ -688,6 +688,10 @@ public class Player {
 		sendDiscardSize();
 	}
 
+	public void removeFromDiscard(Card card) {
+        removeFromDiscard(card, 1);
+    }
+
 	public void removeFromDiscard(Card card, int count) {
 		for (Iterator<Card> iter = discard.iterator(); count != 0 && iter.hasNext(); ) {
 			if (iter.next() == card) {

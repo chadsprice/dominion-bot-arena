@@ -26,7 +26,7 @@ public class Pillage extends Card {
         if (!hasMoved) {
             game.messageAll("trashing the " + this.htmlNameRaw());
             player.removeFromPlay(this);
-            game.addToTrash(player, this);
+            game.trash(player, this);
         }
         // each other player with 5 or more cards in hand
         targets.forEach(target -> {

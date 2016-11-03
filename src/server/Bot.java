@@ -478,7 +478,39 @@ public class Bot extends Player {
 		throw new IllegalStateException();
 	}
 
+	// utility functions
+
+	private Card mostExpensive(Collection<Card> cards) {
+        Optional<Card> mostExpensive = cards.stream().max((a, b) -> a.cost(game) - b.cost(game));
+        if (mostExpensive.isPresent()) {
+            return mostExpensive.get();
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
 	// card-specific decisions
+
+	public Card harbingerPutFromDiscardOntoDeck(Set<Card> cards) {
+        // put the most expensive non-victory card on top of your deck
+        Set<Card> nonVictory = cards.stream().filter(c -> !c.isVictory).collect(Collectors.toSet());
+        if (nonVictory.isEmpty()) {
+            return mostExpensive(nonVictory);
+        } else {
+            // if there is none, do nothing
+            return null;
+        }
+	}
+
+	public boolean vassalPlay(Card card) {
+        // playing the action is probably beneficial
+        return true;
+    }
+
+    public boolean moneylenderTrashCopper() {
+        // trashing a Copper for +$3 is good for BigMoney
+        return true;
+    }
 
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)

@@ -20,7 +20,7 @@ public class DameAnna extends Knight {
             if (!toTrash.isEmpty()) {
                 game.messageAll("trashing " + Card.htmlList(toTrash));
                 player.removeFromHand(toTrash);
-                game.addToTrash(player, toTrash);
+                game.trash(player, toTrash);
             }
         }
     }

@@ -24,22 +24,7 @@ public class Poacher extends Card {
         plusActions(player, game, 1);
         plusCoins(player, game, 1);
         // discard a card per empty supply pile
-        int numEmpty = numEmptySupplyPiles(game);
-        if (numEmpty != 0 && !player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, numEmpty, "Poacher", "attackPrompt");
-            game.messageAll("discarding " + Card.htmlList(toDiscard));
-            player.putFromHandIntoDiscard(toDiscard);
-        }
-    }
-
-    private int numEmptySupplyPiles(Game game) {
-        int numEmpty = 0;
-        for (Map.Entry<Card, Integer> entry : game.supply.entrySet()) {
-            if (entry.getValue() == 0) {
-                numEmpty++;
-            }
-        }
-        return numEmpty;
+        discardNumber(player, game, game.numEmptySupplyPiles());
     }
 
     @Override

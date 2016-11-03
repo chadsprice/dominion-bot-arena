@@ -39,7 +39,7 @@ public class Rats extends Card {
             Card toTrash = game.promptChooseTrashFromHand(player, trashable, "Rats: Trash a card from your hand other than " + this.htmlNameRaw() + ".");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
-            game.addToTrash(player, toTrash);
+            game.trash(player, toTrash);
         } else {
             // reveal a hand of all Rats
             revealHand(player, game);

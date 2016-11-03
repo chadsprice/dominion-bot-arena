@@ -27,7 +27,7 @@ public class Lurker extends Card {
                 Card toTrash = game.promptChooseGainFromSupply(player, trashable, "Lurker: Choose an action card from the supply to trash.");
                 game.messageAll("trashing " + toTrash.htmlName() + " from the supply");
                 game.takeFromSupply(toTrash);
-                game.addToTrash(player, toTrash, false);
+                game.trash(player, toTrash, false);
             } else {
                 game.messageAll("there are no action cards in the supply to trash");
             }

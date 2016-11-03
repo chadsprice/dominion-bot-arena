@@ -659,10 +659,15 @@ public class Card {
         return true;
     }
 
+    // common modular effects
+
 	protected void plusCards(Player player, Game game, int numCards) {
-		List<Card> drawn = player.drawIntoHand(numCards);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+        if (numCards == 0) {
+            return;
+        }
+        List<Card> drawn = player.drawIntoHand(numCards);
+        game.message(player, "drawing " + Card.htmlList(drawn));
+        game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 	}
 	protected void plusActions(Player player, Game game, int numActions) {
 		player.addActions(numActions);
@@ -680,6 +685,62 @@ public class Card {
 		player.addVictoryTokens(numTokens);
 		game.messageAll("getting +" + numTokens + " VP");
 	}
+
+	protected void gainOntoDeck(Player player, Game game, Card card) {
+        if (game.supply.get(card) != 0) {
+            game.message(player, "gaining " + card.htmlName() + " onto your deck");
+            game.messageOpponents(player, "gaining " + card.htmlName() + " onto their deck");
+            game.gainToTopOfDeck(player, card);
+        }
+    }
+
+    protected void discardNumber(Player player, Game game, int number) {
+        if (player.getHand().isEmpty() || number == 0) {
+            return;
+        }
+        List<Card> toDiscard = game.promptDiscardNumber(player, number, this.toString(), "attackPrompt");
+        game.messageAll("discarding " + Card.htmlList(toDiscard));
+        player.putFromHandIntoDiscard(toDiscard);
+    }
+
+	protected List<Card> discardAnyNumber(Player player, Game game) {
+        List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, this.toString());
+        game.messageAll("discarding " + Card.htmlList(discarded));
+        player.putFromHandIntoDiscard(discarded);
+        return discarded;
+    }
+
+    protected void gainCardCostingUpTo(Player player, Game game, int cost) {
+        Set<Card> gainable = game.cardsCostingAtMost(cost);
+        if (!gainable.isEmpty()) {
+            Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
+            game.messageAll("gaining " + toGain.htmlName());
+            game.gain(player, toGain);
+        } else {
+            game.messageAll("gaining nothing");
+        }
+    }
+
+    protected void handSizeAttack(List<Player> targets, Game game, int handSize) {
+        targets.forEach(target -> {
+            if (target.getHand().size() > handSize) {
+                int numToDiscard = target.getHand().size() - handSize;
+                List<Card> discarded = game.promptDiscardNumber(target, numToDiscard, this.toString(), "attackPrompt");
+                game.message(target, "You discard " + Card.htmlList(discarded));
+                game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
+                target.putFromHandIntoDiscard(discarded);
+            }
+        });
+    }
+
+    protected Card topCardOfDeck(Player player) {
+        List<Card> drawn = player.takeFromDraw(1);
+        if (!drawn.isEmpty()) {
+            return drawn.get(0);
+        } else {
+            return null;
+        }
+    }
 
 	protected boolean onThroneRoomVariant(Player player, Game game, int multiplier, boolean isMandatory, boolean hasMoved) {
         boolean usedAsModifier = false;
@@ -859,7 +920,7 @@ public class Card {
 			Card toTrash = game.promptChooseTrashFromHand(player, trashable, trashPrompt);
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);
-			game.addToTrash(player, toTrash);
+			game.trash(player, toTrash);
 			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + coins);
 			if (!gainable.isEmpty()) {
 				Card toGain = game.promptChooseGainFromSupply(player, gainable, gainPrompt);

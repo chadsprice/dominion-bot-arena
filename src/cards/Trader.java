@@ -24,7 +24,7 @@ public class Trader extends Card {
             int numSilvers = Math.min(toTrash.cost(game), game.supply.get(Card.SILVER));
             game.messageAll("trashing " + toTrash + " and gaining " + Card.SILVER.htmlName(numSilvers));
             player.removeFromHand(toTrash);
-            game.addToTrash(player, toTrash);
+            game.trash(player, toTrash);
             for (int i = 0; i < numSilvers; i++) {
                 game.gain(player, Card.SILVER);
             }

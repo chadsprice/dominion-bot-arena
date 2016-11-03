@@ -25,7 +25,7 @@ public class Altar extends Card {
             Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Altar: Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
-            game.addToTrash(player, toTrash);
+            game.trash(player, toTrash);
         } else {
             game.messageAll("revealing an empty hand, trashing nothing");
         }

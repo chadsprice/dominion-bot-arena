@@ -64,7 +64,7 @@ public class Count extends Card {
                     List<Card> toTrash = new ArrayList<>(player.getHand());
                     game.messageAll("trashing " + Card.htmlList(toTrash));
                     player.removeFromHand(toTrash);
-                    game.addToTrash(player, toTrash);
+                    game.trash(player, toTrash);
                 } else {
                     game.messageAll("revealing an empty hand, trashing nothing");
                 }

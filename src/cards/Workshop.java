@@ -19,15 +19,7 @@ public class Workshop extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// gain a card costing up to $4
-		Set<Card> gainable = game.cardsCostingAtMost(4);
-		if (!gainable.isEmpty()) {
-			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Workshop: Choose a card to gain.");
-			game.messageAll("gaining " + toGain.htmlName());
-			game.gain(player, toGain);
-		} else {
-			game.messageAll("gaining nothing");
-		}
+		gainCardCostingUpTo(player, game, 4);
 	}
 
 	@Override

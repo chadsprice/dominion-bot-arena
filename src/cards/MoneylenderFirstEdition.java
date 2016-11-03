@@ -22,7 +22,7 @@ public class MoneylenderFirstEdition extends Card {
             game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
             // trash it
             player.removeFromHand(Card.COPPER);
-            game.addToTrash(player, Card.COPPER);
+            game.trash(player, Card.COPPER);
             // +$3
             player.addCoins(3);
         } else {

@@ -405,7 +405,7 @@ public class Game implements Runnable {
 			List<Card> treasures = player.removeAllTreasuresFromPlay();
 			if (!treasures.isEmpty()) {
 				messageAll("trashing " + Card.htmlList(treasures) + " from play");
-				addToTrash(player, treasures);
+				trash(player, treasures);
 			}
 		}
 		// if the purchase can be affected by Goons
@@ -438,7 +438,7 @@ public class Game implements Runnable {
 				Card toTrash = promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Farmland: Choose a card to trash and gain a card costing exactly $2 more.");
 				messageAll("trashing " + toTrash.htmlName() + " because of " + Card.FARMLAND.htmlNameRaw());
 				player.removeFromHand(toTrash);
-				addToTrash(player, toTrash);
+				trash(player, toTrash);
 				Set<Card> gainable = cardsCostingExactly(toTrash.cost(this) + 2);
 				if (!gainable.isEmpty()) {
 					Card toGain = promptChooseGainFromSupply(player, gainable, "Farmland: Choose a card to gain.");
@@ -455,7 +455,7 @@ public class Game implements Runnable {
 				message(player, "trashing " + Card.HOVEL.htmlName() + " from your hand");
 				messageOpponents(player, "trashing " + Card.HOVEL.htmlName() + " from their hand");
 				player.removeFromHand(Card.HOVEL);
-				addToTrash(player, Card.HOVEL);
+				trash(player, Card.HOVEL);
 			} else {
 				break;
 			}
@@ -536,7 +536,7 @@ public class Game implements Runnable {
 			if (chooseTrashUrchinForMercenary(player)) {
 				messageAll("trashing " + Card.URCHIN + " from play" + (nonSupply.get(Card.MERCENARY) != 0 ? (" and gaining " + Card.MERCENARY.htmlName()) : ""));
 				player.removeFromPlay(Card.URCHIN);
-				addToTrash(player, Card.URCHIN);
+				trash(player, Card.URCHIN);
 				if (nonSupply.get(Card.MERCENARY) != 0) {
 					gain(player, Card.MERCENARY);
 				}
@@ -674,7 +674,7 @@ public class Game implements Runnable {
 				messageOpponents(player, player.username + " trashes " + Card.HERMIT.htmlName(numHermits) + " and gains " + Card.MADMAN.htmlName(numMadmen));
 				for (int i = 0; i < numHermits; i++) {
 					player.removeFromPlay(Card.HERMIT);
-					addToTrash(player, Card.HERMIT);
+					trash(player, Card.HERMIT);
 					if (nonSupply.get(Card.MADMAN) != 0) {
 						gain(player, Card.MADMAN);
 					}
@@ -988,7 +988,7 @@ public class Game implements Runnable {
 					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					takeFromSupply(card);
-					addToTrash(player, card);
+					trash(player, card);
 					messageIndent--;
 					return true;
 				} else {
@@ -1055,13 +1055,13 @@ public class Game implements Runnable {
 							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD + " onto your deck");
 							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains " + Card.GOLD + " onto their deck");
 							player.removeFromHand(Card.FOOLS_GOLD);
-							addToTrash(player, Card.FOOLS_GOLD);
+							trash(player, Card.FOOLS_GOLD);
 							gainToTopOfDeck(opponent, Card.GOLD);
 						} else {
 							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain nothing");
 							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains nothing");
 							player.removeFromHand(Card.FOOLS_GOLD);
-							addToTrash(player, Card.FOOLS_GOLD);
+							trash(player, Card.FOOLS_GOLD);
 						}
 					} else {
 						// if the player stops trashing Fool's Golds, stop asking, even if they have more Fool's Golds
@@ -1094,20 +1094,20 @@ public class Game implements Runnable {
 		return trash;
 	}
 
-	public void addToTrash(Player player, Card card) {
-		addToTrash(player, card, true);
+	public void trash(Player player, Card card) {
+		trash(player, card, true);
 	}
 
-	public void addToTrash(Player player, Card card, boolean triggersMarketSquare) {
+    public void trash(Player player, List<Card> cards) {
+        cards.forEach(c -> trash(player, c, true));
+    }
+
+	public void trash(Player player, Card card, boolean triggersMarketSquare) {
         if (onTrash(player, card, triggersMarketSquare)) {
             card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
             trash.add(card);
             sendTrash();
         }
-	}
-
-	public void addToTrash(Player player, List<Card> cards) {
-        cards.forEach(c -> addToTrash(player, c, true));
 	}
 
 	private boolean onTrash(Player player, Card card, boolean triggersMarketSquare) {

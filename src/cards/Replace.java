@@ -27,7 +27,7 @@ public class Replace extends Card {
             Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Replace: Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
-            game.addToTrash(player, toTrash);
+            game.trash(player, toTrash);
             // gain a card costing up to 2 more than the trashed card
             Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 2);
             if (!gainable.isEmpty()) {

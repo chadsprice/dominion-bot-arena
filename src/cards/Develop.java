@@ -27,7 +27,7 @@ public class Develop extends Card {
             Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Develop: Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
-            game.addToTrash(player, toTrash);
+            game.trash(player, toTrash);
             // gain a card costing $1 more and a card costing $1 less, in either order
             int cost = toTrash.cost(game);
             List<Card> gained = new ArrayList<Card>();

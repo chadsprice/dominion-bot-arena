@@ -26,7 +26,7 @@ public class Upgrade extends Card {
 		if (player.getHand().size() > 0) {
 			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Upgrade: Choose a card to trash from your hand.");
 			player.removeFromHand(toTrash);
-			game.addToTrash(player, toTrash);
+			game.trash(player, toTrash);
 			game.messageAll("trashing " + toTrash.htmlName());
 			Set<Card> gainable = game.cardsCostingExactly(toTrash.cost(game) + 1);
 			// if there are cards that can be gained

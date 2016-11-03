@@ -46,7 +46,7 @@ public class Thief extends Card {
 				game.message(target, "You trash the " + toTrash.htmlNameRaw());
 				game.messageOpponents(target, target.username + " trashes the " + toTrash.htmlNameRaw());
 				top.remove(toTrash);
-				game.addToTrash(target, toTrash);
+				game.trash(target, toTrash);
 				int choice = game.promptMultipleChoice(player, "Thief: " + target.username + " trashes " + toTrash.htmlName() + ". Gain the trashed " + toTrash.htmlNameRaw() + "?", new String[] {"Yes", "No"});
 				if (choice == 0) {
 					game.message(player, "You gain the trashed " + toTrash.htmlNameRaw());

@@ -29,7 +29,7 @@ public class Rebuild extends Card {
 
     private void chooseUpgrade(Player player, Game game, Card toTrash) {
         game.messageAll("trashing the " + toTrash.htmlNameRaw());
-        game.addToTrash(player, toTrash);
+        game.trash(player, toTrash);
         Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 3).stream()
                 .filter(c -> c.isVictory).collect(Collectors.toSet());
         if (!gainable.isEmpty()) {

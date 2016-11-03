@@ -5,7 +5,6 @@ import server.Game;
 import server.Player;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Procession extends Card {
 
@@ -30,12 +29,12 @@ public class Procession extends Card {
             // remove it from the set aside duration cards
             game.messageAll("trashing the " + played.htmlNameRaw());
             player.removeDurationSetAside(played);
-            game.addToTrash(player, played);
+            game.trash(player, played);
         } else if (!playedMoved) {
             // remove it from play
             game.messageAll("trashing the " + played.htmlNameRaw());
             player.removeFromPlay(played);
-            game.addToTrash(player, played);
+            game.trash(player, played);
         }
         // gain a card costing exactly $1 more than the trashed card
         Set<Card> gainable = game.cardsCostingExactly(played.cost(game) + 1);
