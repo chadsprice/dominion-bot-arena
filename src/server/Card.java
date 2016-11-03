@@ -285,14 +285,14 @@ public class Card {
 	public static void initializeCardSets() {
 
 		include(BASE_SET, "Base");
-		include(BASE_SET_FIRST_EDITION, "BaseFirstEdition");
+		include(BASE_SET_FIRST_EDITION, "Base (1st Ed.)");
 		include(INTRIGUE_SET, "Intrigue");
-		include(INTRIGUE_SET_FIRST_EDITION, "IntrigueFirstEdition");
+		include(INTRIGUE_SET_FIRST_EDITION, "Intrigue (1st Ed.)");
 		include(SEASIDE_SET, "Seaside");
 		include(PROSPERITY_SET, "Prosperity");
 		include(CORNUCOPIA_SET, "Cornucopia");
 		include(HINTERLANDS_SET, "Hinterlands");
-		include(DARK_AGES_SET, "DarkAges");
+		include(DARK_AGES_SET, "Dark Ages");
 
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);

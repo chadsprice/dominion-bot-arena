@@ -1311,13 +1311,13 @@ function createCustomGame() {
     sets.push('Base');
   }
   if (document.getElementById('baseFirstEditionCheckbox').checked) {
-    sets.push('BaseFirstEdition');
+    sets.push('Base (1st Ed.)');
   }
   if (document.getElementById('intrigueCheckbox').checked) {
     sets.push('Intrigue');
   }
   if (document.getElementById('intrigueFirstEditionCheckbox').checked) {
-    sets.push('IntrigueFirstEdition');
+    sets.push('Intrigue (1st Ed.)');
   }
   if (document.getElementById('seasideCheckbox').checked) {
     sets.push('Seaside');
@@ -1330,6 +1330,9 @@ function createCustomGame() {
   }
   if (document.getElementById('hinterlandsCheckbox').checked) {
     sets.push('Hinterlands');
+  }
+  if (document.getElementById('darkAgesCheckbox').checked) {
+    sets.push('Dark Ages');
   }
   var cards = document.getElementById('customGameCards').value;
   var bots = getBots();
@@ -1896,6 +1899,7 @@ function init() {
   document.getElementById('prosperityCheckbox').checked = true;
   document.getElementById('cornucopiaCheckbox').checked = true;
   document.getElementById('hinterlandsCheckbox').checked = true;
+  document.getElementById('darkAgesCheckbox').checked = true;
 
   // set up lobby log in button
   document.getElementById('changeLoginButton').onclick = changeLogin;
