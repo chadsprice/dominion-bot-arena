@@ -681,6 +681,86 @@ public class Card {
 		game.messageAll("getting +" + numTokens + " VP");
 	}
 
+	protected boolean onThroneRoomVariant(Player player, Game game, int multiplier, boolean isMandatory, boolean hasMoved) {
+        boolean usedAsModifier = false;
+        Set<Card> actions = player.getHand().stream()
+                .filter(c -> c.isAction)
+                .collect(Collectors.toSet());
+        if (!actions.isEmpty()) {
+            Card toPlay;
+            if (isMandatory) {
+                toPlay = game.promptChoosePlay(player, actions,
+                        this.toString() + ": Choose an action from your hand to play " + (multiplier == 2 ? "twice" : "three times") + ".");
+            } else {
+                toPlay = game.promptChoosePlay(player, actions,
+                        this.toString() + ": You may play an action from your hand " + (multiplier == 2 ? "twice" : "three times") + ".",
+                        false, "None");
+            }
+            if (toPlay != null) {
+                game.messageAll("choosing " + toPlay.htmlName());
+                // put the chosen card into play
+                player.putFromHandIntoPlay(toPlay);
+                // handle Band of Misfits entirely separately
+                if (toPlay == Card.BAND_OF_MISFITS) {
+                    return onThroneRoomVariantBandOfMisfits(player, game, multiplier, hasMoved);
+                }
+                // play it multiple times
+                boolean toPlayMoved = false;
+                for (int i = 0; i < multiplier; i++) {
+                    toPlayMoved |= game.playAction(player, toPlay, toPlayMoved);
+                    // if the card was a duration card, and it was set aside, and this hasn't been moved
+                    if (toPlay.isDuration && toPlayMoved && !hasMoved && !usedAsModifier) {
+                        // set this aside as a modifier
+                        player.removeFromPlay(this);
+                        player.addDurationSetAside(this);
+                        usedAsModifier = true;
+                    }
+                }
+                afterThroneRoomVariant(player, game, toPlay, toPlayMoved);
+            } else {
+                game.messageAll("choosing nothing");
+            }
+        } else {
+            game.messageAll("having no actions");
+        }
+        return usedAsModifier;
+    }
+    private boolean onThroneRoomVariantBandOfMisfits(Player player, Game game, int multiplier, boolean hasMoved) {
+        boolean usedAsModifier = false;
+        Set<Card> imitable = game.cardsCostingAtMost(Card.BAND_OF_MISFITS.cost(game) - 1).stream()
+                .filter(c -> c.isAction && c != this)
+                .collect(Collectors.toSet());
+        if (!imitable.isEmpty()) {
+            Card toImitate = BandOfMisfits.chooseImitate(player, game, imitable);
+            // replace this in play with an imitator
+            Card imitator;
+            try {
+                imitator = toImitate.getClass().newInstance();
+                imitator.isBandOfMisfits = true;
+            } catch (Exception e) {
+                throw new IllegalStateException();
+            }
+            player.removeFromPlay(this);
+            player.addToPlay(imitator);
+            // play it multiple times
+            boolean imitatorMoved = false;
+            for (int i = 0; i < multiplier; i++) {
+                imitatorMoved |= game.playAction(player, imitator, imitatorMoved);
+                // if the card was a duration card, and it was set aside, and this hasn't been moved
+                if (imitator.isDuration && imitatorMoved && !hasMoved && !usedAsModifier) {
+                    // set this aside as a modifier
+                    player.removeFromPlay(this);
+                    player.addDurationSetAside(this);
+                    usedAsModifier = true;
+                }
+            }
+        } else {
+            game.messageAll("there are no cards it can be played as");
+        }
+        return usedAsModifier;
+    }
+    protected void afterThroneRoomVariant(Player player, Game game, Card played, boolean playedMoved) {}
+
 	protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt) {
 		List<Card> toPutOnDeck;
 		// if there is no order to decide

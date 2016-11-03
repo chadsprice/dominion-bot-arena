@@ -25,9 +25,10 @@ public class BandOfMisfits extends Card {
                 .filter(c -> c.isAction && c != this)
                 .collect(Collectors.toSet());
         if (!imitable.isEmpty()) {
+            // choose a card to imitate
             Card toImitate = chooseImitate(player, game, imitable);
             // replace this in play with an imitator
-            Card imitator = null;
+            Card imitator;
             try {
                 imitator = toImitate.getClass().newInstance();
                 imitator.isBandOfMisfits = true;
@@ -43,7 +44,7 @@ public class BandOfMisfits extends Card {
         }
     }
 
-    private Card chooseImitate(Player player, Game game, Set<Card> imitable) {
+    public static Card chooseImitate(Player player, Game game, Set<Card> imitable) {
         if (player instanceof Bot) {
             Card toImitate = ((Bot) player).bandOfMisfitsImitate(imitable);
             if (!imitable.contains(toImitate)) {

@@ -20,54 +20,32 @@ public class Procession extends Card {
 
     @Override
     public boolean onPlay(Player player, Game game, boolean hasMoved) {
-        boolean usedAsModifier = false;
-        Set<Card> actions = player.getHand().stream().filter(c -> c.isAction).collect(Collectors.toSet());
-        if (!actions.isEmpty()) {
-            Card toPlay = game.promptChoosePlay(player, actions, "Procession: You may play an action from your hand twice.", false, "None");
-            if (toPlay != null) {
-                game.messageAll("choosing " + toPlay.htmlName());
-                // put the chosen card into play
-                player.putFromHandIntoPlay(toPlay);
-                // play it twice
-                boolean toPlayMoved = false;
-                for (int i = 0; i < 2; i++) {
-                    toPlayMoved |= game.playAction(player, toPlay, toPlayMoved);
-                    // if the card was a duration card, and it was set aside, and this hasn't been moved
-                    if (toPlay.isDuration && toPlayMoved && !hasMoved && !usedAsModifier) {
-                        // set this aside as a modifier
-                        player.removeFromPlay(this);
-                        player.addDurationSetAside(this);
-                        usedAsModifier = true;
-                    }
-                }
-                // trash the played card
-                if (toPlay.isDuration && toPlayMoved) {
-                    // remove it from the set aside duration cards
-                    game.messageAll("trashing the " + toPlay.htmlNameRaw());
-                    player.removeDurationSetAside(toPlay);
-                    game.addToTrash(player, toPlay);
-                } else if (!toPlayMoved) {
-                    // remove it from play
-                    game.messageAll("trashing the " + toPlay.htmlNameRaw());
-                    player.removeFromPlay(toPlay);
-                    game.addToTrash(player, toPlay);
-                }
-                // gain a card costing exactly $1 more than the trashed card
-                Set<Card> gainable = game.cardsCostingExactly(toPlay.cost(game) + 1);
-                if (!gainable.isEmpty()) {
-                    Card toGain = game.promptChooseGainFromSupply(player, gainable, "Procession: Choose a card to gain.");
-                    game.messageAll("gaining " + toGain.htmlName());
-                    game.gain(player, toGain);
-                } else {
-                    game.messageAll("gaining nothing");
-                }
-            } else {
-                game.messageAll("choosing nothing");
-            }
-        } else {
-            game.messageAll("having no actions");
+        return onThroneRoomVariant(player, game, 2, false, hasMoved);
+    }
+
+    @Override
+    protected void afterThroneRoomVariant(Player player, Game game, Card played, boolean playedMoved) {
+        // trash the played card
+        if (played.isDuration && playedMoved) {
+            // remove it from the set aside duration cards
+            game.messageAll("trashing the " + played.htmlNameRaw());
+            player.removeDurationSetAside(played);
+            game.addToTrash(player, played);
+        } else if (!playedMoved) {
+            // remove it from play
+            game.messageAll("trashing the " + played.htmlNameRaw());
+            player.removeFromPlay(played);
+            game.addToTrash(player, played);
         }
-        return usedAsModifier;
+        // gain a card costing exactly $1 more than the trashed card
+        Set<Card> gainable = game.cardsCostingExactly(played.cost(game) + 1);
+        if (!gainable.isEmpty()) {
+            Card toGain = game.promptChooseGainFromSupply(player, gainable, "Procession: Choose a card to gain.");
+            game.messageAll("gaining " + toGain.htmlName());
+            game.gain(player, toGain);
+        } else {
+            game.messageAll("gaining nothing");
+        }
     }
 
     @Override

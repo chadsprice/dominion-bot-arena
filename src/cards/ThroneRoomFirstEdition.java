@@ -20,29 +20,7 @@ public class ThroneRoomFirstEdition extends Card {
 
     @Override
     public boolean onPlay(Player player, Game game, boolean hasMoved) {
-        boolean usedAsModifier = false;
-        Set<Card> actions = player.getHand().stream().filter(c -> c.isAction).collect(Collectors.toSet());
-        if (!actions.isEmpty()) {
-            Card toPlay = game.promptChoosePlay(player, actions, "Throne Room (1st ed.): Choose an action to play twice.");
-            game.messageAll("choosing " + toPlay.htmlName());
-            // put the chosen card into play
-            player.putFromHandIntoPlay(toPlay);
-            // play it twice
-            boolean toPlayMoved = false;
-            for (int i = 0; i < 2; i++) {
-                toPlayMoved |= game.playAction(player, toPlay, toPlayMoved);
-                // if the card was a duration card, and it was set aside, and this hasn't been moved
-                if (toPlay.isDuration && toPlayMoved && !hasMoved && !usedAsModifier) {
-                    // set this aside as a modifier
-                    player.removeFromPlay(this);
-                    player.addDurationSetAside(this);
-                    usedAsModifier = true;
-                }
-            }
-        } else {
-            game.messageAll("having no actions");
-        }
-        return usedAsModifier;
+        return onThroneRoomVariant(player, game, 2, true, hasMoved);
     }
 
     @Override
