@@ -751,4 +751,11 @@ public class Bot extends Player {
 		}
 	}
 
+	public Card bandOfMisfitsImitate(Set<Card> imitable) {
+		// imitate the most expensive
+		List<Card> imitableByCost = new ArrayList<>(imitable);
+		Collections.sort(imitableByCost, COST_ORDER_COMPARATOR);
+		return imitableByCost.get(0);
+	}
+
 }

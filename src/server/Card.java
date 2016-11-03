@@ -218,6 +218,7 @@ public class Card {
 	public static final Card RATS = new Rats();
 	public static final Card SCAVENGER = new Scavenger();
 	public static final Card WANDERING_MINSTREL = new WanderingMinstrel();
+    public static final Card BAND_OF_MISFITS = new BandOfMisfits();
 	public static final Card BANDIT_CAMP = new BanditCamp();
 	public static final Card CATACOMBS = new Catacombs();
 	public static final Card COUNT = new Count();
@@ -506,6 +507,7 @@ public class Card {
 		include(SCAVENGER, DARK_AGES_SET);
 		include(BANDIT_CAMP, DARK_AGES_SET);
 		include(WANDERING_MINSTREL, DARK_AGES_SET);
+        include(BAND_OF_MISFITS, DARK_AGES_SET);
 		include(CATACOMBS, DARK_AGES_SET);
 		include(COUNT, DARK_AGES_SET);
 		include(COUNTERFEIT, DARK_AGES_SET);
@@ -578,6 +580,8 @@ public class Card {
 	public boolean isRuins;
 	public boolean isShelter;
 	public boolean isLooter;
+
+    public boolean isBandOfMisfits;
 
 	public int startingSupply(int numPlayers) {
 		if (isVictory) {

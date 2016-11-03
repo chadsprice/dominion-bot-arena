@@ -482,8 +482,12 @@ public class Game implements Runnable {
 	public boolean playAction(Player player, Card action, boolean hasMoved) {
 		boolean moves = false;
 		actionsPlayedThisTurn++;
-		message(player, "You play " + action.htmlName());
-		messageOpponents(player, player.username + " plays " + action.htmlName());
+        if (!action.isBandOfMisfits) {
+            message(player, "You play " + action.htmlName());
+            messageOpponents(player, player.username + " plays " + action.htmlName());
+        } else {
+            messageAll("playing it as " + action.htmlName());
+        }
 		messageIndent++;
 		if (!action.isDuration) {
 			if (action.isAttack) {
@@ -1105,12 +1109,14 @@ public class Game implements Runnable {
 	}
 
 	public void addToTrash(Player player, Card card, boolean triggersMarketSquare) {
+		card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
 		trash.add(card);
 		onTrash(player, card, triggersMarketSquare);
 		sendTrash();
 	}
 
 	public void addToTrash(Player player, List<Card> cards) {
+		cards = cards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		for (Card card : cards) {
 			trash.add(card);
 			onTrash(player, card, true);
@@ -1815,7 +1821,7 @@ public class Game implements Runnable {
 	 * Prompts a human player to choose a card from the supply.
 	 */
 	@SuppressWarnings("unchecked")
-	private Card sendPromptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
+	public Card sendPromptChooseFromSupply(Player player, Set<Card> choiceSet, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
 		if (player instanceof Bot) {
 			throw new IllegalStateException();
 		}

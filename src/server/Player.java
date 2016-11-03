@@ -202,11 +202,13 @@ public class Player {
 	}
 
 	public void cleanup() {
+        play = play.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		discard.addAll(play);
 		play.clear();
 		sendPlay();
 		discard.addAll(hand);
 		hand.clear();
+        resolvedDurationCards = resolvedDurationCards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		discard.addAll(resolvedDurationCards);
 		resolvedDurationCards.clear();
 		sendDiscardSize();
@@ -503,6 +505,7 @@ public class Player {
 	}
 
 	public void addToDiscard(Card card, boolean triggersTunnelReaction) {
+		card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
 		if (triggersTunnelReaction && card == Card.TUNNEL) {
 			handleDiscardedTunnels(1);
 		}
@@ -515,6 +518,7 @@ public class Player {
 	}
 
 	public void addToDiscard(List<Card> cards, boolean triggersTunnelReaction) {
+		cards = cards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		if (triggersTunnelReaction && cards.contains(Card.TUNNEL)) {
 			int numTunnels = (int) cards.stream().filter(c -> c == Card.TUNNEL).count();
 			handleDiscardedTunnels(numTunnels);
@@ -819,7 +823,7 @@ public class Player {
 	public void sendDurations() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setDurations");
-		command.put("contents", Card.htmlList(durationSetAsideCards));
+		command.put("contents", durationSetAsideCards.isEmpty() ? "" : Card.htmlList(durationSetAsideCards));
 		sendCommand(command);
 	}
 
