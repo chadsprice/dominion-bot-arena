@@ -686,6 +686,13 @@ public class Card {
 		game.messageAll("getting +" + numTokens + " VP");
 	}
 
+    protected void gain(Player player, Game game, Card card) {
+        if (game.supply.get(card) != 0) {
+            game.messageAll("gaining " + card.htmlName());
+            game.gain(player, card);
+        }
+    }
+
 	protected void gainOntoDeck(Player player, Game game, Card card) {
         if (game.supply.get(card) != 0) {
             game.message(player, "gaining " + card.htmlName() + " onto your deck");
@@ -733,12 +740,86 @@ public class Card {
         });
     }
 
+    protected void topTwoCardsAttack(List<Player> targets, Game game, Predicate<Card> trashablePredicate, Consumer<Card> trashedConsumer) {
+        targets.forEach(target -> {
+            // draw 2 cards
+            List<Card> drawn = target.takeFromDraw(2);
+            if (!drawn.isEmpty()) {
+                // announce the drawn cards
+                game.message(target, "You draw " + Card.htmlList(drawn));
+                game.messageOpponents(target, target.username + " draws " + Card.htmlList(drawn));
+                game.messageIndent++;
+                // filter out those that can be trashed
+                Set<Card> trashable = drawn.stream().filter(trashablePredicate).collect(Collectors.toSet());
+                if (!trashable.isEmpty()) {
+                    // choose one to trash
+                    Card toTrash;
+                    if (trashable.size() == 1) {
+                        toTrash = trashable.iterator().next();
+                    } else {
+                        toTrash = topTwoCardsAttackChooseTrash(target, game, trashable);
+                    }
+                    // trash it
+                    game.messageAll("trashing the " + toTrash.htmlNameRaw());
+                    drawn.remove(toTrash);
+                    game.trash(target, toTrash);
+                    // do something else with the trashed card
+                    trashedConsumer.accept(toTrash);
+                }
+                if (!drawn.isEmpty()) {
+                    game.messageAll("discarding the rest");
+                    target.addToDiscard(drawn);
+                }
+                game.messageIndent--;
+            } else {
+                game.message(target, "Your deck is empty");
+                game.messageOpponents(target, target.username + "'s deck is empty");
+            }
+        });
+    }
+    private Card topTwoCardsAttackChooseTrash(Player player, Game game, Set<Card> trashable) {
+        if (player instanceof Bot) {
+            Card toTrash = ((Bot) player).topTwoCardAttackTrash(trashable);
+            if (!trashable.contains(toTrash)) {
+                throw new IllegalStateException();
+            }
+            return toTrash;
+        }
+        return game.promptMultipleChoiceCard(player, this.toString() + ": You draw " + Card.htmlList(new ArrayList<>(trashable)) + ". Choose one to trash.", "attackPrompt", trashable);
+    }
+
     protected Card topCardOfDeck(Player player) {
         List<Card> drawn = player.takeFromDraw(1);
         if (!drawn.isEmpty()) {
             return drawn.get(0);
         } else {
             return null;
+        }
+    }
+
+    protected void onRemodelVariant(Player player, Game game, int coins, boolean isExact) {
+        if (!player.getHand().isEmpty()) {
+            // trash a card from your hand
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": Choose a card to trash.");
+            game.messageAll("trashing " + toTrash.htmlName());
+            player.removeFromHand(toTrash);
+            game.trash(player, toTrash);
+            // gain a card from the supply costing more
+            Set<Card> gainable;
+            if (isExact) {
+                gainable = game.cardsCostingExactly(toTrash.cost(game) + coins);
+            } else {
+                gainable = game.cardsCostingAtMost(toTrash.cost(game) + coins);
+            }
+            if (!gainable.isEmpty()) {
+                Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
+                game.messageAll("gaining " + toGain.htmlName());
+                game.gain(player, toGain);
+            } else {
+                game.messageAll("gaining nothing");
+            }
+        } else {
+            game.messageAll("having nothing in hand to trash");
         }
     }
 

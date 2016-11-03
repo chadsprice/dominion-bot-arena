@@ -22,7 +22,7 @@ public class Bureaucrat extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// gain a silver card
+		// gain a Silver
 		gainOntoDeck(player, game, Card.SILVER);
 		// each other player puts a victory card from their hand on top of their deck or reveals a hand with no victory cards
 		for (Player target : targets) {

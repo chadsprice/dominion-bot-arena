@@ -77,7 +77,7 @@ public abstract class Knight extends Card {
 
     private Card chooseTrash(Player player, Game game, Set<Card> trashable) {
         if (player instanceof Bot) {
-            Card toTrash = ((Bot) player).rogueTrash(trashable);
+            Card toTrash = ((Bot) player).topTwoCardAttackTrash(trashable);
             if (!trashable.contains(toTrash)) {
                 throw new IllegalStateException();
             }

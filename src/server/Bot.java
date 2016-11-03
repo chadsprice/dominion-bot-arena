@@ -489,7 +489,28 @@ public class Bot extends Player {
         }
     }
 
+    private Card leastExpensive(Collection<Card> cards) {
+        Optional<Card> leastExpensive = cards.stream().min((a, b) -> a.cost(game) - b.cost(game));
+        if (leastExpensive.isPresent()) {
+            return leastExpensive.get();
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
 	// card-specific decisions
+
+	public Card topTwoCardAttackTrash(Set<Card> trashable) {
+		// if there is a card you want to trash
+		Optional<Card> optionalToTrash = trashable.stream().filter(this::wantToTrash).findFirst();
+		if (optionalToTrash.isPresent()) {
+			// trash it
+			return optionalToTrash.get();
+		} else {
+			// otherwise, trash the cheapest
+            return leastExpensive(trashable);
+		}
+	}
 
 	public Card harbingerPutFromDiscardOntoDeck(Set<Card> cards) {
         // put the most expensive non-victory card on top of your deck
@@ -735,20 +756,6 @@ public class Bot extends Player {
 	public boolean graverobberGain() {
 		// only gain Gold from the trash (unlikely)
 		return game.getTrash().stream().anyMatch(c -> c == Card.GOLD);
-	}
-
-	public Card rogueTrash(Set<Card> trashable) {
-		// if there is a card you want to trash
-		Optional<Card> optionalToTrash = trashable.stream().filter(this::wantToTrash).findFirst();
-		if (optionalToTrash.isPresent()) {
-			// trash it
-			return optionalToTrash.get();
-		} else {
-			// otherwise, trash the cheapest
-			List<Card> trashableByCost = new ArrayList<>(trashable);
-			Collections.sort(trashableByCost, COST_ORDER_COMPARATOR);
-			return trashableByCost.get(trashableByCost.size() - 1);
-		}
 	}
 
 	public boolean huntingGroundsGainDuchy() {

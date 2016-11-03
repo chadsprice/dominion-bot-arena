@@ -20,25 +20,7 @@ public class Remodel extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		// trash a card from hand
-		if (!player.getHand().isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Remodel: Choose a card to trash");
-			// trash card
-			game.messageAll("trashing " + toTrash.htmlName());
-			player.removeFromHand(toTrash);
-			game.trash(player, toTrash);
-			// gain a card costing up to 2 more
-			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 2);
-			if (!gainable.isEmpty()) {
-				Card toGain = game.promptChooseGainFromSupply(player, gainable, "Remodel: Choose a card to gain");
-				game.messageAll("gaining " + toGain.htmlName());
-				game.gain(player, toGain);
-			} else {
-				game.messageAll("gaining nothing");
-			}
-		} else {
-			game.messageAll("having nothing in hand to trash");
-		}
+		onRemodelVariant(player, game, 2, false);
 	}
 
 	@Override

@@ -20,43 +20,12 @@ public class Bandit extends Card {
 
     @Override
     public void onAttack(Player player, Game game, List<Player> targets) {
-        // gain a gold
-        if (game.supply.get(Card.GOLD) != 0) {
-            game.messageAll("gaining " + Card.GOLD.htmlName());
-            game.gain(player, Card.GOLD);
-        }
-        // each other player reveals the top 2 cards of their deck, then trashes a non-copper treasure
-        for (Player target : targets) {
-            List<Card> revealed = target.takeFromDraw(2);
-            if (!revealed.isEmpty()) {
-                game.message(target, "you reveal " + Card.htmlList(revealed));
-                game.messageOpponents(target, target.username + " reveals " + Card.htmlList(revealed));
-                Set<Card> trashable = nonCopperTreasures(revealed);
-                if (!trashable.isEmpty()) {
-                    Card toTrash = null;
-                    if (trashable.size() == 2) {
-                        // target chooses which one to trash
-                        String[] choices = new String[2];
-                        List<Card> trashableSorted = new ArrayList<Card>(trashable);
-                        Collections.sort(trashableSorted, Player.HAND_ORDER_COMPARATOR);
-                        for (int i = 0; i < 2; i++) {
-                            choices[i] = trashableSorted.get(i).toString();
-                        }
-                        int choice = game.promptMultipleChoice(target, "Bandit: You reveal " + Card.htmlList(trashableSorted) + ". Choose one to trash.", "attackPrompt", choices);
-                        toTrash = trashableSorted.get(choice);
-                    } else { // trashable.size() == 1
-                        toTrash = trashable.iterator().next();
-                    }
-                    game.message(target, "you trash " + toTrash.htmlName());
-                    game.messageOpponents(target, target.username + " trashes " + toTrash.htmlName());
-                    revealed.remove(toTrash);
-                    game.trash(target, toTrash);
-                }
-            } else {
-                game.message(target, "your deck is empty");
-                game.messageOpponents(target, target.username + "'s deck is empty");
-            }
-        }
+        // gain a Gold
+        gain(player, game, Card.GOLD);
+        // each other player reveals the top 2 cards of their deck, then trashes a non-Copper treasure
+        topTwoCardsAttack(targets, game,
+                c -> c.isTreasure && c != Card.COPPER,
+                c -> {});
     }
 
     private Set<Card> nonCopperTreasures(List<Card> revealed) {
