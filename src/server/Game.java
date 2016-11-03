@@ -648,31 +648,21 @@ public class Game implements Runnable {
 		}
 		// handle Treasuries
 		if (!boughtVictoryCardThisTurn) {
-			int numTreasuries = 0;
-			for (Card card : player.getPlay()) {
-				if (card == Card.TREASURY) {
-					numTreasuries++;
-				}
-			}
-			if (numTreasuries > 0) {
+			int numTreasuries = (int) player.getPlay().stream().filter(c -> c == Card.TREASURY).count();
+			if (numTreasuries != 0) {
 				String[] choices = new String[numTreasuries + 1];
 				for (int i = 0; i <= numTreasuries; i++) {
-					choices[i] = (numTreasuries - i) + "";
+					choices[i] = i + "";
 				}
-				int choice = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
-				int numToPutOnDeck = numTreasuries - choice;
-				if (numToPutOnDeck > 0) {
-					for (Iterator<Card> iter = player.getPlay().iterator(); numToPutOnDeck > 0 && iter.hasNext(); ) {
-						if (iter.next() == Card.TREASURY) {
-							iter.remove();
-							player.putOnDraw(Card.TREASURY);
-							numToPutOnDeck--;
-						}
-					}
-					player.sendPlay();
-					message(player, "You put " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of your deck");
-					messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numTreasuries - choice) + " on top of their deck");
-				}
+				int numToPutOnDeck = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
+				if (numToPutOnDeck != 0) {
+                    message(player, "You put " + Card.TREASURY.htmlName(numToPutOnDeck) + " on top of your deck");
+                    messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numToPutOnDeck) + " on top of their deck");
+                    for (int i = 0; i < numToPutOnDeck; i++) {
+                        player.removeFromPlay(Card.TREASURY);
+                        player.putOnDraw(Card.TREASURY);
+                    }
+                }
 			}
 		}
 		// handle Hermit
