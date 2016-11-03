@@ -358,8 +358,8 @@ public class Game implements Runnable {
 			boughtVictoryCardThisTurn = true;
 		}
 		// if that card's pile was embargoed
-		if (embargoTokensOn(card) > 0 && supply.get(Card.CURSE) > 0) {
-			int cursesToGain = Math.min(embargoTokens.get(card), supply.get(Card.CURSE));
+		if (embargoTokensOn(card) != 0 && supply.get(Card.CURSE) != 0) {
+			int cursesToGain = Math.min(embargoTokensOn(card), supply.get(Card.CURSE));
 			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
 			for (int i = 0; i < cursesToGain; i++) {
 				gain(player, Card.CURSE);
@@ -1099,32 +1099,30 @@ public class Game implements Runnable {
 	}
 
 	public void addToTrash(Player player, Card card, boolean triggersMarketSquare) {
-		card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
-		trash.add(card);
-		onTrash(player, card, triggersMarketSquare);
-		sendTrash();
+        if (onTrash(player, card, triggersMarketSquare)) {
+            card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
+            trash.add(card);
+            sendTrash();
+        }
 	}
 
 	public void addToTrash(Player player, List<Card> cards) {
-		cards = cards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
-		for (Card card : cards) {
-			trash.add(card);
-			onTrash(player, card, true);
-		}
-		sendTrash();
+        cards.forEach(c -> addToTrash(player, c, true));
 	}
 
-	private void onTrash(Player player, Card card, boolean triggersMarketSquare) {
+	private boolean onTrash(Player player, Card card, boolean triggersMarketSquare) {
+        boolean isTrashed;
 		messageIndent++;
 		if (triggersMarketSquare) {
 			// Market Square can react before or after the trashed card's on-trash effect
 			allowMarketSquareReaction(player);
-			card.onTrash(player, this);
+            isTrashed = card.onTrashIsTrashed(player, this);
 			allowMarketSquareReaction(player);
 		} else {
-			card.onTrash(player, this);
+            isTrashed = card.onTrashIsTrashed(player, this);
 		}
 		messageIndent--;
+        return isTrashed;
 	}
 
 	private void allowMarketSquareReaction(Player player) {
@@ -1520,26 +1518,22 @@ public class Game implements Runnable {
 		}
 	}
 
-	public void addEmbargoToken(Card card, Card.MixedPileId pileId) {
-		if (pileId != null) {
-			mixedPileEmbargoTokens.put(pileId, mixedPileEmbargoTokens.get(pileId) + 1);
-		} else {
-			embargoTokens.put(card, embargoTokens.get(card) + 1);
-		}
-		sendEmbargoTokens(card, pileId);
+	public void addEmbargoToken(Card card) {
+        embargoTokens.put(card, embargoTokens.get(card) + 1);
+        sendEmbargoTokens(card.toString(), embargoTokens.get(card));
+    }
+
+	public void addEmbargoToken(Card.MixedPileId pileId) {
+        mixedPileEmbargoTokens.put(pileId, mixedPileEmbargoTokens.get(pileId) + 1);
+		sendEmbargoTokens(pileId.toString(), mixedPileEmbargoTokens.get(pileId));
 	}
 
 	@SuppressWarnings("unchecked")
-	private void sendEmbargoTokens(Card card, Card.MixedPileId pileId) {
+	private void sendEmbargoTokens(String pileId, int numTokens) {
 		JSONObject command = new JSONObject();
 		command.put("command", "setEmbargoTokens");
-		if (pileId != null) {
-			command.put("pileId", pileId.toString());
-			command.put("numTokens", mixedPileEmbargoTokens.get(pileId));
-		} else {
-			command.put("card", card.toString());
-			command.put("numTokens", embargoTokens.get(card));
-		}
+        command.put("pileId", pileId);
+        command.put("numTokens", numTokens);
 		for (Player player : players) {
 			player.sendCommand(command);
 		}
@@ -2396,6 +2390,45 @@ public class Game implements Runnable {
 			return cardsSorted.get(choice);
 		}
 	}
+
+    @SuppressWarnings("unchecked")
+	public Object promptChoosePile(Player player, String promptMessage, String promptType, boolean isMandatory, String noneMessage) {
+        if (player instanceof Bot) {
+            throw new IllegalStateException();
+        }
+        // construct JSON message
+        JSONObject prompt = new JSONObject();
+        prompt.put("command", "promptChooseFromSupply");
+        JSONArray choiceArray = new JSONArray();
+        supply.keySet().stream().map(Card::toString).forEach(choiceArray::add);
+        mixedPiles.keySet().stream().map(Card.MixedPileId::toString).forEach(choiceArray::add);
+        prompt.put("choices", choiceArray);
+        prompt.put("message", promptMessage);
+        prompt.put("promptType", promptType);
+        prompt.put("isMandatory", isMandatory);
+        prompt.put("noneMessage", noneMessage);
+        player.sendCommand(prompt);
+        // wait for response
+        String response = null;
+        try {
+            response = (String) waitForResponse(player);
+        } catch (ClassCastException e) {
+            // ignore incorrect responses
+        }
+        // parse response
+        for (Card card : supply.keySet()) {
+            if (card.toString().equals(response)) {
+                return card;
+            }
+        }
+        for (Card.MixedPileId id : mixedPiles.keySet()) {
+            if (id.toString().equals(response)) {
+                return id;
+            }
+        }
+        // response was invalid, so just return some pile
+        return supply.keySet().iterator().next();
+    }
 
 	private Set<Card> cardsChoosableInSupplyUI() {
 		// add any card with a uniform pile (these can be chosen even when empty)

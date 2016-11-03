@@ -714,7 +714,7 @@ public class Player {
 	}
 
 	public List<Card> takeAllFromNativeVillageMat() {
-		List<Card> taken = new ArrayList<Card>(nativeVillageMat);
+		List<Card> taken = new ArrayList<>(nativeVillageMat);
 		nativeVillageMat.clear();
 		sendNativeVillageMat();
 		return taken;
@@ -731,6 +731,7 @@ public class Player {
 	}
 
 	public void putOnIslandMat(Card card) {
+        card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
 		islandMat.add(card);
 		sendIslandMat();
 	}

@@ -22,11 +22,11 @@ public class Fortress extends Card {
     }
 
     @Override
-    public void onTrash(Player player, Game game) {
+    public boolean onTrashIsTrashed(Player player, Game game) {
         game.message(player, "putting the " + this.htmlNameRaw() + " into your hand");
         game.messageOpponents(player, "putting the " + this.htmlNameRaw() + " into their hand");
-        game.removeFromTrash(this);
-        player.addToHand(this);
+        player.addToHand(isBandOfMisfits ? Card.BAND_OF_MISFITS : this);
+        return false;
     }
 
     @Override

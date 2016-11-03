@@ -548,8 +548,8 @@ function setTopCard(id, topCard) {
   }
 }
 
-function setEmbargoTokens(card, pileId, numTokens) {
-  var pileTokensDiv = getPileTokensDiv(card, pileId);
+function setEmbargoTokens(pileId, numTokens) {
+  var pileTokensDiv = getPileTokensDiv(pileId);
   // remove previous embargo tokens
   while (pileTokensDiv.getElementsByClassName('embargoTokens').length != 0) {
     pileTokensDiv.removeChild(pileTokensDiv.getElementsByClassName('embargoTokens')[0]);
@@ -576,13 +576,8 @@ function setTradeRouteToken(card, hasToken) {
   }
 }
 
-function getPileTokensDiv(card, pileId) {
-  var pile;
-  if (pileId) {
-    pile = mixedPiles[pileId].pile;
-  } else {
-    pile = supplyPiles[card].pile;
-  }
+function getPileTokensDiv(id) {
+  var pile = supplyPiles[id].pile;
   var cardArtDiv = pile.getElementsByClassName('cardArt')[0];
   var pileTokensDiv;
   if (cardArtDiv.getElementsByClassName('pileTokens').length != 0) {
@@ -1597,7 +1592,7 @@ function executeCommand(command) {
       setTopCard(command.id, command.topCard);
       break;
     case 'setEmbargoTokens':
-      setEmbargoTokens(command.card, command.pileId, command.numTokens);
+      setEmbargoTokens(command.pileId, command.numTokens);
       break;
     case 'setTradeRouteToken':
       setTradeRouteToken(command.card, command.hasToken);

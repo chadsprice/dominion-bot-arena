@@ -480,6 +480,11 @@ public class Bot extends Player {
 
 	// card-specific decisions
 
+	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
+		// embargo something random (no clear strategy yet)
+		return cardPiles.iterator().next();
+	}
+
 	public int ambassadorNumToReturn(Card revealed, int maximum) {
 		if (wantToTrash(revealed)) {
 			return maximum;

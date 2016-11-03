@@ -1,5 +1,6 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -17,21 +18,38 @@ public class Embargo extends Card {
 
 	@Override
 	public boolean onPlay(Player player, Game game, boolean hasMoved) {
-		boolean movedToTrash = false;
 		plusCoins(player, game, 2);
+		boolean movedToTrash = false;
 		if (!hasMoved) {
 			// trash this
+			game.messageAll("trashing the " + this.htmlNameRaw());
 			player.removeFromPlay(this);
 			game.addToTrash(player, this);
-			game.messageAll("trashing the " + this.htmlNameRaw());
 			movedToTrash = true;
 		}
 		// put an embargo token on top of a supply pile
-		// TODO: allow mixed piles to be embargoed
-		Card toEmbargo = game.promptChooseGainFromSupply(player, game.supply.keySet(), "Embargo: Put an embargo token on a supply pile.");
-		game.addEmbargoToken(toEmbargo, null);
-		game.messageAll("putting an embargo token on the " + toEmbargo.htmlName() + " pile");
+		Object pile = chooseEmbargoPile(player, game);
+		if (pile instanceof Card) {
+			Card card = (Card) pile;
+			game.messageAll("putting an embargo token on the " + card.htmlName() + " pile");
+			game.addEmbargoToken(card);
+		} else if (pile instanceof Card.MixedPileId) {
+			Card.MixedPileId id = (Card.MixedPileId) pile;
+			game.messageAll("putting an embargo token on the " + id.toString() + " pile");
+			game.addEmbargoToken(id);
+		}
 		return movedToTrash;
+	}
+
+	private Object chooseEmbargoPile(Player player, Game game) {
+		if (player instanceof Bot) {
+			Object pile = ((Bot) player).embargoPile(game.supply.keySet(), game.mixedPiles.keySet());
+			if (!game.supply.containsKey(pile) && !game.mixedPiles.containsKey(pile)) {
+				throw new IllegalStateException();
+			}
+			return pile;
+		}
+		return game.promptChoosePile(player, "Embargo: Put an embargo token on a supply pile.", "actionPrompt", true, null);
 	}
 
 	@Override

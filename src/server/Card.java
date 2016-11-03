@@ -653,7 +653,11 @@ public class Card {
 
 	public void onGain(Player player, Game game) {}
 
-	public void onTrash(Player player, Game game) {}
+    public void onTrash(Player player, Game game) {}
+	public boolean onTrashIsTrashed(Player player, Game game) {
+        onTrash(player, game);
+        return true;
+    }
 
 	protected void plusCards(Player player, Game game, int numCards) {
 		List<Card> drawn = player.drawIntoHand(numCards);
