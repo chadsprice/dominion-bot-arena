@@ -1,11 +1,9 @@
 package cards;
 
-import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;

@@ -1,5 +1,6 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -23,14 +24,16 @@ public class Sentry extends Card {
     public void onPlay(Player player, Game game) {
         plusCards(player, game, 1);
         plusActions(player, game, 1);
+        // look at the top 2 cards of your deck
         List<Card> top = player.takeFromDraw(2);
         if (!top.isEmpty()) {
-            Collections.sort(top, Player.HAND_ORDER_COMPARATOR);
-            List<Card> toPutBack = new ArrayList<Card>();
             game.message(player, "drawing " + Card.htmlList(top));
             game.messageOpponents(player, "drawing " + Card.numCards(top.size()));
+            // trash and/or discard any number of them
+            List<Card> toPutBack = new ArrayList<>();
+            Collections.sort(top, Player.HAND_ORDER_COMPARATOR);
             for (Card card : top) {
-                int choice = game.promptMultipleChoice(player, "Sentry: You draw " + Card.htmlList(top) + ". What will you do with the " + card.htmlNameRaw() + "?", new String[] {"Trash", "Discard", "Put back"});
+                int choice = chooseTrashDiscardOrPutBack(player, game, top, card);
                 if (choice == 0) {
                     game.messageAll("trashing " + card.htmlName());
                     game.trash(player, card);
@@ -44,12 +47,23 @@ public class Sentry extends Card {
             // put the rest back on top
             if (!toPutBack.isEmpty()) {
                 game.messageAll("putting the rest back on top");
-                putOnDeckInAnyOrder(player, game, toPutBack, "Sentry: Put the rest back on top in any order");
+                putOnDeckInAnyOrder(player, game, toPutBack, this.toString() + ": Put the rest back on top in any order");
             }
         } else {
             game.message(player, "your deck is empty");
             game.messageOpponents(player, player.username + "'s deck is empty");
         }
+    }
+
+    private int chooseTrashDiscardOrPutBack(Player player, Game game, List<Card> top, Card card) {
+        if (player instanceof Bot) {
+            int choice = ((Bot) player).sentryTrashDiscardOrPutBack(card);
+            if (choice < 0 || choice > 2) {
+                throw new IllegalStateException();
+            }
+            return choice;
+        }
+        return game.promptMultipleChoice(player, this.toString() + ": You draw " + Card.htmlList(top) + ". What will you do with the " + card.htmlNameRaw() + "?", new String[] {"Trash", "Discard", "Put back"});
     }
 
     @Override

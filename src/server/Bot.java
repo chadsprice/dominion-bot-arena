@@ -533,6 +533,46 @@ public class Bot extends Player {
         return true;
     }
 
+    public boolean librarySetAside(Card card) {
+        // BigMoney should avoid action cards whenever possible
+        return true;
+    }
+
+    public Card mineTrash(Set<Card> trashable) {
+        // upgrade the most expensive treasure possible
+        if (trashable.contains(Card.GOLD) && game.isAvailableInSupply(Card.PLATINUM)) {
+            return Card.GOLD;
+        } else if (trashable.contains(Card.SILVER) && game.isAvailableInSupply(Card.GOLD)) {
+            return Card.SILVER;
+        } else if (trashable.contains(Card.COPPER) && game.isAvailableInSupply(Card.SILVER)) {
+            return Card.COPPER;
+        } else {
+            // if there is no basic upgerade available, trash nothing
+            return null;
+        }
+    }
+
+    public Card mineFirstEditionTrash(Set<Card> trashable) {
+        // first edition mine is mandatory, so first check if there is a card you would trash even if it weren't mandatory
+        Card wantToTrash = mineTrash(trashable);
+        if (wantToTrash != null) {
+            return wantToTrash;
+        } else {
+            // if not, just trash something
+            return trashable.iterator().next();
+        }
+    }
+
+    public int sentryTrashDiscardOrPutBack(Card card) {
+        if (wantToTrash(card)) {
+            return 0;
+        } else if (wantToDiscard(card)) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

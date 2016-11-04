@@ -606,7 +606,7 @@ public class Game implements Runnable {
 	}
 
 	private void exitBuyPhase() {
-		inBuyPhase = true;
+		inBuyPhase = false;
 		// display current Peddler cost
 		if (supply.keySet().contains(Card.PEDDLER)) {
 			sendCardCost(Card.PEDDLER);

@@ -1,11 +1,12 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MineFirstEdition extends Card {
 
@@ -20,42 +21,41 @@ public class MineFirstEdition extends Card {
 
     @Override
     public void onPlay(Player player, Game game) {
-        // trash a treasure card from hand
-        Set<Card> treasures = treasuresInHand(player);
+        // trash a treasure from your hand
+        Set<Card> treasures = player.getHand().stream().filter(c -> c.isTreasure).collect(Collectors.toSet());
         if (!treasures.isEmpty()) {
-            Card toTrash = game.promptChooseTrashFromHand(player, treasures, "Mine (1st ed.): Choose a treasure to trash");
+            // trashing a treasure is mandatory for the first edition of Mine
+            Card toTrash = chooseTrash(player, game, treasures);
+            // trash the chosen treasure
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
             game.trash(player, toTrash);
-            // gain a treasure costing up to 3 more
-            Set<Card> cardsCosting3More = game.cardsCostingAtMost(toTrash.cost(game) + 3);
-            Set<Card> gainable = new HashSet<Card>();
-            for (Card card : cardsCosting3More) {
-                if (card.isTreasure) {
-                    gainable.add(card);
-                }
-            }
+            // gain a treasure costing up to $3 more
+            Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost() + 3).stream()
+                    .filter(c -> c.isTreasure)
+                    .collect(Collectors.toSet());
             if (!gainable.isEmpty()) {
-                Card toGain = game.promptChooseGainFromSupply(player, gainable, "Mine (1st ed.): Choose a treasure to gain");
-                game.message(player, "gaining " + toGain.htmlName() + ", putting it into your hand");
-                game.messageOpponents(player, "gaining " + toGain.htmlName() + ", putting it into their hand");
+                Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Gain a treasure to your hand costing up to $3 more.");
+                game.message(player, "gaining " + toGain.htmlName() + " to your hand");
+                game.messageOpponents(player, "gaining " + toGain.htmlName() + " to their hand");
                 game.gainToHand(player, toGain);
             } else {
                 game.messageAll("gaining nothing");
             }
         } else {
-            game.messageAll("trashing nothing");
+            game.messageAll("having no treasure to trash");
         }
     }
 
-    private Set<Card> treasuresInHand(Player player) {
-        Set<Card> treasures = new HashSet<Card>();
-        for (Card card : player.getHand()) {
-            if (card.isTreasure) {
-                treasures.add(card);
+    private Card chooseTrash(Player player, Game game, Set<Card> trashable) {
+        if (player instanceof Bot) {
+            Card toTrash = ((Bot) player).mineFirstEditionTrash(trashable);
+            if (!trashable.contains(toTrash)) {
+                throw new IllegalStateException();
             }
+            return toTrash;
         }
-        return treasures;
+        return game.promptChooseTrashFromHand(player, trashable, this.toString() + ": You may trash a treasure from your hand.");
     }
 
     @Override

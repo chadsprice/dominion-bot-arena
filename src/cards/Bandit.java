@@ -28,16 +28,6 @@ public class Bandit extends Card {
                 c -> {});
     }
 
-    private Set<Card> nonCopperTreasures(List<Card> revealed) {
-        Set<Card> nonCopperTreasures = new HashSet<Card>();
-        for (Card card : revealed) {
-            if (card.isTreasure && card != card.COPPER) {
-                nonCopperTreasures.add(card);
-            }
-        }
-        return nonCopperTreasures;
-    }
-
     @Override
     public String[] description() {
         return new String[] {"Gain a Gold. Each other player reveals the top 2 cards of their deck, trashes a revealed Treasure other than Copper, and discards the rest."};

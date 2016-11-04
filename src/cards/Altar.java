@@ -30,14 +30,7 @@ public class Altar extends Card {
             game.messageAll("revealing an empty hand, trashing nothing");
         }
         // gain a card costing up to $5
-        Set<Card> gainable = game.cardsCostingAtMost(5);
-        if (!gainable.isEmpty()) {
-            Card toGain = game.promptChooseGainFromSupply(player, gainable, "Altar: Choose a card to gain.");
-            game.messageAll("gaining " + toGain.htmlName());
-            game.gain(player, toGain);
-        } else {
-            game.messageAll("gaining nothing");
-        }
+        gainCardCostingUpTo(player, game, 5);
     }
 
     @Override

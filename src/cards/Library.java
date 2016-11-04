@@ -3,6 +3,7 @@ package cards;
 import java.util.ArrayList;
 import java.util.List;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -32,19 +33,16 @@ public class Library extends Card {
 			}
 			Card card = drawn.get(0);
 			// allow action cards to be set aside
-			if (card.isAction) {
-				int choice = game.promptMultipleChoice(player, "Library: You draw " + card.htmlName() + ", set it aside?", new String[] {"Set aside", "Keep"});
-				if (choice == 0) {
-					// if one is set aside, announce the number drawn before it and what the set aside card is
-					if (addedToHand.size() > 0) {
-						game.message(player, "drawing " + Card.htmlList(addedToHand));
-						game.messageOpponents(player, "drawing " + Card.numCards(addedToHand.size()));
-						addedToHand.clear();
-					}
-					setAside.add(card);
-					game.messageAll("setting aside " + card.htmlName());
-					continue;
-				}
+			if (card.isAction && chooseSetAside(player, game, card)) {
+                // if one is set aside, announce the number drawn before it and what the set aside card is
+                if (addedToHand.size() != 0) {
+                    game.message(player, "drawing " + Card.htmlList(addedToHand));
+                    game.messageOpponents(player, "drawing " + Card.numCards(addedToHand.size()));
+                    addedToHand.clear();
+                }
+                setAside.add(card);
+                game.messageAll("setting aside " + card.htmlName());
+                continue;
 			}
 			player.addToHand(card);
 			addedToHand.add(card);
@@ -56,6 +54,14 @@ public class Library extends Card {
 		if (!setAside.isEmpty()) {
 			player.addToDiscard(setAside);
 		}
+	}
+
+	private boolean chooseSetAside(Player player, Game game, Card card) {
+		if (player instanceof Bot) {
+			return ((Bot) player).librarySetAside(card);
+		}
+        int choice = game.promptMultipleChoice(player, "Library: You draw " + card.htmlName() + ", set it aside?", new String[] {"Set aside", "Keep"});
+        return (choice == 0);
 	}
 
 	@Override
