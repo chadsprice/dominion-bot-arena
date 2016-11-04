@@ -614,6 +614,8 @@ public class Game implements Runnable {
 	}
 
 	private void cleanup(Player player) {
+		// cleanup the player's hand first so cards like Watchtower aren't triggered during cleanup
+		player.cleanupHand();
 		// handle Scheme
 		if (schemesPlayedThisTurn != 0) {
 			List<Card> schemed = new ArrayList<>();
@@ -681,8 +683,8 @@ public class Game implements Runnable {
 				}
 			}
 		}
-		// cleanup and redraw
-		player.cleanup();
+		// cleanup the rest of play and redraw
+		player.cleanupPlay();
 		player.turns++;
 	}
 

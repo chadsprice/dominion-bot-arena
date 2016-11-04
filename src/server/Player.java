@@ -197,17 +197,20 @@ public class Player {
 		return resolvedDurationCards.contains(Card.OUTPOST);
 	}
 
-	public void startNewTurn() {
+	void startNewTurn() {
 		cardsGainedDuringTurn.clear();
 	}
 
-	public void cleanup() {
+	void cleanupHand() {
+		discard.addAll(hand);
+		hand.clear();
+	}
+
+	void cleanupPlay() {
         play = play.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		discard.addAll(play);
 		play.clear();
 		sendPlay();
-		discard.addAll(hand);
-		hand.clear();
         resolvedDurationCards = resolvedDurationCards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		discard.addAll(resolvedDurationCards);
 		resolvedDurationCards.clear();
@@ -215,7 +218,7 @@ public class Player {
 		newTurn();
 	}
 
-	public boolean hasPlayableAction() {
+	boolean hasPlayableAction() {
 		for (Card card : hand) {
 			if (card.isAction) {
 				return true;
