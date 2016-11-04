@@ -588,6 +588,19 @@ public class Bot extends Player {
         return trashed != Card.COPPER;
     }
 
+    public boolean lurkerTrashOverGain() {
+        Set<Card> gainable = game.getTrash().stream()
+                .filter(c -> c.isAction)
+                .collect(Collectors.toSet());
+        // if there is no card you want to gain from the trash, choose to trash a card from the supply instead
+        return chooseGainFromSupply(gainable, false) == null;
+    }
+
+    public Card lurkerTrashFromSupply(Set<Card> trashable) {
+        // trash a card that you want to later gain
+        return chooseGainFromSupply(trashable, true);
+    }
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

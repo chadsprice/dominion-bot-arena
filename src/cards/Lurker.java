@@ -1,5 +1,6 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -20,13 +21,13 @@ public class Lurker extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         plusActions(player, game, 1);
-        int choice = game.promptMultipleChoice(player, "Lurker: Trash an action card from the supply, or gain an action card from the trash?", new String[] {"Trash", "Gain"});
-        if (choice == 0) {
+        if (chooseTrashOverGain(player, game))  {
             Set<Card> trashable = game.cardsInSupply();
             if (!trashable.isEmpty()) {
-                Card toTrash = game.promptChooseGainFromSupply(player, trashable, "Lurker: Choose an action card from the supply to trash.");
+                Card toTrash = chooseTrashFromSupply(player, game, trashable);
                 game.messageAll("trashing " + toTrash.htmlName() + " from the supply");
                 game.takeFromSupply(toTrash);
+                // this doesn't trigger Market Square because the card your are trashing isn't "yours"
                 game.trash(player, toTrash, false);
             } else {
                 game.messageAll("there are no action cards in the supply to trash");
@@ -35,8 +36,27 @@ public class Lurker extends Card {
             // gain an action card from the trash
             gainFromTrashSatisfying(player, game,
                     c -> c.isAction,
-                    "Lurker: Choose an action card to gain from the trash.");
+                    this.toString() + ": Choose an action card to gain from the trash.");
         }
+    }
+
+    private boolean chooseTrashOverGain(Player player, Game game) {
+        if (player instanceof Bot) {
+            return ((Bot) player).lurkerTrashOverGain();
+        }
+        int choice = game.promptMultipleChoice(player, this.toString() + ": Trash an action card from the supply, or gain an action card from the trash?", new String[] {"Trash", "Gain"});
+        return (choice == 0);
+    }
+
+    private Card chooseTrashFromSupply(Player player, Game game, Set<Card> trashable) {
+        if (player instanceof Bot) {
+            Card toTrash = ((Bot) player).lurkerTrashFromSupply(trashable);
+            if (!trashable.contains(toTrash)) {
+                throw new IllegalStateException();
+            }
+            return toTrash;
+        }
+        return game.promptChooseGainFromSupply(player, trashable, this.toString() + ": Choose an action card from the supply to trash.");
     }
 
     @Override

@@ -1092,6 +1092,15 @@ public class Card {
 		}
 	}
 
+	protected void putACardFromYourHandOntoYourDeck(Player player, Game game) {
+        if (!player.getHand().isEmpty()) {
+            Card toPutOnDeck = game.promptChoosePutOnDeck(player, new HashSet<>(player.getHand()), this.toString() + ": Put a card from your hand onto your deck.");
+            game.message(player, "putting " + toPutOnDeck.htmlName() + " from your hand onto your deck");
+            game.messageOpponents(player, "putting a card from their hand onto their deck");
+            player.putFromHandOntoDraw(toPutOnDeck);
+        }
+    }
+
 	public String htmlClass() {
 		if (isAction && isVictory) {
 			return "action-victory";

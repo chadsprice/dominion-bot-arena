@@ -4,7 +4,6 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.HashSet;
 import java.util.Set;
 
 public class Artisan extends Card {
@@ -30,13 +29,8 @@ public class Artisan extends Card {
         } else {
             game.messageAll("gaining nothing");
         }
-        // put a card onto your deck
-        if (!player.getHand().isEmpty()) {
-            Card toPutOnDeck = game.promptChoosePutOnDeck(player, new HashSet<>(player.getHand()), this.toString() + ": Put a card from your hand onto your deck.");
-            game.message(player, "putting " + toPutOnDeck.htmlName() + " on your deck");
-            game.messageOpponents(player, "putting " + toPutOnDeck.htmlName() + " on their deck");
-            player.putFromHandOntoDraw(toPutOnDeck);
-        }
+        // put a card from your hand onto your deck
+        putACardFromYourHandOntoYourDeck(player, game);
     }
 
     @Override
