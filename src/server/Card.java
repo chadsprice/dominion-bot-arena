@@ -949,55 +949,71 @@ public class Card {
 	}
 
 	protected void revealUntil(Player player, Game game, Predicate<Card> condition, Consumer<Card> onFound, boolean isTarget) {
-		List<Card> revealed = new ArrayList<Card>();
-		Card found = null;
-		for (;;) {
-			List<Card> drawn = player.takeFromDraw(1);
-			if (drawn.isEmpty()) {
-				break;
-			}
-			Card card = drawn.get(0);
-			revealed.add(card);
-			if (condition.test(card)) {
-				found = card;
-				break;
-			}
-		}
-		if (!revealed.isEmpty()) {
-			if (!isTarget) {
-				game.messageAll("drawing " + Card.htmlList(revealed));
-			} else {
-				game.message(player, "You draw " + Card.htmlList(revealed));
-				game.messageOpponents(player, player.username + " draws " + Card.htmlList(revealed));
-				game.messageIndent++;
-			}
-			if (found != null) {
-				revealed.remove(found);
-				onFound.accept(found);
-			}
-			if (!revealed.isEmpty()) {
-				game.messageAll("discarding the rest");
-				player.addToDiscard(revealed);
-			}
-			if (isTarget) {
-				game.messageIndent--;
-			}
-		} else {
-			if (!isTarget) {
-				game.message(player, "your deck is empty");
-				game.messageOpponents(player, "their deck is empty");
-			} else {
-				game.message(player, "Your deck is empty");
-				game.messageOpponents(player, player.username + "'s deck is empty");
-			}
-		}
+        revealUntil(player, game, condition, 1, list -> onFound.accept(list.get(0)), isTarget);
 	}
+
+    protected void revealUntil(Player player, Game game, Predicate<Card> condition, int numToFind, Consumer<List<Card>> onFound) {
+        revealUntil(player, game, condition, numToFind, onFound, false);
+    }
+
+    protected void revealUntil(Player player, Game game, Predicate<Card> condition, int numToFind, Consumer<List<Card>> onFound, boolean isTarget) {
+        List<Card> revealed = new ArrayList<>();
+        List<Card> found = new ArrayList<>();
+        for (;;) {
+            List<Card> drawn = player.takeFromDraw(1);
+            if (drawn.isEmpty()) {
+                break;
+            }
+            Card card = drawn.get(0);
+            revealed.add(card);
+            if (condition.test(card)) {
+                found.add(card);
+                if (found.size() == numToFind) {
+                    break;
+                }
+            }
+        }
+        if (!revealed.isEmpty()) {
+            if (isTarget) {
+                game.message(player, "You draw " + Card.htmlList(revealed));
+                game.messageOpponents(player, player.username + " draws " + Card.htmlList(revealed));
+                game.messageIndent++;
+            } else {
+                game.messageAll("drawing " + Card.htmlList(revealed));
+            }
+            if (!found.isEmpty()) {
+                found.forEach(revealed::remove);
+                onFound.accept(found);
+            }
+            if (!revealed.isEmpty()) {
+                game.messageAll("discarding the rest");
+                player.addToDiscard(revealed);
+            }
+            if (isTarget) {
+                game.messageIndent--;
+            }
+        } else {
+            if (!isTarget) {
+                game.message(player, "your deck is empty");
+                game.messageOpponents(player, "their deck is empty");
+            } else {
+                game.message(player, "Your deck is empty");
+                game.messageOpponents(player, player.username + "'s deck is empty");
+            }
+        }
+    }
 
 	protected void putRevealedIntoHand(Player player, Game game, Card card) {
 		game.message(player, "putting the " + card.htmlNameRaw() + " into your hand");
 		game.messageOpponents(player, "putting the " + card.htmlNameRaw() + " into their hand");
 		player.addToHand(card);
 	}
+
+    protected void putRevealedIntoHand(Player player, Game game, List<Card> cards) {
+        game.message(player, "putting " + Card.htmlList(cards) + " into your hand");
+        game.messageOpponents(player, "putting " + Card.htmlList(cards) + " into their hand");
+        player.addToHand(cards);
+    }
 
 	protected void putRevealedOnDeck(Player player, Game game, Card card) {
 		game.messageAll("putting the " + card.htmlNameRaw() + " back on top");
