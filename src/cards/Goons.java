@@ -22,16 +22,8 @@ public class Goons extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		plusBuys(player, game, 1);
 		plusCoins(player, game, 2);
-		// other players discard down to 3
-		for (Player target : targets) {
-			if (target.getHand().size() > 3) {
-				int count = target.getHand().size() - 3;
-				List<Card> discarded = game.promptDiscardNumber(target, count, "Goons", "attackPrompt");
-				target.putFromHandIntoDiscard(discarded);
-				game.message(target, "you discard " + Card.htmlList(discarded));
-				game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
-			}
-		}
+		// each other player discards down to 3 cards in hand
+		handSizeAttack(targets, game, 3);
 	}
 
 	@Override

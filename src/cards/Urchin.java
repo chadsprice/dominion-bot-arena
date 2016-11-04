@@ -23,15 +23,7 @@ public class Urchin extends Card {
         plusCards(player, game, 1);
         plusActions(player, game, 1);
         // each other player discards down to 4 cards in hand
-        targets.forEach(target -> {
-            if (target.getHand().size() > 4) {
-                int count = target.getHand().size() - 4;
-                List<Card> discarded = game.promptDiscardNumber(target, count, "Urchin", "attackPrompt");
-                game.message(target, "You discard " + Card.htmlList(discarded));
-                game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
-                target.putFromHandIntoDiscard(discarded);
-            }
-        });
+        handSizeAttack(targets, game, 4);
     }
 
     @Override

@@ -30,7 +30,7 @@ public class Diplomat extends Card {
     public boolean onAttackReaction(Player player, Game game) {
         plusCards(player, game, 2);
         if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 3, "Diplomat", "attackPrompt");
+            List<Card> toDiscard = game.promptDiscardNumber(player, 3, "Diplomat");
             game.messageAll("discarding " + Card.htmlList(toDiscard));
             player.putFromHandIntoDiscard(toDiscard);
         }

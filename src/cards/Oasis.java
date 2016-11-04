@@ -23,7 +23,7 @@ public class Oasis extends Card {
         plusActions(player, game, 1);
         plusCoins(player, game, 1);
         if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 1, "Oasis", "actionPrompt");
+            List<Card> toDiscard = game.promptDiscardNumber(player, 1, "Oasis");
             Card card = toDiscard.get(0);
             game.messageAll("discarding " + card.htmlName());
             player.putFromHandIntoDiscard(card);

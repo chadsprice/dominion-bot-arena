@@ -21,7 +21,7 @@ public class Embassy extends Card {
     public void onPlay(Player player, Game game) {
         plusCards(player, game, 5);
         if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 3, "Embassy", "actionPrompt");
+            List<Card> toDiscard = game.promptDiscardNumber(player, 3, "Embassy");
             game.messageAll("discarding " + Card.htmlList(toDiscard));
             player.putFromHandIntoDiscard(toDiscard);
         }

@@ -26,7 +26,7 @@ public class Count extends Card {
             case 0:
                 // discard 2 cards
                 if (!player.getHand().isEmpty()) {
-                    List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Count", "actionPrompt");
+                    List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Count");
                     game.messageAll("discarding " + Card.htmlList(toDiscard));
                     player.putFromHandIntoDiscard(toDiscard);
                 } else {

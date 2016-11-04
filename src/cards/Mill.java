@@ -27,18 +27,23 @@ public class Mill extends Card {
     public void onPlay(Player player, Game game) {
         plusCards(player, game, 1);
         plusActions(player, game, 1);
-        if (!player.getHand().isEmpty()) {
-            String promptMessage = "Mill: Discard 2 cards for +$2?";
-            if (player.getHand().size() == 1) {
-                promptMessage = "Discard your last card? (You will not get +$2)";
+        // you may discard 2 cards for $2
+        List<Card> toDiscard = game.promptDiscardNumber(player, 2, false, this.toString());
+        if (toDiscard.size() == 2) {
+            game.messageAll("discarding " + Card.htmlList(toDiscard) + " for +$2");
+            player.putFromHandIntoDiscard(toDiscard);
+            // benefit for discarding 2 cards
+            player.addCoins(2);
+        } else if (player.getHand().size() == 1 && toDiscard.size() == 1) {
+            // if you have only one card in hand, you are allowed to discard it
+            game.messageAll("discarding " + Card.htmlList(toDiscard));
+            player.putFromHandIntoDiscard(toDiscard);
+        } else {
+            if (toDiscard.size() == 1) {
+                // you tried to discard just one card when you weren't allowed to
+                player.sendHand();
             }
-            int choice = game.promptMultipleChoice(player, promptMessage, new String[] {"Yes", "No"});
-            if (choice == 0) {
-                List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Mill", "attackPrompt");
-                game.messageAll("discarding " + Card.htmlList(toDiscard) + " for +$2");
-                player.putFromHandIntoDiscard(toDiscard);
-                player.addCoins(2);
-            }
+            game.messageAll("discarding nothing");
         }
     }
 

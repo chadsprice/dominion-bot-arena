@@ -24,7 +24,7 @@ public class HorseTraders extends Card {
         plusCoins(player, game, 3);
         // discard 2 cards
         if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Horse Traders", "actionPrompt");
+            List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Horse Traders");
             game.messageAll("discarding " + Card.htmlList(toDiscard));
             player.putFromHandIntoDiscard(toDiscard);
         }

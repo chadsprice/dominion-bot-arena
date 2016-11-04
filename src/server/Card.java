@@ -705,7 +705,7 @@ public class Card {
         if (player.getHand().isEmpty() || number == 0) {
             return;
         }
-        List<Card> toDiscard = game.promptDiscardNumber(player, number, this.toString(), "attackPrompt");
+        List<Card> toDiscard = game.promptDiscardNumber(player, number, this.toString());
         game.messageAll("discarding " + Card.htmlList(toDiscard));
         player.putFromHandIntoDiscard(toDiscard);
     }
@@ -732,7 +732,7 @@ public class Card {
         targets.forEach(target -> {
             if (target.getHand().size() > handSize) {
                 int numToDiscard = target.getHand().size() - handSize;
-                List<Card> discarded = game.promptDiscardNumber(target, numToDiscard, this.toString(), "attackPrompt");
+                List<Card> discarded = game.promptDiscardNumber(target, numToDiscard, this.toString());
                 game.message(target, "You discard " + Card.htmlList(discarded));
                 game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
                 target.putFromHandIntoDiscard(discarded);
@@ -910,6 +910,66 @@ public class Card {
         return usedAsModifier;
     }
     protected void afterThroneRoomVariant(Player player, Game game, Card played, boolean playedMoved) {}
+
+	protected void onMasqueradeVariant(Player player, Game game, boolean isSecondEdition) {
+        plusCards(player, game, 2);
+        // ask players in turn order which card they want to pass, starting with this player
+        List<Player> passOrder = game.getOpponents(player);
+        passOrder.add(0, player);
+        if (isSecondEdition) {
+            // skip over players with no cards in hand
+            passOrder = passOrder.stream()
+                    .filter(p -> !p.getHand().isEmpty())
+                    .collect(Collectors.toList());
+        }
+        // only bother to pass cards if there are at least 2 players that will pass cards
+        if (passOrder.size() >= 2) {
+            // choose all cards to pass first
+            List<Card> cardsToPass = new ArrayList<>();
+            int i = 0;
+            for (Player passingPlayer : passOrder) {
+                Player receivingPlayer = passOrder.get((i + 1) % passOrder.size());
+                String promptType = (passingPlayer == player) ? "actionPrompt" : "attackPrompt";
+                Card toPass = game.promptChoosePassToOpponent(passingPlayer, new HashSet<>(passingPlayer.getHand()),
+                        this.toString() + ": Pass a card from your hand to " + receivingPlayer.username + ".", promptType);
+                cardsToPass.add(toPass);
+                i++;
+            }
+            // then actually pass them
+            for (i = 0; i < passOrder.size(); i++) {
+                Player passingPlayer = passOrder.get(i);
+                Player receivingPlayer = passOrder.get((i + 1) % passOrder.size());
+                Card toPass = cardsToPass.get(i);
+                if (toPass != null) {
+                    passingPlayer.removeFromHand(toPass);
+                    receivingPlayer.addToHand(toPass);
+                }
+                String cardString = (toPass != null) ? toPass.htmlName() : "nothing";
+                // message player who is passing
+                game.message(passingPlayer, "You pass " + cardString + " to " + receivingPlayer.username);
+                // message player who is receiving
+                game.message(receivingPlayer, passingPlayer.username + " passes " + cardString + " to you");
+                // message other players (without naming the card passed)
+                cardString = (toPass != null) ? "a card" : "nothing";
+                for (Player uninvolvedPlayer : passOrder) {
+                    if (uninvolvedPlayer != passingPlayer && uninvolvedPlayer != receivingPlayer) {
+                        game.message(uninvolvedPlayer, passingPlayer.username + " passes " + cardString + " to " + receivingPlayer.username);
+                    }
+                }
+            }
+        }
+        // you may trash a card from your hand
+        if (player.getHand().size() != 0){
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()),
+                    this.toString() + ": You may trash a card from your hand",
+                    false, "Trash nothing");
+            if (toTrash != null) {
+                game.messageAll("trashing " + toTrash.htmlName());
+                player.removeFromHand(toTrash);
+                game.trash(player, toTrash);
+            }
+        }
+    }
 
 	protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt) {
 		List<Card> toPutOnDeck;

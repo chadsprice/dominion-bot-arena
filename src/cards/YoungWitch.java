@@ -24,7 +24,7 @@ public class YoungWitch extends Card {
         plusCards(player, game, 2);
         // discard 2 cards
         if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Young Witch", "actionPrompt");
+            List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Young Witch");
             game.messageAll("discarding " + Card.htmlList(toDiscard));
             player.putFromHandIntoDiscard(toDiscard);
         }

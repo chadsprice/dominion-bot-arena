@@ -27,7 +27,7 @@ public class Torturer extends Card {
 			if (choice == 0) {
 				// discard 2
 				if (target.getHand().size() > 0) {
-					List<Card> toDiscard = game.promptDiscardNumber(target, 2, "Torturer", "attackPrompt");
+					List<Card> toDiscard = game.promptDiscardNumber(target, 2, "Torturer");
 					target.putFromHandIntoDiscard(toDiscard);
 					game.message(target, "You discard " + Card.htmlList(toDiscard));
 					game.messageOpponents(target, target.username + " discards " + Card.htmlList(toDiscard));

@@ -1899,7 +1899,7 @@ public class Game implements Runnable {
 			}
 			return card;
 		}
-		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "actionPrompt", isMandatory, noneMessage);
+		return sendPromptChooseFromHand(player, choiceSet, promptMessage, "attackPrompt", isMandatory, noneMessage);
 	}
 
 	/**
@@ -2089,22 +2089,14 @@ public class Game implements Runnable {
 	 * Returns a list of cards that the player has chosen to discard.
 	 * This prompt is mandatory.
 	 */
-	public List<Card> promptDiscardNumber(Player player, int number, String cause, String promptType) {
-		return promptDiscardNumber(player, number, true, cause, promptType);
+	public List<Card> promptDiscardNumber(Player player, int number, String cause) {
+		return promptDiscardNumber(player, number, true, cause);
 	}
 
 	/**
 	 * Returns a list of cards that the player has chosen to discard.
-	 * This prompt is the "actionPrompt" type.
 	 */
 	public List<Card> promptDiscardNumber(Player player, int number, boolean isMandatory, String cause) {
-		return promptDiscardNumber(player, number, isMandatory, cause, "actionPrompt");
-	}
-
-	/**
-	 * Returns a list of cards that the player has chosen to discard.
-	 */
-	public List<Card> promptDiscardNumber(Player player, int number, boolean isMandatory, String cause, String promptType) {
 		if (player.getHand().size() < number) {
 			number = player.getHand().size();
 		}
@@ -2123,7 +2115,7 @@ public class Game implements Runnable {
 			}
 			return toDiscard;
 		}
-		return sendPromptDiscardNumber(player, number, isMandatory, cause, promptType, "discard");
+		return sendPromptDiscardNumber(player, number, isMandatory, cause, "attackPrompt", "discard");
 	}
 
 	/**
@@ -2132,21 +2124,13 @@ public class Game implements Runnable {
 	 * This choice is the "actionPrompt" type.
 	 */
 	public List<Card> promptTrashNumber(Player player, int number, String cause) {
-		return promptTrashNumber(player, number, true, cause, "actionPrompt");
+		return promptTrashNumber(player, number, true, cause);
 	}
 
 	/**
 	 * Returns a list of cards that the player has chosen to trash.
-	 * This choice is the "actionPrompt" type.
 	 */
 	public List<Card> promptTrashNumber(Player player, int number, boolean isMandatory, String cause) {
-		return promptTrashNumber(player, number, isMandatory, cause, "actionPrompt");
-	}
-
-	/**
-	 * Returns a list of cards that the player has chosen to trash.
-	 */
-	private List<Card> promptTrashNumber(Player player, int number, boolean isMandatory, String cause, String promptType) {
 		if (player.getHand().size() < number) {
 			number = player.getHand().size();
 		}
@@ -2165,7 +2149,7 @@ public class Game implements Runnable {
 			}
 			return toTrash;
 		}
-		return sendPromptDiscardNumber(player, number, isMandatory, cause, promptType, "trash");
+		return sendPromptDiscardNumber(player, number, isMandatory, cause, "attackPrompt", "trash");
 	}
 
 	/**

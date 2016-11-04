@@ -22,7 +22,7 @@ public class Mercenary extends Card {
     public void onAttack(Player player, Game game, List<Player> targets) {
         if (!player.getHand().isEmpty()) {
             // you may trash 2 cards from your hand
-            List<Card> toTrash = game.promptTrashNumber(player, 2, false, "Mercenary");
+            List<Card> toTrash = game.promptTrashNumber(player, 2, false, this.toString());
             if (toTrash.size() == 2) {
                 game.messageAll("trashing " + Card.htmlList(toTrash));
                 player.removeFromHand(toTrash);
@@ -33,7 +33,7 @@ public class Mercenary extends Card {
                 targets.forEach(target -> {
                     if (target.getHand().size() > 3) {
                         int count = target.getHand().size() - 3;
-                        List<Card> discarded = game.promptDiscardNumber(target, count, "Mercenary", "attackPrompt");
+                        List<Card> discarded = game.promptDiscardNumber(target, count, "Mercenary");
                         game.message(target, "You discard " + Card.htmlList(discarded));
                         game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
                         target.putFromHandIntoDiscard(discarded);

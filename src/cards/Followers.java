@@ -21,26 +21,11 @@ public class Followers extends Card {
     @Override
     public void onAttack(Player player, Game game, List<Player> targets) {
         plusCards(player, game, 2);
-        // gain an estate
-        if (game.supply.get(Card.ESTATE) != 0) {
-            game.messageAll("gaining " + Card.ESTATE.htmlName());
-            game.gain(player, Card.ESTATE);
-        }
+        // gain an Estate
+        gain(player, game, Card.ESTATE);
         // each other player gains a curse and discards down to 3 in hand
-        for (Player target : targets) {
-            if (game.supply.get(Card.CURSE) != 0) {
-                game.message(target, "You gain " + Card.CURSE.htmlName());
-                game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
-                game.gain(target, Card.CURSE);
-            }
-            if (target.getHand().size() > 3) {
-                int count = target.getHand().size() - 3;
-                List<Card> discarded = game.promptDiscardNumber(target, count, "Followers", "attackPrompt");
-                target.putFromHandIntoDiscard(discarded);
-                game.message(target, "You discard " + Card.htmlList(discarded));
-                game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
-            }
-        }
+        junkingAttack(targets, game, Card.CURSE);
+        handSizeAttack(targets, game, 3);
     }
 
     @Override

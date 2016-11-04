@@ -26,7 +26,7 @@ public class Inn extends Card {
         plusCards(player, game, 2);
         plusActions(player, game, 2);
         if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Inn", "actionPrompt");
+            List<Card> toDiscard = game.promptDiscardNumber(player, 2, "Inn");
             game.messageAll("discarding " + Card.htmlList(toDiscard));
             player.putFromHandIntoDiscard(toDiscard);
         }

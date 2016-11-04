@@ -22,7 +22,7 @@ public class Warehouse extends Card {
 		plusCards(player, game, 3);
 		plusActions(player, game, 1);
 		// discard 3 cards
-		List<Card> toDiscard = game.promptDiscardNumber(player, 3, this.toString(), "actionPrompt");
+		List<Card> toDiscard = game.promptDiscardNumber(player, 3, this.toString());
 		for (Card card : toDiscard) {
 			player.removeFromHand(card);
 			player.addToDiscard(card);

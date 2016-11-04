@@ -30,7 +30,7 @@ public class Margrave extends Card {
             // discard down to 3 in hand
             if (target.getHand().size() > 3) {
                 int count = target.getHand().size() - 3;
-                List<Card> discarded = game.promptDiscardNumber(target, count, "Militia", "attackPrompt");
+                List<Card> discarded = game.promptDiscardNumber(target, count, "Militia");
                 game.message(target, "You discard " + Card.htmlList(discarded));
                 game.messageOpponents(target, target.username + " discards " + Card.htmlList(discarded));
                 target.putFromHandIntoDiscard(discarded);
