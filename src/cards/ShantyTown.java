@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -22,21 +20,10 @@ public class ShantyTown extends Card {
 		plusActions(player, game, 2);
 		// reveal your hand
 		revealHand(player, game);
-		// if no actions, +2 cards
-		if (!handContainsActions(player)) {
-			List<Card> drawn = player.drawIntoHand(2);
-			game.message(player, "drawing " + Card.htmlList(drawn));
-			game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		// if you have no actions in hand, +2 cards
+		if (player.getHand().stream().noneMatch(c -> c.isAction)) {
+			plusCards(player, game, 2);
 		}
-	}
-
-	private boolean handContainsActions(Player player) {
-		for (Card card : player.getHand()) {
-			if (card.isAction) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@Override

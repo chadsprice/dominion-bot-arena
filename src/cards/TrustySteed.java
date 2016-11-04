@@ -5,9 +5,6 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrustySteed extends Card {
 
     public TrustySteed() {
@@ -22,8 +19,8 @@ public class TrustySteed extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         int[] benefits = chooseBenefits(player, game);
-        for (int i = 0; i < benefits.length; i++) {
-            switch (benefits[i]) {
+        for (Integer benefit : benefits) {
+            switch (benefit) {
                 case 0:
                     plusCards(player, game, 2);
                     break;
@@ -55,18 +52,15 @@ public class TrustySteed extends Card {
         if (player instanceof Bot) {
             int[] benefits = ((Bot) player).trustySteedBenefits();
             // there must be 2 distinct choices, both in the range of 0-3
-            if (benefits.length != 2 || benefits[0] == benefits[1] || !(0 <= benefits[0] && benefits[0] < 4) || !(0 <= benefits[1] && benefits[1] < 4)) {
+            if (benefits.length != 2 ||
+                    benefits[0] == benefits[1] ||
+                    !(0 <= benefits[0] && benefits[0] < 4) ||
+                    !(0 <= benefits[1] && benefits[1] < 4)) {
                 throw new IllegalStateException();
             }
             return benefits;
         }
-        List<Integer> benefits = new ArrayList<Integer>();
-        String[] choices = new String[] {"+2 Cards", "+2 Actions", "+$2", "Gain 4 Silvers and put your deck into your discard pile"};
-        int choice = game.promptMultipleChoice(player, "Pawn: Choose the first", choices);
-        benefits.add(choice);
-        choice = game.promptMultipleChoice(player, "Pawn: Choose the second", choices, new int[] {choice});
-        benefits.add(choice);
-        return new int[] {benefits.get(0), benefits.get(1)};
+        return chooseTwoDifferentBenefits(player, game, new String[] {"+2 Cards", "+2 Actions", "+$2", "Gain 4 Silvers and put your deck into your discard pile"});
     }
 
     @Override
@@ -83,4 +77,5 @@ public class TrustySteed extends Card {
     public String htmlType() {
         return "Action-Prize";
     }
+
 }

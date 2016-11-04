@@ -601,6 +601,11 @@ public class Bot extends Player {
         return chooseGainFromSupply(trashable, true);
     }
 
+    public int[] pawnBenefits() {
+        // +1 Card and +$1 is a safe choice for BigMoney
+        return new int[] {0, 3};
+    }
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

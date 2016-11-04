@@ -1101,6 +1101,12 @@ public class Card {
         }
     }
 
+    protected int[] chooseTwoDifferentBenefits(Player player, Game game, String[] benefits) {
+        int firstChoice = game.promptMultipleChoice(player, this.toString() + ": Choose two (the choices must be different)", benefits);
+        int secondChoice = game.promptMultipleChoice(player, this.toString() + ": Choose two (the choices must be different)", benefits, new int[] {firstChoice});
+        return new int[] {firstChoice, secondChoice};
+    }
+
 	public String htmlClass() {
 		if (isAction && isVictory) {
 			return "action-victory";
