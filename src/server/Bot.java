@@ -606,6 +606,16 @@ public class Bot extends Player {
         return new int[] {0, 3};
     }
 
+	public int stewardBenefit() {
+		// if there are two cards in hand you want to trash, trash them
+		if (getHand().stream().filter(this::wantToTrash).count() >= 2) {
+			return 2;
+		} else {
+			// otherwise, for BigMoney, +2 Cards is better on average than +$2
+			return 0;
+		}
+	}
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();
