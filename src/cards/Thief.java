@@ -1,9 +1,11 @@
 package cards;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -22,44 +24,65 @@ public class Thief extends Card {
 
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
-		// each other player reveals the top 2 cards of their deck
-		for (Player target : targets) {
-			List<Card> top = target.takeFromDraw(2);
-			game.message(target, "You reveal " + Card.htmlList(top));
-			game.messageOpponents(target, target.username + " reveals " + Card.htmlList(top));
-			Set<Card> treasures = new HashSet<Card>();
-			for (Card card : top) {
-				if (card.isTreasure) {
-					treasures.add(card);
+		targets.forEach(target -> {
+			// draw 2 cards
+			List<Card> drawn = target.takeFromDraw(2);
+			if (!drawn.isEmpty()) {
+				// announce the drawn cards
+				game.message(target, "You draw " + Card.htmlList(drawn));
+				game.messageOpponents(target, target.username + " draws " + Card.htmlList(drawn));
+				game.messageIndent++;
+				// filter out the treasures
+				Set<Card> trashable = drawn.stream().filter(c -> c.isTreasure).collect(Collectors.toSet());
+				if (!trashable.isEmpty()) {
+					// choose one to trash
+					Card toTrash;
+					if (trashable.size() == 1) {
+						toTrash = trashable.iterator().next();
+					} else {
+						toTrash = chooseTrash(player, game, trashable, target);
+					}
+					// trash it
+					game.messageAll("trashing the " + toTrash.htmlNameRaw());
+					drawn.remove(toTrash);
+					game.trash(target, toTrash);
+                    // you may gain the trashed treasure
+                    if (chooseGainTrashed(player, game, toTrash)) {
+                        game.message(player, "You gain the trashed " + toTrash.htmlNameRaw());
+                        game.messageOpponents(player, player.username + " gains the trashed " + toTrash.htmlNameRaw());
+                        game.gainFromTrash(player, toTrash);
+                    }
 				}
-			}
-			Card toTrash = null;
-			if (treasures.size() == 2) {
-				Card c1 = top.get(0);
-				Card c2 = top.get(1);
-				int choice = game.promptMultipleChoice(player, "Thief: " + target.username + " reveals " + c1.htmlName() + " and " + c2.htmlName() + ", choose one to trash", new String[] {c1.toString(), c2.toString()});
-				toTrash = top.get(choice);
-			} else if (treasures.size() == 1) {
-				toTrash = treasures.iterator().next();
-			}
-			if (toTrash != null) {
-				game.message(target, "You trash the " + toTrash.htmlNameRaw());
-				game.messageOpponents(target, target.username + " trashes the " + toTrash.htmlNameRaw());
-				top.remove(toTrash);
-				game.trash(target, toTrash);
-				int choice = game.promptMultipleChoice(player, "Thief: " + target.username + " trashes " + toTrash.htmlName() + ". Gain the trashed " + toTrash.htmlNameRaw() + "?", new String[] {"Yes", "No"});
-				if (choice == 0) {
-					game.message(player, "You gain the trashed " + toTrash.htmlNameRaw());
-					game.messageOpponents(player, player.username + " gains the trashed " + toTrash.htmlNameRaw());
-					game.gainFromTrash(player, toTrash);
+				if (!drawn.isEmpty()) {
+					game.messageAll("discarding the rest");
+					target.addToDiscard(drawn);
 				}
+				game.messageIndent--;
+			} else {
+				game.message(target, "Your deck is empty");
+				game.messageOpponents(target, target.username + "'s deck is empty");
 			}
-			// discard the non-treasures
-			if (!top.isEmpty()) {
-				target.addToDiscard(top);
-			}
-		}
+		});
 	}
+
+	private Card chooseTrash(Player player, Game game, Set<Card> trashable, Player target) {
+        if (player instanceof Bot) {
+            Card toTrash = ((Bot) player).thiefTrash(trashable);
+            if (!trashable.contains(toTrash)) {
+                throw new IllegalStateException();
+            }
+            return toTrash;
+        }
+        return game.promptMultipleChoiceCard(player, this.toString() + ": " + target.username + " draws " + Card.htmlList(new ArrayList<>(trashable)) + ". Choose which one they trash", "actionPrompt", trashable);
+    }
+
+    private boolean chooseGainTrashed(Player player, Game game, Card trashed) {
+        if (player instanceof Bot) {
+            return ((Bot) player).thiefGainTrashed(trashed);
+        }
+        int choice = game.promptMultipleChoice(player, this.toString() + ": Gain the trashed " + trashed.htmlNameRaw() + "?", new String[] {"Gain", "Don't"});
+        return (choice == 0);
+    }
 
 	@Override
 	public String[] description() {

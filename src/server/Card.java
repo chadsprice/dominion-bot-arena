@@ -740,7 +740,17 @@ public class Card {
         });
     }
 
-    protected void topTwoCardsAttack(List<Player> targets, Game game, Predicate<Card> trashablePredicate, Consumer<Card> trashedConsumer) {
+    protected void junkingAttack(List<Player> targets, Game game, Card junk) {
+        targets.forEach(target -> {
+            if (game.isAvailableInSupply(junk)) {
+                game.message(target, "You gain " + junk.htmlName());
+                game.messageOpponents(target, target.username + " gains " + junk.htmlName());
+                game.gain(target, junk);
+            }
+        });
+    }
+
+    protected void topTwoCardsAttack(List<Player> targets, Game game, Predicate<Card> trashablePredicate) {
         targets.forEach(target -> {
             // draw 2 cards
             List<Card> drawn = target.takeFromDraw(2);
@@ -763,8 +773,6 @@ public class Card {
                     game.messageAll("trashing the " + toTrash.htmlNameRaw());
                     drawn.remove(toTrash);
                     game.trash(target, toTrash);
-                    // do something else with the trashed card
-                    trashedConsumer.accept(toTrash);
                 }
                 if (!drawn.isEmpty()) {
                     game.messageAll("discarding the rest");

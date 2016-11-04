@@ -30,8 +30,7 @@ public class Rogue extends Card {
         } else {
             // each other player reveals the top 2 cards of their deck, trashes one of them costing from $3 to $6
             topTwoCardsAttack(targets,  game,
-                    c -> 3 <= c.cost(game) && c.cost(game) <= 6,
-                    c -> {});
+                    c -> 3 <= c.cost(game) && c.cost(game) <= 6);
         }
     }
 

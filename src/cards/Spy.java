@@ -2,6 +2,7 @@ package cards;
 
 import java.util.List;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -24,33 +25,49 @@ public class Spy extends Card {
 		plusActions(player, game, 1);
 		// reveal top card of each player's deck and decide to keep it or discard it
 		targets.add(0, player);
-		for (Player target : targets) {
-			List<Card> top = target.takeFromDraw(1);
-			if (top.size() == 1) {
-				Card card = top.get(0);
-				game.message(target, "You reveal " + card.htmlName());
-				game.messageOpponents(target, target.username + " reveals " + card.htmlName());
-				int choice;
-				if (target == player) {
-					choice = game.promptMultipleChoice(player, "Spy: You reveal " + card.htmlName(), new String[] {"Keep it", "Discard it"});
-				} else {
-					choice = game.promptMultipleChoice(player, "Spy: " + target.username + " reveals " + card.htmlName(), new String[] {"They keep it", "They discard it"});
-				}
-				if (choice == 0) {
-					target.putOnDraw(card);
-					game.message(target, "You put it back");
-					game.messageOpponents(target, target.username + " puts it back");
-				} else {
-					target.addToDiscard(card);
-					game.message(target, "You discard it");
-					game.messageOpponents(target, target.username + " discards it");
-				}
-			} else {
-				game.message(target, "Your deck is empty");
-				game.messageOpponents(target, target.username + "'s deck is empty");
-			}
-		}
+        targets.forEach(target -> {
+            List<Card> top = target.takeFromDraw(1);
+            if (!top.isEmpty()) {
+                Card card = top.get(0);
+                game.message(target, "You reveal " + card.htmlName());
+                game.messageOpponents(target, target.username + " reveals " + card.htmlName());
+                boolean isDiscarding;
+                if (target == player) {
+                    isDiscarding = chooseDiscardSelf(player, game, card);
+                } else {
+                    isDiscarding = chooseDiscardOpponent(player, game, target, card);
+                }
+                game.messageIndent++;
+                if (isDiscarding) {
+                    game.messageAll("discarding it");
+                    target.addToDiscard(card);
+                } else {
+                    game.messageAll("putting it back");
+                    target.putOnDraw(card);
+                }
+                game.messageIndent--;
+            } else {
+                game.message(target, "Your deck is empty");
+                game.messageOpponents(target, target.username + "'s deck is empty");
+            }
+        });
 	}
+
+	private boolean chooseDiscardSelf(Player player, Game game, Card card) {
+        if (player instanceof Bot) {
+            return ((Bot) player).wantToDiscard(card);
+        }
+        int choice = game.promptMultipleChoice(player, this.toString() + ": You draw " + card.htmlName() + ". Discard it or put it back?", new String[] {"Discard", "Put back"});
+        return (choice == 0);
+    }
+
+    private boolean chooseDiscardOpponent(Player player, Game game, Player opponent, Card card) {
+        if (player instanceof Bot) {
+            return !((Bot) player).wantToDiscard(card);
+        }
+        int choice = game.promptMultipleChoice(player, this.toString() + ": " + opponent.username + " draws " + card.htmlName() + ". Have them discard it or put it back?", new String[] {"They discard", "They put back"});
+        return (choice == 0);
+    }
 
 	@Override
 	public String[] description() {

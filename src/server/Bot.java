@@ -573,6 +573,21 @@ public class Bot extends Player {
         }
     }
 
+    public boolean chancellorPutDeckIntoDiscard() {
+        // putting your deck into your discard speeds up cycling
+        return true;
+    }
+
+    public Card thiefTrash(Set<Card> trashable) {
+        // trash the opponent's most expensive treasure
+        return mostExpensive(trashable);
+    }
+
+    public boolean thiefGainTrashed(Card trashed) {
+        // gain any non-Copper treasure
+        return trashed != Card.COPPER;
+    }
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

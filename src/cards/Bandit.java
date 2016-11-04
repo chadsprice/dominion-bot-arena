@@ -24,8 +24,7 @@ public class Bandit extends Card {
         gain(player, game, Card.GOLD);
         // each other player reveals the top 2 cards of their deck, then trashes a non-Copper treasure
         topTwoCardsAttack(targets, game,
-                c -> c.isTreasure && c != Card.COPPER,
-                c -> {});
+                c -> c.isTreasure && c != Card.COPPER);
     }
 
     @Override

@@ -21,14 +21,8 @@ public class Witch extends Card {
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		plusCards(player, game, 2);
-		// each other player gains a curse
-		for (Player target : targets) {
-			if (game.supply.get(Card.CURSE) > 0) {
-				game.message(target, "You gain " + Card.CURSE.htmlName());
-				game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
-				game.gain(target, Card.CURSE);
-			}
-		}
+		// each other player gains a Curse
+		junkingAttack(targets, game, Card.CURSE);
 	}
 
 	@Override
