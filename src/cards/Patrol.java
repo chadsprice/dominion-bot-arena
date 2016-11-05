@@ -4,9 +4,8 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Patrol extends Card {
 
@@ -25,29 +24,27 @@ public class Patrol extends Card {
         // reveal 4 cards, etc.
         List<Card> revealed = player.takeFromDraw(4);
         if (!revealed.isEmpty()) {
-            game.messageAll("revealing " + Card.htmlList(revealed));
-            // put the revealed victory cards any curses into your hand
-            List<Card> toPutInHand = new ArrayList<Card>();
-            for (Iterator<Card> iter = revealed.iterator(); iter.hasNext(); ) {
-                Card next = iter.next();
-                if (next.isVictory || next == Card.CURSE) {
-                    iter.remove();
-                    toPutInHand.add(next);
-                }
-            }
+            game.messageAll("drawing " + Card.htmlList(revealed));
+            game.messageIndent++;
+            // put the revealed victory cards any Curses into your hand
+            List<Card> toPutInHand = revealed.stream()
+                    .filter(c -> c.isVictory || c == Card.CURSE)
+                    .collect(Collectors.toList());
             if (!toPutInHand.isEmpty()) {
                 game.message(player, "putting " + Card.htmlList(toPutInHand) + " into your hand");
                 game.messageOpponents(player, "putting " + Card.htmlList(toPutInHand) + " into their hand");
+                toPutInHand.forEach(revealed::remove);
                 player.addToHand(toPutInHand);
             }
             // put the rest back in any order
             if (!revealed.isEmpty()) {
                 game.messageAll("putting the rest back");
-                putOnDeckInAnyOrder(player, game, revealed, "Patrol: Put the rest back in any order");
+                putOnDeckInAnyOrder(player, game, revealed, this.toString() + ": Put the rest back in any order.");
             }
+            game.messageIndent--;
         } else {
-            game.message(player, "revealing nothing because your deck is empty");
-            game.messageOpponents(player, "revealing nothing because their deck is empty");
+            game.message(player, "your deck is empty");
+            game.messageOpponents(player, "their deck is empty");
         }
     }
 

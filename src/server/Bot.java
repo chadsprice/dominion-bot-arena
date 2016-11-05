@@ -643,6 +643,11 @@ public class Bot extends Player {
 		return Arrays.asList(new Integer[] {2, 3, 1, 0}).subList(0, numBenefits);
 	}
 
+	public boolean minionCoinOverAttack() {
+		// take the $2 if you have another Minion in hand to chain into
+		return getHand().contains(Card.MINION);
+	}
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();
