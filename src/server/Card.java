@@ -717,15 +717,19 @@ public class Card {
         return discarded;
     }
 
-    protected void gainCardCostingUpTo(Player player, Game game, int cost) {
+    protected Card gainCardCostingUpTo(Player player, Game game, int cost) {
         Set<Card> gainable = game.cardsCostingAtMost(cost);
         if (!gainable.isEmpty()) {
             Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
             game.messageAll("gaining " + toGain.htmlName());
-            game.gain(player, toGain);
+            boolean replaced = game.gain(player, toGain);
+			if (!replaced) {
+				return toGain;
+			}
         } else {
             game.messageAll("gaining nothing");
         }
+        return null;
     }
 
     protected void handSizeAttack(List<Player> targets, Game game, int handSize) {
@@ -822,7 +826,7 @@ public class Card {
             if (!gainable.isEmpty()) {
                 Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
                 game.messageAll("gaining " + toGain.htmlName());
-                game.gain(player, toGain);
+				game.gain(player, toGain);
             } else {
                 game.messageAll("gaining nothing");
             }

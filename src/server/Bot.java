@@ -648,6 +648,11 @@ public class Bot extends Player {
 		return getHand().contains(Card.MINION);
 	}
 
+	public boolean torturerDiscardTwoOverTakingCurse() {
+		// if you have enough cards that you want to discard, discard them
+		return getHand().stream().filter(this::wantToDiscard).count() >= Math.min(2, getHand().size());
+	}
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

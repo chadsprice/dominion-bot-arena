@@ -2,6 +2,7 @@ package cards;
 
 import java.util.List;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -23,21 +24,20 @@ public class Torturer extends Card {
 		plusCards(player, game, 3);
 		// torture targets
 		for (Player target : targets) {
-			int choice = game.promptMultipleChoice(target, "Torturer: Choose one", "attackPrompt", new String[] {"Discard 2 cards", "Gain a Curse, putting it into your hand"});
-			if (choice == 0) {
-				// discard 2
-				if (target.getHand().size() > 0) {
+			if (chooseDiscardTwoOverTakingCurse(target, game)) {
+				// discard 2 cards
+				if (target.getHand().size() != 0) {
 					List<Card> toDiscard = game.promptDiscardNumber(target, 2, "Torturer");
-					target.putFromHandIntoDiscard(toDiscard);
 					game.message(target, "You discard " + Card.htmlList(toDiscard));
 					game.messageOpponents(target, target.username + " discards " + Card.htmlList(toDiscard));
+					target.putFromHandIntoDiscard(toDiscard);
 				} else {
 					game.message(target, "You reveal an empty hand, discarding nothing");
 					game.messageOpponents(target, target.username + " reveals an empty hand, discarding nothing");
 				}
 			} else {
 				// gain a curse putting it into your hand
-				if (game.supply.get(Card.CURSE) > 0) {
+				if (game.supply.get(Card.CURSE) != 0) {
 					game.message(target, "You gain " + Card.CURSE.htmlName() + " to your hand");
 					game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName() + " to their hand");
 					game.gainToHand(player, Card.CURSE);
@@ -47,6 +47,14 @@ public class Torturer extends Card {
 				}
 			}
 		}
+	}
+
+	private boolean chooseDiscardTwoOverTakingCurse(Player player, Game game) {
+		if (player instanceof Bot) {
+			return ((Bot) player).torturerDiscardTwoOverTakingCurse();
+		}
+		int choice = game.promptMultipleChoice(player, this.toString() + ": Choose one", "attackPrompt", new String[] {"Discard 2 cards", "Gain a Curse, putting it into your hand"});
+		return (choice == 0);
 	}
 
 	@Override

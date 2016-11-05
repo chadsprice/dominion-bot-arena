@@ -24,14 +24,14 @@ public class Replace extends Card {
     public void onAttack(Player player, Game game, List<Player> targets) {
         if (!player.getHand().isEmpty()) {
             // trash a card from your hand
-            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Replace: Choose a card to trash.");
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
             game.trash(player, toTrash);
             // gain a card costing up to 2 more than the trashed card
             Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + 2);
             if (!gainable.isEmpty()) {
-                Card toGain = game.promptChooseGainFromSupply(player, gainable, "Replace: Choose a card to gain.");
+                Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
                 // if it is an action or treasure, put it on top of your deck
                 if (toGain.isAction || toGain.isTreasure) {
                     game.message(player, "gaining " + toGain.htmlName() + ", putting it on top of your deck");
@@ -43,13 +43,7 @@ public class Replace extends Card {
                 }
                 // if it is a victory card, every other player gains a curse
                 if (toGain.isVictory) {
-                    for (Player target : targets) {
-                        if (game.supply.get(Card.CURSE) > 0) {
-                            game.message(target, "You gain " + Card.CURSE.htmlName());
-                            game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
-                            game.gain(target, Card.CURSE);
-                        }
-                    }
+                    junkingAttack(targets, game, Card.CURSE);
                 }
             } else {
                 game.messageAll("gaining nothing");

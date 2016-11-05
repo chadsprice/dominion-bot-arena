@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.Set;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -20,30 +18,20 @@ public class Ironworks extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// gain a card costing up to $4
-		Set<Card> gainable = game.cardsCostingAtMost(4);
-		if (!gainable.isEmpty()) {
-			Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
-			game.messageAll("gaining " + toGain.htmlName());
-			boolean replaced = game.gain(player, toGain);
-			if (replaced) {
-				// if the gained card is replaced, you get no benefit
-				// a.k.a. the "blue dog" rule
-				return;
-			}
+		Card gained = gainCardCostingUpTo(player, game, 4);
+		if (gained != null) {
 			// action -> +1 action
-			if (toGain.isAction) {
+			if (gained.isAction) {
 				plusActions(player, game, 1);
 			}
 			// treasure -> +$1
-			if (toGain.isTreasure) {
+			if (gained.isTreasure) {
 				plusCoins(player, game, 1);
 			}
 			// victory -> +1 card
-			if (toGain.isVictory) {
+			if (gained.isVictory) {
 				plusCards(player, game, 1);
 			}
-		} else {
-			game.messageAll("gaining nothing");
 		}
 	}
 
