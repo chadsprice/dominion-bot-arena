@@ -663,6 +663,11 @@ public class Bot extends Player {
 		return cardPiles.iterator().next();
 	}
 
+	public Card havenSetAside(Set<Card> canSetAside) {
+		// set aside something random (no clear strategy yet)
+		return canSetAside.iterator().next();
+	}
+
 	public int ambassadorNumToReturn(Card revealed, int maximum) {
 		if (wantToTrash(revealed)) {
 			return maximum;

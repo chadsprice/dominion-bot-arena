@@ -23,25 +23,25 @@ public class Tribute extends Card {
 	public void onPlay(Player player, Game game) {
 		Player playerOnLeft = game.getOpponents(player).get(0);
 		List<Card> drawn = playerOnLeft.takeFromDraw(2);
-		if (drawn.size() > 0) {
+		if (!drawn.isEmpty()) {
+			game.message(playerOnLeft, "You draw " + Card.htmlList(drawn) + " and discard");
+			game.messageOpponents(playerOnLeft, playerOnLeft.username + " draws " + Card.htmlList(drawn) + " and discards");
 			playerOnLeft.addToDiscard(drawn);
-			game.message(playerOnLeft, "You reveal " + Card.htmlList(drawn));
-			game.messageOpponents(playerOnLeft, playerOnLeft.username + " reveals " + Card.htmlList(drawn));
-			Set<Card> differentlyNamed = new HashSet<Card>(drawn);
+			Set<Card> differentlyNamed = new HashSet<>(drawn);
 			for (Card card : differentlyNamed) {
-				// +2 actions
+				// action -> +2 actions
 				if (card.isAction) {
-					player.addActions(2);
 					game.message(player, "You get +2 actions for the " + card.htmlNameRaw());
 					game.messageOpponents(player, player.username + " gets +2 actions for the " + card.htmlNameRaw());
+					player.addActions(2);
 				}
-				// +$2
+				// treasure -> +$2
 				if (card.isTreasure) {
-					player.addCoins(2);
 					game.message(player, "You get +$2 for the " + card.htmlNameRaw());
 					game.messageOpponents(player, player.username + " gets +$2 for the " + card.htmlNameRaw());
+					player.addCoins(2);
 				}
-				// +2 cards
+				// victory -> +2 cards
 				if (card.isVictory) {
 					drawn = player.drawIntoHand(2);
 					game.message(player, "You draw " + Card.htmlList(drawn) + " for the " + card.htmlNameRaw());

@@ -44,12 +44,13 @@ public class Embargo extends Card {
 	private Object chooseEmbargoPile(Player player, Game game) {
 		if (player instanceof Bot) {
 			Object pile = ((Bot) player).embargoPile(game.supply.keySet(), game.mixedPiles.keySet());
-			if (!game.supply.containsKey(pile) && !game.mixedPiles.containsKey(pile)) {
+			if ((pile instanceof Card && !game.supply.containsKey(pile)) ||
+					(pile instanceof Card.MixedPileId && !game.mixedPiles.containsKey(pile))) {
 				throw new IllegalStateException();
 			}
 			return pile;
 		}
-		return game.promptChoosePile(player, "Embargo: Put an embargo token on a supply pile.", "actionPrompt", true, null);
+		return game.promptChoosePile(player, this.toString() + ": Put an embargo token on a supply pile.", "actionPrompt", true, null);
 	}
 
 	@Override

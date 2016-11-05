@@ -2,11 +2,9 @@ package cards;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import server.Card;
-import server.DurationEffect;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class Haven extends Card {
 
@@ -26,11 +24,11 @@ public class Haven extends Card {
 		plusActions(player, game, 1);
 		// choose a card to haven
 		if (!player.getHand().isEmpty()) {
-			Card toHaven = game.promptChoosePutOnDeck(player, new HashSet<>(player.getHand()), "Haven: Choose a card to set aside.");
-			player.removeFromHand(toHaven);
-			havened.add(toHaven);
+			Card toHaven = chooseSetAside(player, game);
 			game.message(player, "setting aside " + toHaven.htmlName() + " face down");
 			game.messageOpponents(player, "setting aside a card face down");
+			player.removeFromHand(toHaven);
+			havened.add(toHaven);
 			// indicate that this haven will have an effect next turn
 			return true;
 		} else {
@@ -39,6 +37,18 @@ public class Haven extends Card {
 			// indicate that this haven will have no effect next turn
 			return false;
 		}
+	}
+
+	private Card chooseSetAside(Player player, Game game) {
+		Set<Card> canSetAside = new HashSet<>(player.getHand());
+		if (player instanceof Bot) {
+			Card toSetAside = ((Bot) player).havenSetAside(canSetAside);
+			if (!canSetAside.contains(toSetAside)) {
+				throw new IllegalStateException();
+			}
+			return toSetAside;
+		}
+		return game.promptChoosePutOnDeck(player, canSetAside, this.toString() + ": Choose a card to set aside.");
 	}
 
 	@Override

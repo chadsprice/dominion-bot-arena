@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import cards.Hovel;
+import cards.Lighthouse;
 import cards.MarketSquare;
 import cards.NobleBrigand;
 import org.json.simple.JSONArray;
@@ -555,8 +556,8 @@ public class Game implements Runnable {
 	}
 
 	private boolean reactToAttack(Player player) {
-		if (player.getDurationEffects().stream()
-				.anyMatch(effect -> effect.card == Card.LIGHTHOUSE)) {
+		if (player.getDurationSetAsideCards().stream()
+				.anyMatch(effect -> effect instanceof Lighthouse)) {
 			message(player, "You have " + Card.LIGHTHOUSE.htmlName() + " in play");
 			messageOpponents(player, player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play");
 			return true;

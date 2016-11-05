@@ -810,6 +810,10 @@ public class Player {
 		sendDurations();
 	}
 
+	public List<Card> getDurationSetAsideCards() {
+		return durationSetAsideCards;
+	}
+
 	public void addDurationSetAside(Card card) {
 		durationSetAsideCards.add(card);
 		sendDurations();
