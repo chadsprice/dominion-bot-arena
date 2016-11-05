@@ -1,8 +1,5 @@
 package cards;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,7 +38,7 @@ public class Scout extends Card {
 			if (!nonVictoryCards.isEmpty()) {
 				game.message(player, "putting the rest on top of your deck");
 				game.messageOpponents(player, "putting the rest on top of their deck");
-				putOnDeckInAnyOrder(player, game, revealed, "Scout: Put the remaining cards on top of your deck");
+				putOnDeckInAnyOrder(player, game, revealed, this.toString() + ": Put the remaining cards on top of your deck");
 			}
 		} else {
 			game.message(player, "your deck is empty");
