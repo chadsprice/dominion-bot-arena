@@ -1,5 +1,6 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -18,26 +19,23 @@ public class Baron extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		plusBuys(player, game, 1);
-		// may discard an estate
-		boolean discardingEstate = false;
-		if (player.getHand().contains(Card.ESTATE)) {
-			int choice = game.promptMultipleChoice(player, "Baron: Discard " + Card.ESTATE.htmlName() + " for +$4?", new String[] {"Yes", "No"});
-			if (choice == 0) {
-				discardingEstate = true;
-			}
-		}
-		if (discardingEstate) {
+		// may discard an Estate for +$4
+		if (player.getHand().contains(Card.ESTATE) && chooseDiscardEstate(player, game)) {
 			game.messageAll("discarding " + Card.ESTATE.htmlName() + " for +$4");
 			player.putFromHandIntoDiscard(Card.ESTATE);
 			player.addCoins(4);
 		} else {
-			if (game.supply.get(Card.ESTATE) > 0) {
-				game.messageAll("gaining " + Card.ESTATE.htmlName());
-				game.gain(player, Card.ESTATE);
-			} else {
-				game.messageAll("gaining nothing");
-			}
+			// otherwise, gain an Estate
+			gain(player, game, Card.ESTATE);
 		}
+	}
+
+	private boolean chooseDiscardEstate(Player player, Game game) {
+		if (player instanceof Bot) {
+			return ((Bot) player).baronDiscardEstate();
+		}
+		int choice = game.promptMultipleChoice(player, this.toString() + ": Discard " + Card.ESTATE.htmlName() + " for +$4?", new String[] {"Yes", "No"});
+		return (choice == 0);
 	}
 
 	@Override

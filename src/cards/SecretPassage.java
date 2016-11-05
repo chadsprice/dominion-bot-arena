@@ -23,7 +23,7 @@ public class SecretPassage extends Card {
         plusActions(player, game, 1);
         if (!player.getHand().isEmpty()) {
             // choose a card from your hand
-            Card card = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Secret Passage: Choose a card from your hand to put anywhere in your deck.");
+            Card card = game.promptChoosePutOnDeck(player, new HashSet<>(player.getHand()), this.toString() + ": Take a card from your hand and put it anywhere in your deck.");
             // choose where to put it in your deck
             int numPositions = player.getDraw().size() + 1;
             String[] choices = new String[numPositions];
@@ -36,7 +36,7 @@ public class SecretPassage extends Card {
                 }
                 choices[i] = positionStr;
             }
-            int choice = game.promptMultipleChoice(player, "Secret Passage: Choose to put the " + card.htmlNameRaw() + " on top of your deck, at the bottom, or some number of cards from the top.", choices);
+            int choice = game.promptMultipleChoice(player, this.toString() + ": Choose to put the " + card.htmlNameRaw() + " on top of your deck, at the bottom, or some number of cards from the top.", choices);
             String choiceStr = Card.numCards(choice) + " from the top";
             if (choice == 0) {
                 choiceStr = "on top";

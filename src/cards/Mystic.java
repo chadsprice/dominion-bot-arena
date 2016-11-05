@@ -19,7 +19,7 @@ public class Mystic extends Card {
     public void onPlay(Player player, Game game) {
         plusActions(player, game, 1);
         plusCoins(player, game, 2);
-        tryToNameTopCardOfDeck(player, game, "Mystic");
+        tryToNameTopCardOfDeck(player, game);
     }
 
     @Override

@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import server.Card;
@@ -24,11 +22,12 @@ public class Ironworks extends Card {
 		// gain a card costing up to $4
 		Set<Card> gainable = game.cardsCostingAtMost(4);
 		if (!gainable.isEmpty()) {
-			Card toGain = game.promptChooseGainFromSupply(player, gainable, "Ironworks: Choose a card to gain.");
+			Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
 			game.messageAll("gaining " + toGain.htmlName());
 			boolean replaced = game.gain(player, toGain);
 			if (replaced) {
 				// if the gained card is replaced, you get no benefit
+				// a.k.a. the "blue dog" rule
 				return;
 			}
 			// action -> +1 action

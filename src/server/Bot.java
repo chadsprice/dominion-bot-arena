@@ -616,6 +616,33 @@ public class Bot extends Player {
 		}
 	}
 
+	public boolean baronDiscardEstate() {
+		// discard an Estate for +$4
+		return true;
+	}
+
+	public boolean miningVillageTrash() {
+		// trashing an action card for coin is beneficial for BigMoney
+		return true;
+	}
+
+	public Card courtierReveal(Set<Card> revealable) {
+		// reveal the card with the most types
+		Optional<Card> mostTypes = revealable.stream().max(
+				(a, b) -> a.htmlType().split("-").length - b.htmlType().split("-").length);
+		if (mostTypes.isPresent()) {
+			return mostTypes.get();
+		} else {
+			// revealable must be empty, so no choice can be made
+			throw new IllegalArgumentException();
+		}
+	}
+
+	public List<Integer> courtierBenefits(int numBenefits) {
+		// in order of usefulness for BigMoney: +$3, gain Gold, +1 Buy, +1 Action
+		return Arrays.asList(new Integer[] {2, 3, 1, 0}).subList(0, numBenefits);
+	}
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

@@ -1,7 +1,5 @@
 package cards;
 
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -21,7 +19,7 @@ public class WishingWell extends Card {
 	public void onPlay(Player player, Game game) {
 		plusCards(player, game, 1);
 		plusActions(player, game, 1);
-		tryToNameTopCardOfDeck(player, game, "Wishing Well");
+		tryToNameTopCardOfDeck(player, game);
 	}
 
 	@Override

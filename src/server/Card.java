@@ -1132,8 +1132,8 @@ public class Card {
 		return gainableSorted.get(choice);
 	}
 
-	protected void tryToNameTopCardOfDeck(Player player, Game game, String cause) {
-		Card namedCard = game.promptNameACard(player, cause, "Name a card. If that is the top card of your deck, it will go into your hand");
+	protected void tryToNameTopCardOfDeck(Player player, Game game) {
+		Card namedCard = game.promptNameACard(player, this.toString(), "Name a card. If that is the top card of your deck, it will go into your hand");
 		List<Card> drawn = player.takeFromDraw(1);
 		if (!drawn.isEmpty()) {
 			Card revealedCard = drawn.get(0);

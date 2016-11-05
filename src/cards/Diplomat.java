@@ -4,8 +4,6 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.List;
-
 public class Diplomat extends Card {
 
     public Diplomat() {
@@ -29,11 +27,7 @@ public class Diplomat extends Card {
     @Override
     public boolean onAttackReaction(Player player, Game game) {
         plusCards(player, game, 2);
-        if (!player.getHand().isEmpty()) {
-            List<Card> toDiscard = game.promptDiscardNumber(player, 3, "Diplomat");
-            game.messageAll("discarding " + Card.htmlList(toDiscard));
-            player.putFromHandIntoDiscard(toDiscard);
-        }
+        discardNumber(player, game, 3);
         return false;
     }
 
