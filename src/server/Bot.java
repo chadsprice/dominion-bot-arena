@@ -653,6 +653,11 @@ public class Bot extends Player {
 		return getHand().stream().filter(this::wantToDiscard).count() >= Math.min(2, getHand().size());
 	}
 
+	public boolean noblesCardsOverActions() {
+		// +3 Cards is better than +2 Actions for BigMoney
+		return true;
+	}
+
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();

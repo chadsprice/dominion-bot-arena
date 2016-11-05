@@ -15,7 +15,7 @@ public class SirVander extends Knight {
     @Override
     public void onTrash(Player player, Game game) {
         if (game.supply.get(Card.GOLD) != 0) {
-            game.messageAll("gaining " + Card.GOLD.htmlName());
+            game.messageAll("gaining " + Card.GOLD.htmlName() + " because of " + this.htmlNameRaw());
             game.gain(player, Card.GOLD);
         }
     }

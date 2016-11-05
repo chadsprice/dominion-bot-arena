@@ -670,20 +670,32 @@ public class Card {
         game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
 	}
 	protected void plusActions(Player player, Game game, int numActions) {
-		player.addActions(numActions);
+		if (numActions == 0) {
+			return;
+		}
 		game.messageAll("getting +" + numActions + ((numActions == 1) ? " action" : " actions"));
+		player.addActions(numActions);
 	}
 	protected void plusBuys(Player player, Game game, int numBuys) {
-		player.addBuys(numBuys);
+		if (numBuys == 0) {
+			return;
+		}
 		game.messageAll("getting +" + numBuys + ((numBuys == 1) ? " buy" : " buys"));
+		player.addBuys(numBuys);
 	}
 	protected void plusCoins(Player player, Game game, int numCoins) {
-		player.addCoins(numCoins);
+		if (numCoins == 0) {
+			return;
+		}
 		game.messageAll("getting +$" + numCoins);
+		player.addCoins(numCoins);
 	}
 	protected void plusVictoryTokens(Player player, Game game, int numTokens) {
-		player.addVictoryTokens(numTokens);
+		if (numTokens == 0) {
+			return;
+		}
 		game.messageAll("getting +" + numTokens + " VP");
+		player.addVictoryTokens(numTokens);
 	}
 
     protected void gain(Player player, Game game, Card card) {
@@ -711,6 +723,9 @@ public class Card {
     }
 
 	protected List<Card> discardAnyNumber(Player player, Game game) {
+		if (player.getHand().isEmpty()) {
+			return new ArrayList<>();
+		}
         List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, this.toString());
         game.messageAll("discarding " + Card.htmlList(discarded));
         player.putFromHandIntoDiscard(discarded);
@@ -831,7 +846,7 @@ public class Card {
                 game.messageAll("gaining nothing");
             }
         } else {
-            game.messageAll("having nothing in hand to trash");
+            game.messageAll("having no card to trash");
         }
     }
 
@@ -1082,25 +1097,6 @@ public class Card {
 	protected void putRevealedOnDeck(Player player, Game game, Card card) {
 		game.messageAll("putting the " + card.htmlNameRaw() + " back on top");
 		player.putOnDraw(card);
-	}
-
-	protected void upgradeViaTrashing(Player player, Game game, Set<Card> trashable, int coins, String trashPrompt, String gainPrompt) {
-		if (!trashable.isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, trashable, trashPrompt);
-			game.messageAll("trashing " + toTrash.htmlName());
-			player.removeFromHand(toTrash);
-			game.trash(player, toTrash);
-			Set<Card> gainable = game.cardsCostingAtMost(toTrash.cost(game) + coins);
-			if (!gainable.isEmpty()) {
-				Card toGain = game.promptChooseGainFromSupply(player, gainable, gainPrompt);
-				game.messageAll("gaining " + toGain.htmlName());
-				game.gain(player, toGain);
-			} else {
-				game.messageAll("gaining nothing");
-			}
-		} else {
-			game.messageAll("trashing nothing");
-		}
 	}
 
 	protected void gainFromTrashSatisfying(Player player, Game game, Predicate<Card> predicate, String promptMessage) {

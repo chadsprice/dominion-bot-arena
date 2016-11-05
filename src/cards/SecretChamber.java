@@ -1,6 +1,5 @@
 package cards;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import server.Card;
@@ -22,35 +21,26 @@ public class SecretChamber extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// discard any number of cards
-		List<Card> discarded = game.promptDiscardNumber(player, player.getHand().size(), false, "Secret Chamber");
-		if (!discarded.isEmpty()) {
-			game.messageAll("discarding " + Card.htmlList(discarded) + " for +$" + discarded.size());
-			player.putFromHandIntoDiscard(discarded);
-			// +$1 per card discarded
-			player.addCoins(discarded.size());
-		} else {
-			game.messageAll("discarding nothing");
-		}
+		List<Card> discarded = discardAnyNumber(player, game);
+		// +$1 per card discarded
+		plusCoins(player, game, discarded.size());
 	}
 
 	@Override
 	public boolean onAttackReaction(Player player, Game game) {
 		// +2 cards
-		List<Card> drawn = player.drawIntoHand(2);
-		game.message(player, "drawing " + Card.htmlList(drawn));
-		game.messageOpponents(player, "drawing " + Card.numCards(drawn.size()));
+		plusCards(player, game, 2);
 		// put 2 cards from your hand back on top of your deck
-		List<Card> discarded;
-		if (player.getHand().size() > 0) {
-			int numToDiscard = player.getHand().size() == 1 ? 1 : 2;
-			discarded = game.promptPutNumberOnDeck(player, numToDiscard, "Secret Chamber");
+		if (!player.getHand().isEmpty()) {
+			List<Card> discarded = game.promptPutNumberOnDeck(player, 2, this.toString());
+			game.message(player, "putting " + Card.htmlList(discarded) + " on top of your deck");
+			game.messageOpponents(player, "putting " + Card.numCards(discarded.size()) + " on top of their deck");
 			player.removeFromHand(discarded);
 			player.putOnDraw(discarded);
 		} else {
-			discarded = new ArrayList<Card>();
+			game.message(player, "having no cards to put on top of your deck");
+			game.messageOpponents(player, "having no cards to put on top of their deck");
 		}
-		game.message(player, "putting " + Card.htmlList(discarded) + " on top of your deck");
-		game.messageOpponents(player, "putting " + Card.numCards(drawn.size()) + " on top of their deck");
 		return false;
 	}
 

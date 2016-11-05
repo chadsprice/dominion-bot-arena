@@ -1,5 +1,6 @@
 package cards;
 
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -23,12 +24,19 @@ public class Nobles extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		int choice = game.promptMultipleChoice(player, "Nobles: Choose one", new String[] {"+3 Cards", "+2 Actions"});
-		if (choice == 0) {
+		if (chooseCardsOverActions(player, game)) {
 			plusCards(player, game, 3);
 		} else {
 			plusActions(player, game, 2);
 		}
+	}
+
+	private boolean chooseCardsOverActions(Player player, Game game) {
+		if (player instanceof Bot) {
+			return ((Bot) player).noblesCardsOverActions();
+		}
+		int choice = game.promptMultipleChoice(player, this.toString() + ": Choose one", new String[] {"+3 Cards", "+2 Actions"});
+		return (choice == 0);
 	}
 
 	@Override
