@@ -1452,7 +1452,8 @@ function enterGame() {
   setArea('pirateShipMat');
   setArea('durations');
   setArea('inPlay');
-  // clear seaside UI
+  // clear other UI
+  setArea('coinTokens');
   setArea('victoryTokenMat');
   setArea('tradeRouteMat');
   // clear prizes
@@ -1614,6 +1615,9 @@ function executeCommand(command) {
       break;
     case 'setDiscardSize':
       setDeckSize(command.size, 'discardStatus');
+      break;
+    case 'setCoinTokens':
+      setArea('coinTokens', 'Coin Tokens', command.contents);
       break;
     case 'setVictoryTokenMat':
       setArea('victoryTokenMat', 'Victory Tokens', command.contents);

@@ -113,15 +113,16 @@ public class Player {
 
 	public Game game;
 
-	private List<Card> draw = new ArrayList<Card>();
-	private List<Card> hand = new ArrayList<Card>();
-	private List<Card> play = new ArrayList<Card>();
-	private List<Card> discard = new ArrayList<Card>();
+	private List<Card> draw = new ArrayList<>();
+	private List<Card> hand = new ArrayList<>();
+	private List<Card> play = new ArrayList<>();
+	private List<Card> discard = new ArrayList<>();
 
-	private List<Card> nativeVillageMat = new ArrayList<Card>();
-	private List<Card> islandMat = new ArrayList<Card>();
+	private List<Card> nativeVillageMat = new ArrayList<>();
+	private List<Card> islandMat = new ArrayList<>();
 	private int pirateShipTokens = 0;
 
+	private int coinTokens = 0;
 	private int victoryTokens = 0;
 
 	private List<DurationEffect> durationEffects = new ArrayList<>();
@@ -135,7 +136,7 @@ public class Player {
 	public int turns;
 
 	// keep track of gained cards for Smugglers
-	public Set<Card> cardsGainedDuringTurn = new HashSet<Card>();
+	public Set<Card> cardsGainedDuringTurn = new HashSet<>();
 
 	// keep track of Fool's Golds played
 	public boolean playedFoolsGoldThisTurn;
@@ -152,6 +153,7 @@ public class Player {
 		nativeVillageMat.clear();
 		islandMat.clear();
 		pirateShipTokens = 0;
+		coinTokens = 0;
 		victoryTokens = 0;
 		durationEffects.clear();
 		durationSetAsideCards.clear();
@@ -711,6 +713,29 @@ public class Player {
 		command.put("command", "setInPlay");
 		if (!play.isEmpty()) {
 			command.put("contents", Card.htmlList(play));
+		}
+		sendCommand(command);
+	}
+
+	public int getCoinTokens() {
+		return coinTokens;
+	}
+
+	public void setCoinTokens(int coinTokens) {
+		this.coinTokens = coinTokens;
+		sendCoinTokens();
+	}
+
+	public void addCoinTokens(int toAdd) {
+		setCoinTokens(coinTokens + toAdd);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void sendCoinTokens() {
+		JSONObject command = new JSONObject();
+		command.put("command", "setCoinTokens");
+		if (coinTokens != 0) {
+			command.put("contents", "$" + coinTokens);
 		}
 		sendCommand(command);
 	}

@@ -258,8 +258,11 @@ public class Card {
 	public static final Card HOVEL = new Hovel();
 	public static final Card NECROPOLIS = new Necropolis();
 	public static final Card OVERGROWN_ESTATE = new OvergrownEstate();
+	// guilds expansion
+	public static final Card CANDLESTICK_MAKER = new CandlestickMaker();
+	public static final Card SOOTHSAYER = new Soothsayer();
 
-	public static Map<String, Card> cardsByName = new HashMap<String, Card>();
+	public static Map<String, Card> cardsByName = new HashMap<>();
 
 	static Set<Card> BASIC_CARDS = new HashSet<>();
 	static Set<Card> BASE_SET = new HashSet<>();
@@ -277,6 +280,7 @@ public class Card {
 	static Set<Card> KNIGHT_CARDS = new HashSet<>();
 	static Set<Card> DARK_AGES_NON_SUPPLY_CARDS = new HashSet<>();
 	static Set<Card> SHELTER_CARDS = new HashSet<>();
+	static Set<Card> GUILDS_SET = new HashSet<>();
 
 	public static Map<String, Set<Card>> setsByName = new HashMap<>();
 	public static List<Set<Card>> setOrder = new ArrayList<>();
@@ -293,6 +297,7 @@ public class Card {
 		include(CORNUCOPIA_SET, "Cornucopia");
 		include(HINTERLANDS_SET, "Hinterlands");
 		include(DARK_AGES_SET, "Dark Ages");
+		include(GUILDS_SET, "Guilds");
 
 		// basic cards
 		include(PROVINCE, BASIC_CARDS);
@@ -546,6 +551,9 @@ public class Card {
 		include(HOVEL, SHELTER_CARDS);
 		include(NECROPOLIS, SHELTER_CARDS);
 		include(OVERGROWN_ESTATE, SHELTER_CARDS);
+		// guilds expansion
+		include(CANDLESTICK_MAKER, GUILDS_SET);
+		include(SOOTHSAYER, GUILDS_SET);
 	}
 
 	public static void include(Set<Card> cardSet, String name) {
@@ -689,6 +697,13 @@ public class Card {
 		}
 		game.messageAll("getting +$" + numCoins);
 		player.addCoins(numCoins);
+	}
+	protected void plusCoinTokens(Player player, Game game, int numTokens) {
+		if (numTokens == 0) {
+			return;
+		}
+		game.messageAll("getting +" + numTokens + " coin " + (numTokens == 1 ? "token" : "tokens"));
+		player.addCoinTokens(numTokens);
 	}
 	protected void plusVictoryTokens(Player player, Game game, int numTokens) {
 		if (numTokens == 0) {
