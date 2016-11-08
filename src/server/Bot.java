@@ -547,7 +547,7 @@ public class Bot extends Player {
         } else if (trashable.contains(Card.COPPER) && game.isAvailableInSupply(Card.SILVER)) {
             return Card.COPPER;
         } else {
-            // if there is no basic upgerade available, trash nothing
+            // if there is no basic upgrade available, trash nothing
             return null;
         }
     }
@@ -956,6 +956,11 @@ public class Bot extends Player {
 		} else {
 			return null;
 		}
+	}
+
+	public Card taxmanTrash(Set<Card> trashable) {
+		// Taxman is very similar to Mine, so just use the same logic
+		return mineTrash(trashable);
 	}
 
 }
