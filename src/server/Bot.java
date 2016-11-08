@@ -949,4 +949,13 @@ public class Bot extends Player {
 		}
 	}
 
+	public Card plazaDiscard(Set<Card> discardable) {
+		// discarding a Copper for a coin token is always beneficial
+		if (discardable.contains(Card.COPPER)) {
+			return Card.COPPER;
+		} else {
+			return null;
+		}
+	}
+
 }
