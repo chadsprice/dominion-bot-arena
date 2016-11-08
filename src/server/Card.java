@@ -262,6 +262,7 @@ public class Card {
 	public static final Card CANDLESTICK_MAKER = new CandlestickMaker();
 	public static final Card STONEMASON = new Stonemason();
 	public static final Card DOCTOR = new Doctor();
+	public static final Card MASTERPIECE = new Masterpiece();
 	public static final Card SOOTHSAYER = new Soothsayer();
 
 	public static Map<String, Card> cardsByName = new HashMap<>();
@@ -557,6 +558,7 @@ public class Card {
 		include(CANDLESTICK_MAKER, GUILDS_SET);
 		include(STONEMASON, GUILDS_SET);
 		include(DOCTOR, GUILDS_SET);
+		include(MASTERPIECE, GUILDS_SET);
 		include(SOOTHSAYER, GUILDS_SET);
 	}
 
@@ -726,6 +728,14 @@ public class Card {
             game.gain(player, card);
         }
     }
+
+    protected void gain(Player player, Game game, Card card, int number) {
+		int numGainable = Math.min(number, game.supply.get(card));
+		game.messageAll("gaining " + card.htmlName(numGainable));
+		for (int i = 0; i < numGainable && game.supply.get(card) != 0; i++) {
+			game.gain(player, card);
+		}
+	}
 
 	protected void gainOntoDeck(Player player, Game game, Card card) {
         if (game.supply.get(card) != 0) {

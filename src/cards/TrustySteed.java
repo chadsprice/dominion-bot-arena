@@ -31,15 +31,7 @@ public class TrustySteed extends Card {
                     plusCoins(player, game, 2);
                     break;
                 default: // 3
-                    int numSilvers = Math.min(game.supply.get(Card.SILVER), 4);
-                    if (numSilvers != 0) {
-                        game.messageAll("gaining " + Card.SILVER.htmlName(numSilvers));
-                        for (int n = 0; n < numSilvers; n++) {
-                            game.gain(player, Card.SILVER);
-                        }
-                    } else {
-                        game.messageAll("gaining nothing");
-                    }
+                    gain(player, game, Card.SILVER, 4);
                     game.message(player, "putting your deck into your discard pile");
                     game.messageOpponents(player, "putting their deck into their discard pile");
                     // this does not trigger the Tunnel reaction
