@@ -773,19 +773,19 @@ function endPrompt() {
   }
 }
 
-function promptBuyPhase(canBuy, hasUnplayedTreasure, canPlay) {
-  // set message
-  var message;
+function promptBuyPhase(canBuy, hasUnplayedTreasure, canPlay, coinTokens) {
+  setPromptMessage('Buy Phase: Buy cards from the supply, or play treasures from your hand.', 'buyPrompt');
+  // "play all treasures" button
   if (hasUnplayedTreasure) {
-    message = 'Buy Phase: Choose a card to purchase, or treasure to play';
-  } else {
-    message = 'Buy Phase: Choose a card to purchase, or';
+    var playAllTreasuresButton = addPromptButton('Play all treasures');
+    sendResponseOnMouseDown(playAllTreasuresButton, JSON.stringify({'responseType':'playAllTreasures'}));
   }
-  setPromptMessage(message, 'buyPrompt');
-  // "play treasures individually" button
-  if (hasUnplayedTreasure) {
-    var button = addPromptButton('Play all treasures');
-    sendResponseOnMouseDown(button, JSON.stringify({'responseType':'playAllTreasures'}));
+  // "spend coin tokens" button
+  if (coinTokens) {
+    var spendCoinTokensButton = addPromptButton('Spend coin tokens');
+    spendCoinTokensButton.onmousedown = function () {
+      switchSpendCoinTokens(hasUnplayedTreasure, coinTokens);
+    };
   }
   // "end turn" button
   var endTurnButton = addPromptButton('End turn');
@@ -808,6 +808,37 @@ function promptBuyPhase(canBuy, hasUnplayedTreasure, canPlay) {
     sendResponseOnMouseDown(stack, JSON.stringify({'responseType':'play', 'toPlay':canPlay[i]}));
   }
   displayPrompt();
+}
+
+function switchSpendCoinTokens(hasUnplayedTreasure, coinTokens) {
+  setPromptMessage('Buy Phase: Spend how many coin tokens?', 'buyPrompt');
+  for (var i = 1; i <= coinTokens; i++) {
+    var button = addPromptButton(i.toString());
+    sendResponseOnMouseDown(button, JSON.stringify({'responseType':'spendCoinTokens', 'toSpend':i}));
+  }
+  var cancelButton = addPromptButton('Cancel');
+  cancelButton.onmousedown = function () {
+    switchCancelCoinTokens(hasUnplayedTreasure, coinTokens);
+  }
+}
+
+function switchCancelCoinTokens(hasUnplayedTreasure, coinTokens) {
+  setPromptMessage('Buy Phase: Buy cards from the supply, or play treasures from your hand.', 'buyPrompt');
+  // "play all treasures" button
+  if (hasUnplayedTreasure) {
+    var playAllTreasuresButton = addPromptButton('Play all treasures');
+    sendResponseOnMouseDown(playAllTreasuresButton, JSON.stringify({'responseType':'playAllTreasures'}));
+  }
+  // "spend coin tokens" button
+  if (coinTokens) {
+    var spendCoinTokensButton = addPromptButton('Spend coin tokens');
+    spendCoinTokensButton.onmousedown = function () {
+      switchSpendCoinTokens(hasUnplayedTreasure, coinTokens);
+    };
+  }
+  // "end turn" button
+  var endTurnButton = addPromptButton('End turn');
+  sendResponseOnMouseDown(endTurnButton, JSON.stringify({'responseType':'endTurn'}));
 }
 
 function promptChooseFromSupply(choices, message, promptType, isMandatory, noneMessage) {
@@ -1657,7 +1688,7 @@ function executeCommand(command) {
       break;
     case 'promptBuyPhase':
       setWaitingOn();
-      promptBuyPhase(command.canBuy, command.hasUnplayedTreasure, command.canPlay);
+      promptBuyPhase(command.canBuy, command.hasUnplayedTreasure, command.canPlay, command.coinTokens);
       break;
     case 'promptChooseFromSupply':
       setWaitingOn();

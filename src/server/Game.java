@@ -242,7 +242,7 @@ public class Game implements Runnable {
 			Set<Card> choices = player.getHand().stream()
 					.filter(c -> c.isAction)
 					.collect(Collectors.toSet());
-			Card choice = promptChoosePlay(player, choices, "Action Phase: Choose an action to play.", false, "No Action");
+			Card choice = promptChoosePlay(player, choices, "Action Phase: Play actions from your hand.", false, "No Action");
 			if (choice == null) {
 				break;
 			}
@@ -272,8 +272,8 @@ public class Game implements Runnable {
 				player.addBuys(-1);
 				player.addCoins(-choice.toBuy.cost(this));
 				// gain purchased card
-				message(player, "You purchase " + choice.toBuy.htmlName());
-				messageOpponents(player, player.username + " purchases " + choice.toBuy.htmlName());
+				message(player, "You buy " + choice.toBuy.htmlName());
+				messageOpponents(player, player.username + " buys " + choice.toBuy.htmlName());
 				gain(player, choice.toBuy);
 				onBuy(player, choice.toBuy);
 				// record purchases for MimicBot
@@ -284,6 +284,15 @@ public class Game implements Runnable {
 				playTreasure(player, choice.toPlay);
 			} else if (choice.isPlayingAllTreasures) {
 				playAllTreasures(player);
+			} else if (choice.coinTokensToSpend != 0) {
+				String coinTokensStr = choice.coinTokensToSpend + " coin token";
+				if (choice.coinTokensToSpend != 1) {
+					coinTokensStr += "s";
+				}
+				message(player, "You spend " + coinTokensStr);
+				messageOpponents(player, player.username + " spends " + coinTokensStr);
+				player.addCoinTokens(-choice.coinTokensToSpend);
+				player.addCoins(choice.coinTokensToSpend);
 			} else if (choice.isEndingTurn) {
 				break;
 			}
@@ -1646,6 +1655,7 @@ public class Game implements Runnable {
 		Card toBuy;
 		Card toPlay;
 		boolean isPlayingAllTreasures;
+		int coinTokensToSpend;
 		boolean isEndingTurn;
 	}
 
@@ -1696,6 +1706,9 @@ public class Game implements Runnable {
 		JSONArray canPlayJSONArray = new JSONArray();
 		canPlay.forEach(c -> canPlayJSONArray.add(c.toString()));
 		command.put("canPlay", canPlayJSONArray);
+		if (player.getCoinTokens() != 0) {
+			command.put("coinTokens", player.getCoinTokens());
+		}
 		player.sendCommand(command);
 		// wait for response
 		String responseString = null;
@@ -1733,6 +1746,13 @@ public class Game implements Runnable {
 					return endTurnChoice();
 				}
 				choice.isPlayingAllTreasures = true;
+				return choice;
+			} else if ("spendCoinTokens".equals(responseType)) {
+				int toSpend = ((Long) response.get("toSpend")).intValue();
+				if (toSpend <= 0 || toSpend > player.getCoinTokens()) {
+					return endTurnChoice();
+				}
+				choice.coinTokensToSpend = toSpend;
 				return choice;
 			} else if ("endTurn".equals(responseType)) {
 				choice.isEndingTurn = true;
