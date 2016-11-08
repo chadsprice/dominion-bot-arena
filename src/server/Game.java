@@ -260,24 +260,38 @@ public class Game implements Runnable {
 			givenBuyPrompt = true;
 			BuyPhaseChoice choice = promptBuyPhase(player);
 			if (choice.toBuy != null) {
+				// choose how much to overpay
+				int amountOverpaid = chooseOverpay(player, choice.toBuy);
 				// autoplay treasures
-				if (player.getCoins() < choice.toBuy.cost(this) && player.isAutoplayingTreasures()) {
+				if (choice.toBuy.cost(this) + amountOverpaid > player.getCoins()) {
 					playAllTreasures(player);
 					// if the coin prediction was wrong and we let the user choose something that they couldn't actually buy 
 					if (!buyableCards(player).contains(choice.toBuy)) {
 						throw new IllegalStateException();
 					}
 				}
-				// update player status
-				player.addBuys(-1);
-				player.addCoins(-choice.toBuy.cost(this));
-				// gain purchased card
 				message(player, "You buy " + choice.toBuy.htmlName());
 				messageOpponents(player, player.username + " buys " + choice.toBuy.htmlName());
-				gain(player, choice.toBuy);
-				onBuy(player, choice.toBuy);
-				// record purchases for MimicBot
-				recordPlayerGained(player, choice.toBuy);
+				// deduct 1 buy and spent coins
+				player.addBuys(-1);
+				player.addCoins(-(choice.toBuy.cost(this) + amountOverpaid));
+				// overpaying effect
+				if (amountOverpaid != 0) {
+					messageIndent++;
+					messageAll("overpaying $" + amountOverpaid);
+					messageIndent++;
+					choice.toBuy.onOverpay(player, this, amountOverpaid);
+					messageIndent--;
+					messageIndent--;
+				}
+				// if the card can be gained (it's supply may have been depleted by an overpaying effect)
+				if (isAvailableInSupply(choice.toBuy)) {
+					// gain purchased card
+					gain(player, choice.toBuy);
+					onBuy(player, choice.toBuy);
+					// record purchases for MimicBot
+					recordPlayerGained(player, choice.toBuy);
+				}
 			} else if (choice.toPlay != null) {
 				message(player, "You play " + choice.toPlay.htmlName());
 				messageOpponents(player, player.username + " plays " + choice.toPlay.htmlName());
@@ -301,6 +315,7 @@ public class Game implements Runnable {
 		coppersmithsPlayedThisTurn = 0;
 		exitBuyPhase();
 		// if the player couldn't buy anything, notify them that their turn is over
+		// (without this prompt, the game could get caught in a non-interactive infinite loop if all players can do nothing on their turns)
 		if (!givenBuyPrompt) {
 			promptMultipleChoice(player, "There are no cards that you can buy this turn.", new String[] {"End Turn"});
 		}
@@ -338,6 +353,20 @@ public class Game implements Runnable {
 				playTreasure(player, treasure);
 			}
 			messageIndent--;
+		}
+	}
+
+	private int chooseOverpay(Player player, Card toBuy) {
+		if (toBuy.isOverpayable && player.getUsableCoins() > toBuy.cost(this)) {
+			int maxOverpayable = player.getUsableCoins() - toBuy.cost(this);
+			String[] choices = new String[maxOverpayable + 1];
+			choices[0] = "Don't overpay";
+			for (int i = 0; i < maxOverpayable; i++) {
+				choices[i + 1] = "$" + (i + 1);
+			}
+			return promptMultipleChoice(player, toBuy.toString() + ": Overpay by how much?", choices);
+		} else {
+			return 0;
 		}
 	}
 

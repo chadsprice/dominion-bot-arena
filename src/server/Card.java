@@ -260,6 +260,7 @@ public class Card {
 	public static final Card OVERGROWN_ESTATE = new OvergrownEstate();
 	// guilds expansion
 	public static final Card CANDLESTICK_MAKER = new CandlestickMaker();
+	public static final Card STONEMASON = new Stonemason();
 	public static final Card SOOTHSAYER = new Soothsayer();
 
 	public static Map<String, Card> cardsByName = new HashMap<>();
@@ -553,6 +554,7 @@ public class Card {
 		include(OVERGROWN_ESTATE, SHELTER_CARDS);
 		// guilds expansion
 		include(CANDLESTICK_MAKER, GUILDS_SET);
+		include(STONEMASON, GUILDS_SET);
 		include(SOOTHSAYER, GUILDS_SET);
 	}
 
@@ -588,6 +590,7 @@ public class Card {
 	public boolean isRuins;
 	public boolean isShelter;
 	public boolean isLooter;
+	public boolean isOverpayable;
 
     public boolean isBandOfMisfits;
 
@@ -666,6 +669,8 @@ public class Card {
         onTrash(player, game);
         return true;
     }
+
+    public void onOverpay(Player player, Game game, int amountOverpaid) {}
 
     // common modular effects
 
