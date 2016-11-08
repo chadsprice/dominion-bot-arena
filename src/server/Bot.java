@@ -963,4 +963,17 @@ public class Bot extends Player {
 		return mineTrash(trashable);
 	}
 
+	public Card heraldPutFromDiscardOntoDeck(Set<Card> cards) {
+		// put the most expensive non-victory card on top of your deck
+		Set<Card> nonVictory = cards.stream()
+				.filter(c -> !c.isVictory)
+				.collect(Collectors.toSet());
+		if (nonVictory.isEmpty()) {
+			return mostExpensive(nonVictory);
+		} else {
+			// if there is none, pick something at random
+			return cards.iterator().next();
+		}
+	}
+
 }

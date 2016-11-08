@@ -45,7 +45,7 @@ public class Harbinger extends Card {
             }
             return toHarbinger;
         }
-        return game.promptMultipleChoiceCard(player, "Harbinger: You may put a card from your discard onto your deck.", "actionPrompt", cards, "None");
+        return game.promptMultipleChoiceCard(player, this.toString() + ": You may put a card from your discard onto your deck.", "actionPrompt", cards, "None");
     }
 
     @Override
