@@ -976,4 +976,9 @@ public class Bot extends Player {
 		}
 	}
 
+	public int butcherSpendCoinTokens(int max, Card trashed) {
+		// just spend the most you can (no clear strategy yet)
+		return max;
+	}
+
 }

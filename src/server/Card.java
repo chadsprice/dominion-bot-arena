@@ -268,6 +268,7 @@ public class Card {
 	public static final Card TAXMAN = new Taxman();
 	public static final Card HERALD = new Herald();
 	public static final Card BAKER = new Baker();
+	public static final Card BUTCHER = new Butcher();
 	public static final Card SOOTHSAYER = new Soothsayer();
 
 	public static Map<String, Card> cardsByName = new HashMap<>();
@@ -569,6 +570,7 @@ public class Card {
 		include(TAXMAN, GUILDS_SET);
 		include(HERALD, GUILDS_SET);
 		include(BAKER, GUILDS_SET);
+		include(BUTCHER, GUILDS_SET);
 		include(SOOTHSAYER, GUILDS_SET);
 	}
 
