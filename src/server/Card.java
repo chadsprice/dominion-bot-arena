@@ -263,6 +263,7 @@ public class Card {
 	public static final Card STONEMASON = new Stonemason();
 	public static final Card DOCTOR = new Doctor();
 	public static final Card MASTERPIECE = new Masterpiece();
+	public static final Card ADVISOR = new Advisor();
 	public static final Card SOOTHSAYER = new Soothsayer();
 
 	public static Map<String, Card> cardsByName = new HashMap<>();
@@ -559,6 +560,7 @@ public class Card {
 		include(STONEMASON, GUILDS_SET);
 		include(DOCTOR, GUILDS_SET);
 		include(MASTERPIECE, GUILDS_SET);
+		include(ADVISOR, GUILDS_SET);
 		include(SOOTHSAYER, GUILDS_SET);
 	}
 

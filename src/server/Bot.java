@@ -937,4 +937,16 @@ public class Bot extends Player {
 		return sentryTrashDiscardOrPutBack(card);
 	}
 
+	public Card advisorChooseOpponentDiscard(Set<Card> discardable) {
+		// have your opponent discard the most expensive non-victory card
+		Set<Card> nonVictory = discardable.stream()
+				.filter(c -> !c.isVictory)
+				.collect(Collectors.toSet());
+		if (!nonVictory.isEmpty()) {
+			return mostExpensive(nonVictory);
+		} else {
+			return mostExpensive(discardable);
+		}
+	}
+
 }
