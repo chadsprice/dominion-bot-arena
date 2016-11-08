@@ -932,4 +932,9 @@ public class Bot extends Player {
 		return imitableByCost.get(0);
 	}
 
+	public int doctorTrashDiscardOrPutBack(Card card) {
+		// just do the same thing as Sentry
+		return sentryTrashDiscardOrPutBack(card);
+	}
+
 }

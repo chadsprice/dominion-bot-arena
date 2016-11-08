@@ -24,7 +24,7 @@ public class Stonemason extends Card {
     public void onPlay(Player player, Game game) {
         // trash a card from your hand
         if (!player.getHand().isEmpty()) {
-            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), this.toString() + ": Choose a card to trash and gain 2 cards each costing less than it.");
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": Choose a card to trash and gain 2 cards each costing less than it.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
             game.trash(player, toTrash);

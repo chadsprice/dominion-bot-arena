@@ -261,6 +261,7 @@ public class Card {
 	// guilds expansion
 	public static final Card CANDLESTICK_MAKER = new CandlestickMaker();
 	public static final Card STONEMASON = new Stonemason();
+	public static final Card DOCTOR = new Doctor();
 	public static final Card SOOTHSAYER = new Soothsayer();
 
 	public static Map<String, Card> cardsByName = new HashMap<>();
@@ -555,6 +556,7 @@ public class Card {
 		// guilds expansion
 		include(CANDLESTICK_MAKER, GUILDS_SET);
 		include(STONEMASON, GUILDS_SET);
+		include(DOCTOR, GUILDS_SET);
 		include(SOOTHSAYER, GUILDS_SET);
 	}
 
