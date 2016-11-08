@@ -179,6 +179,10 @@ public class Game implements Runnable {
 			clearActions(player);
 			clearBuys(player);
 		}
+		// give each player a coin token if Baker is in play
+		if (kingdomCards.contains(Card.BAKER)) {
+			players.forEach(p -> p.addCoinTokens(1));
+		}
 		// start recording gain strategies
 		initRecords();
 	}
