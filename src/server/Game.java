@@ -4,10 +4,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import cards.Hovel;
-import cards.Lighthouse;
-import cards.MarketSquare;
-import cards.NobleBrigand;
+import cards.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -470,6 +467,15 @@ public class Game implements Runnable {
 			} else {
 				break;
 			}
+		}
+		// if the purchase can be affected by Merchant Guild
+		int numMerchantGuilds = (int) currentPlayer().getPlay().stream()
+				.filter(c -> c instanceof MerchantGuild)
+				.count();
+		if (numMerchantGuilds != 0) {
+			// gain a coin token for each Merchant Guild
+			messageAll("gaining " + numMerchantGuilds + " coin token" + (numMerchantGuilds == 1 ? "" : "s") + " because of " + Card.MERCHANT_GUILD.htmlNameRaw());
+			currentPlayer().addCoinTokens(numMerchantGuilds);
 		}
 		// if the card is Noble Brigand, do on-buy effect
 		if (card == Card.NOBLE_BRIGAND) {

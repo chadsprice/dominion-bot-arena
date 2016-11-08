@@ -270,6 +270,7 @@ public class Card {
 	public static final Card BAKER = new Baker();
 	public static final Card BUTCHER = new Butcher();
 	public static final Card JOURNEYMAN = new Journeyman();
+	public static final Card MERCHANT_GUILD = new MerchantGuild();
 	public static final Card SOOTHSAYER = new Soothsayer();
 
 	public static Map<String, Card> cardsByName = new HashMap<>();
@@ -573,6 +574,7 @@ public class Card {
 		include(BAKER, GUILDS_SET);
 		include(BUTCHER, GUILDS_SET);
 		include(JOURNEYMAN, GUILDS_SET);
+		include(MERCHANT_GUILD, GUILDS_SET);
 		include(SOOTHSAYER, GUILDS_SET);
 	}
 
