@@ -5,20 +5,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class GameLobby implements Comparable<GameLobby> {
+class GameLobby implements Comparable<GameLobby> {
 
 	public String name;
 	// the number of openings to fill before the game can begin
-	public int numOpenings;
-	public Set<Set<Card>> sets;
-	public Set<Card> requiredCards;
-	public Set<Card> forbiddenCards;
+	int numOpenings;
+	Set<Set<Card>> sets;
+	Set<Card> requiredCards;
+	Set<Card> forbiddenCards;
 	// the openings for players to join, null if open
-	public Player[] players;
+	Player[] players;
 	// the readiness of players to start the game
-	public boolean[] isPlayerReady;
+	boolean[] isPlayerReady;
 
-	public GameLobby(String name, int numOpenings, Set<Set<Card>> sets, Set<Card> requiredCards, Set<Card> forbiddenCards, List<Player> bots) {
+	GameLobby(String name, int numOpenings, Set<Set<Card>> sets, Set<Card> requiredCards, Set<Card> forbiddenCards, List<Player> bots) {
 		this.name = name;
 		this.numOpenings = numOpenings;
 		this.sets = sets;
@@ -37,15 +37,15 @@ public class GameLobby implements Comparable<GameLobby> {
 	 * @param numOpenings the number of openings in the automatched game
 	 * @return a new lobby ready for automatch players to be added
 	 */
-	public static GameLobby automatchLobby(int numOpenings) {
-		Set<Set<Card>> sets = new HashSet<Set<Card>>();
+	static GameLobby automatchLobby(int numOpenings) {
+		Set<Set<Card>> sets = new HashSet<>();
 		sets.add(Card.BASE_SET);
 		sets.add(Card.INTRIGUE_SET);
 		sets.add(Card.SEASIDE_SET);
-		return new GameLobby("Automatch", numOpenings, sets, new HashSet<Card>(), new HashSet<Card>(), new ArrayList<Player>());
+		return new GameLobby("Automatch", numOpenings, sets, new HashSet<>(), new HashSet<>(), new ArrayList<>());
 	}
 
-	public void addPlayer(Player player) {
+	void addPlayer(Player player) {
 		for (int i = 0; i < numOpenings; i++) {
 			if (players[i] == null) {
 				players[i] = player;
@@ -55,7 +55,7 @@ public class GameLobby implements Comparable<GameLobby> {
 		}
 	}
 
-	public void removePlayer(Player player) {
+	void removePlayer(Player player) {
 		for (int i = 0; i < numOpenings; i++) {
 			if (players[i] == player) {
 				players[i] = null;
@@ -75,7 +75,7 @@ public class GameLobby implements Comparable<GameLobby> {
 		return numPlayers;
 	}
 
-	public boolean isFull() {
+	boolean isFull() {
 		for (int i = 0; i < numOpenings; i++) {
 			if (players[i] == null) {
 				return false;
@@ -93,7 +93,7 @@ public class GameLobby implements Comparable<GameLobby> {
 		return true;
 	}
 
-	public void setIsPlayerReady(Player player, boolean isReady) {
+	void setIsPlayerReady(Player player, boolean isReady) {
 		for (int i = 0; i < numOpenings; i++) {
 			if (players[i] == player) {
 				isPlayerReady[i] = isReady;
@@ -102,7 +102,7 @@ public class GameLobby implements Comparable<GameLobby> {
 		}
 	}
 
-	public boolean isReady() {
+	boolean isReady() {
 		for (int i = 0; i < numOpenings; i++) {
 			if (!isPlayerReady[i]) {
 				return false;

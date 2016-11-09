@@ -1914,7 +1914,7 @@ public class Game implements Runnable {
 	 * Returns a card that the player has chosen to play.
 	 * This choice is mandatory.
 	 */
-	public Card promptChoosePlay(Player player, Set<Card> choiceSet, String promptMessage) {
+	Card promptChoosePlay(Player player, Set<Card> choiceSet, String promptMessage) {
 		return promptChoosePlay(player, choiceSet, promptMessage, true, "");
 	}
 
@@ -1922,7 +1922,7 @@ public class Game implements Runnable {
 	 * Returns a card that the player has chosen to play, or null if they
 	 * choose not to play any action.
 	 */
-	public Card promptChoosePlay(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
+	Card promptChoosePlay(Player player, Set<Card> choiceSet, String promptMessage, boolean isMandatory, String noneMessage) {
 		if (player instanceof Bot) {
 			Bot bot = (Bot) player;
 			Card card = bot.choosePlay(choiceSet, isMandatory);

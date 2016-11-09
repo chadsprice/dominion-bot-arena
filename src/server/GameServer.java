@@ -2,7 +2,6 @@ package server;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -21,6 +20,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import bots.*;
 import org.eclipse.jetty.server.Handler;
@@ -48,38 +48,28 @@ public class GameServer {
 
 	private static final Path CONFIG_FILE_PATH = Paths.get("config");
 
-	public static GameServer INSTANCE;
+	static GameServer INSTANCE;
 
 	private int httpPort;
 	private int websocketTimeout;
 
-	private Map<PlayerWebSocketHandler, Player> players;
-	private Map<String, Player> loggedInPlayers;
-	private Set<Player> playersInLobby;
-	private Map<String, GameLobby> gameLobbies;
-	private Map<Player, GameLobby> playersInGameLobbies;
+	private Map<PlayerWebSocketHandler, Player> players = new HashMap<>();
+	private Map<String, Player> loggedInPlayers = new HashMap<>();
+	private Set<Player> playersInLobby = new HashSet<>();
+	private Map<String, GameLobby> gameLobbies = new HashMap<>();
+	private Map<Player, GameLobby> playersInGameLobbies = new HashMap<>();
 
-	private Set<Player> automatch2, automatch3, automatch4;
+	private Set<Player> automatch2 = new HashSet<>(), automatch3 = new HashSet<>(), automatch4 = new HashSet<>();
 
-	private Map<String, String> validLogins;
+	private Map<String, String> validLogins = new HashMap<>();
 
 	private int anonymousNumber = 1;
 	private static Pattern anonymousNamePattern = Pattern.compile("^Anonymous\\d+$");
 
-	public GameServer() {}
+	private GameServer() {}
 
-	public void run() {
-		players = new HashMap<PlayerWebSocketHandler, Player>();
-		loggedInPlayers = new HashMap<String, Player>();
-		playersInLobby = new HashSet<Player>();
-		playersInGameLobbies = new HashMap<Player, GameLobby>();
-		automatch2 = new HashSet<Player>();
-		automatch3 = new HashSet<Player>();
-		automatch4 = new HashSet<Player>();
-		validLogins = new HashMap<String, String>();
+	private void run() {
 		loadLogins();
-		gameLobbies = new HashMap<String, GameLobby>();
-		winningStrategies = new HashMap<Set<Card>, List<Card>>();
 		loadServerConfiguration();
 		startServer();
 	}
@@ -163,14 +153,14 @@ public class GameServer {
 		}
 	}
 
-	public synchronized void addConnection(PlayerWebSocketHandler conn) {
+	synchronized void addConnection(PlayerWebSocketHandler conn) {
 		Player player = new Player(conn);
 		players.put(conn, player);
 		anonymousLogin(player);
 		sendToLobby(player);
 	}
 
-	public synchronized void removeConnection(PlayerWebSocketHandler conn) {
+	synchronized void removeConnection(PlayerWebSocketHandler conn) {
 		Player player = players.get(conn);
 		if (player == null) {
 			return;
@@ -194,7 +184,7 @@ public class GameServer {
 		}
 	}
 
-	public synchronized void receiveMessage(PlayerWebSocketHandler conn, String message) {
+	synchronized void receiveMessage(PlayerWebSocketHandler conn, String message) {
 		try {
 			JSONObject request = (JSONObject) JSONValue.parse(message);
 			handleRequest(conn, request);
@@ -356,7 +346,7 @@ public class GameServer {
 		}
 		// sets
 		JSONArray setArray = (JSONArray) request.get("sets");
-		Set<Set<Card>> sets = new HashSet<Set<Card>>();
+		Set<Set<Card>> sets = new HashSet<>();
 		for (Object setNameObject : setArray) {
 			String setName = (String) setNameObject;
 			Set<Card> set = Card.setsByName.get(setName);
@@ -393,7 +383,7 @@ public class GameServer {
 			}
 		}
 		// bots
-		List<String> botNames = new ArrayList<String>();
+		List<String> botNames = new ArrayList<>();
 		JSONArray botNameArray = (JSONArray) request.get("bots");
 		for (Object botName : botNameArray) {
 			botNames.add((String) botName);
@@ -402,10 +392,9 @@ public class GameServer {
 			customGameError(player, "Increase the number of players to make room for yourself!");
 			return;
 		}
-		List<Player> bots = new ArrayList<Player>();
-		for (String botName : botNames) {
-			bots.add(Bot.newBotFromName(botName));
-		}
+		List<Player> bots = botNames.stream()
+				.map(Bot::newBotFromName)
+				.collect(Collectors.toList());
 		// create the lobby
 		GameLobby lobby = new GameLobby(name, numPlayers, sets, requiredCards, forbiddenCards, bots);
 		gameLobbies.put(name, lobby);
@@ -507,7 +496,7 @@ public class GameServer {
 			int size = i + 2;
 			if (pool.size() == size) {
 				GameLobby lobby = GameLobby.automatchLobby(size);
-				List<Player> copy = new ArrayList<Player>(pool);
+				List<Player> copy = new ArrayList<>(pool);
 				for (Player player : copy) {
 					sendToGameLobby(player, lobby);
 				}
@@ -534,12 +523,12 @@ public class GameServer {
 		// trim again
 		name = name.trim();
 		// guarantee that no name contains a return character
-		name.replace("\n", "");
+		name = name.replace("\n", "");
 		return name;
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setPlayerReadiness(Player player, boolean isReady) {
+	private void setPlayerReadiness(Player player, boolean isReady) {
 		// if the player is not in a game lobby, ignore the request
 		if (!playersInGameLobbies.containsKey(player)) {
 			return;
@@ -571,7 +560,7 @@ public class GameServer {
 				command.put("command", "enterGame");
 				inGame.issueCommand(command);
 			}
-			Set<Player> playerSet = new HashSet<Player>();
+			Set<Player> playerSet = new HashSet<>();
 			Collections.addAll(playerSet, lobby.players);
 			// TODO move all of this setup to the game thread
 			setupGame(game, lobby.sets, lobby.requiredCards, lobby.forbiddenCards, playerSet);
@@ -588,7 +577,7 @@ public class GameServer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void announceGameListing(GameLobby lobby) {
+	private void announceGameListing(GameLobby lobby) {
 		JSONObject command = new JSONObject();
 		command.put("command", "addGameListing");
 		command.put("gameListing", gameLobbyToJson(lobby));
@@ -600,7 +589,7 @@ public class GameServer {
 
 	private String setsToString(Set<Set<Card>> sets) {
 		// make a list of the sets' names, ordered by release date (i.e. Card.setOrder)
-		List<String> setNames = new ArrayList<String>();
+		List<String> setNames = new ArrayList<>();
 		for (int i = 0; i < Card.setOrder.size(); i++) {
 			if (sets.contains(Card.setOrder.get(i))) {
 				setNames.add(Card.setNames.get(i));
@@ -619,7 +608,7 @@ public class GameServer {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void removeGameLobby(GameLobby lobby) {
+	private void removeGameLobby(GameLobby lobby) {
 		gameLobbies.remove(lobby.name);
 		// announce that the game lobby has closed
 		JSONObject command = new JSONObject();
@@ -738,15 +727,13 @@ public class GameServer {
 	private void sendToLobby(Player player) {
 		playersInLobby.add(player);
 		// order all of the available game lobbies alphabetically
-		List<GameLobby> availableLobbies = new ArrayList<GameLobby>();
+		List<GameLobby> availableLobbies = new ArrayList<>();
 		availableLobbies.addAll(gameLobbies.values());
 		Collections.sort(availableLobbies);
 		JSONArray gameListings = new JSONArray();
-		for (GameLobby lobby : availableLobbies) {
-			gameListings.add(gameLobbyToJson(lobby));
-		}
+		availableLobbies.forEach(lobby -> gameListings.add(gameLobbyToJson(lobby)));
 		// send all available bots
-		List<String> availableBotNames = new ArrayList<String>(Bot.botsByName.keySet());
+		List<String> availableBotNames = new ArrayList<>(Bot.botsByName.keySet());
 		// first, order bots alphabetically
 		Collections.sort(availableBotNames);
 		// then, put BigMoney first for convenience
@@ -789,22 +776,19 @@ public class GameServer {
 			InputStream is = new FileInputStream(LOGINS_FILE_NAME);
 			InputStreamReader isr = new InputStreamReader(is, LOGINS_FILE_CHARSET);
 			BufferedReader br = new BufferedReader(isr);
-			String line;
-			while ((line = br.readLine()) != null) {
-				String username = line;
+			String username;
+			while ((username = br.readLine()) != null) {
 				String hashedPassword = br.readLine();
 				validLogins.put(username, hashedPassword);
 			}
 			br.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void saveLogin(String username, String hashedPassword) {
-		List<String> lines = new ArrayList<String>();
+		List<String> lines = new ArrayList<>();
 		lines.add(username);
 		lines.add(hashedPassword);
 		try {
@@ -821,7 +805,7 @@ public class GameServer {
 		}
 	}
 
-	public synchronized void forfeit(Player forfeitPlayer) {
+	synchronized void forfeit(Player forfeitPlayer) {
 		// if the player is not in a game, ignore the request
 		if (forfeitPlayer.game == null) {
 			return;
@@ -873,7 +857,7 @@ public class GameServer {
 		for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
 			Player next = iter.next(); 
 			if (next instanceof Bot) {
-				Set<Card> requiredForBot = new HashSet<Card>(required);
+				Set<Card> requiredForBot = new HashSet<>(required);
 				requiredForBot.addAll(((Bot) next).required());
 				if (requiredForBot.size() > 10) {
 					iter.remove();
@@ -891,25 +875,23 @@ public class GameServer {
 		// start with the required cards
 		Set<Card> chosen = required;
 		if (chosen.size() > 10) {
-			chosen = new HashSet<Card>((new ArrayList<Card>(chosen)).subList(0, 10));
+			chosen = new HashSet<>((new ArrayList<>(chosen)).subList(0, 10));
 		}
 		// create a list of available kingdom cards to fill in the rest
-		Set<Card> available = new HashSet<Card>();
-		for (Set<Card> set : sets) {
-			available.addAll(set);
-		}
+		Set<Card> available = new HashSet<>();
+		sets.forEach(available::addAll);
 		// take out the forbidden cards
 		available.removeAll(forbidden);
 		// shuffle and draw the remaining
-		List<Card> availableList = new ArrayList<Card>(available);
+		List<Card> availableList = new ArrayList<>(available);
 		Collections.shuffle(availableList);
 		int toDraw = Math.max(10 - chosen.size(), 0);
 		chosen.addAll(availableList.subList(0, Math.min(toDraw, availableList.size())));
 		// if there are not 10, fill in the rest with the basic set
 		if (chosen.size() < 10) {
-			Set<Card> filler = new HashSet<Card>(Card.BASE_SET);
+			Set<Card> filler = new HashSet<>(Card.BASE_SET);
 			filler.removeAll(chosen);
-			List<Card> fillerList = new ArrayList<Card>(filler);
+			List<Card> fillerList = new ArrayList<>(filler);
 			Collections.shuffle(fillerList);
 			chosen.addAll(fillerList.subList(0, 10 - chosen.size()));
 		}
@@ -917,7 +899,7 @@ public class GameServer {
 		Card baneCard = null;
 		if (chosen.contains(Card.YOUNG_WITCH)) {
 			// search through each set looking for a bane card
-			List<Set<Card>> potentialBaneSets = new ArrayList<Set<Card>>();
+			List<Set<Card>> potentialBaneSets = new ArrayList<>();
 			// start with the requested sets
 			potentialBaneSets.add(available);
 			// if a bane card can't be found in the requested sets, just find one from another set
@@ -927,7 +909,7 @@ public class GameServer {
 			potentialBaneSets.add(Card.PROSPERITY_SET);
 			potentialBaneSets.add(Card.CORNUCOPIA_SET);
 			for (Set<Card> baneSet : potentialBaneSets) {
-				Set<Card> baneChoices = new HashSet<Card>(baneSet);
+				Set<Card> baneChoices = new HashSet<>(baneSet);
 				// make sure the bane card is a new 11th card
 				baneChoices.removeAll(chosen);
 				// make sure the bane card costs 2 or 3
@@ -940,7 +922,7 @@ public class GameServer {
 				// if there are any potential bane cards
 				if (!baneChoices.isEmpty()) {
 					// choose one at random
-					List<Card> baneChoiceList = new ArrayList<Card>(baneChoices);
+					List<Card> baneChoiceList = new ArrayList<>(baneChoices);
 					Collections.shuffle(baneChoiceList);
 					baneCard = baneChoiceList.get(0);
 					break;
@@ -953,12 +935,12 @@ public class GameServer {
 			chosen.add(baneCard);
 		}
 		// if tournament is in the supply, add prize cards
-		Set<Card> prizeCards = new HashSet<Card>();
+		Set<Card> prizeCards = new HashSet<>();
 		if (chosen.contains(Card.TOURNAMENT)) {
 			prizeCards.addAll(Card.PRIZE_CARDS);
 		}
 		// basic cards
-		Set<Card> basicSet = new HashSet<Card>();
+		Set<Card> basicSet = new HashSet<>();
 		basicSet.add(Card.PROVINCE);
 		basicSet.add(Card.DUCHY);
 		basicSet.add(Card.ESTATE);
@@ -982,15 +964,15 @@ public class GameServer {
 	 * This is always true if all cards in the kingdom are from that set, always false if none are, and random with
 	 * probability equal to the proportion of cards from that set otherwise.
 	 */
-	public boolean proportionDeterminedSufficient(Set<Card> kingdomCards, Set<Card> cardSet) {
-		int numFromSet = (int) kingdomCards.stream().filter(c -> cardSet.contains(c)).count();
+	private boolean proportionDeterminedSufficient(Set<Card> kingdomCards, Set<Card> cardSet) {
+		int numFromSet = (int) kingdomCards.stream().filter(cardSet::contains).count();
 		return (int) (Math.random() * kingdomCards.size()) < numFromSet;
 	}
 
 	// record successful strategies that can be used by MimicBot
-	private Map<Set<Card>, List<Card>> winningStrategies;
+	private Map<Set<Card>, List<Card>> winningStrategies = new HashMap<>();
 
-	public void recordWinningStrategy(Set<Card> kingdom, List<Card> gainStrategy) {
+	void recordWinningStrategy(Set<Card> kingdom, List<Card> gainStrategy) {
 		winningStrategies.put(kingdom, gainStrategy);
 	}
 
@@ -1003,7 +985,11 @@ public class GameServer {
 
 		System.out.println("Server running. Type \"exit\" to terminate.");
 		Scanner scanner = new Scanner(System.in);
-		while (!scanner.nextLine().equals("exit")) {}
+		for (;;) {
+			if ("exit".equals(scanner.nextLine())) {
+				break;
+			}
+		}
 		scanner.close();
 		System.exit(0);
 	}
