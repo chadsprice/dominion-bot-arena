@@ -1,7 +1,6 @@
 package server;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import bots.*;
@@ -12,9 +11,9 @@ import cards.Smugglers;
 
 public class Bot extends Player {
 
-	public static Map<String, Class<? extends Bot>> botsByName = new HashMap<String, Class<? extends Bot>>();
+	static Map<String, Class<? extends Bot>> botsByName = new HashMap<>();
 
-	public static void initializeBots() {
+	static void initializeBots() {
 		include(Bot.class);
 		include(BankWharfBot.class);
 		include(BigNothing.class);
@@ -28,20 +27,16 @@ public class Bot extends Player {
 	private static void include(Class<? extends Bot> botClass) {
 		try {
 			botsByName.put(botClass.newInstance().botName(), botClass);
-		} catch (IllegalAccessException e) {
-			throw new IllegalStateException();
-		} catch (InstantiationException e) {
+		} catch (IllegalAccessException|InstantiationException e) {
 			throw new IllegalStateException();
 		}
 	}
 
-	public static Bot newBotFromName(String botName) {
+	static Bot newBotFromName(String botName) {
 		if (botsByName.containsKey(botName)) {
 			try {
 				return botsByName.get(botName).newInstance();
-			} catch (IllegalAccessException e) {
-				throw new IllegalStateException();
-			} catch (InstantiationException e) {
+			} catch (IllegalAccessException|InstantiationException e) {
 				throw new IllegalStateException();
 			}
 		} else {
@@ -50,13 +45,9 @@ public class Bot extends Player {
 		}
 	}
 
-	private static final Comparator<Card> COST_ORDER_COMPARATOR = new Comparator<Card>() {
-		@Override
-		public int compare(Card c1, Card c2) {
+	private static final Comparator<Card> COST_ORDER_COMPARATOR =
 			// order by highest cost
-			return c2.cost() - c1.cost();
-		}
-	};
+			(a, b) -> b.cost() - a.cost();
 
 	@Override
 	protected void sendCommand(JSONObject command, boolean autoIssue) {}
@@ -73,11 +64,11 @@ public class Bot extends Player {
 		return "BigMoney";
 	}
 
-	protected void setName() {
+	private void setName() {
 		username = "<span class=\"botName\">" + botName() + "[Bot]</span>";
 	}
 
-	public Card chooseBuy(Set<Card> choiceSet) {
+	Card chooseBuy(Set<Card> choiceSet) {
 		return chooseGainFromSupply(choiceSet, false);
 	}
 
@@ -99,7 +90,7 @@ public class Bot extends Player {
 
 	public List<Card> gainPriority() {
 		// based on WanderingWinder's "Big Money" bot
-		List<Card> priority = new ArrayList<Card>();
+		List<Card> priority = new ArrayList<>();
 		if (game.supply.containsKey(Card.COLONY)) {
 			if (getTotalMoney() > 32) {
 				priority.add(Card.COLONY);
@@ -156,10 +147,11 @@ public class Bot extends Player {
 
 	protected int gainsToEndGame() {
 		// get the number of cards in the smallest 3 piles
-		List<Integer> piles = new ArrayList<Integer>();
-		for (Entry<Card, Integer> pile : game.supply.entrySet()) {
-			piles.add(pile.getValue());
-		}
+		List<Integer> piles = new ArrayList<>();
+		piles.addAll(game.supply.values());
+		game.mixedPiles.values().stream()
+				.map(List::size)
+				.forEach(piles::add);
 		Collections.sort(piles);
 		int gains = 0;
 		for (int i = 0; i < 3; i++) {
@@ -193,10 +185,10 @@ public class Bot extends Player {
 
 	public Set<Card> required() {
 		// BigMoney requires no non-basic cards
-		return new HashSet<Card>();
+		return new HashSet<>();
 	}
 
-	public Card chooseOpponentGainFromSupply(Set<Card> choiceSet) {
+	Card chooseOpponentGainFromSupply(Set<Card> choiceSet) {
 		if (choiceSet.contains(Card.CURSE)) {
 			return Card.CURSE;
 		} else {
@@ -204,7 +196,7 @@ public class Bot extends Player {
 		}
 	}
 
-	public Card choosePlay(Set<Card> choiceSet, boolean isMandatory) {
+	Card choosePlay(Set<Card> choiceSet, boolean isMandatory) {
 		// play "free" cantrips first (cards that always give at least +1 card, +1 action)
 		Card freeCantrip = firstFreeCantrip(choiceSet);
 		if (freeCantrip != null) {
@@ -225,7 +217,7 @@ public class Bot extends Player {
 		}
 	}
 
-	public Card firstFreeCantrip(Set<Card> choiceSet) {
+	private Card firstFreeCantrip(Set<Card> choiceSet) {
 		for (Card card : choiceSet) {
 			if (isFreeCantrip(card)) {
 				return card;
@@ -245,10 +237,7 @@ public class Bot extends Player {
 			}
 		}
 		// conspirator is a free cantrip if it will be the third action played (or more)
-		if (card == Card.CONSPIRATOR && this.game.actionsPlayedThisTurn >= 2) {
-			return true;
-		}
-		return false;
+		return card == Card.CONSPIRATOR && this.game.actionsPlayedThisTurn >= 2;
 	}
 
 	private boolean hasNoBenefit(Card card) {
@@ -261,7 +250,7 @@ public class Bot extends Player {
 			return chooseToDiscard(getHand()) == null;
 		} else if (card == Card.CHAPEL) {
 			// Chapel has no benefit if you do not want to trash anything
-			return chooseToTrash(new HashSet<Card>(getHand())) == null;
+			return chooseToTrash(new HashSet<>(getHand())) == null;
 		} else if (card == Card.MONEYLENDER) {
 			// Moneylender has no benefit if you have no copper
 			return !getHand().contains(Card.COPPER);
@@ -293,7 +282,7 @@ public class Bot extends Player {
 			return getHand().size() < 3;
 		} else if (card == Card.AMBASSADOR) {
 			// Ambassador has no benefit if you do not want to trash anything
-			return chooseToTrash(new HashSet<Card>(getHand())) == null;
+			return chooseToTrash(new HashSet<>(getHand())) == null;
 		} else if (card == Card.SMUGGLERS) {
 			// Smugglers has no benefit if you can't smuggle anything you want
 			Smugglers SMUGGLERS = (Smugglers) Card.SMUGGLERS;
@@ -329,7 +318,7 @@ public class Bot extends Player {
 		return false;
 	}
 
-	public Card chooseTrashFromHand(Set<Card> choiceSet, boolean isMandatory) {
+	Card chooseTrashFromHand(Set<Card> choiceSet, boolean isMandatory) {
 		// trash a card willingly
 		Card card = chooseToTrash(choiceSet);
 		if (card != null) {
@@ -338,13 +327,13 @@ public class Bot extends Player {
 			return null;
 		}
 		// trash the cheapest card
-		List<Card> choiceList = new ArrayList<Card>(choiceSet);
+		List<Card> choiceList = new ArrayList<>(choiceSet);
 		Collections.sort(choiceList, COST_ORDER_COMPARATOR);
 		Collections.reverse(choiceList);
 		return choiceList.get(0);
 	}
 
-	public Card chooseIslandFromHand(Set<Card> choiceSet) {
+	Card chooseIslandFromHand(Set<Card> choiceSet) {
 		// island any plain victory card
 		for (Card card : choiceSet) {
 			if (isPlainVictory(card)) {
@@ -352,25 +341,25 @@ public class Bot extends Player {
 			}
 		}
 		// island the cheapest card
-		List<Card> choiceList = new ArrayList<Card>(choiceSet);
+		List<Card> choiceList = new ArrayList<>(choiceSet);
 		Collections.sort(choiceList, COST_ORDER_COMPARATOR);
 		Collections.reverse(choiceList);
 		return choiceList.get(0);
 	}
 
 	private boolean isPlainVictory(Card card) {
-		return card.isVictory && !card.isAction && !card.isVictory;
+		return card.isVictory && !card.isAction && !card.isTreasure;
 	}
 
-	public Card choosePutOnDeck(Set<Card> choiceSet) {
+	Card choosePutOnDeck(Set<Card> choiceSet) {
 		return choiceSet.iterator().next();
 	}
 
-	public Card choosePassToOpponent(Set<Card> choiceSet) {
+	Card choosePassToOpponent(Set<Card> choiceSet) {
 		return chooseTrashFromHand(choiceSet, true);
 	}
 
-	public Card chooseRevealAttackReaction(Set<Card> choiceSet) {
+	Card chooseRevealAttackReaction(Set<Card> choiceSet) {
 		if (choiceSet.contains(Card.MOAT)) {
 			return Card.MOAT;
 		} else {
@@ -378,9 +367,9 @@ public class Bot extends Player {
 		}
 	}
 
-	public List<Card> discardNumber(int number, boolean isMandatory) {
-		List<Card> toDiscard = new ArrayList<Card>();
-		List<Card> handCopy = new ArrayList<Card>(getHand());
+	List<Card> discardNumber(int number, boolean isMandatory) {
+		List<Card> toDiscard = new ArrayList<>();
+		List<Card> handCopy = new ArrayList<>(getHand());
 		// discard some cards willingly
 		while (toDiscard.size() < number && chooseToDiscard(handCopy) != null) {
 			Card card = chooseToDiscard(handCopy);
@@ -397,7 +386,7 @@ public class Bot extends Player {
 		return toDiscard;
 	}
 
-	public Card chooseToDiscard(List<Card> cards) {
+	private Card chooseToDiscard(List<Card> cards) {
 		for (Card card : cards) {
 			if (wantToDiscard(card)) {
 				return card;
@@ -410,12 +399,12 @@ public class Bot extends Player {
 		return card == Card.CURSE || card.isVictory;
 	}
 
-	public List<Card> trashNumber(int number, boolean isMandatory) {
-		List<Card> toTrash = new ArrayList<Card>();
-		List<Card> handCopy = new ArrayList<Card>(getHand());
+	List<Card> trashNumber(int number, boolean isMandatory) {
+		List<Card> toTrash = new ArrayList<>();
+		List<Card> handCopy = new ArrayList<>(getHand());
 		// trash some cards willingly
-		while (toTrash.size() < number && chooseToTrash(new HashSet<Card>(handCopy)) != null) {
-			Card card = chooseToTrash(new HashSet<Card>(handCopy));
+		while (toTrash.size() < number && chooseToTrash(new HashSet<>(handCopy)) != null) {
+			Card card = chooseToTrash(new HashSet<>(handCopy));
 			handCopy.remove(card);
 			toTrash.add(card);
 		}
@@ -429,7 +418,7 @@ public class Bot extends Player {
 		return toTrash;
 	}
 
-	public Card chooseToTrash(Set<Card> choiceSet) {
+	private Card chooseToTrash(Set<Card> choiceSet) {
 		for (Card card : trashPriority()) {
 			if (choiceSet.contains(card)) {
 				return card;
@@ -438,12 +427,12 @@ public class Bot extends Player {
 		return null;
 	}
 
-	public boolean wantToTrash(Card card) {
+	private boolean wantToTrash(Card card) {
 		return trashPriority().contains(card);
 	}
 
 	public List<Card> trashPriority() {
-		List<Card> priority = new ArrayList<Card>();
+		List<Card> priority = new ArrayList<>();
 		priority.add(Card.CURSE);
 		priority.add(Card.OVERGROWN_ESTATE);
 		if (gainsToEndGame() > 4) {
@@ -455,27 +444,24 @@ public class Bot extends Player {
 		return priority;
 	}
 
-	public List<Card> putNumberOnDeck(int number) {
+	List<Card> putNumberOnDeck(int number) {
 		// TODO doesn't really have a clear strategy yet
-		return new ArrayList<Card>(getHand().subList(0, Math.min(number, getHand().size())));
+		return new ArrayList<>(getHand().subList(0, Math.min(number, getHand().size())));
 	}
 
-	public int multipleChoice(String[] choices, int[] disabledIndexes) {
+	int multipleChoice(String[] choices, int[] disabledIndexes) {
+		// return the fist non-disabled choices
 		for (int i = 0; i < choices.length; i++) {
-			boolean disabled = false;
-			if (disabledIndexes != null) {
-				for (int j = 0; j < disabledIndexes.length; j++) {
-					if (disabledIndexes[j] == i) {
-						disabled = true;
-						break;
-					}
-				}
-			}
-			if (!disabled) {
+			// if this choice is not disabled, return it
+			if (!isDisabled(i, disabledIndexes)) {
 				return i;
 			}
 		}
 		throw new IllegalStateException();
+	}
+
+	private static boolean isDisabled(int i, int[] disabledIndexes) {
+		return Arrays.stream(disabledIndexes).anyMatch(disabledIndex -> disabledIndex == i);
 	}
 
 	// utility functions
@@ -523,6 +509,7 @@ public class Bot extends Player {
         }
 	}
 
+	@SuppressWarnings("unused")
 	public boolean vassalPlay(Card card) {
         // playing the action is probably beneficial
         return true;
@@ -533,6 +520,7 @@ public class Bot extends Player {
         return true;
     }
 
+	@SuppressWarnings("unused")
     public boolean librarySetAside(Card card) {
         // BigMoney should avoid action cards whenever possible
         return true;
@@ -658,6 +646,7 @@ public class Bot extends Player {
 		return true;
 	}
 
+	@SuppressWarnings("unused")
 	public Object embargoPile(Set<Card> cardPiles, Set<Card.MixedPileId> mixedPiles) {
 		// embargo something random (no clear strategy yet)
 		return cardPiles.iterator().next();
@@ -726,12 +715,12 @@ public class Bot extends Player {
 		return wantToDiscard(card);
 	}
 
-	public boolean duchessGainDuchessOnGainingDuchy() {
+	boolean duchessGainDuchessOnGainingDuchy() {
 		// BigMoney should not gain actions, even free Duchesses
 		return false;
 	}
 
-	public boolean foolsGoldReveal() {
+	boolean foolsGoldReveal() {
 		// BigMoney should prefer Gold to Fool's Gold
 		return true;
 	}
@@ -777,14 +766,14 @@ public class Bot extends Player {
 		return false;
 	}
 
-	public boolean traderReplaceWithSilver(Card card) {
+	boolean traderReplaceWithSilver(Card card) {
 		// if it is a card that you would trash, gain a Silver instead
 		return wantToTrash(card);
 	}
 
 	public List<Card> cartographerDiscardAnyNumber(List<Card> cards) {
 		// discard any that you would discard if they were in your hand
-		return cards.stream().filter(c -> wantToDiscard(c)).collect(Collectors.toList());
+		return cards.stream().filter(this::wantToDiscard).collect(Collectors.toList());
 	}
 
 	public boolean illGottenGainsGainCopper() {
@@ -792,9 +781,10 @@ public class Bot extends Player {
 		return false;
 	}
 
+	@SuppressWarnings("unused")
 	public List<Card> innShuffleIntoDeck(List<Card> innable) {
 		// BigMoney shouldn't want more actions in its deck
-		return new ArrayList<Card>();
+		return new ArrayList<>();
 	}
 
 	public Card stablesDiscard(Set<Card> treasures) {
@@ -908,7 +898,7 @@ public class Bot extends Player {
 		return new Hermit.CardFromDiscardOrHand(null, false);
 	}
 
-	public boolean urchinTrashForMercenary() {
+	boolean urchinTrashForMercenary() {
 		// Mercenary is likely to be better than Urchin
 		return true;
 	}
@@ -976,6 +966,7 @@ public class Bot extends Player {
 		}
 	}
 
+	@SuppressWarnings("unused")
 	public int butcherSpendCoinTokens(int max, Card trashed) {
 		// just spend the most you can (no clear strategy yet)
 		return max;
