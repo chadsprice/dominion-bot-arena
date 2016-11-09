@@ -399,9 +399,10 @@ public class Game implements Runnable {
 		}
 		// if that card's pile was embargoed
 		if (embargoTokensOn(card) != 0 && supply.get(Card.CURSE) != 0) {
-			int cursesToGain = Math.min(embargoTokensOn(card), supply.get(Card.CURSE));
+			int numEmbargoTokens = embargoTokensOn(card);
+			int cursesToGain = Math.min(numEmbargoTokens, supply.get(Card.CURSE));
 			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
-			for (int i = 0; i < cursesToGain; i++) {
+			for (int i = 0; i < numEmbargoTokens && supply.get(Card.CURSE) != 0; i++) {
 				gain(player, Card.CURSE);
 			}
 		}
@@ -409,7 +410,7 @@ public class Game implements Runnable {
 		if (card.cost(this) <= 4 && !card.isVictory && isAvailableInSupply(card)) {
 			int numTalismans = numberInPlay(Card.TALISMAN);
 			// if the player has talismans in play
-			if (numTalismans > 0) {
+			if (numTalismans != 0) {
 				if (supply.containsKey(card)) {
 					int copiesToGain = Math.min(numTalismans, supply.get(card));
 					if (copiesToGain == 1) {
@@ -429,13 +430,15 @@ public class Game implements Runnable {
 			}
 		}
 		// if the purchase can be affected by hoard
-		if (card.isVictory && supply.get(Card.GOLD) > 0) {
-			int numHoards = numberInPlay(Card.HOARD);
+		if (card.isVictory && supply.get(Card.GOLD) != 0) {
+			int numHoards = (int) currentPlayer().getPlay().stream()
+					.filter(c -> c instanceof Hoard)
+					.count();
 			// if the player has hoards in play
-			if (numHoards > 0) {
+			if (numHoards != 0) {
 				int goldsToGain = Math.min(numHoards, supply.get(Card.GOLD));
 				messageAll("gaining " + Card.GOLD.htmlName(goldsToGain) + " because of " + Card.HOARD.htmlNameRaw());
-				for (int i = 0; i < goldsToGain; i++) {
+				for (int i = 0; i < numHoards && supply.get(Card.GOLD) != 0; i++) {
 					gain(player, Card.GOLD);
 				}
 			}
@@ -449,13 +452,17 @@ public class Game implements Runnable {
 			}
 		}
 		// if the purchase can be affected by Goons
-		int numGoons = numberInPlay(Card.GOONS);
-		if (numGoons > 0) {
+		int numGoons = (int) currentPlayer().getPlay().stream()
+				.filter(c -> c instanceof Goons)
+				.count();
+		if (numGoons != 0) {
 			messageAll("gaining +" + numGoons + " VP because of " + Card.GOONS.htmlNameRaw());
 			player.addVictoryTokens(numGoons);
 		}
 		// if the purchase can be affected by Hagglers
-		int numHagglers = numberInPlay(Card.HAGGLER);
+		int numHagglers = (int) currentPlayer().getPlay().stream()
+				.filter(c -> c instanceof Haggler)
+				.count();
 		for (int i = 0; i < numHagglers; i++) {
 			// gain card costing less than the purchased card that is not a victory card
 			Set<Card> gainable = cardsCostingAtMost(card.cost(this) - 1);

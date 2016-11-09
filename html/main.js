@@ -1365,6 +1365,9 @@ function createCustomGame() {
   if (document.getElementById('darkAgesCheckbox').checked) {
     sets.push('Dark Ages');
   }
+  if (document.getElementById('guildsCheckbox').checked) {
+    sets.push('Guilds');
+  }
   var cards = document.getElementById('customGameCards').value;
   var bots = getBots();
   socket.send(JSON.stringify({'type':'createCustomGame', 'name':name, 'numPlayers':numPlayers, 'sets':sets, 'cards':cards, 'bots':bots}));
@@ -1935,6 +1938,7 @@ function init() {
   document.getElementById('cornucopiaCheckbox').checked = true;
   document.getElementById('hinterlandsCheckbox').checked = true;
   document.getElementById('darkAgesCheckbox').checked = true;
+  document.getElementById('guildsCheckbox').checked = true;
 
   // set up lobby log in button
   document.getElementById('changeLoginButton').onclick = changeLogin;
