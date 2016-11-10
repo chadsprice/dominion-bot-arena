@@ -22,6 +22,7 @@ public class Bot extends Player {
 		include(BmMasquerade.class);
 		include(ChapelWitch.class);
 		include(DoubleJack.class);
+		include(AdvisorBM.class);
 		include(Mimic.class);
 	}
 
