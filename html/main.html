@@ -33,9 +33,17 @@
       <div id="lobbyBody">
         <div>
           <div class="lobbySection">
+            <h1>Quick Game</h1>
+            <div class="lobbyContent">
+              <select id="quickGameBotSelect">
+              </select>
+              <button id="quickGamePlay">Play</button>
+            </div>
+          </div>
+          <div class="lobbySection">
             <h1>Automatch</h1>
             <div class="lobbyContent">
-              <p>Automatically create games with other players using automatch.</p>
+              <p>Automatically create games with other human players who have also turned on automatch.</p>
               <div class="lobbyControl">
                 <input type="checkbox" id="automatchCheckbox"><label>Automatch On</label>
               </div>
@@ -48,9 +56,9 @@
             </div>
           </div>
           <div class="lobbySection" id="customGameSection">
-            <h1>Create Custom Game</h1>
+            <h1>Custom Game</h1>
             <div class="lobbyContent">
-              <label>Name <span class="optional">(Optional)</span></label>
+              <label>Lobby Name <span class="optional">(Optional)</span></label>
               <div class="lobbyControl">
                 <input id="customGameName" type="text"></input>
               </div>
@@ -93,7 +101,7 @@
           </div>
         </div>
         <div class="lobbySection" id="gamesSection">
-          <h1>Custom Games</h1>
+          <h1>Open Lobbies</h1>
           <div class="lobbyContent">
             <button id="removeClosedButton">Remove Closed</button>
             <div id="gameList">

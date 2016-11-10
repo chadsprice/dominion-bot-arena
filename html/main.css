@@ -409,11 +409,6 @@ body {
   background-color: #777777;
 }
 
-.manyCards {
-  height: 1.4em;
-  background-color: #777777;
-}
-
 #hand {
   display: flex;
   flex-direction: row;

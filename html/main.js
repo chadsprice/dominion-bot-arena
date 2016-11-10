@@ -627,18 +627,10 @@ function setDeckSize(size, elemId) {
   var pile = document.getElementById(elemId);
   // remove previous card indicators
   removeAllChildNodes(pile);
-  if (size <= 10) {
-    // add multiple oneCard elements
-    for (var i = 0; i < size; i++) {
-      var div = document.createElement('div');
-      div.className = 'oneCard';
-      pile.appendChild(div);
-    }
-  } else {
-    // add one manyCards element
+  // add multiple oneCard elements
+  for (var i = 0; i < size; i++) {
     var div = document.createElement('div');
-    div.className = 'manyCards';
-    div.style.width = (8 * size).toString() + 'px';
+    div.className = 'oneCard';
     pile.appendChild(div);
   }
 }
@@ -997,6 +989,10 @@ in each row.
 */
 function enterLobby(username, gameListings, availableBots) {
   availableBotNames = availableBots;
+  //
+  var quickGameBotSelect = document.getElementById('quickGameBotSelect');
+  removeAllChildNodes(quickGameBotSelect);
+  addAvailableBotOptions(quickGameBotSelect);
   // show lobby
   showPage('lobby');
   // set username
@@ -1071,7 +1067,21 @@ function addBot() {
   }
   var botList = document.getElementById('botList');
   var div = document.createElement('div');
+  // create a new drop down meny with all of the available bots as options
   var select = document.createElement('select');
+  addAvailableBotOptions(select);
+  // add a button to remove this bot
+  var button = document.createElement('button');
+  button.innerHTML = 'Remove';
+  button.onmousedown = function () {
+    removeBot(div);
+  }
+  div.appendChild(select);
+  div.appendChild(button);
+  botList.appendChild(div);
+}
+
+function addAvailableBotOptions(select) {
   // add each available bot name as an <option> in the <select> drop down menu
   for (var i = 0; i < availableBotNames.length; i++) {
     var option = document.createElement('option');
@@ -1083,15 +1093,6 @@ function addBot() {
     }
     select.appendChild(option);
   }
-  // add a button to remove this bot
-  var button = document.createElement('button');
-  button.innerHTML = 'Remove';
-  button.onmousedown = function () {
-    removeBot(div);
-  }
-  div.appendChild(select);
-  div.appendChild(button);
-  botList.appendChild(div);
 }
 
 /*
