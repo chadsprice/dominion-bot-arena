@@ -15,7 +15,7 @@ public class BigNothing extends Bot {
 
     @Override
     public List<Card> gainPriority() {
-        return new ArrayList<Card>();
+        return new ArrayList<>();
     }
 
 }

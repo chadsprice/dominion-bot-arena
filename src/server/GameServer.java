@@ -827,12 +827,12 @@ public class GameServer {
 	}
 
 	private void setupGame(Game game, Set<Set<Card>> sets, Set<Card> required, Set<Card> forbidden, Set<Player> players) {
-		if (players.stream().anyMatch(c -> c instanceof MimicBot)) {
+		if (players.stream().anyMatch(c -> c instanceof Mimic)) {
 			// if there is no available strategy, replace all Mimic bots
 			if (winningStrategies.keySet().isEmpty()) {
 				int numToReplace = 0;
 				for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
-					if (iter.next() instanceof MimicBot) {
+					if (iter.next() instanceof Mimic) {
 						iter.remove();
 						numToReplace++;
 					}
@@ -845,8 +845,8 @@ public class GameServer {
 			} else {
 				required = winningStrategies.keySet().iterator().next();
 				for (Player player : players) {
-					if (player instanceof MimicBot) {
-						MimicBot mimicBot = (MimicBot) player;
+					if (player instanceof Mimic) {
+						Mimic mimicBot = (Mimic) player;
 						mimicBot.setStrategy(winningStrategies.get(required));
 					}
 				}

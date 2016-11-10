@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class MimicBot extends Bot {
+public class Mimic extends Bot {
 
 	private List<Card> gainStrategy;
 
@@ -17,7 +17,7 @@ public class MimicBot extends Bot {
 	}
 
 	public void setStrategy(List<Card> gainStrategy) {
-		this.gainStrategy = new ArrayList<Card>(gainStrategy);
+		this.gainStrategy = new ArrayList<>(gainStrategy);
 	}
 
 	public Card chooseGainFromSupply(Set<Card> choiceSet, boolean isMandatory) {

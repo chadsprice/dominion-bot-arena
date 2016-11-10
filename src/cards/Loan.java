@@ -1,8 +1,6 @@
 package cards;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
@@ -19,49 +17,33 @@ public class Loan extends Card {
 	}
 
 	@Override
-	public void onPlay(Player player, Game game) {
-		// reveal cards from the top of the deck until a treasure is revealed
-		List<Card> revealed = new ArrayList<Card>();
-		Card treasure = null;
-		for (;;) {
-			List<Card> drawn = player.takeFromDraw(1);
-			if (drawn.isEmpty()) {
-				// revealed entire deck with no treasures
-				break;
-			}
-			Card card = drawn.get(0);
-			revealed.add(card);
-			if (card.isTreasure) {
-				// revealed a treasure
-				treasure = card;
-				break;
-			}
-		}
-		if (revealed.isEmpty()) {
-			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "their deck is empty");
-			return;
-		}
-		game.messageAll("revealing " + Card.htmlList(revealed));
-		if (treasure != null) {
-			// discard or trash the revealed treasure
-			revealed.remove(treasure);
-			int choice = game.promptMultipleChoice(player, "You reveal " + treasure.htmlName() + ", discard or trash it?", new String[] {"Discard", "Trash"});
-			if (choice == 0) {
-				player.addToDiscard(treasure);
-				game.messageAll("discarding the " + treasure.htmlNameRaw());
-			} else {
-				game.trash(player, treasure);
-				game.messageAll("trashing the " + treasure.htmlNameRaw());
-			}
-		}
-		// discard the rest
-		player.addToDiscard(revealed);
+	public int treasureValue(Game game) {
+		return 1;
 	}
 
 	@Override
-	public int treasureValue(Game game) {
-		return 1;
+	public void onPlay(Player player, Game game) {
+		// reveal cards from your deck until you reveal a treasure
+		revealUntil(player, game,
+				c -> c.isTreasure,
+				treasure -> {
+					// discard or trash the revealed treasure
+					if (chooseDiscardOverTrash(player, game, treasure)) {
+						player.addToDiscard(treasure);
+						game.messageAll("discarding the " + treasure.htmlNameRaw());
+					} else {
+						game.trash(player, treasure);
+						game.messageAll("trashing the " + treasure.htmlNameRaw());
+					}
+				});
+	}
+
+	private boolean chooseDiscardOverTrash(Player player, Game game, Card card) {
+		if (player instanceof Bot) {
+			return ((Bot) player).loanDiscardOverTrash(card);
+		}
+		int choice = game.promptMultipleChoice(player, "You draw " + card.htmlName() + ", discard or trash it?", new String[] {"Discard", "Trash"});
+		return (choice == 0);
 	}
 
 	@Override

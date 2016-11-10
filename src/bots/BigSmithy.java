@@ -14,7 +14,7 @@ public class BigSmithy extends Bot {
 
     @Override
     public List<Card> gainPriority() {
-        List<Card> priority = new ArrayList<Card>();
+        List<Card> priority = new ArrayList<>();
         if (countInDeck(Card.PLATINUM) > 0) {
             priority.add(Card.COLONY);
         }
@@ -41,6 +41,6 @@ public class BigSmithy extends Bot {
 
     @Override
     public Set<Card> required() {
-        return new HashSet<Card>(Arrays.asList(new Card[] {Card.SMITHY}));
+        return new HashSet<>(Arrays.asList(new Card[] {Card.SMITHY}));
     }
 }

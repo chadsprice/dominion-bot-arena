@@ -15,13 +15,14 @@ public class Bot extends Player {
 
 	static void initializeBots() {
 		include(Bot.class);
-		include(BankWharfBot.class);
+		include(BankWharf.class);
 		include(BigNothing.class);
 		include(BigSmithy.class);
-		include(BmLibraryBot.class);
-		include(BmMasqueradeBot.class);
-		include(ChapelWitchBot.class);
-		include(MimicBot.class);
+		include(BmLibrary.class);
+		include(BmMasquerade.class);
+		include(ChapelWitch.class);
+		include(DoubleJack.class);
+		include(Mimic.class);
 	}
 
 	private static void include(Class<? extends Bot> botClass) {
@@ -461,7 +462,7 @@ public class Bot extends Player {
 	}
 
 	private static boolean isDisabled(int i, int[] disabledIndexes) {
-		return Arrays.stream(disabledIndexes).anyMatch(disabledIndex -> disabledIndex == i);
+		return disabledIndexes != null && Arrays.stream(disabledIndexes).anyMatch(disabledIndex -> disabledIndex == i);
 	}
 
 	// utility functions
@@ -663,6 +664,11 @@ public class Bot extends Player {
 		} else {
 			return 0;
 		}
+	}
+
+	public boolean loanDiscardOverTrash(Card card) {
+		// discard the revealed treasure if you don't want to trash it
+		return !wantToTrash(card);
 	}
 
 	public Card hamletDiscardForAction() {

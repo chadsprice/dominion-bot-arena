@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BmMasqueradeBot extends Bot {
+public class BmMasquerade extends Bot {
 
 	@Override
 	public String botName() {
@@ -19,7 +19,7 @@ public class BmMasqueradeBot extends Bot {
 	@Override
 	public List<Card> gainPriority() {
 		// based on ehunt's "BM Maquerade" bot
-		List<Card> priority = new ArrayList<Card>();
+		List<Card> priority = new ArrayList<>();
 		priority.add(Card.PROVINCE);
 		priority.add(Card.GOLD);
 		if (gainsToEndGame() <= 5) {
@@ -34,7 +34,7 @@ public class BmMasqueradeBot extends Bot {
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<Card>(Arrays.asList(new Card[] {Card.MASQUERADE}));
+		return new HashSet<>(Arrays.asList(new Card[] {Card.MASQUERADE}));
 	}
 
 }

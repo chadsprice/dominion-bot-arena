@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ChapelWitchBot extends Bot {
+public class ChapelWitch extends Bot {
 
 	@Override
 	public String botName() {
@@ -18,7 +18,7 @@ public class ChapelWitchBot extends Bot {
 
 	@Override
 	public List<Card> gainPriority() {
-		List<Card> priority = new ArrayList<Card>();
+		List<Card> priority = new ArrayList<>();
 		if (countInDeck(Card.PLATINUM) > 0) {
 			priority.add(Card.COLONY);
 		}
@@ -49,7 +49,7 @@ public class ChapelWitchBot extends Bot {
 
 	@Override
 	public List<Card> trashPriority() {
-		List<Card> priority = new ArrayList<Card>();
+		List<Card> priority = new ArrayList<>();
 		priority.add(Card.CURSE);
 		if (gainsToEndGame() > 4) {
 			priority.add(Card.ESTATE);
@@ -75,7 +75,7 @@ public class ChapelWitchBot extends Bot {
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<Card>(Arrays.asList(new Card[] {Card.CHAPEL, Card.WITCH}));
+		return new HashSet<>(Arrays.asList(new Card[] {Card.CHAPEL, Card.WITCH}));
 	}
 
 }

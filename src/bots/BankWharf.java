@@ -9,38 +9,43 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BmLibraryBot extends Bot {
+public class BankWharf extends Bot {
 
 	@Override
 	public String botName() {
-		return "BM Library";
+		return "BankWharf";
 	}
 
 	@Override
 	public List<Card> gainPriority() {
-		List<Card> priority = new ArrayList<Card>();
+		// based on Geronimoo and Jorbles's "BankWharf" bot
+		List<Card> priority = new ArrayList<>();
 		if (countInDeck(Card.PLATINUM) > 0) {
 			priority.add(Card.COLONY);
 		}
 		if (countInSupply(Card.COLONY) <= 6) {
 			priority.add(Card.PROVINCE);
 		}
-		if (gainsToEndGame() <= 5) {
+		if (gainsToEndGame() <= 4) {
 			priority.add(Card.DUCHY);
 		}
 		if (gainsToEndGame() <= 2) {
 			priority.add(Card.ESTATE);
 		}
 		priority.add(Card.PLATINUM);
+		priority.add(Card.BANK);
 		priority.add(Card.GOLD);
-		priority.add(Card.LIBRARY);
+		priority.add(Card.WHARF);
 		priority.add(Card.SILVER);
+		if (gainsToEndGame() <= 3) {
+			priority.add(Card.COPPER);
+		}
 		return priority;
 	}
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<Card>(Arrays.asList(new Card[] {Card.LIBRARY}));
+		return new HashSet<>(Arrays.asList(new Card[] {Card.BANK, Card.WHARF}));
 	}
 
 }
