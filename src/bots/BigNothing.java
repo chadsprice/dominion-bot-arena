@@ -4,6 +4,7 @@ import server.Bot;
 import server.Card;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class BigNothing extends Bot {
@@ -15,7 +16,7 @@ public class BigNothing extends Bot {
 
     @Override
     public List<Card> gainPriority() {
-        return new ArrayList<>();
+        return Collections.emptyList();
     }
 
 }

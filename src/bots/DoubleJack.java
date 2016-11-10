@@ -35,7 +35,7 @@ public class DoubleJack extends Bot {
 
     @Override
     public Set<Card> required() {
-        return new HashSet<>(Arrays.asList(new Card[] {Card.JACK_OF_ALL_TRADES}));
+        return Collections.singleton(Card.JACK_OF_ALL_TRADES);
     }
 
 }

@@ -989,10 +989,11 @@ in each row.
 */
 function enterLobby(username, gameListings, availableBots) {
   availableBotNames = availableBots;
-  //
+  // enable "Quick Game" option
   var quickGameBotSelect = document.getElementById('quickGameBotSelect');
   removeAllChildNodes(quickGameBotSelect);
   addAvailableBotOptions(quickGameBotSelect);
+  document.getElementById('quickGameButton').onmousedown = quickGame;
   // show lobby
   showPage('lobby');
   // set username
@@ -1016,6 +1017,12 @@ function enterLobby(username, gameListings, availableBots) {
   document.getElementById('createCustomGameButton').onmousedown = createCustomGame;
   // enable "remove closed button"
   document.getElementById('removeClosedButton').onmousedown = removeClosedGameListings;
+}
+
+function quickGame() {
+  var quickGameBotSelect = document.getElementById('quickGameBotSelect');
+  var bot = quickGameBotSelect.options[quickGameBotSelect.selectedIndex].value;
+  socket.send(JSON.stringify({'type':'quickGame', 'bot':bot}));
 }
 
 /*

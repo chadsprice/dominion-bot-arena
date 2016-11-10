@@ -1,9 +1,6 @@
 package server;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 class GameLobby implements Comparable<GameLobby> {
 
@@ -38,11 +35,9 @@ class GameLobby implements Comparable<GameLobby> {
 	 * @return a new lobby ready for automatch players to be added
 	 */
 	static GameLobby automatchLobby(int numOpenings) {
-		Set<Set<Card>> sets = new HashSet<>();
-		sets.add(Card.BASE_SET);
-		sets.add(Card.INTRIGUE_SET);
-		sets.add(Card.SEASIDE_SET);
-		return new GameLobby("Automatch", numOpenings, sets, new HashSet<>(), new HashSet<>(), new ArrayList<>());
+		// use all of the known card sets
+		Set<Set<Card>> cardSets = new HashSet<>(Card.setsByName.values());
+		return new GameLobby("Automatch", numOpenings, cardSets, Collections.emptySet(), Collections.emptySet(), Collections.emptyList());
 	}
 
 	void addPlayer(Player player) {

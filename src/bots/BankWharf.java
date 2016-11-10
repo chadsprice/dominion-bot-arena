@@ -45,7 +45,7 @@ public class BankWharf extends Bot {
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<>(Arrays.asList(new Card[] {Card.BANK, Card.WHARF}));
+		return new HashSet<>(Arrays.asList(Card.BANK, Card.WHARF));
 	}
 
 }

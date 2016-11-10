@@ -75,7 +75,7 @@ public class ChapelWitch extends Bot {
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<>(Arrays.asList(new Card[] {Card.CHAPEL, Card.WITCH}));
+		return new HashSet<>(Arrays.asList(Card.CHAPEL, Card.WITCH));
 	}
 
 }

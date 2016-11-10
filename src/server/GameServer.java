@@ -10,15 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -204,6 +196,8 @@ public class GameServer {
 			handleResponse(player, request);
 		} else if ("login".equals(type)) {
 			handleLogin(player, request);
+		} else if ("quickGame".equals(type)) {
+			handleQuickGame(player, request);
 		} else if ("createCustomGame".equals(type)) {
 			handleCreateCustomGame(player, request);
 		} else if ("joinGame".equals(type)) {
@@ -317,6 +311,35 @@ public class GameServer {
 		command.put("command", "loginAccepted");
 		command.put("username", player.username);
 		player.issueCommand(command);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void handleQuickGame(Player player, JSONObject request) {
+		// if player isn't in the lobby, ignore the request
+		if (!playersInLobby.contains(player)) {
+			return;
+		}
+		// parse the requested bot
+		Bot bot = Bot.newBotFromName((String) request.get("bot"));
+		// create new game
+		Game game = new Game();
+		// remove the player from the lobby
+		playersInLobby.remove(player);
+		removeFromAutomatch(player);
+		// put the player and bot in the new game
+		Set<Player> players = new HashSet<>(Arrays.asList(player, bot));
+		for (Player inGame : players) {
+			inGame.game = game;
+		}
+		// send the players to the game screen
+		JSONObject command = new JSONObject();
+		command.put("command", "enterGame");
+		player.issueCommand(command);
+		// TODO move all of this setup to the game thread
+		Set<Set<Card>> cardSets = new HashSet<>(Card.setsByName.values());
+		setupGame(game, cardSets, Collections.emptySet(), Collections.emptySet(), players);
+		Thread gameThread = new Thread(game);
+		gameThread.start();
 	}
 
 	private void handleCreateCustomGame(Player player, JSONObject request) {
@@ -873,7 +896,7 @@ public class GameServer {
 			players.add(bot);
 		}
 		// start with the required cards
-		Set<Card> chosen = required;
+		Set<Card> chosen = new HashSet<>(required);
 		if (chosen.size() > 10) {
 			chosen = new HashSet<>((new ArrayList<>(chosen)).subList(0, 10));
 		}

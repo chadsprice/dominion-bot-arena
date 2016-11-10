@@ -3,11 +3,7 @@ package bots;
 import server.Bot;
 import server.Card;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class BmLibrary extends Bot {
 
@@ -40,7 +36,7 @@ public class BmLibrary extends Bot {
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<>(Arrays.asList(new Card[] {Card.LIBRARY}));
+		return Collections.singleton(Card.LIBRARY);
 	}
 
 }

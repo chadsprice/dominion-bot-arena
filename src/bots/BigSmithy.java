@@ -41,6 +41,6 @@ public class BigSmithy extends Bot {
 
     @Override
     public Set<Card> required() {
-        return new HashSet<>(Arrays.asList(new Card[] {Card.SMITHY}));
+        return Collections.singleton(Card.SMITHY);
     }
 }

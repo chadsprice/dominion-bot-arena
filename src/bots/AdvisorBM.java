@@ -33,7 +33,7 @@ public class AdvisorBM extends Bot {
 
     @Override
     public Set<Card> required() {
-        return new HashSet<>(Arrays.asList(new Card[] {Card.ADVISOR}));
+        return Collections.singleton(Card.ADVISOR);
     }
 
 }

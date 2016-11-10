@@ -187,7 +187,7 @@ public class Bot extends Player {
 
 	public Set<Card> required() {
 		// BigMoney requires no non-basic cards
-		return new HashSet<>();
+		return Collections.emptySet();
 	}
 
 	Card chooseOpponentGainFromSupply(Set<Card> choiceSet) {
