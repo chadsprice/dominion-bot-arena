@@ -850,34 +850,86 @@ public class Game implements Runnable {
 				player.putOnDraw(schemed);
 			}
 		}
-		// handle Treasuries
+		// handle Treasury (and Band of Misfits played as Treasury)
 		if (!boughtVictoryCardThisTurn) {
-			int numTreasuries = (int) player.getPlay().stream().filter(c -> c == Cards.TREASURY).count();
-			if (numTreasuries != 0) {
-				String[] choices = new String[numTreasuries + 1];
-				for (int i = 0; i <= numTreasuries; i++) {
-					choices[i] = i + "";
+			int numTreasuries = (int) player.getPlay().stream()
+					.filter(c -> c == Cards.TREASURY)
+					.count();
+			int numTreasuriesActuallyBandsOfMisfits = (int) player.getPlay().stream()
+					.filter(c -> c instanceof Treasury && c.isBandOfMisfits)
+					.count();
+			if (numTreasuries != 0 || numTreasuriesActuallyBandsOfMisfits != 0) {
+				// all Treasuries or all Bands of Misfits(played as Treasuries)
+				if (numTreasuries == 0 || numTreasuriesActuallyBandsOfMisfits == 0) {
+					boolean areBandsOfMisfits = (numTreasuries == 0);
+					int numToPutOnDeck = chooseNumTreasuriesToPutOnDeck(player, (areBandsOfMisfits ? numTreasuriesActuallyBandsOfMisfits : numTreasuries), areBandsOfMisfits);
+					if (numToPutOnDeck != 0) {
+						if (areBandsOfMisfits) {
+							String cardsStr = Cards.BAND_OF_MISFITS.htmlName(numToPutOnDeck) + " that " + (numToPutOnDeck == 1 ? "was" : "were") + " played as " + Cards.TREASURY.htmlName(numToPutOnDeck);
+							message(player, "You put " + cardsStr + " on top of your deck");
+							messageOpponents(player, player.username + " puts " + cardsStr + " on top of their deck");
+							player.removeFromPlay(player.getPlay().stream().filter(c -> c instanceof Treasury && c.isBandOfMisfits).collect(Collectors.toList()).subList(0, numToPutOnDeck));
+							for (int i = 0; i < numToPutOnDeck; i++) {
+								player.putOnDraw(Cards.BAND_OF_MISFITS);
+							}
+						} else {
+							message(player, "You put " + Cards.TREASURY.htmlName(numToPutOnDeck) + " on top of your deck");
+							messageOpponents(player, player.username + " puts " + Cards.TREASURY.htmlName(numToPutOnDeck) + " on top of their deck");
+							for (int i = 0; i < numToPutOnDeck; i++) {
+								player.removeFromPlay(Cards.TREASURY);
+								player.putOnDraw(Cards.TREASURY);
+							}
+						}
+					}
+				} else {
+					// player has both Treasuries and Band of Misfits(played as Treasuries) in play, any of which can be put on top of their deck, in any order
+					while (numTreasuries != 0 || numTreasuriesActuallyBandsOfMisfits != 0) {
+						int[] disabledIndexes = null;
+						if (numTreasuries == 0) {
+							disabledIndexes = new int[]{0};
+						} else if (numTreasuriesActuallyBandsOfMisfits == 0) {
+							disabledIndexes = new int[]{1};
+						}
+						int choice = promptMultipleChoice(player, "Clean Up: You have Treasuries and Bands of Misfits(played as Treasuries) in play, any of which can be put on top of your deck, in any order.", new String[] {"Put a Treasury on top of your deck", "Put a Band of Misfits on top of your deck", "Done"}, disabledIndexes);
+						if (choice == 0) {
+							message(player, "You put " + Cards.TREASURY.htmlName() + " on top of your deck");
+							messageOpponents(player, player.username + " puts " + Cards.TREASURY.htmlName() + " on top of their deck");
+							player.removeFromPlay(Cards.TREASURY);
+							player.putOnDraw(Cards.TREASURY);
+							numTreasuries--;
+						} else if (choice == 1) {
+							message(player, "You put " + Cards.BAND_OF_MISFITS.htmlName() + " that was played as " + Cards.TREASURY.htmlName() + " on top of your deck");
+							messageOpponents(player, player.username + " puts " + Cards.BAND_OF_MISFITS.htmlName() + " that was played as " + Cards.TREASURY.htmlName() + " on top of their deck");
+							Optional<Card> nextBandOfMisfits = player.getPlay().stream().filter(c -> c instanceof Treasury && c.isBandOfMisfits).findFirst();
+							if (!nextBandOfMisfits.isPresent()) {
+								throw new IllegalStateException();
+							}
+							player.removeFromPlay(nextBandOfMisfits.get());
+							player.putOnDraw(Cards.BAND_OF_MISFITS);
+							numTreasuriesActuallyBandsOfMisfits--;
+						} else { // choice == 2
+							break;
+						}
+					}
 				}
-				int numToPutOnDeck = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
-				if (numToPutOnDeck != 0) {
-                    message(player, "You put " + Cards.TREASURY.htmlName(numToPutOnDeck) + " on top of your deck");
-                    messageOpponents(player, player.username + " puts " + Cards.TREASURY.htmlName(numToPutOnDeck) + " on top of their deck");
-                    for (int i = 0; i < numToPutOnDeck; i++) {
-                        player.removeFromPlay(Cards.TREASURY);
-                        player.putOnDraw(Cards.TREASURY);
-                    }
-                }
 			}
 		}
-		// handle Hermit
+		// handle Hermit (and Band of Misfits played as Hermit)
 		if (!boughtCardThisTurn) {
 			List<Card> hermitsInPlay = player.getPlay().stream()
 					.filter(c -> c instanceof Hermit)
 					.collect(Collectors.toList());
 			if (!hermitsInPlay.isEmpty()) {
 				int numMadmen = Math.min(hermitsInPlay.size(), nonSupply.get(Cards.MADMAN));
-				message(player, "You trash " + Card.htmlList(hermitsInPlay) + " and gain " + Cards.MADMAN.htmlName(numMadmen));
-				messageOpponents(player, player.username + " trashes " + Card.htmlList(hermitsInPlay) + " and gains " + Cards.MADMAN.htmlName(numMadmen));
+				String hermitsStr = Cards.HERMIT.htmlName(hermitsInPlay.size());
+				int numHermitsActuallyBandOfMisfits = (int) hermitsInPlay.stream()
+						.filter(c -> c.isBandOfMisfits)
+						.count();
+				if (numHermitsActuallyBandOfMisfits != 0) {
+					hermitsStr += " (" + numHermitsActuallyBandOfMisfits + " of which " + (numHermitsActuallyBandOfMisfits == 1 ? "is" : "are") + " " + Cards.BAND_OF_MISFITS.htmlNameRaw() + ")";
+				}
+				message(player, "You trash " + hermitsStr + " and gain " + Cards.MADMAN.htmlName(numMadmen));
+				messageOpponents(player, player.username + " trashes " + hermitsStr + " and gains " + Cards.MADMAN.htmlName(numMadmen));
 				player.removeFromPlay(hermitsInPlay);
 				trash(player, hermitsInPlay);
 				for (int i = 0; i < numMadmen; i++) {
@@ -888,6 +940,21 @@ public class Game implements Runnable {
 		// cleanup the rest of play and redraw
 		player.cleanupPlay();
 		player.turns++;
+	}
+
+	private int chooseNumTreasuriesToPutOnDeck(Player player, int max, boolean areBandsOfMisfits) {
+		if (player instanceof Bot) {
+			int num = ((Bot) player).treasuryNumToPutOnDeck(max);
+			if (num < 0 || num > max) {
+				throw new IllegalStateException();
+			}
+			return num;
+		}
+		String[] choices = new String[max + 1];
+		for (int i = 0; i <= max; i++) {
+			choices[i] = i + "";
+		}
+		return promptMultipleChoice(player, "Clean Up: Put how many " + (areBandsOfMisfits ? "Bands of Misfits (played as Treasuries)" : "Treasuries") + " on top of your deck?", choices);
 	}
 
 	private boolean gameOverConditionMet() {

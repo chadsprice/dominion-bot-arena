@@ -667,6 +667,11 @@ public class Bot extends Player {
 		}
 	}
 
+	public int treasuryNumToPutOnDeck(int max) {
+		// always put your Treasuries on top of your deck when you can
+		return max;
+	}
+
 	public boolean loanDiscardOverTrash(Card card) {
 		// discard the revealed treasure if you don't want to trash it
 		return !wantToTrash(card);
