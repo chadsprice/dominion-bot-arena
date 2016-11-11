@@ -266,7 +266,7 @@ public class GameServer {
 				loginError(player, "Username already taken.");
 				return;
 			} else if (anonymousNamePattern.matcher(username).find()) {
-				// the username also can be "Anonymous#", since those are reserved
+				// the username can't have the form "Anonymous#", since those are reserved
 				loginError(player, "Must provide unique username.");
 				return;
 			}
@@ -382,7 +382,7 @@ public class GameServer {
 			// silent error, client should only request games of size 2-4
 			return;
 		}
-		// sets
+		// card sets
 		JSONArray setArray = (JSONArray) request.get("sets");
 		Set<Set<Card>> cardSets = new HashSet<>();
 		for (Object setNameObject : setArray) {
@@ -392,7 +392,7 @@ public class GameServer {
 				cardSets.add(cardSet);
 			}
 		}
-		// cards
+		// required and forbidden cards
 		String cards = (String) request.get("cards");
 		Set<Card> requiredCards = new HashSet<>();
 		Set<Card> forbiddenCards = new HashSet<>();
@@ -426,9 +426,15 @@ public class GameServer {
 		for (Object botName : botNameArray) {
 			botNames.add((String) botName);
 		}
+		// if the game would be entirely bots
 		if (botNames.size() >= numPlayers) {
-			customGameError(player, "Increase the number of players to make room for yourself!");
-			return;
+			// try to add room for the human player
+			numPlayers = botNames.size() + 1;
+			// if there isn't room, error
+			if (numPlayers > 4) {
+				customGameError(player, "Game cannot contain only bots.");
+				return;
+			}
 		}
 		List<Player> bots = botNames.stream()
 				.map(Bot::newBotFromName)
@@ -676,12 +682,12 @@ public class GameServer {
 	}
 
 	private void removeFromGameLobby(Player player) {
-		// get the game lobby that the player is currently in
-		GameLobby lobby = playersInGameLobbies.get(player);
 		// if they are not in a game lobby, ignore the request
-		if (lobby == null) {
+		if (!playersInGameLobbies.containsKey(player)) {
 			return;
 		}
+		// get the game lobby that the player is currently in
+		GameLobby lobby = playersInGameLobbies.get(player);
 		// remove the player from the game lobby
 		lobby.removePlayer(player);
 		playersInGameLobbies.remove(player);
