@@ -353,7 +353,7 @@ public class Card {
     private boolean onThroneRoomVariantBandOfMisfits(Player player, Game game, int multiplier, boolean hasMoved) {
         boolean usedAsModifier = false;
         Set<Card> imitable = game.cardsCostingAtMost(Cards.BAND_OF_MISFITS.cost(game) - 1).stream()
-                .filter(c -> c.isAction && c != this)
+                .filter(c -> c.isAction && c != Cards.BAND_OF_MISFITS)
                 .collect(Collectors.toSet());
         if (!imitable.isEmpty()) {
             Card toImitate = BandOfMisfits.chooseImitate(player, game, imitable);
@@ -369,16 +369,41 @@ public class Card {
             player.addToPlay(imitator);
             // play it multiple times
             boolean imitatorMoved = false;
+            // if Band of Misfits leaves play, choose a new card for it to become, but only do this once
+            // (Band of Misfits doesn't become that card since it has already left play, but it still has the on-play effect of the chosen card)
+            // (yes, this is an official rule, no, I don't know what they were thinking)
+            boolean madeNewChoiceAfterLeavingPlay = false;
             for (int i = 0; i < multiplier; i++) {
+                // if the card has left play, choose a different card for it to imitate
+                if (imitatorMoved && !imitator.isDuration && !(imitator instanceof ThroneRoom || imitator instanceof KingsCourt || imitator instanceof Procession) && !madeNewChoiceAfterLeavingPlay) {
+                    imitable = game.cardsCostingAtMost(Cards.BAND_OF_MISFITS.cost(game) - 1).stream()
+                            .filter(c -> c.isAction && c != Cards.BAND_OF_MISFITS)
+                            .collect(Collectors.toSet());
+                    if (!imitable.isEmpty()) {
+                        toImitate = BandOfMisfits.chooseImitate(player, game, imitable);
+                        // create a new card that has the on-play effect of the chosen card, but isn't technically in the game anywhere
+                        try {
+                            imitator = toImitate.getClass().newInstance();
+                            imitator.isBandOfMisfits = true;
+                        } catch (Exception e) {
+                            throw new IllegalStateException();
+                        }
+                        madeNewChoiceAfterLeavingPlay = true;
+                    } else {
+                        game.messageAll(Cards.BAND_OF_MISFITS.htmlNameRaw() + " has left play and there are no cards it can be played as");
+                        break;
+                    }
+                }
                 imitatorMoved |= game.playAction(player, imitator, imitatorMoved);
                 // if the card was a duration card, and it was set aside, and this hasn't been moved
-                if (imitator.isDuration && imitatorMoved && !hasMoved && !usedAsModifier) {
+                if (imitatorMoved && imitator.isDuration && !hasMoved && !usedAsModifier) {
                     // set this aside as a modifier
                     player.removeFromPlay(this);
                     player.addDurationSetAside(this);
                     usedAsModifier = true;
                 }
             }
+            afterThroneRoomVariant(player, game, imitator, imitatorMoved);
         } else {
             game.messageAll("there are no cards it can be played as");
         }

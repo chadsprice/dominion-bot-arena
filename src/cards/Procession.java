@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -25,7 +26,7 @@ public class Procession extends Card {
     @Override
     protected void afterThroneRoomVariant(Player player, Game game, Card played, boolean playedMoved) {
         // trash the played card
-        if (played.isDuration && playedMoved) {
+        if (playedMoved && (played.isDuration || played instanceof ThroneRoom || played instanceof KingsCourt || played instanceof Procession)) {
             // remove it from the set aside duration cards
             game.messageAll("trashing the " + played.htmlNameRaw());
             player.removeDurationSetAside(played);
@@ -37,9 +38,14 @@ public class Procession extends Card {
             game.trash(player, played);
         }
         // gain a card costing exactly $1 more than the trashed card
-        Set<Card> gainable = game.cardsCostingExactly(played.cost(game) + 1);
+        int cost = played.cost(game);
+        if (played.isBandOfMisfits) {
+            // if the card was a Band of Misfits imitator, use the cost of the Band of Misfits
+            cost = Cards.BAND_OF_MISFITS.cost(game);
+        }
+        Set<Card> gainable = game.cardsCostingExactly(cost + 1);
         if (!gainable.isEmpty()) {
-            Card toGain = game.promptChooseGainFromSupply(player, gainable, "Procession: Choose a card to gain.");
+            Card toGain = game.promptChooseGainFromSupply(player, gainable, this.toString() + ": Choose a card to gain.");
             game.messageAll("gaining " + toGain.htmlName());
             game.gain(player, toGain);
         } else {
