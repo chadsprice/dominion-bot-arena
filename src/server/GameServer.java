@@ -14,7 +14,6 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import bots.*;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.DefaultHandler;
@@ -32,7 +31,8 @@ import org.mindrot.BCrypt;
 public class GameServer {
 
 	private static final int DEFAULT_HTTP_PORT = 8080;
-	private static final int DEFAULT_WEBSOCKET_TIMEOUT = 600000;
+	// in milliseconds (minutes * seconds/minute * milliseconds/second)
+	private static final int DEFAULT_WEBSOCKET_TIMEOUT = 10 * 60 * 1000;
 
 	private static final String LOGINS_FILE_NAME = "logins";
 	private static final Path LOGINS_FILE_PATH = Paths.get(LOGINS_FILE_NAME);
@@ -51,11 +51,14 @@ public class GameServer {
 	private Map<String, GameLobby> gameLobbies = new HashMap<>();
 	private Map<Player, GameLobby> playersInGameLobbies = new HashMap<>();
 
-	private Set<Player> automatch2 = new HashSet<>(), automatch3 = new HashSet<>(), automatch4 = new HashSet<>();
+	private Set<Player>
+			automatch2 = new HashSet<>(),
+			automatch3 = new HashSet<>(),
+			automatch4 = new HashSet<>();
 
 	private Map<String, String> validLogins = new HashMap<>();
 
-	private int anonymousNumber = 1;
+	private int anonymousLoginCounter = 1;
 	private static Pattern anonymousNamePattern = Pattern.compile("^Anonymous\\d+$");
 
 	private GameServer() {}
@@ -70,12 +73,11 @@ public class GameServer {
 		// set default configuration
 		httpPort = DEFAULT_HTTP_PORT;
 		websocketTimeout = DEFAULT_WEBSOCKET_TIMEOUT;
-		// change configuration according to configuration file
+		// read configuration file
 		try {
 			Scanner scanner = new Scanner(CONFIG_FILE_PATH);
 			while (scanner.hasNextLine()) {
 				String line = scanner.nextLine();
-				// ignore empty lines and lines starting with "#"
 				if (line.isEmpty() || line.startsWith("#")) {
 					continue;
 				}
@@ -99,7 +101,7 @@ public class GameServer {
 						configurationError(line);
 					}
 				} else {
-					// unknown setting
+					// unrecognized setting
 					configurationError(line);
 				}
 			}
@@ -153,10 +155,10 @@ public class GameServer {
 	}
 
 	synchronized void removeConnection(PlayerWebSocketHandler conn) {
-		Player player = players.get(conn);
-		if (player == null) {
+		if (!players.containsKey(conn)) {
 			return;
 		}
+		Player player = players.get(conn);
 		// remove from active players
 		players.remove(conn);
 		// if logged in, log out
@@ -164,10 +166,9 @@ public class GameServer {
 			loggedInPlayers.remove(player.username);
 		}
 		// remove player from the general lobby
-		playersInLobby.remove(player);
-		removeFromAutomatch(player);
+		removeFromLobby(player);
 		// if in game lobby, remove from game lobby
-		if (playersInGameLobbies.get(player) != null) {
+		if (playersInGameLobbies.containsKey(player)) {
 			removeFromGameLobby(player);
 		}
 		// if in game, forfeit
@@ -176,21 +177,24 @@ public class GameServer {
 		}
 	}
 
-	synchronized void receiveMessage(PlayerWebSocketHandler conn, String message) {
+	void receiveMessage(PlayerWebSocketHandler conn, String message) {
 		try {
+			// allow JSON to be parsed in parallel
 			JSONObject request = (JSONObject) JSONValue.parse(message);
 			handleRequest(conn, request);
 		} catch (Exception e) {
-			// ignore failed requests
 			e.printStackTrace();
 		}
 	}
 
 	private synchronized void handleRequest(PlayerWebSocketHandler conn, JSONObject request) {
-		Player player = players.get(conn);
-		if (player == null) {
-			return;
+		// make sure that the connection is still associated with an active player
+		if (players.containsKey(conn)) {
+			handleRequest(players.get(conn), request);
 		}
+	}
+
+	private void handleRequest(Player player, JSONObject request) {
 		String type = (String) request.get("type");
 		if ("response".equals(type)) {
 			handleResponse(player, request);
@@ -210,44 +214,43 @@ public class GameServer {
 			handleReturnToLobby(player);
 		} else if ("hurryUp".equals(type)) {
 			handleHurryUp(player);
-		} else if (type.equals("forfeit")) {
+		} else if ("forfeit".equals(type)) {
 			forfeit(player);
-		} else if (type.equals("automatch")) {
+		} else if ("automatch".equals(type)) {
 			handleAutomatch(player, request);
-		} else if (type.equals("chat")) {
+		} else if ("chat".equals(type)) {
 			handleChat(player, request);
 		}
 	}
 
 	private void handleResponse(Player player, JSONObject request) {
-		player.receiveResponse(request.get("response"));
+		Object response = request.get("response");
+		if (response != null) {
+			player.receiveResponse(response);
+		}
 	}
 
 	private void anonymousLogin(Player player) {
-		String username = "Anonymous" + (anonymousNumber++);
+		String username = "Anonymous" + (anonymousLoginCounter++);
 		while (loggedInPlayers.containsKey(username)) {
-			username = "Anonymous" + (anonymousNumber++);
+			username = "Anonymous" + (anonymousLoginCounter++);
 		}
 		player.username = username;
 		loggedInPlayers.put(username, player);
 	}
 
 	private void handleLogin(Player player, JSONObject request) {
-		// ignore the request if the player is not in the lobby
+		// player must be in the lobby to change logins
 		if (!playersInLobby.contains(player)) {
 			return;
 		}
 		String username = (String) request.get("username");
 		String password = (String) request.get("password");
 		Boolean newLogin = (Boolean) request.get("newLogin");
-		if (username == null) {
-			// silent error, the client should never send no username
-			return;
-		}
 		// sanitize username
 		username = cleanName(username);
-		// sanitized username is empty
-		if (username.equals("")) {
+		// username cannot be empty
+		if (username.isEmpty()) {
 			loginError(player, "Username is empty.");
 			return;
 		}
@@ -256,45 +259,63 @@ public class GameServer {
 			loginError(player, "Duplicate login.");
 			return;
 		}
-		// if not creating a new login
-		if (newLogin == null) {
-			// if this is an existing login, check the password
+		// if the user is creating a new account
+		if (newLogin != null) {
+			// check that the username is not already taken
 			if (validLogins.containsKey(username)) {
+				loginError(player, "Username already taken.");
+				return;
+			} else if (anonymousNamePattern.matcher(username).find()) {
+				// the username also can be "Anonymous#", since those are reserved
+				loginError(player, "Must provide unique username.");
+				return;
+			}
+			// save the new account
+			String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+			validLogins.put(username, hashedPassword);
+			saveLogin(username, hashedPassword);
+		} else {
+			// if this username is password-protected
+			if (validLogins.containsKey(username)) {
+				// if no password was given, error
 				if (password == null) {
 					loginError(player, "Username or password is incorrect.");
 					return;
 				}
 				String hashed = validLogins.get(username);
+				// if the password is wrong, error
 				if (!BCrypt.checkpw(password, hashed)) {
 					loginError(player, "Username or password is incorrect.");
 					return;
 				}
 			} else if (password != null) {
-				// password provided when none was needed
+				// the username is unrecognized, but the user entered a password (probably a typo entering their username)
 				loginError(player, "Given username has no associated password.");
 				return;
 			}
 			// else, okay non-password-protected login
-		} else {
-			// creating a new login
-			// if this is an existing username
-			if (validLogins.containsKey(username)) {
-				loginError(player, "Username already taken.");
-				return;
-			} else if (anonymousNamePattern.matcher(username).find()) {
-				loginError(player, "Must provide unique username.");
-				return;
-			}
-			String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-			validLogins.put(username, hashedPassword);
-			saveLogin(username, hashedPassword);
 		}
-		// remove old username
-		loggedInPlayers.remove(player.username);
 		// set new username
+		loggedInPlayers.remove(player.username);
 		player.username = username;
 		loggedInPlayers.put(username, player);
 		loginAccepted(player);
+	}
+
+	private static String cleanName(String name) {
+		// trim whitespace
+		name = name.trim();
+		// maximum length of 25 characters
+		if (name.length() > 25) {
+			name = name.substring(0, 25);
+		}
+		// escape html
+		name = org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(name);
+		// trim whitespace again
+		name = name.trim();
+		// remove any return character
+		name = name.replace("\n", "");
+		return name;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -319,25 +340,19 @@ public class GameServer {
 		if (!playersInLobby.contains(player)) {
 			return;
 		}
+		// remove the player from the lobby
+		removeFromLobby(player);
 		// parse the requested bot
 		Bot bot = Bot.newBotFromName((String) request.get("bot"));
 		// create new game
-		Game game = new Game();
-		// remove the player from the lobby
-		playersInLobby.remove(player);
-		removeFromAutomatch(player);
-		// put the player and bot in the new game
-		Set<Player> players = new HashSet<>(Arrays.asList(player, bot));
-		for (Player inGame : players) {
-			inGame.game = game;
-		}
-		// send the players to the game screen
-		JSONObject command = new JSONObject();
-		command.put("command", "enterGame");
-		player.issueCommand(command);
-		// TODO move all of this setup to the game thread
+		// use all of the known card sets
 		Set<Set<Card>> cardSets = new HashSet<>(Card.setsByName.values());
-		setupGame(game, cardSets, Collections.emptySet(), Collections.emptySet(), players);
+		Set<Player> players = new HashSet<>(Arrays.asList(player, bot));
+		startGame(players, cardSets, Collections.emptySet(), Collections.emptySet());
+	}
+
+	private void startGame(Set<Player> players, Set<Set<Card>> cardSets, Set<Card> requiredCards, Set<Card> forbiddenCards) {
+		Game game = new Game(this, players, cardSets, requiredCards, forbiddenCards);
 		Thread gameThread = new Thread(game);
 		gameThread.start();
 	}
@@ -369,12 +384,12 @@ public class GameServer {
 		}
 		// sets
 		JSONArray setArray = (JSONArray) request.get("sets");
-		Set<Set<Card>> sets = new HashSet<>();
+		Set<Set<Card>> cardSets = new HashSet<>();
 		for (Object setNameObject : setArray) {
 			String setName = (String) setNameObject;
-			Set<Card> set = Card.setsByName.get(setName);
-			if (set != null) {
-				sets.add(set);
+			Set<Card> cardSet = Card.setsByName.get(setName);
+			if (cardSet != null) {
+				cardSets.add(cardSet);
 			}
 		}
 		// cards
@@ -419,7 +434,7 @@ public class GameServer {
 				.map(Bot::newBotFromName)
 				.collect(Collectors.toList());
 		// create the lobby
-		GameLobby lobby = new GameLobby(name, numPlayers, sets, requiredCards, forbiddenCards, bots);
+		GameLobby lobby = new GameLobby(name, numPlayers, cardSets, requiredCards, forbiddenCards, bots);
 		gameLobbies.put(name, lobby);
 		// send the player to the game lobby they created
 		sendToGameLobby(player, lobby);
@@ -460,6 +475,7 @@ public class GameServer {
 	}
 
 	private void handleReturnToLobby(Player player) {
+		// check that the player is leaving a game that has ended normally
 		if (player.game != null && player.game.isGameOver) {
 			player.game = null;
 			sendToLobby(player);
@@ -492,6 +508,23 @@ public class GameServer {
 		}
 	}
 
+	private void tryAutomatch() {
+		@SuppressWarnings("unchecked")
+		Set<Player>[] pools = new Set[] {automatch2, automatch3, automatch4};
+		for (int i = 0; i < pools.length; i++) {
+			Set<Player> pool = pools[i];
+			int size = i + 2;
+			if (pool.size() == size) {
+				GameLobby lobby = GameLobby.automatchLobby(size);
+				List<Player> copy = new ArrayList<>(pool);
+				for (Player player : copy) {
+					sendToGameLobby(player, lobby);
+				}
+				pool.clear();
+			}
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	private void handleChat(Player player, JSONObject request) {
 		if (player.game == null) {
@@ -511,43 +544,15 @@ public class GameServer {
 		}
 	}
 
-	private void tryAutomatch() {
-		@SuppressWarnings("unchecked")
-		Set<Player>[] pools = new Set[] {automatch2, automatch3, automatch4};
-		for (int i = 0; i < pools.length; i++) {
-			Set<Player> pool = pools[i];
-			int size = i + 2;
-			if (pool.size() == size) {
-				GameLobby lobby = GameLobby.automatchLobby(size);
-				List<Player> copy = new ArrayList<>(pool);
-				for (Player player : copy) {
-					sendToGameLobby(player, lobby);
-				}
-				pool.clear();
-			}
-		}
+	private void removeFromLobby(Player player) {
+		playersInLobby.remove(player);
+		removeFromAutomatch(player);
 	}
 
 	private void removeFromAutomatch(Player player) {
 		automatch2.remove(player);
 		automatch3.remove(player);
 		automatch4.remove(player);
-	}
-
-	private String cleanName(String name) {
-		// trim whitespace
-		name = name.trim();
-		// maximum length of 25 characters
-		if (name.length() > 25) {
-			name = name.substring(0, 25);
-		}
-		// escape html
-		name = org.apache.commons.lang3.StringEscapeUtils.escapeHtml4(name);
-		// trim again
-		name = name.trim();
-		// guarantee that no name contains a return character
-		name = name.replace("\n", "");
-		return name;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -559,36 +564,17 @@ public class GameServer {
 		GameLobby lobby = playersInGameLobbies.get(player);
 		lobby.setIsPlayerReady(player, isReady);
 		// if all players are ready
-		boolean gameStart = false;
 		if (lobby.isReady()) {
-			// start a new game
-			gameStart = true;
 			// remove the players from the game lobby
 			for (Player playerInGameLobby : lobby.players) {
 				playersInGameLobbies.remove(playerInGameLobby);
 			}
-		}
-		if (gameStart) {
 			// remove the lobby
 			removeGameLobby(lobby);
-			// create new game
-			Game game = new Game();
-			// add the game lobby players to the game
-			for (Player inGame : lobby.players) {
-				inGame.game = game;
-			}
-			// send the players to the game screen
-			for (Player inGame : lobby.players) {
-				JSONObject command = new JSONObject();
-				command.put("command", "enterGame");
-				inGame.issueCommand(command);
-			}
+			// start a new game
 			Set<Player> playerSet = new HashSet<>();
 			Collections.addAll(playerSet, lobby.players);
-			// TODO move all of this setup to the game thread
-			setupGame(game, lobby.sets, lobby.requiredCards, lobby.forbiddenCards, playerSet);
-			Thread gameThread = new Thread(game);
-			gameThread.start();
+			startGame(playerSet, lobby.cardSets, lobby.requiredCards, lobby.forbiddenCards);
 		} else {
 			// send the new lobby state to the players
 			for (Player playerInLobby : lobby.players) {
@@ -650,15 +636,14 @@ public class GameServer {
 			return;
 		}
 		// move the player from the general lobby to the game lobby
-		playersInLobby.remove(player);
-		removeFromAutomatch(player);
+		removeFromLobby(player);
 		playersInGameLobbies.put(player, lobby);
 		lobby.addPlayer(player);
 		// send the player the current state of the game lobby
 		JSONObject command = new JSONObject();
 		command.put("command", "enterGameLobby");
 		command.put("name", lobby.name);
-		command.put("sets", setsToString(lobby.sets));
+		command.put("sets", setsToString(lobby.cardSets));
 		if (!lobby.requiredCards.isEmpty()) {
 			command.put("requiredCards", Card.htmlSet(lobby.requiredCards));
 		}
@@ -779,7 +764,7 @@ public class GameServer {
 		game.put("name", lobby.name);
 		game.put("numOpenings", lobby.numOpenings);
 		game.put("numPlayers", lobby.numPlayers());
-		game.put("sets", setsToString(lobby.sets));
+		game.put("sets", setsToString(lobby.cardSets));
 		if (!lobby.requiredCards.isEmpty()) {
 			game.put("requiredCards", Card.htmlSet(lobby.requiredCards));
 		}
@@ -849,154 +834,24 @@ public class GameServer {
 		sendToLobby(newPlayer);
 	}
 
-	private void setupGame(Game game, Set<Set<Card>> sets, Set<Card> required, Set<Card> forbidden, Set<Player> players) {
-		if (players.stream().anyMatch(c -> c instanceof Mimic)) {
-			// if there is no available strategy, replace all Mimic bots
-			if (winningStrategies.keySet().isEmpty()) {
-				int numToReplace = 0;
-				for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
-					if (iter.next() instanceof Mimic) {
-						iter.remove();
-						numToReplace++;
-					}
-				}
-				for (int n = 0; n < numToReplace; n++) {
-					Bot bot = new Bot();
-					bot.game = game;
-					players.add(bot);
-				}
-			} else {
-				required = winningStrategies.keySet().iterator().next();
-				for (Player player : players) {
-					if (player instanceof Mimic) {
-						Mimic mimicBot = (Mimic) player;
-						mimicBot.setStrategy(winningStrategies.get(required));
-					}
-				}
-			}
-		}
-		// replace any bot that cannot have its required cards
-		int numToReplace = 0;
-		for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
-			Player next = iter.next(); 
-			if (next instanceof Bot) {
-				Set<Card> requiredForBot = new HashSet<>(required);
-				requiredForBot.addAll(((Bot) next).required());
-				if (requiredForBot.size() > 10) {
-					iter.remove();
-					numToReplace++;
-				} else {
-					required = requiredForBot;
-				}
-			}
-		}
-		for (int n = 0; n < numToReplace; n++) {
-			Bot bot = new Bot();
-			bot.game = game;
-			players.add(bot);
-		}
-		// start with the required cards
-		Set<Card> chosen = new HashSet<>(required);
-		if (chosen.size() > 10) {
-			chosen = new HashSet<>((new ArrayList<>(chosen)).subList(0, 10));
-		}
-		// create a list of available kingdom cards to fill in the rest
-		Set<Card> available = new HashSet<>();
-		sets.forEach(available::addAll);
-		// take out the forbidden cards
-		available.removeAll(forbidden);
-		// shuffle and draw the remaining
-		List<Card> availableList = new ArrayList<>(available);
-		Collections.shuffle(availableList);
-		int toDraw = Math.max(10 - chosen.size(), 0);
-		chosen.addAll(availableList.subList(0, Math.min(toDraw, availableList.size())));
-		// if there are not 10, fill in the rest with the basic set
-		if (chosen.size() < 10) {
-			Set<Card> filler = new HashSet<>(Card.BASE_SET);
-			filler.removeAll(chosen);
-			List<Card> fillerList = new ArrayList<>(filler);
-			Collections.shuffle(fillerList);
-			chosen.addAll(fillerList.subList(0, 10 - chosen.size()));
-		}
-		// if Young Witch is in the supply, choose a bane card
-		Card baneCard = null;
-		if (chosen.contains(Card.YOUNG_WITCH)) {
-			// search through each set looking for a bane card
-			List<Set<Card>> potentialBaneSets = new ArrayList<>();
-			// start with the requested sets
-			potentialBaneSets.add(available);
-			// if a bane card can't be found in the requested sets, just find one from another set
-			potentialBaneSets.add(Card.BASE_SET);
-			potentialBaneSets.add(Card.INTRIGUE_SET);
-			potentialBaneSets.add(Card.SEASIDE_SET);
-			potentialBaneSets.add(Card.PROSPERITY_SET);
-			potentialBaneSets.add(Card.CORNUCOPIA_SET);
-			for (Set<Card> baneSet : potentialBaneSets) {
-				Set<Card> baneChoices = new HashSet<>(baneSet);
-				// make sure the bane card is a new 11th card
-				baneChoices.removeAll(chosen);
-				// make sure the bane card costs 2 or 3
-				for (Iterator<Card> iter = baneChoices.iterator(); iter.hasNext(); ) {
-					int baseCost = iter.next().cost();
-					if (!(baseCost == 2 || baseCost == 3)) {
-						iter.remove();
-					}
-				}
-				// if there are any potential bane cards
-				if (!baneChoices.isEmpty()) {
-					// choose one at random
-					List<Card> baneChoiceList = new ArrayList<>(baneChoices);
-					Collections.shuffle(baneChoiceList);
-					baneCard = baneChoiceList.get(0);
-					break;
-				}
-			}
-			if (baneCard == null) {
-				throw new IllegalStateException();
-			}
-			// add the bane card to the kingdom cards
-			chosen.add(baneCard);
-		}
-		// if tournament is in the supply, add prize cards
-		Set<Card> prizeCards = new HashSet<>();
-		if (chosen.contains(Card.TOURNAMENT)) {
-			prizeCards.addAll(Card.PRIZE_CARDS);
-		}
-		// basic cards
-		Set<Card> basicSet = new HashSet<>();
-		basicSet.add(Card.PROVINCE);
-		basicSet.add(Card.DUCHY);
-		basicSet.add(Card.ESTATE);
-		basicSet.add(Card.GOLD);
-		basicSet.add(Card.SILVER);
-		basicSet.add(Card.COPPER);
-		basicSet.add(Card.CURSE);
-		// somewhat-randomly choose whether to include platinum and colony
-		if (proportionDeterminedSufficient(chosen, Card.PROSPERITY_SET)) {
-			basicSet.add(Card.PLATINUM);
-			basicSet.add(Card.COLONY);
-		}
-		// somewhat-randomly choose whether to play with shelters
-		boolean usingShelters = proportionDeterminedSufficient(chosen, Card.DARK_AGES_SET);
-		// initialize the game with this kingdom and basic set
-		game.init(this, players, chosen, basicSet, baneCard, prizeCards, usingShelters);
-	}
-
-	/**
-	 * Returns true if the there are enough of the given card set's cards in the kingdom to use that set's custom rules.
-	 * This is always true if all cards in the kingdom are from that set, always false if none are, and random with
-	 * probability equal to the proportion of cards from that set otherwise.
-	 */
-	private boolean proportionDeterminedSufficient(Set<Card> kingdomCards, Set<Card> cardSet) {
-		int numFromSet = (int) kingdomCards.stream().filter(cardSet::contains).count();
-		return (int) (Math.random() * kingdomCards.size()) < numFromSet;
-	}
-
 	// record successful strategies that can be used by MimicBot
 	private Map<Set<Card>, List<Card>> winningStrategies = new HashMap<>();
 
-	void recordWinningStrategy(Set<Card> kingdom, List<Card> gainStrategy) {
+	synchronized void recordWinningStrategy(Set<Card> kingdom, List<Card> gainStrategy) {
 		winningStrategies.put(kingdom, gainStrategy);
+	}
+
+	synchronized boolean hasAnyWinningStrategy() {
+		return !winningStrategies.keySet().isEmpty();
+	}
+
+	synchronized Set<Card> randomWinningStrategyCardSet() {
+		List<Set<Card>> choices = new ArrayList<>(winningStrategies.keySet());
+		return choices.get((int) (Math.random() * choices.size()));
+	}
+
+	synchronized List<Card> winningStrategyForCardSet(Set<Card> cardSet) {
+		return winningStrategies.get(cardSet);
 	}
 
 	public static void main(String[] args) {

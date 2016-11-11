@@ -7,7 +7,7 @@ class GameLobby implements Comparable<GameLobby> {
 	public String name;
 	// the number of openings to fill before the game can begin
 	int numOpenings;
-	Set<Set<Card>> sets;
+	Set<Set<Card>> cardSets;
 	Set<Card> requiredCards;
 	Set<Card> forbiddenCards;
 	// the openings for players to join, null if open
@@ -15,10 +15,10 @@ class GameLobby implements Comparable<GameLobby> {
 	// the readiness of players to start the game
 	boolean[] isPlayerReady;
 
-	GameLobby(String name, int numOpenings, Set<Set<Card>> sets, Set<Card> requiredCards, Set<Card> forbiddenCards, List<Player> bots) {
+	GameLobby(String name, int numOpenings, Set<Set<Card>> cardSets, Set<Card> requiredCards, Set<Card> forbiddenCards, List<Player> bots) {
 		this.name = name;
 		this.numOpenings = numOpenings;
-		this.sets = sets;
+		this.cardSets = cardSets;
 		this.requiredCards = requiredCards;
 		this.forbiddenCards = forbiddenCards;
 		players = new Player[numOpenings];

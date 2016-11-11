@@ -4,6 +4,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+import bots.Mimic;
 import cards.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -114,7 +115,21 @@ public class Game implements Runnable {
 	public int messageIndent;
 	public boolean costModifierPlayedLastTurn;
 
-	void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
+	// setup conditions
+	private Set<Set<Card>> cardSets;
+	private Set<Card> requiredCards;
+	private Set<Card> forbiddenCards;
+
+	public Game(GameServer server, Set<Player> playerSet, Set<Set<Card>> cardSets, Set<Card> requiredCards, Set<Card> forbiddenCards) {
+		this.server = server;
+		playerSet.forEach(player -> player.game = this);
+		players = new ArrayList<>(playerSet);
+		this.cardSets = cardSets;
+		this.requiredCards = requiredCards;
+		this.forbiddenCards = forbiddenCards;
+	}
+
+	/*void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
 		this.server = server;
 		this.kingdomCards = kingdomCards;
 		this.basicCards = basicCards;
@@ -122,7 +137,7 @@ public class Game implements Runnable {
 		this.prizeCards = prizeCards;
 		this.usingShelters = usingShelters;
 		players = new ArrayList<>(playerSet);
-	}
+	}*/
 
 	@Override
 	public void run() {
@@ -138,20 +153,175 @@ public class Game implements Runnable {
 	}
 
 	private void setup() {
+		setupPlayers();
+		chooseCardsInGame();
+		setupSupply();
+		// randomize turn order
+		Collections.shuffle(players);
+		// send each player the initial game state
+		for (Player player : players) {
+			sendSupply(player);
+			player.startGame(usingShelters);
+			clearActions(player);
+			clearBuys(player);
+		}
+		// give each player a coin token if Baker is in play
+		if (kingdomCards.contains(Card.BAKER)) {
+			players.forEach(p -> p.addCoinTokens(1));
+		}
+		// start recording gain strategies
+		initRecords();
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setupPlayers() {
+		// send players to the game screen
+		JSONObject command = new JSONObject();
+		command.put("command", "enterGame");
+		players.forEach(p -> p.issueCommand(command));
+	}
+
+	private void chooseCardsInGame() {
+		// if there are any Mimic bots
+		if (players.stream().anyMatch(p -> p instanceof Mimic)) {
+			// if there is an available strategy
+			if (server.hasAnyWinningStrategy()) {
+				// pick a random card set with a strategy
+				requiredCards = server.randomWinningStrategyCardSet();
+				List<Card> strategy = server.winningStrategyForCardSet(requiredCards);
+				// set all bots to use the strategy for that set
+				players.forEach(player -> {
+					if (player instanceof Mimic) {
+						Mimic mimicBot = (Mimic) player;
+						mimicBot.setStrategy(strategy);
+					}
+				});
+			} else {
+				// if there is no available strategy, replace them all with BigMoney bots
+				int numToReplace = (int) players.stream()
+						.filter(p -> p instanceof Mimic)
+						.count();
+				players = players.stream()
+						.filter(p -> !(p instanceof Mimic))
+						.collect(Collectors.toList());
+				for (int n = 0; n < numToReplace; n++) {
+					Bot bot = new Bot();
+					bot.game = this;
+					players.add(bot);
+				}
+			}
+		}
+		// add the required cards for each bot, replacing any bot that can't have its required cards with a BigMoney bot
+		int numToReplace = 0;
+		for (Iterator<Player> iter = players.iterator(); iter.hasNext(); ) {
+			Player next = iter.next();
+			if (next instanceof Bot) {
+				Set<Card> requiredForBot = new HashSet<>(requiredCards);
+				requiredForBot.addAll(((Bot) next).required());
+				if (requiredForBot.size() > 10) {
+					iter.remove();
+					numToReplace++;
+				} else {
+					requiredCards = requiredForBot;
+				}
+			}
+		}
+		for (int n = 0; n < numToReplace; n++) {
+			Bot bot = new Bot();
+			bot.game = this;
+			players.add(bot);
+		}
+		// add all of the required cards to the kingdom
+		kingdomCards = new HashSet<>(requiredCards);
+		// if there are too many required cards, take the first 10
+		if (kingdomCards.size() > 10) {
+			kingdomCards = new HashSet<>((new ArrayList<>(kingdomCards)).subList(0, 10));
+		}
+		// create a list of available kingdom cards to fill in the rest
+		Set<Card> available = new HashSet<>();
+		cardSets.forEach(available::addAll);
+		// take out the forbidden cards
+		available.removeAll(forbiddenCards);
+		// shuffle and draw the remaining
+		List<Card> availableList = new ArrayList<>(available);
+		Collections.shuffle(availableList);
+		int toDraw = Math.max(10 - kingdomCards.size(), 0);
+		kingdomCards.addAll(availableList.subList(0, Math.min(toDraw, availableList.size())));
+		// if there are still not 10, fill in the rest with the basic set (completely overriding user requests)
+		if (kingdomCards.size() < 10) {
+			Set<Card> filler = new HashSet<>(Card.BASE_SET);
+			filler.removeAll(kingdomCards);
+			List<Card> fillerList = new ArrayList<>(filler);
+			Collections.shuffle(fillerList);
+			kingdomCards.addAll(fillerList.subList(0, 10 - kingdomCards.size()));
+		}
+		// if Young Witch is in the supply, choose a bane card
+		if (kingdomCards.contains(Card.YOUNG_WITCH)) {
+			// if there is no acceptable bane card in the requested sets, choose one from another set
+			Set<Card> backupBaneOptions = new HashSet<>();
+			Card.setsByName.values().forEach(backupBaneOptions::addAll);
+			for (Set<Card> baneSet : Arrays.asList(available, backupBaneOptions)) {
+				Set<Card> baneChoices = new HashSet<>(baneSet);
+				// the bane card must be a new 11th card (not one of the 10 kingdom cards already chosen)
+				baneChoices.removeAll(kingdomCards);
+				// make sure the bane card costs 2 or 3
+				List<Card> baneChoicesList = baneChoices.stream()
+						.filter(c -> c.cost() == 2 || c.cost() == 3)
+						.collect(Collectors.toList());
+				// if there are any acceptable bane cards
+				if (!baneChoicesList.isEmpty()) {
+					// choose one at random
+					baneCard = baneChoicesList.get((int) (Math.random() * baneChoicesList.size()));
+					break;
+				}
+			}
+			// if Young Witch is in the kingdom, a bane card must be chosen
+			if (baneCard == null) {
+				throw new IllegalStateException();
+			}
+			// add the bane card to the kingdom cards
+			kingdomCards.add(baneCard);
+		}
+		// if tournament is in the supply, add prize cards
+		prizeCards = new HashSet<>();
+		if (kingdomCards.contains(Card.TOURNAMENT)) {
+			prizeCards.addAll(Card.PRIZE_CARDS);
+		}
+		// basic cards
+		basicCards = new HashSet<>(Card.BASIC_CARDS);
+		// somewhat-randomly choose whether to include platinum and colony
+		if (proportionDeterminedSufficient(kingdomCards, Card.PROSPERITY_SET)) {
+			basicCards.addAll(Card.PROSPERITY_BASIC_CARDS);
+		}
+		// somewhat-randomly choose whether to play with shelters
+		usingShelters = proportionDeterminedSufficient(kingdomCards, Card.DARK_AGES_SET);
+	}
+
+	/**
+	 * Returns true if the there are enough of the given card set's cards in the kingdom to use that set's custom rules.
+	 * This is always true if all cards in the kingdom are from that set, always false if none are, and random with
+	 * probability equal to the proportion of cards from that set otherwise.
+	 */
+	private boolean proportionDeterminedSufficient(Set<Card> kingdomCards, Set<Card> cardSet) {
+		int numFromSet = (int) kingdomCards.stream().filter(cardSet::contains).count();
+		return (int) (Math.random() * kingdomCards.size()) < numFromSet;
+	}
+
+	private void setupSupply() {
 		// remove Knights placeholder card and set up mixed Knight pile
 		if (kingdomCards.contains(Card.KNIGHTS)) {
 			kingdomCards.remove(Card.KNIGHTS);
-			initKnightPile();
+			setupKnightPile();
 		}
 		// initialize kingdom piles
 		for (Card card : kingdomCards) {
 			supply.put(card, card.startingSupply(players.size()));
 		}
 		// initialize non-supply piles
-		initNonSupply();
+		setupNonSupply();
 		// initialize ruins pile
 		if (kingdomCards.stream().anyMatch(c -> c.isLooter)) {
-			initRuinsPile();
+			setupRuinsPile();
 		}
 		// initialize basic piles
 		for (Card card : basicCards) {
@@ -168,23 +338,17 @@ public class Game implements Runnable {
 		if (supply.containsKey(Card.TRADE_ROUTE)) {
 			tradeRouteTokenedPiles = supply.keySet().stream().filter(c -> c.isVictory).collect(Collectors.toSet());
 		}
-		// randomize turn order
-		Collections.shuffle(players);
-		for (Player player : players) {
-			sendSupply(player);
-			player.startGame(usingShelters);
-			clearActions(player);
-			clearBuys(player);
-		}
-		// give each player a coin token if Baker is in play
-		if (kingdomCards.contains(Card.BAKER)) {
-			players.forEach(p -> p.addCoinTokens(1));
-		}
-		// start recording gain strategies
-		initRecords();
 	}
 
-	private void initRuinsPile() {
+	private void setupKnightPile() {
+		// add one of each Knight
+		List<Card> knightPile = new ArrayList<>(Card.KNIGHT_CARDS);
+		// shuffle
+		Collections.shuffle(knightPile);
+		mixedPiles.put(Card.MixedPileId.KNIGHTS, knightPile);
+	}
+
+	private void setupRuinsPile() {
 		List<Card> ruinsPile = new ArrayList<>();
 		// add 10 of each ruins card
 		for (Card ruinsCard : Card.RUINS_CARDS) {
@@ -198,15 +362,7 @@ public class Game implements Runnable {
 		mixedPiles.put(Card.MixedPileId.RUINS, ruinsPile);
 	}
 
-	private void initKnightPile() {
-		// add one of each Knight
-		List<Card> knightPile = new ArrayList<>(Card.KNIGHT_CARDS);
-		// shuffle
-		Collections.shuffle(knightPile);
-		mixedPiles.put(Card.MixedPileId.KNIGHTS, knightPile);
-	}
-
-	private void initNonSupply() {
+	private void setupNonSupply() {
 		if (kingdomCards.contains(Card.HERMIT)) {
 			nonSupply.put(Card.MADMAN, 10);
 		}

@@ -92,21 +92,17 @@ public class Player {
 
 	@SuppressWarnings("unchecked")
 	public synchronized void issueCommands() {
-		if (!forfeit && commands.size() > 0) {
-			JSONArray commandArray = new JSONArray();
-			for (JSONObject command : commands) {
-				commandArray.add(command);
-			}
-			commands.clear();
-			conn.send(commandArray.toJSONString());
+		if (forfeit || commands.isEmpty()) {
+			return;
 		}
+		JSONArray commandArray = new JSONArray();
+		commands.forEach(commandArray::add);
+		commands.clear();
+		conn.send(commandArray.toJSONString());
 	}
 
-	public void receiveResponse(Object response) {
-		// blocking queue cannot accept null
-		if (response != null) {
-			responses.add(response);
-		}
+	void receiveResponse(Object response) {
+		responses.add(response);
 	}
 
 	public String username;
