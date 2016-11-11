@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -43,7 +44,7 @@ public class Replace extends Card {
                 }
                 // if it is a victory card, every other player gains a curse
                 if (toGain.isVictory) {
-                    junkingAttack(targets, game, Card.CURSE);
+                    junkingAttack(targets, game, Cards.CURSE);
                 }
             } else {
                 game.messageAll("gaining nothing");

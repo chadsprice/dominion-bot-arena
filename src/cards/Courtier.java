@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -41,7 +38,7 @@ public class Courtier extends Card {
                         plusCoins(player, game, 3);
                         break;
                     default: // case 3
-                        gain(player, game, Card.GOLD);
+                        gain(player, game, Cards.GOLD);
                 }
             }
         } else {

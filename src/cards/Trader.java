@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -20,13 +21,13 @@ public class Trader extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         if (!player.getHand().isEmpty()) {
-            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Trader: Choose a card to trash, and gain a number of Silvers equal to its cost in coins.");
-            int numSilvers = Math.min(toTrash.cost(game), game.supply.get(Card.SILVER));
-            game.messageAll("trashing " + toTrash + " and gaining " + Card.SILVER.htmlName(numSilvers));
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": Choose a card to trash, and gain a number of Silvers equal to its cost in coins.");
+            int numSilvers = Math.min(toTrash.cost(game), game.supply.get(Cards.SILVER));
+            game.messageAll("trashing " + toTrash + " and gaining " + Cards.SILVER.htmlName(numSilvers));
             player.removeFromHand(toTrash);
             game.trash(player, toTrash);
             for (int i = 0; i < numSilvers; i++) {
-                game.gain(player, Card.SILVER);
+                game.gain(player, Cards.SILVER);
             }
         } else {
             game.messageAll("having no card in hand to trash");

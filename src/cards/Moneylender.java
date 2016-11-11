@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class Moneylender extends Card {
 
@@ -19,12 +16,12 @@ public class Moneylender extends Card {
 	@Override
 	public void onPlay(Player player, Game game) {
 		// if you have a Copper in hand
-		if (player.getHand().contains(Card.COPPER)) {
+		if (player.getHand().contains(Cards.COPPER)) {
 			// you may choose to trash it for +$3
             if (chooseTrashCopper(player, game)) {
-                game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
-                player.removeFromHand(Card.COPPER);
-                game.trash(player, Card.COPPER);
+                game.messageAll("trashing " + Cards.COPPER.htmlName() + " for +$3");
+                player.removeFromHand(Cards.COPPER);
+                game.trash(player, Cards.COPPER);
                 player.addCoins(3);
             } else {
                 game.messageAll("trashing nothing");
@@ -36,7 +33,7 @@ public class Moneylender extends Card {
 		if (player instanceof Bot) {
 			return ((Bot) player).moneylenderTrashCopper();
 		}
-		int choice = game.promptMultipleChoice(player, "Moneylender: Trash " + Card.COPPER.htmlName() + " for +$3?", new String[] {"Yes", "No"});
+		int choice = game.promptMultipleChoice(player, "Moneylender: Trash " + Cards.COPPER.htmlName() + " for +$3?", new String[] {"Yes", "No"});
 		return (choice == 0);
 	}
 	

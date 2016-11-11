@@ -93,46 +93,46 @@ public class Bot extends Player {
 	public List<Card> gainPriority() {
 		// based on WanderingWinder's "Big Money" bot
 		List<Card> priority = new ArrayList<>();
-		if (game.supply.containsKey(Card.COLONY)) {
+		if (game.supply.containsKey(Cards.COLONY)) {
 			if (getTotalMoney() > 32) {
-				priority.add(Card.COLONY);
+				priority.add(Cards.COLONY);
 			}
 			if (gainsToEndGame() <= 6) {
-				priority.add(Card.PROVINCE);
+				priority.add(Cards.PROVINCE);
 			}
 			if (gainsToEndGame() <= 5) {
-				priority.add(Card.DUCHY);
+				priority.add(Cards.DUCHY);
 			}
 			if (gainsToEndGame() <= 2) {
-				priority.add(Card.ESTATE);
+				priority.add(Cards.ESTATE);
 			}
-			priority.add(Card.PLATINUM);
-			if (countInSupply(Card.COLONY) <= 7) {
-				priority.add(Card.PROVINCE);
+			priority.add(Cards.PLATINUM);
+			if (countInSupply(Cards.COLONY) <= 7) {
+				priority.add(Cards.PROVINCE);
 			}
-			priority.add(Card.GOLD);
+			priority.add(Cards.GOLD);
 			if (gainsToEndGame() <= 6) {
-				priority.add(Card.DUCHY);
+				priority.add(Cards.DUCHY);
 			}
-			priority.add(Card.SILVER);
+			priority.add(Cards.SILVER);
 			if (gainsToEndGame() <= 2) {
-				priority.add(Card.COPPER);
+				priority.add(Cards.COPPER);
 			}
 		} else {
 			if (getTotalMoney() > 18) {
-				priority.add(Card.PROVINCE);
+				priority.add(Cards.PROVINCE);
 			}
 			if (gainsToEndGame() <= 4) {
-				priority.add(Card.DUCHY);
+				priority.add(Cards.DUCHY);
 			}
 			if (gainsToEndGame() <= 2) {
-				priority.add(Card.ESTATE);
+				priority.add(Cards.ESTATE);
 			}
-			priority.add(Card.GOLD);
+			priority.add(Cards.GOLD);
 			if (gainsToEndGame() <= 6) {
-				priority.add(Card.DUCHY);
+				priority.add(Cards.DUCHY);
 			}
-			priority.add(Card.SILVER);
+			priority.add(Cards.SILVER);
 		}
 		return priority;
 	}
@@ -160,9 +160,9 @@ public class Bot extends Player {
 			gains += piles.get(i);
 		}
 		// compare that to the number of provinces and colonies remaining
-		gains = Math.min(gains, game.supply.get(Card.PROVINCE));
-		if (game.supply.containsKey(Card.COLONY)) {
-			gains = Math.min(gains, game.supply.get(Card.COLONY));
+		gains = Math.min(gains, game.supply.get(Cards.PROVINCE));
+		if (game.supply.containsKey(Cards.COLONY)) {
+			gains = Math.min(gains, game.supply.get(Cards.COLONY));
 		}
 		return gains;
 	}
@@ -191,8 +191,8 @@ public class Bot extends Player {
 	}
 
 	Card chooseOpponentGainFromSupply(Set<Card> choiceSet) {
-		if (choiceSet.contains(Card.CURSE)) {
-			return Card.CURSE;
+		if (choiceSet.contains(Cards.CURSE)) {
+			return Cards.CURSE;
 		} else {
 			return choiceSet.iterator().next();
 		}
@@ -229,34 +229,34 @@ public class Bot extends Player {
 	}
 
 	private boolean isFreeCantrip(Card card) {
-		Card[] freeCantrips = new Card[] {Card.VILLAGE, Card.SPY, Card.FESTIVAL, Card.LABORATORY, Card.MARKET,
-				Card.GREAT_HALL, Card.WISHING_WELL, Card.MINING_VILLAGE,
-				Card.PEARL_DIVER, Card.CARAVAN, Card.BAZAAR, Card.TREASURY,
-				Card.WORKERS_VILLAGE, Card.CITY, Card.GRAND_MARKET, Card.PEDDLER};
+		Card[] freeCantrips = new Card[] {Cards.VILLAGE, Cards.SPY, Cards.FESTIVAL, Cards.LABORATORY, Cards.MARKET,
+				Cards.GREAT_HALL, Cards.WISHING_WELL, Cards.MINING_VILLAGE,
+				Cards.PEARL_DIVER, Cards.CARAVAN, Cards.BAZAAR, Cards.TREASURY,
+				Cards.WORKERS_VILLAGE, Cards.CITY, Cards.GRAND_MARKET, Cards.PEDDLER};
 		for (Card freeCantrip : freeCantrips) {
 			if (card == freeCantrip) {
 				return true;
 			}
 		}
 		// conspirator is a free cantrip if it will be the third action played (or more)
-		return card == Card.CONSPIRATOR && this.game.actionsPlayedThisTurn >= 2;
+		return card == Cards.CONSPIRATOR && this.game.actionsPlayedThisTurn >= 2;
 	}
 
 	private boolean hasNoBenefit(Card card) {
 		// if playing this card will get conspirator to become a cantrip, then that is a benefit
-		if (getActions() - this.game.actionsPlayedThisTurn >= 3 && getHand().contains(Card.CONSPIRATOR)) {
+		if (getActions() - this.game.actionsPlayedThisTurn >= 3 && getHand().contains(Cards.CONSPIRATOR)) {
 			return false;
 		}
-		if (card == Card.CELLAR) {
+		if (card == Cards.CELLAR) {
 			// Cellar has no benefit if you do not want to discard anything
 			return chooseToDiscard(getHand()) == null;
-		} else if (card == Card.CHAPEL) {
+		} else if (card == Cards.CHAPEL) {
 			// Chapel has no benefit if you do not want to trash anything
 			return chooseToTrash(new HashSet<>(getHand())) == null;
-		} else if (card == Card.MONEYLENDER) {
+		} else if (card == Cards.MONEYLENDER) {
 			// Moneylender has no benefit if you have no copper
-			return !getHand().contains(Card.COPPER);
-		} else if (card == Card.THRONE_ROOM) {
+			return !getHand().contains(Cards.COPPER);
+		} else if (card == Cards.THRONE_ROOM) {
 			// Throne Room has no benefit if you have no other actions
 			int numActions = 0;
 			for (Card cardInHand : getHand()) {
@@ -265,10 +265,10 @@ public class Bot extends Player {
 				}
 			}
 			return numActions >= 2;
-		} else if (card == Card.LIBRARY) {
+		} else if (card == Cards.LIBRARY) {
 			// Library has no benefit if you already have more than 7 cards in hand
 			return getHand().size() > 7;
-		} else if (card == Card.MINE) {
+		} else if (card == Cards.MINE) {
 			// Mine has no benefit if you have no treasure cards in hand
 			for (Card cardInHand : getHand()) {
 				if (cardInHand.isTreasure) {
@@ -276,46 +276,46 @@ public class Bot extends Player {
 				}
 			}
 			return true;
-		} else if (card == Card.COPPERSMITH) {
+		} else if (card == Cards.COPPERSMITH) {
 			// Coppersmith has no benefit if you have no Copper in hand
-			return !getHand().contains(Card.COPPER);
-		} else if (card == Card.TRADING_POST) {
+			return !getHand().contains(Cards.COPPER);
+		} else if (card == Cards.TRADING_POST) {
 			// Trading Post has no benefit if you cannot trash two cards from your hand (after playing it)
 			return getHand().size() < 3;
-		} else if (card == Card.AMBASSADOR) {
+		} else if (card == Cards.AMBASSADOR) {
 			// Ambassador has no benefit if you do not want to trash anything
 			return chooseToTrash(new HashSet<>(getHand())) == null;
-		} else if (card == Card.SMUGGLERS) {
+		} else if (card == Cards.SMUGGLERS) {
 			// Smugglers has no benefit if you can't smuggle anything you want
-			Smugglers SMUGGLERS = (Smugglers) Card.SMUGGLERS;
+			Smugglers SMUGGLERS = (Smugglers) Cards.SMUGGLERS;
 			return chooseGainFromSupply(SMUGGLERS.smuggleable(this, game), false) == null;
-		} else if (card == Card.TREASURE_MAP) {
+		} else if (card == Cards.TREASURE_MAP) {
 			// Treasure map has no benefit if you don't have another treasure map to trash
 			int numTreasureMaps = 0;
 			for (Card cardInHand : getHand()) {
-				if (cardInHand == Card.TREASURE_MAP) {
+				if (cardInHand == Cards.TREASURE_MAP) {
 					numTreasureMaps++;
 				}
 			}
 			return numTreasureMaps < 2;
-		} else if (card == Card.OUTPOST) {
+		} else if (card == Cards.OUTPOST) {
 			// Outpost has no benefit if you are already getting an extra turn, or if this is an extra turn
 			return hasExtraTurn() || isTakingExtraTurn();
-		} else if (card == Card.TACTICIAN) {
+		} else if (card == Cards.TACTICIAN) {
 			// Tactician has no benefit if you have no other cards to discard
 			return getHand().size() == 1;
-		} else if (card == Card.WATCHTOWER) {
+		} else if (card == Cards.WATCHTOWER) {
 			// Watchtower has no benefit if you have 6 or more cards in hand (after playing it)
 			return getHand().size() > 6;
-		} else if (card == Card.COUNTING_HOUSE) {
+		} else if (card == Cards.COUNTING_HOUSE) {
 			// Counting house has no benefit if you have no copper in your discard
-			return !getDiscard().contains(Card.COPPER);
-		} else if (card == Card.MINT) {
+			return !getDiscard().contains(Cards.COPPER);
+		} else if (card == Cards.MINT) {
 			// Mint has no benefit if you have no treasure in your hand (exactly like Mine)
-			return hasNoBenefit(Card.MINE);
-		} else if (card == Card.KINGS_COURT) {
+			return hasNoBenefit(Cards.MINE);
+		} else if (card == Cards.KINGS_COURT) {
 			// King's Court has no benefit if you have no other actions (exactly like Throne Room)
-			return hasNoBenefit(Card.THRONE_ROOM);
+			return hasNoBenefit(Cards.THRONE_ROOM);
 		}
 		return false;
 	}
@@ -362,8 +362,8 @@ public class Bot extends Player {
 	}
 
 	Card chooseRevealAttackReaction(Set<Card> choiceSet) {
-		if (choiceSet.contains(Card.MOAT)) {
-			return Card.MOAT;
+		if (choiceSet.contains(Cards.MOAT)) {
+			return Cards.MOAT;
 		} else {
 			return null;
 		}
@@ -398,7 +398,7 @@ public class Bot extends Player {
 	}
 
 	public boolean wantToDiscard(Card card) {
-		return card == Card.CURSE || card.isVictory;
+		return card == Cards.CURSE || card.isVictory;
 	}
 
 	List<Card> trashNumber(int number, boolean isMandatory) {
@@ -435,13 +435,13 @@ public class Bot extends Player {
 
 	public List<Card> trashPriority() {
 		List<Card> priority = new ArrayList<>();
-		priority.add(Card.CURSE);
-		priority.add(Card.OVERGROWN_ESTATE);
+		priority.add(Cards.CURSE);
+		priority.add(Cards.OVERGROWN_ESTATE);
 		if (gainsToEndGame() > 4) {
-			priority.add(Card.ESTATE);
+			priority.add(Cards.ESTATE);
 		}
 		if (getTotalMoney() > 4) {
-			priority.add(Card.COPPER);
+			priority.add(Cards.COPPER);
 		}
 		return priority;
 	}
@@ -530,12 +530,12 @@ public class Bot extends Player {
 
     public Card mineTrash(Set<Card> trashable) {
         // upgrade the most expensive treasure possible
-        if (trashable.contains(Card.GOLD) && game.isAvailableInSupply(Card.PLATINUM)) {
-            return Card.GOLD;
-        } else if (trashable.contains(Card.SILVER) && game.isAvailableInSupply(Card.GOLD)) {
-            return Card.SILVER;
-        } else if (trashable.contains(Card.COPPER) && game.isAvailableInSupply(Card.SILVER)) {
-            return Card.COPPER;
+        if (trashable.contains(Cards.GOLD) && game.isAvailableInSupply(Cards.PLATINUM)) {
+            return Cards.GOLD;
+        } else if (trashable.contains(Cards.SILVER) && game.isAvailableInSupply(Cards.GOLD)) {
+            return Cards.SILVER;
+        } else if (trashable.contains(Cards.COPPER) && game.isAvailableInSupply(Cards.SILVER)) {
+            return Cards.COPPER;
         } else {
             // if there is no basic upgrade available, trash nothing
             return null;
@@ -575,7 +575,7 @@ public class Bot extends Player {
 
     public boolean thiefGainTrashed(Card trashed) {
         // gain any non-Copper treasure
-        return trashed != Card.COPPER;
+        return trashed != Cards.COPPER;
     }
 
     public boolean lurkerTrashOverGain() {
@@ -635,7 +635,7 @@ public class Bot extends Player {
 
 	public boolean minionCoinOverAttack() {
 		// take the $2 if you have another Minion in hand to chain into
-		return getHand().contains(Card.MINION);
+		return getHand().contains(Cards.MINION);
 	}
 
 	public boolean torturerDiscardTwoOverTakingCurse() {
@@ -683,7 +683,7 @@ public class Bot extends Player {
 		if (numActions < getActions()) {
 			// discard a curse or plain victory card for +1 action
 			for (Card card : getHand()) {
-				if (card == Card.CURSE || isPlainVictory(card)) {
+				if (card == Cards.CURSE || isPlainVictory(card)) {
 					return card;
 				}
 			}
@@ -796,8 +796,8 @@ public class Bot extends Player {
 
 	public Card stablesDiscard(Set<Card> treasures) {
 		// discarding a Copper for +3 cards is probably beneficial for BigMoney
-		if (treasures.contains(Card.COPPER)) {
-			return Card.COPPER;
+		if (treasures.contains(Cards.COPPER)) {
+			return Cards.COPPER;
 		} else {
 			return null;
 		}
@@ -825,7 +825,7 @@ public class Bot extends Player {
 
 	public boolean marketSquareDiscard() {
 		// only discard a market square if your will gain a gold
-		return game.supply.get(Card.GOLD) != 0;
+		return game.supply.get(Cards.GOLD) != 0;
 	}
 
 	public boolean ironmongerDiscardTopOfDeck(Card card) {
@@ -882,12 +882,12 @@ public class Bot extends Player {
 
 	public boolean graverobberGain() {
 		// only gain Gold from the trash (unlikely)
-		return game.getTrash().stream().anyMatch(c -> c == Card.GOLD);
+		return game.getTrash().stream().anyMatch(c -> c == Cards.GOLD);
 	}
 
 	public boolean huntingGroundsGainDuchy() {
 		// gain a Duchy if there are any in the supply, otherwise gain 3 Estates
-		return game.supply.get(Card.DUCHY) != 0;
+		return game.supply.get(Cards.DUCHY) != 0;
 	}
 
 	public Hermit.CardFromDiscardOrHand hermitTrash(Set<Card> trashableFromDiscard, Set<Card> trashableFromHand) {
@@ -948,8 +948,8 @@ public class Bot extends Player {
 
 	public Card plazaDiscard(Set<Card> discardable) {
 		// discarding a Copper for a coin token is always beneficial
-		if (discardable.contains(Card.COPPER)) {
-			return Card.COPPER;
+		if (discardable.contains(Cards.COPPER)) {
+			return Cards.COPPER;
 		} else {
 			return null;
 		}

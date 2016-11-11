@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -31,10 +32,10 @@ public class Embassy extends Card {
     public void onGain(Player player, Game game) {
         // each other player gains a Silver
         game.getOpponents(player).forEach(opponent -> {
-            if (game.supply.get(Card.SILVER) != 0) {
-                game.message(opponent, "You gain " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
-                game.messageOpponents(opponent, opponent.username + " gains " + Card.SILVER.htmlName() + " because of " + Card.EMBASSY.htmlNameRaw());
-                game.gain(opponent, Card.SILVER);
+            if (game.supply.get(Cards.SILVER) != 0) {
+                game.message(opponent, "You gain " + Cards.SILVER.htmlName() + " because of " + this.htmlNameRaw());
+                game.messageOpponents(opponent, opponent.username + " gains " + Cards.SILVER.htmlName() + " because of " + this.htmlNameRaw());
+                game.gain(opponent, Cards.SILVER);
             }
         });
     }

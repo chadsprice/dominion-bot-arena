@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -21,13 +22,13 @@ public class Soothsayer extends Card {
     @Override
     public void onAttack(Player player, Game game, List<Player> targets) {
         // gain a Gold
-        gain(player, game, Card.GOLD);
+        gain(player, game, Cards.GOLD);
         // each other player gains a Curse
         targets.forEach(target -> {
-            if (game.isAvailableInSupply(Card.CURSE)) {
-                game.message(target, "You gain " + Card.CURSE.htmlName());
-                game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
-                game.gain(target, Card.CURSE);
+            if (game.isAvailableInSupply(Cards.CURSE)) {
+                game.message(target, "You gain " + Cards.CURSE.htmlName());
+                game.messageOpponents(target, target.username + " gains " + Cards.CURSE.htmlName());
+                game.gain(target, Cards.CURSE);
                 // each player who gain a Curse draws a card
                 game.messageIndent++;
                 plusCards(target, game, 1);

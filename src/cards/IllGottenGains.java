@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class IllGottenGains extends Card {
 
@@ -23,10 +20,10 @@ public class IllGottenGains extends Card {
 
     @Override
     public void onPlay(Player player, Game game) {
-        if (game.supply.get(Card.COPPER) != 0 && chooseGainCopper(player, game)) {
-            game.message(player, "gaining " + Card.COPPER.htmlName() + ", putting it into your hand");
-            game.messageOpponents(player, "gaining " + Card.COPPER.htmlName() + ", putting it into their hand");
-            game.gainToHand(player, Card.COPPER);
+        if (game.supply.get(Cards.COPPER) != 0 && chooseGainCopper(player, game)) {
+            game.message(player, "gaining " + Cards.COPPER.htmlName() + ", putting it into your hand");
+            game.messageOpponents(player, "gaining " + Cards.COPPER.htmlName() + ", putting it into their hand");
+            game.gainToHand(player, Cards.COPPER);
         }
     }
 
@@ -34,7 +31,7 @@ public class IllGottenGains extends Card {
         if (player instanceof Bot) {
             return ((Bot) player).illGottenGainsGainCopper();
         }
-        int choice = game.promptMultipleChoice(player, "Ill-Gotten Gains: Gain " + Card.COPPER.htmlName() + ", putting it into your hand?", new String[] {"Yes", "No"});
+        int choice = game.promptMultipleChoice(player, "Ill-Gotten Gains: Gain " + Cards.COPPER.htmlName() + ", putting it into your hand?", new String[] {"Yes", "No"});
         return (choice == 0);
     }
 
@@ -42,10 +39,10 @@ public class IllGottenGains extends Card {
     public void onGain(Player player, Game game) {
         // each other player gains a Curse
         game.getOpponents(player).forEach(opponent -> {
-            if (game.supply.get(Card.CURSE) != 0) {
-                game.message(opponent, "You gain " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
-                game.messageOpponents(opponent, opponent.username + " gains " + Card.CURSE.htmlName() + " because of " + Card.ILL_GOTTEN_GAINS.htmlNameRaw());
-                game.gain(opponent, Card.CURSE);
+            if (game.supply.get(Cards.CURSE) != 0) {
+                game.message(opponent, "You gain " + Cards.CURSE.htmlName() + " because of " + this.htmlNameRaw());
+                game.messageOpponents(opponent, opponent.username + " gains " + Cards.CURSE.htmlName() + " because of " + this.htmlNameRaw());
+                game.gain(opponent, Cards.CURSE);
             }
         });
     }

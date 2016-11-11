@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -26,10 +27,10 @@ public class BorderVillage extends Card {
     @Override
     public void onGain(Player player, Game game) {
         // gain a card costing less than this
-        Set<Card> gainable = game.cardsCostingAtMost(Card.BORDER_VILLAGE.cost(game) - 1);
+        Set<Card> gainable = game.cardsCostingAtMost(Cards.BORDER_VILLAGE.cost(game) - 1);
         if (!gainable.isEmpty()) {
             Card toGain = game.promptChooseGainFromSupply(player, gainable, "Border Village: Choose a card to gain.");
-            game.messageAll("gaining " + toGain.htmlName() + " because of " + Card.BORDER_VILLAGE.htmlNameRaw());
+            game.messageAll("gaining " + toGain.htmlName() + " because of " + Cards.BORDER_VILLAGE.htmlNameRaw());
             game.gain(player, toGain);
         }
     }

@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,17 +21,17 @@ public class Tournament extends Card {
         plusActions(player, game, 1);
         boolean playerRevealedProvince = false;
         boolean opponentRevealedProvince = false;
-        if (player.getHand().contains(Card.PROVINCE)) {
+        if (player.getHand().contains(Cards.PROVINCE)) {
             if (chooseRevealProvince(player, game)) {
-                game.messageAll("revealing " + Card.PROVINCE.htmlName());
+                game.messageAll("revealing " + Cards.PROVINCE.htmlName());
                 playerRevealedProvince = true;
             }
         }
         for (Player opponent : game.getOpponents(player)) {
-            if (opponent.getHand().contains(Card.PROVINCE)) {
+            if (opponent.getHand().contains(Cards.PROVINCE)) {
                 if (chooseRevealProvince(opponent, game)) {
-                    game.message(opponent, "You reveal " + Card.PROVINCE.htmlName());
-                    game.messageOpponents(opponent, opponent.username + " reveals " + Card.PROVINCE.htmlName());
+                    game.message(opponent, "You reveal " + Cards.PROVINCE.htmlName());
+                    game.messageOpponents(opponent, opponent.username + " reveals " + Cards.PROVINCE.htmlName());
                     opponentRevealedProvince = true;
                     // the outcome doesn't change if additional opponents reveal provinces
                     break;
@@ -42,19 +39,19 @@ public class Tournament extends Card {
             }
         }
         if (playerRevealedProvince) {
-            game.messageAll("discarding the " + Card.PROVINCE.htmlNameRaw());
-            player.putFromHandIntoDiscard(Card.PROVINCE);
-            Set<Card> gainable = new HashSet<Card>();
+            game.messageAll("discarding the " + Cards.PROVINCE.htmlNameRaw());
+            player.putFromHandIntoDiscard(Cards.PROVINCE);
+            Set<Card> gainable = new HashSet<>();
             gainable.addAll(game.prizeCards);
-            if (game.supply.get(Card.DUCHY) != 0) {
-                gainable.add(Card.DUCHY);
+            if (game.supply.get(Cards.DUCHY) != 0) {
+                gainable.add(Cards.DUCHY);
             }
             Card toGain = null;
             if (!gainable.isEmpty()) {
-                if (game.supply.get(Card.DUCHY) == 0 || game.prizeCards.isEmpty()) {
-                    toGain = game.promptChooseGainFromSupply(player, gainable, "Tournament: Choose a prize or " + Card.DUCHY.htmlNameRaw() + " to gain. (Or choose to gain nothing because one of those piles is empty.)", false, "Gain nothing");
+                if (game.supply.get(Cards.DUCHY) == 0 || game.prizeCards.isEmpty()) {
+                    toGain = game.promptChooseGainFromSupply(player, gainable, "Tournament: Choose a prize or " + Cards.DUCHY.htmlNameRaw() + " to gain. (Or choose to gain nothing because one of those piles is empty.)", false, "Gain nothing");
                 } else {
-                    toGain = game.promptChooseGainFromSupply(player, gainable, "Tournament: Choose a prize or " + Card.DUCHY.htmlNameRaw() + " to gain.");
+                    toGain = game.promptChooseGainFromSupply(player, gainable, "Tournament: Choose a prize or " + Cards.DUCHY.htmlNameRaw() + " to gain.");
                 }
             }
             if (toGain != null) {
@@ -75,7 +72,7 @@ public class Tournament extends Card {
         if (player instanceof Bot) {
             return ((Bot) player).tournamentRevealProvince();
         }
-        int choice = game.promptMultipleChoice(player, "Tournament: Reveal " + Card.PROVINCE.htmlName() + " from your hand?", new String[] {"Reveal", "Don't"});
+        int choice = game.promptMultipleChoice(player, "Tournament: Reveal " + Cards.PROVINCE.htmlName() + " from your hand?", new String[] {"Reveal", "Don't"});
         return (choice == 0);
     }
 

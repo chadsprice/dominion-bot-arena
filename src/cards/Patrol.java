@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -28,7 +29,7 @@ public class Patrol extends Card {
             game.messageIndent++;
             // put the revealed victory cards any Curses into your hand
             List<Card> toPutInHand = revealed.stream()
-                    .filter(c -> c.isVictory || c == Card.CURSE)
+                    .filter(c -> c.isVictory || c == Cards.CURSE)
                     .collect(Collectors.toList());
             if (!toPutInHand.isEmpty()) {
                 game.message(player, "putting " + Card.htmlList(toPutInHand) + " into your hand");

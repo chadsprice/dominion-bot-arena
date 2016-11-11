@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -25,7 +26,7 @@ public class Fortress extends Card {
     public boolean onTrashIsTrashed(Player player, Game game) {
         game.message(player, "putting the " + this.htmlNameRaw() + " into your hand");
         game.messageOpponents(player, "putting the " + this.htmlNameRaw() + " into their hand");
-        player.addToHand(isBandOfMisfits ? Card.BAND_OF_MISFITS : this);
+        player.addToHand(isBandOfMisfits ? Cards.BAND_OF_MISFITS : this);
         return false;
     }
 

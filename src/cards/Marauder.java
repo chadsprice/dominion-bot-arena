@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -22,9 +23,9 @@ public class Marauder extends Card {
     @Override
     public void onAttack(Player player, Game game, List<Player> targets) {
         // gain a Spoils
-        if (game.nonSupply.get(Card.SPOILS) != 0) {
-            game.messageAll("gaining " + Card.SPOILS.htmlName());
-            game.gain(player, Card.SPOILS);
+        if (game.nonSupply.get(Cards.SPOILS) != 0) {
+            game.messageAll("gaining " + Cards.SPOILS.htmlName());
+            game.gain(player, Cards.SPOILS);
         }
         // each other player gains a ruins
         targets.forEach(target -> {

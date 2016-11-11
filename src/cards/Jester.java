@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.List;
 
@@ -31,16 +28,13 @@ public class Jester extends Card {
                 game.messageOpponents(target, target.username + " draws and discards " + card.htmlName());
                 game.messageIndent++;
                 if (card.isVictory) {
-                    if (game.supply.get(Card.CURSE) != 0) {
-                        game.message(target, "You gain " + Card.CURSE.htmlName());
-                        game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
-                        game.gain(target, Card.CURSE);
-                    } else {
-                        game.message(target, "You gain " + Card.CURSE.htmlName());
-                        game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
+                    if (game.supply.get(Cards.CURSE) != 0) {
+                        game.message(target, "You gain " + Cards.CURSE.htmlName());
+                        game.messageOpponents(target, target.username + " gains " + Cards.CURSE.htmlName());
+                        game.gain(target, Cards.CURSE);
                     }
                 } else {
-                    if (game.supply.containsKey(card) && game.supply.get(card) != 0) {
+                    if (game.isAvailableInSupply(card)) {
                         if (chooseGainInsteadOfOpponent(player, game, card)) {
                             game.message(player, "You gain " + card.htmlName());
                             game.messageOpponents(player, player.username + " gains " + card.htmlName());
@@ -64,7 +58,7 @@ public class Jester extends Card {
         if (player instanceof Bot) {
             return ((Bot) player).jesterGainInsteadOfOpponent(card);
         }
-        int choice = game.promptMultipleChoice(player, "Jester: Gain " + card.htmlName() + ", or have your opponent gain it?", new String[] {"Gain", "Opponent gains"});
+        int choice = game.promptMultipleChoice(player, this.toString() + ": Gain " + card.htmlName() + ", or have your opponent gain it?", new String[] {"Gain", "Opponent gains"});
         return (choice == 0);
     }
 

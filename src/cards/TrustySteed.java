@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class TrustySteed extends Card {
 
@@ -31,7 +28,7 @@ public class TrustySteed extends Card {
                     plusCoins(player, game, 2);
                     break;
                 default: // 3
-                    gain(player, game, Card.SILVER, 4);
+                    gain(player, game, Cards.SILVER, 4);
                     game.message(player, "putting your deck into your discard pile");
                     game.messageOpponents(player, "putting their deck into their discard pile");
                     // this does not trigger the Tunnel reaction

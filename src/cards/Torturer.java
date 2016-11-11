@@ -2,10 +2,7 @@ package cards;
 
 import java.util.List;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class Torturer extends Card {
 
@@ -37,10 +34,10 @@ public class Torturer extends Card {
 				}
 			} else {
 				// gain a curse putting it into your hand
-				if (game.supply.get(Card.CURSE) != 0) {
-					game.message(target, "You gain " + Card.CURSE.htmlName() + " to your hand");
-					game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName() + " to their hand");
-					game.gainToHand(player, Card.CURSE);
+				if (game.supply.get(Cards.CURSE) != 0) {
+					game.message(target, "You gain " + Cards.CURSE.htmlName() + " to your hand");
+					game.messageOpponents(target, target.username + " gains " + Cards.CURSE.htmlName() + " to their hand");
+					game.gainToHand(player, Cards.CURSE);
 				} else {
 					game.message(target, "You gain nothing");
 					game.messageOpponents(target, target.username + " gains nothing");

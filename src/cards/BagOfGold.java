@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -19,9 +20,7 @@ public class BagOfGold extends Card {
     public void onPlay(Player player, Game game) {
         plusActions(player, game, 1);
         // gain a gold onto your deck
-        game.message(player, "gaining " + Card.GOLD + " onto your deck");
-        game.messageOpponents(player, "gaining " + Card.GOLD + " onto their deck");
-        game.gainToTopOfDeck(player, Card.GOLD);
+        gainOntoDeck(player, game, Cards.GOLD);
     }
 
     @Override

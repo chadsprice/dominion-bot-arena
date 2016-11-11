@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -23,7 +24,7 @@ public class Bureaucrat extends Card {
 	@Override
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		// gain a Silver
-		gainOntoDeck(player, game, Card.SILVER);
+		gainOntoDeck(player, game, Cards.SILVER);
 		// each other player puts a victory card from their hand on top of their deck or reveals a hand with no victory cards
 		for (Player target : targets) {
 			Set<Card> victoryCards = target.getHand().stream()

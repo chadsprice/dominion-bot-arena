@@ -2,6 +2,7 @@ package bots;
 
 import server.Bot;
 import server.Card;
+import server.Cards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,30 +20,30 @@ public class ChapelWitch extends Bot {
 	@Override
 	public List<Card> gainPriority() {
 		List<Card> priority = new ArrayList<>();
-		if (countInDeck(Card.PLATINUM) > 0) {
-			priority.add(Card.COLONY);
+		if (countInDeck(Cards.PLATINUM) > 0) {
+			priority.add(Cards.COLONY);
 		}
-		if (countInSupply(Card.COLONY) <= 6) {
-			priority.add(Card.PROVINCE);
+		if (countInSupply(Cards.COLONY) <= 6) {
+			priority.add(Cards.PROVINCE);
 		}
-		if (countInDeck(Card.WITCH) == 0) {
-			priority.add(Card.WITCH);
+		if (countInDeck(Cards.WITCH) == 0) {
+			priority.add(Cards.WITCH);
 		}
 		if (gainsToEndGame() <= 5) {
-			priority.add(Card.DUCHY);
+			priority.add(Cards.DUCHY);
 		}
 		if (gainsToEndGame() <= 2) {
-			priority.add(Card.ESTATE);
+			priority.add(Cards.ESTATE);
 		}
-		priority.add(Card.PLATINUM);
-		priority.add(Card.GOLD);
+		priority.add(Cards.PLATINUM);
+		priority.add(Cards.GOLD);
 		// if this bot somehow gets rid of its chapel later in the game, don't get another one
-		if (getCoins() <= 3 && countInDeck(Card.CHAPEL) == 0 && turns <= 2) {
-			priority.add(Card.CHAPEL);
+		if (getCoins() <= 3 && countInDeck(Cards.CHAPEL) == 0 && turns <= 2) {
+			priority.add(Cards.CHAPEL);
 		}
-		priority.add(Card.SILVER);
+		priority.add(Cards.SILVER);
 		if (gainsToEndGame() <= 3) {
-			priority.add(Card.COPPER);
+			priority.add(Cards.COPPER);
 		}
 		return priority;
 	}
@@ -50,15 +51,15 @@ public class ChapelWitch extends Bot {
 	@Override
 	public List<Card> trashPriority() {
 		List<Card> priority = new ArrayList<>();
-		priority.add(Card.CURSE);
+		priority.add(Cards.CURSE);
 		if (gainsToEndGame() > 4) {
-			priority.add(Card.ESTATE);
+			priority.add(Cards.ESTATE);
 		}
-		if (getTotalMoney() > 4 && !(countInDeck(Card.WITCH) == 0 && treasureInHand() == 5)) {
-			priority.add(Card.COPPER);
+		if (getTotalMoney() > 4 && !(countInDeck(Cards.WITCH) == 0 && treasureInHand() == 5)) {
+			priority.add(Cards.COPPER);
 		}
 		if (gainsToEndGame() > 2) {
-			priority.add(Card.ESTATE);
+			priority.add(Cards.ESTATE);
 		}
 		return priority;
 	}
@@ -75,7 +76,7 @@ public class ChapelWitch extends Bot {
 
 	@Override
 	public Set<Card> required() {
-		return new HashSet<>(Arrays.asList(Card.CHAPEL, Card.WITCH));
+		return new HashSet<>(Arrays.asList(Cards.CHAPEL, Cards.WITCH));
 	}
 
 }

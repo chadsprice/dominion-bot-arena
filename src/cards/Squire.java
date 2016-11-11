@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -30,9 +27,9 @@ public class Squire extends Card {
                 plusBuys(player, game, 2);
                 break;
             default: // 2
-                if (game.supply.get(Card.SILVER) != 0) {
-                    game.messageAll("gaining " + Card.SILVER.htmlName());
-                    game.gain(player, Card.SILVER);
+                if (game.supply.get(Cards.SILVER) != 0) {
+                    game.messageAll("gaining " + Cards.SILVER.htmlName());
+                    game.gain(player, Cards.SILVER);
                 } else {
                     game.messageAll("gaining nothing");
                 }

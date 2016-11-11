@@ -2,6 +2,7 @@ package bots;
 
 import server.Bot;
 import server.Card;
+import server.Cards;
 
 import java.util.*;
 
@@ -17,25 +18,25 @@ public class DoubleJack extends Bot {
         // based on rspeer's "DoubleJack" bot
         List<Card> priority = new ArrayList<>();
         if (getTotalMoney() > 15) {
-            priority.add(Card.PROVINCE);
+            priority.add(Cards.PROVINCE);
         }
         if (gainsToEndGame() <= 5) {
-            priority.add(Card.DUCHY);
+            priority.add(Cards.DUCHY);
         }
         if (gainsToEndGame() <= 5) {
-            priority.add(Card.ESTATE);
+            priority.add(Cards.ESTATE);
         }
-        priority.add(Card.GOLD);
-        if (countInDeck(Card.JACK_OF_ALL_TRADES) < 2) {
-            priority.add(Card.JACK_OF_ALL_TRADES);
+        priority.add(Cards.GOLD);
+        if (countInDeck(Cards.JACK_OF_ALL_TRADES) < 2) {
+            priority.add(Cards.JACK_OF_ALL_TRADES);
         }
-        priority.add(Card.SILVER);
+        priority.add(Cards.SILVER);
         return priority;
     }
 
     @Override
     public Set<Card> required() {
-        return Collections.singleton(Card.JACK_OF_ALL_TRADES);
+        return Collections.singleton(Cards.JACK_OF_ALL_TRADES);
     }
 
 }

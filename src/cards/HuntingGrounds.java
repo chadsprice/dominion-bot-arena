@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class HuntingGrounds extends Card {
 
@@ -24,16 +21,16 @@ public class HuntingGrounds extends Card {
     @Override
     public void onTrash(Player player, Game game) {
         if (chooseGainDuchy(player, game)) {
-            if (game.supply.get(Card.DUCHY) != 0) {
-                game.messageAll("gaining " + Card.DUCHY.htmlName() + " because of " + this.htmlNameRaw());
-                game.gain(player, Card.DUCHY);
+            if (game.supply.get(Cards.DUCHY) != 0) {
+                game.messageAll("gaining " + Cards.DUCHY.htmlName() + " because of " + this.htmlNameRaw());
+                game.gain(player, Cards.DUCHY);
             }
         } else {
-            int numEstates = Math.min(3, game.supply.get(Card.ESTATE));
+            int numEstates = Math.min(3, game.supply.get(Cards.ESTATE));
             if (numEstates != 0) {
-                game.messageAll("gaining " + Card.ESTATE.htmlName(numEstates) + " because of " + this.htmlNameRaw());
+                game.messageAll("gaining " + Cards.ESTATE.htmlName(numEstates) + " because of " + this.htmlNameRaw());
                 for (int i = 0; i < numEstates; i++) {
-                    game.gain(player, Card.ESTATE);
+                    game.gain(player, Cards.ESTATE);
                 }
             }
         }

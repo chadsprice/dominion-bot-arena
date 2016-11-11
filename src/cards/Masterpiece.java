@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -24,7 +25,7 @@ public class Masterpiece extends Card {
     @Override
     public void onOverpay(Player player, Game game, int amountOverpaid) {
         // gain a Silver per $1 overpaid
-        gain(player, game, Card.SILVER, amountOverpaid);
+        gain(player, game, Cards.SILVER, amountOverpaid);
     }
 
     @Override

@@ -3,6 +3,7 @@ package cards;
 import java.util.List;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -23,10 +24,10 @@ public class Cutpurse extends Card {
 		plusCoins(player, game, 2);
 		// targets discard a copper
 		for (Player target : targets) {
-			if (target.getHand().contains(Card.COPPER)) {
-				target.putFromHandIntoDiscard(Card.COPPER);
-				game.message(target, "You discard " + Card.COPPER.htmlName());
-				game.messageOpponents(target, target.username + " discards " + Card.COPPER.htmlName());
+			if (target.getHand().contains(Cards.COPPER)) {
+				target.putFromHandIntoDiscard(Cards.COPPER);
+				game.message(target, "You discard " + Cards.COPPER.htmlName());
+				game.messageOpponents(target, target.username + " discards " + Cards.COPPER.htmlName());
 			} else {
 				game.message(target, "You reveal " + Card.htmlList(target.getHand()));
 				game.messageOpponents(target, target.username + " reveals " + Card.htmlList(target.getHand()));

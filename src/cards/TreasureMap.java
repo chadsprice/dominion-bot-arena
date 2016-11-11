@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -34,12 +35,12 @@ public class TreasureMap extends Card {
 			// only if both treasure maps were trashed
 			if (movedToTrash) {
 				// gain up to 4 golds, putting them on top of your deck
-				int goldsToGain = Math.min(4, game.supply.get(Card.GOLD));
-				for (int i = 0; i < goldsToGain; i++) {
-					game.gainToTopOfDeck(player, Card.GOLD);
+				int goldsToGain = Math.min(4, game.supply.get(Cards.GOLD));
+				game.message(player, "gaining " + Cards.GOLD.htmlName(goldsToGain) + ", putting them on top of your deck");
+				game.messageOpponents(player, "gaining " + Cards.GOLD.htmlName(goldsToGain) + ", putting them on top of their deck");
+				for (int i = 0; i < 4 && game.supply.get(Cards.GOLD) != 0; i++) {
+					game.gainToTopOfDeck(player, Cards.GOLD);
 				}
-				game.message(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of your deck");
-				game.messageOpponents(player, "gaining " + Card.GOLD.htmlName(goldsToGain) + ", putting them on top of their deck");
 			}
 		} else {
 			game.messageAll("having no treasure map in hand");

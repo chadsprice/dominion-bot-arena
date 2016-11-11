@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -24,7 +25,7 @@ public class Vagrant extends Card {
         List<Card> drawn = player.takeFromDraw(1);
         if (!drawn.isEmpty()) {
             Card revealed = drawn.get(0);
-            if (revealed == Card.CURSE || revealed.isRuins || revealed.isShelter || revealed.isVictory) {
+            if (revealed == Cards.CURSE || revealed.isRuins || revealed.isShelter || revealed.isVictory) {
                 game.message(player, "drawing " + revealed.htmlName() + ", putting it into your hand");
                 game.messageOpponents(player, "drawing " + revealed.htmlName() + ", putting it into their hand");
                 player.addToHand(revealed);

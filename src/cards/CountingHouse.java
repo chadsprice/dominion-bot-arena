@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -19,7 +20,7 @@ public class CountingHouse extends Card {
 	public void onPlay(Player player, Game game) {
 		int numCoppersInDiscard = 0;
 		for (Card card : player.getDiscard()) {
-			if (card == Card.COPPER) {
+			if (card == Cards.COPPER) {
 				numCoppersInDiscard++;
 			}
 		}
@@ -28,17 +29,17 @@ public class CountingHouse extends Card {
 			for (int i = 0; i <= numCoppersInDiscard; i++) {
 				choices[i] = (numCoppersInDiscard - i) + "";
 			}
-			int choice = game.promptMultipleChoice(player, "Counting House: Put how many " + Card.COPPER.htmlNameRaw() + " cards from your discard into your hand?" , choices);
+			int choice = game.promptMultipleChoice(player, "Counting House: Put how many " + Cards.COPPER.htmlNameRaw() + " cards from your discard into your hand?" , choices);
 			int toTake = numCoppersInDiscard - choice;
 			if (toTake != 0) {
-				game.message(player, "revealing " + Card.COPPER.htmlName(toTake) + " from your discard and putting them into your hand");
-				game.messageOpponents(player, "revealing " + Card.COPPER.htmlName(toTake) + " from their discard and putting them into your hand");
-				player.removeFromDiscard(Card.COPPER, toTake);
-				player.addToHand(Card.COPPER, toTake);
+				game.message(player, "revealing " + Cards.COPPER.htmlName(toTake) + " from your discard and putting them into your hand");
+				game.messageOpponents(player, "revealing " + Cards.COPPER.htmlName(toTake) + " from their discard and putting them into your hand");
+				player.removeFromDiscard(Cards.COPPER, toTake);
+				player.addToHand(Cards.COPPER, toTake);
 			}
 		} else {
-			game.message(player, "having no " + Card.COPPER.htmlNameRaw() + " in your discard");
-			game.messageOpponents(player, "having no " + Card.COPPER.htmlNameRaw() + " in their discard");
+			game.message(player, "having no " + Cards.COPPER.htmlNameRaw() + " in your discard");
+			game.messageOpponents(player, "having no " + Cards.COPPER.htmlNameRaw() + " in their discard");
 		}
 	}
 

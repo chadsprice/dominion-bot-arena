@@ -3,6 +3,7 @@ package cards;
 import java.util.List;
 
 import server.Card;
+import server.Cards;
 
 public class Duke extends Card {
 
@@ -17,13 +18,9 @@ public class Duke extends Card {
 
 	@Override
 	public int victoryValue(List<Card> deck) {
-		int numDuchies = 0;
-		for (Card card : deck) {
-			if (card == Card.DUCHY) {
-				numDuchies++;
-			}
-		}
-		return numDuchies;
+		return (int) deck.stream()
+				.filter(c -> c == Cards.DUCHY)
+				.count();
 	}
 
 	@Override

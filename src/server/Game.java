@@ -60,17 +60,17 @@ public class Game implements Runnable {
 				}
 			};
 	private static int TREASURE_PLAY_ORDER_TYPE(Card card) {
-		if (card == Card.COUNTERFEIT) {
+		if (card == Cards.COUNTERFEIT) {
 			// play Couterfeit first because it gives you the opportunity to play other treasures twice
 			return 0;
-		} if (card == Card.CONTRABAND) {
+		} if (card == Cards.CONTRABAND) {
 			// play contraband early so opponents don't know exactly how much coin you have when they prohibit you
 			// from buying something
 			return 1;
-		} else if (card == Card.HORN_OF_PLENTY) {
+		} else if (card == Cards.HORN_OF_PLENTY) {
 			// play horn of plenty late to maximize its gaining potential
 			return 3;
-		} else if (card == Card.BANK) {
+		} else if (card == Cards.BANK) {
 			// play bank last to maximize its value
 			return 4;
 		} else {
@@ -129,16 +129,6 @@ public class Game implements Runnable {
 		this.forbiddenCards = forbiddenCards;
 	}
 
-	/*void init(GameServer server, Set<Player> playerSet, Set<Card> kingdomCards, Set<Card> basicCards, Card baneCard, Set<Card> prizeCards, boolean usingShelters) {
-		this.server = server;
-		this.kingdomCards = kingdomCards;
-		this.basicCards = basicCards;
-		this.baneCard = baneCard;
-		this.prizeCards = prizeCards;
-		this.usingShelters = usingShelters;
-		players = new ArrayList<>(playerSet);
-	}*/
-
 	@Override
 	public void run() {
 		setup();
@@ -166,7 +156,7 @@ public class Game implements Runnable {
 			clearBuys(player);
 		}
 		// give each player a coin token if Baker is in play
-		if (kingdomCards.contains(Card.BAKER)) {
+		if (kingdomCards.contains(Cards.BAKER)) {
 			players.forEach(p -> p.addCoinTokens(1));
 		}
 		// start recording gain strategies
@@ -249,17 +239,17 @@ public class Game implements Runnable {
 		kingdomCards.addAll(availableList.subList(0, Math.min(toDraw, availableList.size())));
 		// if there are still not 10, fill in the rest with the basic set (completely overriding user requests)
 		if (kingdomCards.size() < 10) {
-			Set<Card> filler = new HashSet<>(Card.BASE_SET);
+			Set<Card> filler = new HashSet<>(Cards.BASE_SET);
 			filler.removeAll(kingdomCards);
 			List<Card> fillerList = new ArrayList<>(filler);
 			Collections.shuffle(fillerList);
 			kingdomCards.addAll(fillerList.subList(0, 10 - kingdomCards.size()));
 		}
 		// if Young Witch is in the supply, choose a bane card
-		if (kingdomCards.contains(Card.YOUNG_WITCH)) {
+		if (kingdomCards.contains(Cards.YOUNG_WITCH)) {
 			// if there is no acceptable bane card in the requested sets, choose one from another set
 			Set<Card> backupBaneOptions = new HashSet<>();
-			Card.setsByName.values().forEach(backupBaneOptions::addAll);
+			Cards.setsByName.values().forEach(backupBaneOptions::addAll);
 			for (Set<Card> baneSet : Arrays.asList(available, backupBaneOptions)) {
 				Set<Card> baneChoices = new HashSet<>(baneSet);
 				// the bane card must be a new 11th card (not one of the 10 kingdom cards already chosen)
@@ -284,17 +274,17 @@ public class Game implements Runnable {
 		}
 		// if tournament is in the supply, add prize cards
 		prizeCards = new HashSet<>();
-		if (kingdomCards.contains(Card.TOURNAMENT)) {
-			prizeCards.addAll(Card.PRIZE_CARDS);
+		if (kingdomCards.contains(Cards.TOURNAMENT)) {
+			prizeCards.addAll(Cards.PRIZE_CARDS);
 		}
 		// basic cards
-		basicCards = new HashSet<>(Card.BASIC_CARDS);
+		basicCards = new HashSet<>(Cards.BASIC_CARDS);
 		// somewhat-randomly choose whether to include platinum and colony
-		if (proportionDeterminedSufficient(kingdomCards, Card.PROSPERITY_SET)) {
-			basicCards.addAll(Card.PROSPERITY_BASIC_CARDS);
+		if (proportionDeterminedSufficient(kingdomCards, Cards.PROSPERITY_SET)) {
+			basicCards.addAll(Cards.PROSPERITY_BASIC_CARDS);
 		}
 		// somewhat-randomly choose whether to play with shelters
-		usingShelters = proportionDeterminedSufficient(kingdomCards, Card.DARK_AGES_SET);
+		usingShelters = proportionDeterminedSufficient(kingdomCards, Cards.DARK_AGES_SET);
 	}
 
 	/**
@@ -309,8 +299,8 @@ public class Game implements Runnable {
 
 	private void setupSupply() {
 		// remove Knights placeholder card and set up mixed Knight pile
-		if (kingdomCards.contains(Card.KNIGHTS)) {
-			kingdomCards.remove(Card.KNIGHTS);
+		if (kingdomCards.contains(Cards.KNIGHTS)) {
+			kingdomCards.remove(Cards.KNIGHTS);
 			setupKnightPile();
 		}
 		// initialize kingdom piles
@@ -335,14 +325,14 @@ public class Game implements Runnable {
 			mixedPileEmbargoTokens.put(pileId, 0);
 		}
 		// initialize trade route tokens
-		if (supply.containsKey(Card.TRADE_ROUTE)) {
+		if (supply.containsKey(Cards.TRADE_ROUTE)) {
 			tradeRouteTokenedPiles = supply.keySet().stream().filter(c -> c.isVictory).collect(Collectors.toSet());
 		}
 	}
 
 	private void setupKnightPile() {
 		// add one of each Knight
-		List<Card> knightPile = new ArrayList<>(Card.KNIGHT_CARDS);
+		List<Card> knightPile = new ArrayList<>(Cards.KNIGHT_CARDS);
 		// shuffle
 		Collections.shuffle(knightPile);
 		mixedPiles.put(Card.MixedPileId.KNIGHTS, knightPile);
@@ -351,7 +341,7 @@ public class Game implements Runnable {
 	private void setupRuinsPile() {
 		List<Card> ruinsPile = new ArrayList<>();
 		// add 10 of each ruins card
-		for (Card ruinsCard : Card.RUINS_CARDS) {
+		for (Card ruinsCard : Cards.RUINS_CARDS) {
 			for (int i = 0; i < 10; i++) {
 				ruinsPile.add(ruinsCard);
 			}
@@ -363,15 +353,15 @@ public class Game implements Runnable {
 	}
 
 	private void setupNonSupply() {
-		if (kingdomCards.contains(Card.HERMIT)) {
-			nonSupply.put(Card.MADMAN, 10);
+		if (kingdomCards.contains(Cards.HERMIT)) {
+			nonSupply.put(Cards.MADMAN, 10);
 		}
-		if (kingdomCards.contains(Card.URCHIN)) {
-			nonSupply.put(Card.MERCENARY, 10);
+		if (kingdomCards.contains(Cards.URCHIN)) {
+			nonSupply.put(Cards.MERCENARY, 10);
 		}
 		// Spoils are necessary for Marauder, Bandit Camp, and Pillage
-		if (!Collections.disjoint(kingdomCards, Arrays.asList(Card.MARAUDER, Card.BANDIT_CAMP, Card.PILLAGE))) {
-			nonSupply.put(Card.SPOILS, 15);
+		if (!Collections.disjoint(kingdomCards, Arrays.asList(Cards.MARAUDER, Cards.BANDIT_CAMP, Cards.PILLAGE))) {
+			nonSupply.put(Cards.SPOILS, 15);
 		}
 	}
 
@@ -554,53 +544,53 @@ public class Game implements Runnable {
 			boughtVictoryCardThisTurn = true;
 		}
 		// if that card's pile was embargoed
-		if (embargoTokensOn(card) != 0 && supply.get(Card.CURSE) != 0) {
+		if (embargoTokensOn(card) != 0 && supply.get(Cards.CURSE) != 0) {
 			int numEmbargoTokens = embargoTokensOn(card);
-			int cursesToGain = Math.min(numEmbargoTokens, supply.get(Card.CURSE));
-			messageAll("gaining " + Card.CURSE.htmlName(cursesToGain));
-			for (int i = 0; i < numEmbargoTokens && supply.get(Card.CURSE) != 0; i++) {
-				gain(player, Card.CURSE);
+			int cursesToGain = Math.min(numEmbargoTokens, supply.get(Cards.CURSE));
+			messageAll("gaining " + Cards.CURSE.htmlName(cursesToGain));
+			for (int i = 0; i < numEmbargoTokens && supply.get(Cards.CURSE) != 0; i++) {
+				gain(player, Cards.CURSE);
 			}
 		}
 		// if the purchase can be affected by talisman
 		if (card.cost(this) <= 4 && !card.isVictory && isAvailableInSupply(card)) {
-			int numTalismans = numberInPlay(Card.TALISMAN);
+			int numTalismans = numberInPlay(Cards.TALISMAN);
 			// if the player has talismans in play
 			if (numTalismans != 0) {
 				if (supply.containsKey(card)) {
 					int copiesToGain = Math.min(numTalismans, supply.get(card));
 					if (copiesToGain == 1) {
-						messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
+						messageAll("gaining another " + card.htmlNameRaw() + " because of " + Cards.TALISMAN.htmlNameRaw());
 					} else {
-						messageAll("gaining another " + card.htmlName(copiesToGain) + " because of " + Card.TALISMAN.htmlNameRaw());
+						messageAll("gaining another " + card.htmlName(copiesToGain) + " because of " + Cards.TALISMAN.htmlNameRaw());
 					}
 					for (int i = 0; i < copiesToGain; i++) {
 						gain(player, card);
 					}
 				} else {
 					for (int i = 0; i < numTalismans && isAvailableInSupply(card); i++) {
-						messageAll("gaining another " + card.htmlNameRaw() + " because of " + Card.TALISMAN.htmlNameRaw());
+						messageAll("gaining another " + card.htmlNameRaw() + " because of " + Cards.TALISMAN.htmlNameRaw());
 						gain(player, card);
 					}
 				}
 			}
 		}
 		// if the purchase can be affected by hoard
-		if (card.isVictory && supply.get(Card.GOLD) != 0) {
+		if (card.isVictory && supply.get(Cards.GOLD) != 0) {
 			int numHoards = (int) currentPlayer().getPlay().stream()
 					.filter(c -> c instanceof Hoard)
 					.count();
 			// if the player has hoards in play
 			if (numHoards != 0) {
-				int goldsToGain = Math.min(numHoards, supply.get(Card.GOLD));
-				messageAll("gaining " + Card.GOLD.htmlName(goldsToGain) + " because of " + Card.HOARD.htmlNameRaw());
-				for (int i = 0; i < numHoards && supply.get(Card.GOLD) != 0; i++) {
-					gain(player, Card.GOLD);
+				int goldsToGain = Math.min(numHoards, supply.get(Cards.GOLD));
+				messageAll("gaining " + Cards.GOLD.htmlName(goldsToGain) + " because of " + Cards.HOARD.htmlNameRaw());
+				for (int i = 0; i < numHoards && supply.get(Cards.GOLD) != 0; i++) {
+					gain(player, Cards.GOLD);
 				}
 			}
 		}
 		// if the purchase was a Mint, trash all treasures in play
-		if (card == Card.MINT) {
+		if (card == Cards.MINT) {
 			List<Card> treasures = player.removeAllTreasuresFromPlay();
 			if (!treasures.isEmpty()) {
 				messageAll("trashing " + Card.htmlList(treasures) + " from play");
@@ -612,7 +602,7 @@ public class Game implements Runnable {
 				.filter(c -> c instanceof Goons)
 				.count();
 		if (numGoons != 0) {
-			messageAll("gaining +" + numGoons + " VP because of " + Card.GOONS.htmlNameRaw());
+			messageAll("gaining +" + numGoons + " VP because of " + Cards.GOONS.htmlNameRaw());
 			player.addVictoryTokens(numGoons);
 		}
 		// if the purchase can be affected by Hagglers
@@ -625,7 +615,7 @@ public class Game implements Runnable {
 			gainable = gainable.stream().filter(c -> !c.isVictory).collect(Collectors.toSet());
 			if (!gainable.isEmpty()) {
 				Card toGain = promptChooseGainFromSupply(player, gainable, "Haggler: Choose a card to gain.");
-				messageAll("gaining " + toGain.htmlName() + " because of " + Card.HAGGLER.htmlNameRaw());
+				messageAll("gaining " + toGain.htmlName() + " because of " + Cards.HAGGLER.htmlNameRaw());
 				gain(player, toGain);
 			} else {
 				break;
@@ -637,18 +627,18 @@ public class Game implements Runnable {
 				.count();
 		if (numMerchantGuilds != 0) {
 			// gain a coin token for each Merchant Guild
-			messageAll("gaining " + numMerchantGuilds + " coin token" + (numMerchantGuilds == 1 ? "" : "s") + " because of " + Card.MERCHANT_GUILD.htmlNameRaw());
+			messageAll("gaining " + numMerchantGuilds + " coin token" + (numMerchantGuilds == 1 ? "" : "s") + " because of " + Cards.MERCHANT_GUILD.htmlNameRaw());
 			currentPlayer().addCoinTokens(numMerchantGuilds);
 		}
 		// if the card is Noble Brigand, do on-buy effect
-		if (card == Card.NOBLE_BRIGAND) {
-			((NobleBrigand) Card.NOBLE_BRIGAND).onBuyOrPlay(player, this, getOpponents(player));
+		if (card == Cards.NOBLE_BRIGAND) {
+			((NobleBrigand) Cards.NOBLE_BRIGAND).onBuyOrPlay(player, this, getOpponents(player));
 		}
 		// on buying Farmland, trash a card and gain one costing exactly $2 more
-		if (card == Card.FARMLAND) {
+		if (card == Cards.FARMLAND) {
 			if (!player.getHand().isEmpty()) {
 				Card toTrash = promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Farmland: Choose a card to trash and gain a card costing exactly $2 more.");
-				messageAll("trashing " + toTrash.htmlName() + " because of " + Card.FARMLAND.htmlNameRaw());
+				messageAll("trashing " + toTrash.htmlName() + " because of " + Cards.FARMLAND.htmlNameRaw());
 				player.removeFromHand(toTrash);
 				trash(player, toTrash);
 				Set<Card> gainable = cardsCostingExactly(toTrash.cost(this) + 2);
@@ -662,12 +652,12 @@ public class Game implements Runnable {
 			}
 		}
 		// when you buy a victory card, you may trash Hovel
-		while (card.isVictory && player.getHand().contains(Card.HOVEL)) {
-			if (((Hovel) Card.HOVEL).chooseTrash(player, this)) {
-				message(player, "trashing " + Card.HOVEL.htmlName() + " from your hand");
-				messageOpponents(player, "trashing " + Card.HOVEL.htmlName() + " from their hand");
-				player.removeFromHand(Card.HOVEL);
-				trash(player, Card.HOVEL);
+		while (card.isVictory && player.getHand().contains(Cards.HOVEL)) {
+			if (((Hovel) Cards.HOVEL).chooseTrash(player, this)) {
+				message(player, "trashing " + Cards.HOVEL.htmlName() + " from your hand");
+				messageOpponents(player, "trashing " + Cards.HOVEL.htmlName() + " from their hand");
+				player.removeFromHand(Cards.HOVEL);
+				trash(player, Cards.HOVEL);
 			} else {
 				break;
 			}
@@ -721,7 +711,7 @@ public class Game implements Runnable {
 			}
 		} else {
 			List<Card> toHaven = null;
-			if (action == Card.HAVEN) {
+			if (action == Cards.HAVEN) {
 				toHaven = new ArrayList<>();
 			}
 			boolean willHaveEffect = action.onDurationPlay(player, this, toHaven);
@@ -740,17 +730,17 @@ public class Game implements Runnable {
 	}
 
 	private void handleUrchins(Player player, Card trigger) {
-		while (player.getPlay().contains(Card.URCHIN)) {
+		while (player.getPlay().contains(Cards.URCHIN)) {
 			// Urchin cannot trigger itself, even if played multiple times (like via Throne Room)
-			if (trigger == Card.URCHIN && player.getPlay().stream().filter(c -> c == Card.URCHIN).count() == 1) {
+			if (trigger == Cards.URCHIN && player.getPlay().stream().filter(c -> c == Cards.URCHIN).count() == 1) {
 				break;
 			}
 			if (chooseTrashUrchinForMercenary(player)) {
-				messageAll("trashing " + Card.URCHIN + " from play" + (nonSupply.get(Card.MERCENARY) != 0 ? (" and gaining " + Card.MERCENARY.htmlName()) : ""));
-				player.removeFromPlay(Card.URCHIN);
-				trash(player, Card.URCHIN);
-				if (nonSupply.get(Card.MERCENARY) != 0) {
-					gain(player, Card.MERCENARY);
+				messageAll("trashing " + Cards.URCHIN + " from play" + (nonSupply.get(Cards.MERCENARY) != 0 ? (" and gaining " + Cards.MERCENARY.htmlName()) : ""));
+				player.removeFromPlay(Cards.URCHIN);
+				trash(player, Cards.URCHIN);
+				if (nonSupply.get(Cards.MERCENARY) != 0) {
+					gain(player, Cards.MERCENARY);
 				}
 			} else {
 				break;
@@ -762,15 +752,15 @@ public class Game implements Runnable {
 		if (player instanceof Bot) {
 			return ((Bot) player).urchinTrashForMercenary();
 		}
-		int choice = promptMultipleChoice(player, "Urchin: Trash " + Card.URCHIN.htmlName() + (nonSupply.get(Card.MERCENARY) != 0 ? (" and gain " + Card.MERCENARY.htmlName()) : "") + "?", new String[] {"Yes", "No"});
+		int choice = promptMultipleChoice(player, "Urchin: Trash " + Cards.URCHIN.htmlName() + (nonSupply.get(Cards.MERCENARY) != 0 ? (" and gain " + Cards.MERCENARY.htmlName()) : "") + "?", new String[] {"Yes", "No"});
 		return (choice == 0);
 	}
 
 	private boolean reactToAttack(Player player) {
 		if (player.getDurationSetAsideCards().stream()
 				.anyMatch(effect -> effect instanceof Lighthouse)) {
-			message(player, "You have " + Card.LIGHTHOUSE.htmlName() + " in play");
-			messageOpponents(player, player.username + " has " + Card.LIGHTHOUSE.htmlName() + " in play");
+			message(player, "You have " + Cards.LIGHTHOUSE.htmlName() + " in play");
+			messageOpponents(player, player.username + " has " + Cards.LIGHTHOUSE.htmlName() + " in play");
 			return true;
 		}
 		boolean unaffected = false;
@@ -789,7 +779,7 @@ public class Game implements Runnable {
 					// don't allow the same reaction to be played twice in a row
 					// (they are designed so that playing them twice in a row gives no new benefit, with the exception of Diplomat)
 					// (also exempt reaction cards that move themselves, like Horse Traders)
-					if (choice != Card.DIPLOMAT && choice != Card.HORSE_TRADERS && choice != Card.BEGGAR) {
+					if (choice != Cards.DIPLOMAT && choice != Cards.HORSE_TRADERS && choice != Cards.BEGGAR) {
 						reactions.remove(choice);
 					}
 				} else {
@@ -804,7 +794,7 @@ public class Game implements Runnable {
 		Set<Card> reactions = player.getHand().stream().filter(c -> c.isAttackReaction).collect(Collectors.toSet());
 		// diplomat requires a hand of 5 or more cards in order to be revealable
 		if (player.getHand().size() < 5) {
-			reactions.remove(Card.DIPLOMAT);
+			reactions.remove(Cards.DIPLOMAT);
 		}
 		return reactions;
 	}
@@ -812,16 +802,16 @@ public class Game implements Runnable {
 	private void enterBuyPhase() {
 		inBuyPhase = true;
 		// display current peddler cost
-		if (supply.keySet().contains(Card.PEDDLER)) {
-			sendCardCost(Card.PEDDLER);
+		if (supply.keySet().contains(Cards.PEDDLER)) {
+			sendCardCost(Cards.PEDDLER);
 		}
 	}
 
 	private void exitBuyPhase() {
 		inBuyPhase = false;
 		// display current Peddler cost
-		if (supply.keySet().contains(Card.PEDDLER)) {
-			sendCardCost(Card.PEDDLER);
+		if (supply.keySet().contains(Cards.PEDDLER)) {
+			sendCardCost(Cards.PEDDLER);
 		}
 	}
 
@@ -855,14 +845,14 @@ public class Game implements Runnable {
 				schemesPlayedThisTurn--;
 			}
 			if (!schemed.isEmpty()) {
-				message(player, "You put " + Card.htmlList(schemed) + " on top of your deck because of " + Card.SCHEME.htmlName());
-				messageOpponents(player, player.username + " puts " + Card.numCards(schemed.size()) + " on top of their deck because of " + Card.SCHEME.htmlNameRaw());
+				message(player, "You put " + Card.htmlList(schemed) + " on top of your deck because of " + Cards.SCHEME.htmlName());
+				messageOpponents(player, player.username + " puts " + Card.numCards(schemed.size()) + " on top of their deck because of " + Cards.SCHEME.htmlNameRaw());
 				player.putOnDraw(schemed);
 			}
 		}
 		// handle Treasuries
 		if (!boughtVictoryCardThisTurn) {
-			int numTreasuries = (int) player.getPlay().stream().filter(c -> c == Card.TREASURY).count();
+			int numTreasuries = (int) player.getPlay().stream().filter(c -> c == Cards.TREASURY).count();
 			if (numTreasuries != 0) {
 				String[] choices = new String[numTreasuries + 1];
 				for (int i = 0; i <= numTreasuries; i++) {
@@ -870,27 +860,27 @@ public class Game implements Runnable {
 				}
 				int numToPutOnDeck = promptMultipleChoice(player, "Clean Up: Put how many Treasuries on top of your deck?", choices);
 				if (numToPutOnDeck != 0) {
-                    message(player, "You put " + Card.TREASURY.htmlName(numToPutOnDeck) + " on top of your deck");
-                    messageOpponents(player, player.username + " puts " + Card.TREASURY.htmlName(numToPutOnDeck) + " on top of their deck");
+                    message(player, "You put " + Cards.TREASURY.htmlName(numToPutOnDeck) + " on top of your deck");
+                    messageOpponents(player, player.username + " puts " + Cards.TREASURY.htmlName(numToPutOnDeck) + " on top of their deck");
                     for (int i = 0; i < numToPutOnDeck; i++) {
-                        player.removeFromPlay(Card.TREASURY);
-                        player.putOnDraw(Card.TREASURY);
+                        player.removeFromPlay(Cards.TREASURY);
+                        player.putOnDraw(Cards.TREASURY);
                     }
                 }
 			}
 		}
 		// handle Hermit
 		if (!boughtCardThisTurn) {
-			int numHermits = (int) player.getPlay().stream().filter(c -> c == Card.HERMIT).count();
+			int numHermits = (int) player.getPlay().stream().filter(c -> c == Cards.HERMIT).count();
 			if (numHermits != 0) {
-				int numMadmen = Math.min(numHermits, nonSupply.get(Card.MADMAN));
-				message(player, "You trash " + Card.HERMIT.htmlName(numHermits) + " and gain " + Card.MADMAN.htmlName(numMadmen));
-				messageOpponents(player, player.username + " trashes " + Card.HERMIT.htmlName(numHermits) + " and gains " + Card.MADMAN.htmlName(numMadmen));
+				int numMadmen = Math.min(numHermits, nonSupply.get(Cards.MADMAN));
+				message(player, "You trash " + Cards.HERMIT.htmlName(numHermits) + " and gain " + Cards.MADMAN.htmlName(numMadmen));
+				messageOpponents(player, player.username + " trashes " + Cards.HERMIT.htmlName(numHermits) + " and gains " + Cards.MADMAN.htmlName(numMadmen));
 				for (int i = 0; i < numHermits; i++) {
-					player.removeFromPlay(Card.HERMIT);
-					trash(player, Card.HERMIT);
-					if (nonSupply.get(Card.MADMAN) != 0) {
-						gain(player, Card.MADMAN);
+					player.removeFromPlay(Cards.HERMIT);
+					trash(player, Cards.HERMIT);
+					if (nonSupply.get(Cards.MADMAN) != 0) {
+						gain(player, Cards.MADMAN);
 					}
 				}
 			}
@@ -906,11 +896,11 @@ public class Game implements Runnable {
 			return true;
 		}
 		// check if province pile is empty
-		if (supply.get(Card.PROVINCE) == 0) {
+		if (supply.get(Cards.PROVINCE) == 0) {
 			return true;
 		}
 		// check if colony pile is empty
-		if (supply.containsKey(Card.COLONY) && supply.get(Card.COLONY) == 0) {
+		if (supply.containsKey(Cards.COLONY) && supply.get(Cards.COLONY) == 0) {
 			return true;
 		}
 		// check if three supply piles are empty
@@ -1002,7 +992,7 @@ public class Game implements Runnable {
 
 		VictoryReportCard(Player player) {
 			List<Card> deck = player.getDeck();
-			victoryCards = deck.stream().filter(c -> c.isVictory || c == Card.CURSE).collect(Collectors.toList());
+			victoryCards = deck.stream().filter(c -> c.isVictory || c == Cards.CURSE).collect(Collectors.toList());
 			points = 0;
 			victoryCards.forEach(c -> points += c.victoryValue(deck));
 			points += player.getVictoryTokens();
@@ -1150,16 +1140,16 @@ public class Game implements Runnable {
 
 	private boolean gainReplace(Player player, Card card, GainDestination dst) {
 		// handle Trader's reaction to replace gained cards with Silver, but only for non-Silvers
-		if (card != Card.SILVER && player.getHand().contains(Card.TRADER) && chooseRevealTrader(player, card)) {
+		if (card != Cards.SILVER && player.getHand().contains(Cards.TRADER) && chooseRevealTrader(player, card)) {
 			messageIndent++;
-			if (supply.get(Card.SILVER) == 0) {
+			if (supply.get(Cards.SILVER) == 0) {
 				// if there are no Silvers to gain, gain nothing
-				message(player, "revealing " + Card.TRADER.htmlName() + " and gaining nothing instead");
+				message(player, "revealing " + Cards.TRADER.htmlName() + " and gaining nothing instead");
 				return true;
 			}
-			message(player, "revealing " + Card.TRADER.htmlName() + " and gaining " + Card.SILVER.htmlName() + " instead");
+			message(player, "revealing " + Cards.TRADER.htmlName() + " and gaining " + Cards.SILVER.htmlName() + " instead");
 			messageIndent--;
-			card = Card.SILVER;
+			card = Cards.SILVER;
 			// still allow the gain to be redirected
 			if (gainRedirect(player, card)) {
 				return true;
@@ -1186,28 +1176,28 @@ public class Game implements Runnable {
 		if (player instanceof Bot) {
 			return ((Bot) player).traderReplaceWithSilver(card);
 		}
-		int choice = promptMultipleChoice(player, "Trader: Reveal " + Card.TRADER.htmlName() + " and gain " + Card.SILVER.htmlName() + " instead of " + card.htmlName() + "?", "reactionPrompt", new String[] {"Yes", "No"});
+		int choice = promptMultipleChoice(player, "Trader: Reveal " + Cards.TRADER.htmlName() + " and gain " + Cards.SILVER.htmlName() + " instead of " + card.htmlName() + "?", "reactionPrompt", new String[] {"Yes", "No"});
 		return (choice == 0);
 	}
 
 	private boolean gainRedirect(Player player, Card card) {
-		if (player.getHand().contains(Card.WATCHTOWER)) {
-			int choice = promptMultipleChoice(player, "You gained " + card.htmlName() + ". Reveal your " + Card.WATCHTOWER.htmlName() + "?", "reactionPrompt", new String[] {"Reveal", "Don't"});
+		if (player.getHand().contains(Cards.WATCHTOWER)) {
+			int choice = promptMultipleChoice(player, "You gained " + card.htmlName() + ". Reveal your " + Cards.WATCHTOWER.htmlName() + "?", "reactionPrompt", new String[] {"Reveal", "Don't"});
 			if (choice == 0) {
 				messageIndent++;
-				message(player, "you reveal " + Card.WATCHTOWER.htmlName());
-				messageOpponents(player, player.username + " reveals " + Card.WATCHTOWER.htmlName());
+				message(player, "you reveal " + Cards.WATCHTOWER.htmlName());
+				messageOpponents(player, player.username + " reveals " + Cards.WATCHTOWER.htmlName());
 				choice = promptMultipleChoice(player, "Watchtower: Trash the " + card.htmlNameRaw() + " or put it on top of your deck?", "reactionPrompt", new String[] {"Trash", "Put on top of deck"});
 				if (choice == 0) {
-					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
-					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
+					message(player, "you use your " + Cards.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
+					messageOpponents(player, player.username + " uses their " + Cards.WATCHTOWER.htmlNameRaw() + " to trash the " + card.htmlNameRaw());
 					takeFromSupply(card);
 					trash(player, card);
 					messageIndent--;
 					return true;
 				} else {
-					message(player, "you use your " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
-					messageOpponents(player, player.username + " uses their " + Card.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
+					message(player, "you use your " + Cards.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
+					messageOpponents(player, player.username + " uses their " + Cards.WATCHTOWER.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
 					takeFromSupply(card);
 					player.putOnDraw(card);
 					onGained(player, card);
@@ -1216,7 +1206,7 @@ public class Game implements Runnable {
 				}
 			}
 		}
-		if (card == Card.NOMAD_CAMP) {
+		if (card == Cards.NOMAD_CAMP) {
 			messageIndent++;
 			message(player, "putting it on top of your deck");
 			messageOpponents(player, "putting it on top of their deck");
@@ -1226,12 +1216,12 @@ public class Game implements Runnable {
 			messageIndent--;
 			return true;
 		}
-		if (player.getPlay().contains(Card.ROYAL_SEAL)) {
+		if (player.getPlay().contains(Cards.ROYAL_SEAL)) {
 			int choice = promptMultipleChoice(player, "Royal Seal: Put the " + card.htmlNameRaw() + " on top of your deck?", new String[] {"Yes", "No"});
 			if (choice == 0) {
 				messageIndent++;
-				message(player, "you use your " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
-				messageOpponents(player, player.username + " uses their " + Card.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
+				message(player, "you use your " + Cards.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of your deck");
+				messageOpponents(player, player.username + " uses their " + Cards.ROYAL_SEAL.htmlNameRaw() + " to put the " + card.htmlNameRaw() + " on top of their deck");
 				takeFromSupply(card);
 				player.putOnDraw(card);
 				onGained(player, card);
@@ -1253,29 +1243,29 @@ public class Game implements Runnable {
 			sendTradeRouteMat();
 		}
 		// handle Duchess effect on gaining a Duchy
-		if (card == Card.DUCHY && supply.containsKey(Card.DUCHESS) && supply.get(Card.DUCHESS) != 0) {
+		if (card == Cards.DUCHY && supply.containsKey(Cards.DUCHESS) && supply.get(Cards.DUCHESS) != 0) {
 			if (chooseGainDuchessOnGainingDuchy(player)) {
-				messageAll("gaining " + Card.DUCHESS.htmlName());
-				gain(player, Card.DUCHESS);
+				messageAll("gaining " + Cards.DUCHESS.htmlName());
+				gain(player, Cards.DUCHESS);
 			}
 		}
 		// handle Fool's Gold effect on gaining a Province
-		if (card == Card.PROVINCE) {
+		if (card == Cards.PROVINCE) {
 			for (Player opponent : getOpponents(player)) {
-				int numFoolsGolds = opponent.numberInHand(Card.FOOLS_GOLD);
+				int numFoolsGolds = opponent.numberInHand(Cards.FOOLS_GOLD);
 				for (int i = 0; i < numFoolsGolds; i++) {
 					if (chooseRevealFoolsGold(opponent)) {
-						if (supply.get(Card.GOLD) != 0) {
-							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD + " onto your deck");
-							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains " + Card.GOLD + " onto their deck");
-							player.removeFromHand(Card.FOOLS_GOLD);
-							trash(player, Card.FOOLS_GOLD);
-							gainToTopOfDeck(opponent, Card.GOLD);
+						if (supply.get(Cards.GOLD) != 0) {
+							message(opponent, "You trash " + Cards.FOOLS_GOLD.htmlName() + " and gain " + Cards.GOLD + " onto your deck");
+							messageOpponents(opponent, opponent.username + " trashes " + Cards.FOOLS_GOLD.htmlName() + " and gains " + Cards.GOLD + " onto their deck");
+							player.removeFromHand(Cards.FOOLS_GOLD);
+							trash(player, Cards.FOOLS_GOLD);
+							gainToTopOfDeck(opponent, Cards.GOLD);
 						} else {
-							message(opponent, "You trash " + Card.FOOLS_GOLD.htmlName() + " and gain nothing");
-							messageOpponents(opponent, opponent.username + " trashes " + Card.FOOLS_GOLD.htmlName() + " and gains nothing");
-							player.removeFromHand(Card.FOOLS_GOLD);
-							trash(player, Card.FOOLS_GOLD);
+							message(opponent, "You trash " + Cards.FOOLS_GOLD.htmlName() + " and gain nothing");
+							messageOpponents(opponent, opponent.username + " trashes " + Cards.FOOLS_GOLD.htmlName() + " and gains nothing");
+							player.removeFromHand(Cards.FOOLS_GOLD);
+							trash(player, Cards.FOOLS_GOLD);
 						}
 					} else {
 						// if the player stops trashing Fool's Golds, stop asking, even if they have more Fool's Golds
@@ -1292,7 +1282,7 @@ public class Game implements Runnable {
 		if (player instanceof Bot) {
 			return ((Bot) player).duchessGainDuchessOnGainingDuchy();
 		}
-		int choice = promptMultipleChoice(player, "Duchess: Gain " + Card.DUCHESS.htmlName() + "?", new String[] {"Gain Duchess", "Don't"});
+		int choice = promptMultipleChoice(player, "Duchess: Gain " + Cards.DUCHESS.htmlName() + "?", new String[] {"Gain Duchess", "Don't"});
 		return (choice == 0);
 	}
 
@@ -1300,7 +1290,7 @@ public class Game implements Runnable {
 		if (player instanceof Bot) {
 			return ((Bot) player).foolsGoldReveal();
 		}
-		int choice = promptMultipleChoice(player, "Fool's Gold: Trash " + Card.FOOLS_GOLD.htmlName() + " and gain " + Card.GOLD.htmlName() + " onto your deck?", "reactionPrompt", new String[] {"Yes", "No"});
+		int choice = promptMultipleChoice(player, "Fool's Gold: Trash " + Cards.FOOLS_GOLD.htmlName() + " and gain " + Cards.GOLD.htmlName() + " onto your deck?", "reactionPrompt", new String[] {"Yes", "No"});
 		return (choice == 0);
 	}
 
@@ -1318,7 +1308,7 @@ public class Game implements Runnable {
 
 	public void trash(Player player, Card card, boolean triggersMarketSquare) {
         if (onTrash(player, card, triggersMarketSquare)) {
-            card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
+            card = card.isBandOfMisfits ? Cards.BAND_OF_MISFITS : card;
             trash.add(card);
             sendTrash();
         }
@@ -1340,8 +1330,8 @@ public class Game implements Runnable {
 	}
 
 	private void allowMarketSquareReaction(Player player) {
-		while (player.getHand().contains(Card.MARKET_SQUARE)) {
-			if (!((MarketSquare) Card.MARKET_SQUARE).onCardTrashed(player, this)) {
+		while (player.getHand().contains(Cards.MARKET_SQUARE)) {
+			if (!((MarketSquare) Cards.MARKET_SQUARE).onCardTrashed(player, this)) {
 				break;
 			}
 		}
@@ -1381,8 +1371,8 @@ public class Game implements Runnable {
 		// remove cards prohibited by contraband
 		buyable.removeAll(contrabandProhibited);
 		// remove grand market if the player has a copper in play
-		if (buyable.contains(Card.GRAND_MARKET) && player.getPlay().contains(Card.COPPER)) {
-			buyable.remove(Card.GRAND_MARKET);
+		if (buyable.contains(Cards.GRAND_MARKET) && player.getPlay().contains(Cards.COPPER)) {
+			buyable.remove(Cards.GRAND_MARKET);
 		}
 		return buyable;
 	}
@@ -1540,7 +1530,7 @@ public class Game implements Runnable {
 		allCards.addAll(prizeCards);
 		// shelters
 		if (usingShelters) {
-			allCards.addAll(Card.SHELTER_CARDS);
+			allCards.addAll(Cards.SHELTER_CARDS);
 		}
 		return allCards;
 	}
@@ -1603,7 +1593,7 @@ public class Game implements Runnable {
 		if (id != null && mixedPiles.containsKey(id) && !mixedPiles.get(id).isEmpty()) {
 			return mixedPiles.get(id).get(0);
 		} else {
-			return Card.fromName(str);
+			return Cards.fromName(str);
 		}
 	}
 
@@ -1935,7 +1925,7 @@ public class Game implements Runnable {
 				choice.toBuy = toBuy;
 				return choice;
 			} else if ("play".equals(responseType)) {
-				Card toPlay = Card.fromName((String) response.get("toPlay"));
+				Card toPlay = Cards.fromName((String) response.get("toPlay"));
 				// verify response
 				if (!canPlay.contains(toPlay)) {
 					return endTurnChoice();
@@ -2249,7 +2239,7 @@ public class Game implements Runnable {
 		// parse response
 		Card chosen = null;
 		if (response != null) {
-			chosen = Card.fromName(response);
+			chosen = Cards.fromName(response);
 		}
 		// verify response
 		if (choiceSet.contains(chosen)) {
@@ -2296,7 +2286,7 @@ public class Game implements Runnable {
 				}
 			} catch (NumberFormatException e) {
 				// if it does not parse as an integer, parse it as a card name
-				Card chosenCard = Card.fromName(response);
+				Card chosenCard = Cards.fromName(response);
 				if (handChoices.contains(chosenCard)) {
 					return chosenCard;
 				}
@@ -2544,7 +2534,7 @@ public class Game implements Runnable {
 		Card namedCard = promptChooseGainFromSupply(player, cardsChoosableInSupplyUI(), cause + ": " + prompt, false, "Name a card that is not in the supply");
 		if (namedCard == null) {
 			// find all cards not in the supply
-			Set<Card> cardsNotInSupply = new HashSet<>(Card.cardsByName.values());
+			Set<Card> cardsNotInSupply = new HashSet<>(Cards.cardsByName.values());
 			cardsNotInSupply.removeAll(cardsChoosableInSupplyUI());
 			// create an alphabet of only the first letters of cards not in the supply
 			Set<Character> letters = cardsNotInSupply.stream()
@@ -2569,7 +2559,7 @@ public class Game implements Runnable {
 			choices = new String[names.size()];
 			choices = names.toArray(choices);
 			String chosenName = choices[promptMultipleChoice(player, cause + ": Select the card you want to name", choices)];
-			namedCard = Card.fromName(chosenName);
+			namedCard = Cards.fromName(chosenName);
 		}
 		return namedCard;
 	}
@@ -2691,7 +2681,7 @@ public class Game implements Runnable {
 		try {
 			for (Object object : array) {
 				String cardName = (String) object;
-				Card card = Card.fromName(cardName);
+				Card card = Cards.fromName(cardName);
 				if (card == null) {
 					throw new IllegalArgumentException();
 				}

@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -47,12 +44,7 @@ public class Count extends Card {
                 break;
             default: // 2
                 // gain a Copper
-                if (game.supply.get(Card.COPPER) != 0) {
-                    game.messageAll("gaining " + Card.COPPER.htmlName());
-                    game.gain(player, Card.COPPER);
-                } else {
-                    game.messageAll("gaining nothing");
-                }
+                gain(player, game, Cards.COPPER);
         }
         switch (chooseBenefit(player, game, false)) {
             case 0:
@@ -71,12 +63,7 @@ public class Count extends Card {
                 break;
             default: // 2
                 // gain a Duchy
-                if (game.supply.get(Card.DUCHY) != 0) {
-                    game.messageAll("gaining " + Card.DUCHY.htmlName());
-                    game.gain(player, Card.DUCHY);
-                } else {
-                    game.messageAll("gaining nothing");
-                }
+                gain(player, game, Cards.DUCHY);
         }
     }
 

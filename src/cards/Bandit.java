@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -21,10 +22,10 @@ public class Bandit extends Card {
     @Override
     public void onAttack(Player player, Game game, List<Player> targets) {
         // gain a Gold
-        gain(player, game, Card.GOLD);
+        gain(player, game, Cards.GOLD);
         // each other player reveals the top 2 cards of their deck, then trashes a non-Copper treasure
         topTwoCardsAttack(targets, game,
-                c -> c.isTreasure && c != Card.COPPER);
+                c -> c.isTreasure && c != Cards.COPPER);
     }
 
     @Override

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -24,22 +25,22 @@ public class Mountebank extends Card {
 		plusCoins(player, game, 2);
 		for (Player target : targets) {
 			// optionally discard a curse
-			if (target.getHand().contains(Card.CURSE)) {
-				int choice = game.promptMultipleChoice(target, "Mountebank: Discard " + Card.CURSE + ", or don't and gain " + Card.CURSE.htmlName() + " and " + Card.COPPER.htmlName() + "?", "attackPrompt", new String[] {"Discard a Curse", "Don't"});
+			if (target.getHand().contains(Cards.CURSE)) {
+				int choice = game.promptMultipleChoice(target, "Mountebank: Discard " + Cards.CURSE + ", or don't and gain " + Cards.CURSE.htmlName() + " and " + Cards.COPPER.htmlName() + "?", "attackPrompt", new String[] {"Discard a Curse", "Don't"});
 				if (choice == 0) {
-					game.message(target, "you discard " + Card.CURSE.htmlName());
-					game.messageOpponents(target, target.username + " discards " + Card.CURSE.htmlName());
-					target.putFromHandIntoDiscard(Card.CURSE);
+					game.message(target, "you discard " + Cards.CURSE.htmlName());
+					game.messageOpponents(target, target.username + " discards " + Cards.CURSE.htmlName());
+					target.putFromHandIntoDiscard(Cards.CURSE);
 					continue;
 				}
 			}
 			// otherwise, gain a copper and a curse
-			List<Card> toGain = new ArrayList<Card>();
-			if (game.supply.get(Card.CURSE) != 0) {
-				toGain.add(Card.CURSE);
+			List<Card> toGain = new ArrayList<>();
+			if (game.supply.get(Cards.CURSE) != 0) {
+				toGain.add(Cards.CURSE);
 			}
-			if (game.supply.get(Card.COPPER) != 0) {
-				toGain.add(Card.COPPER);
+			if (game.supply.get(Cards.COPPER) != 0) {
+				toGain.add(Cards.COPPER);
 			}
 			if (!toGain.isEmpty()) {
 				game.message(target, "you gain " + Card.htmlList(toGain));

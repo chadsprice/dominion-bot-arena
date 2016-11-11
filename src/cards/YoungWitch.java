@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.List;
 
@@ -38,9 +35,9 @@ public class YoungWitch extends Card {
                 game.message(target, "You reveal a bane card");
                 game.messageOpponents(target, target.username + " reveals a bane card");
             } else {
-                game.message(target, "You gain " + Card.CURSE.htmlName());
-                game.messageOpponents(target, target.username + " gains " + Card.CURSE.htmlName());
-                game.gain(target, Card.CURSE);
+                game.message(target, "You gain " + Cards.CURSE.htmlName());
+                game.messageOpponents(target, target.username + " gains " + Cards.CURSE.htmlName());
+                game.gain(target, Cards.CURSE);
             }
         }
     }
@@ -49,7 +46,7 @@ public class YoungWitch extends Card {
         if (target instanceof Bot) {
             return ((Bot) target).youngWitchRevealBane();
         }
-        int choice = game.promptMultipleChoice(target, "Young Witch: Reveal a bane card, or gain " + Card.CURSE.htmlName() + "?", "attackPrompt", new String[] {"Reveal bane", "Gain Curse"});
+        int choice = game.promptMultipleChoice(target, "Young Witch: Reveal a bane card, or gain " + Cards.CURSE.htmlName() + "?", "attackPrompt", new String[] {"Reveal bane", "Gain Curse"});
         return (choice == 0);
     }
 

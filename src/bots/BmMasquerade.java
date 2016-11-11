@@ -2,6 +2,7 @@ package bots;
 
 import server.Bot;
 import server.Card;
+import server.Cards;
 
 import java.util.*;
 
@@ -16,21 +17,21 @@ public class BmMasquerade extends Bot {
 	public List<Card> gainPriority() {
 		// based on ehunt's "BM Maquerade" bot
 		List<Card> priority = new ArrayList<>();
-		priority.add(Card.PROVINCE);
-		priority.add(Card.GOLD);
+		priority.add(Cards.PROVINCE);
+		priority.add(Cards.GOLD);
 		if (gainsToEndGame() <= 5) {
-			priority.add(Card.DUCHY);
+			priority.add(Cards.DUCHY);
 		}
-		if (countInDeck(Card.MASQUERADE) == 0) {
-			priority.add(Card.MASQUERADE);
+		if (countInDeck(Cards.MASQUERADE) == 0) {
+			priority.add(Cards.MASQUERADE);
 		}
-		priority.add(Card.SILVER);
+		priority.add(Cards.SILVER);
 		return priority;
 	}
 
 	@Override
 	public Set<Card> required() {
-		return Collections.singleton(Card.MASQUERADE);
+		return Collections.singleton(Cards.MASQUERADE);
 	}
 
 }

@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -18,27 +19,27 @@ public class Beggar extends Card {
 
     @Override
     public void onPlay(Player player, Game game) {
-        int numCoppers = Math.min(3, game.supply.get(Card.COPPER));
-        game.message(player, "gaining " + Card.COPPER.htmlName(numCoppers) + " to your hand");
-        game.messageOpponents(player, "gaining " + Card.COPPER.htmlName(numCoppers) + " to their hand");
+        int numCoppers = Math.min(3, game.supply.get(Cards.COPPER));
+        game.message(player, "gaining " + Cards.COPPER.htmlName(numCoppers) + " to your hand");
+        game.messageOpponents(player, "gaining " + Cards.COPPER.htmlName(numCoppers) + " to their hand");
         for (int i = 0; i < numCoppers; i++) {
-            game.gainToHand(player, Card.COPPER);
+            game.gainToHand(player, Cards.COPPER);
         }
     }
 
     @Override
     public boolean onAttackReaction(Player player, Game game) {
-        int numSilvers = game.supply.get(Card.SILVER);
+        int numSilvers = game.supply.get(Cards.SILVER);
         game.message(player, reactionStr(numSilvers, true));
         game.messageOpponents(player, reactionStr(numSilvers, false));
         // discard this Beggar
         player.putFromHandIntoDiscard(this);
-        if (game.supply.get(Card.SILVER) != 0) {
+        if (game.supply.get(Cards.SILVER) != 0) {
             // gain the first Silver onto your deck
-            game.gainToTopOfDeck(player, Card.SILVER);
-            if (game.supply.get(Card.SILVER) != 0) {
+            game.gainToTopOfDeck(player, Cards.SILVER);
+            if (game.supply.get(Cards.SILVER) != 0) {
                 // gain the second to your discard
-                game.gain(player, Card.SILVER);
+                game.gain(player, Cards.SILVER);
             }
         }
         return false;
@@ -47,7 +48,7 @@ public class Beggar extends Card {
     private String reactionStr(int numSilvers, boolean isPlayer) {
         String str = "discarding it";
         if (numSilvers > 0) {
-            str += " and gaining " + Card.SILVER.htmlName(numSilvers) + ", putting " + ((numSilvers == 1) ? "it" : "one") + " on top of " + (isPlayer ? "your" : "their") + " deck";
+            str += " and gaining " + Cards.SILVER.htmlName(numSilvers) + ", putting " + ((numSilvers == 1) ? "it" : "one") + " on top of " + (isPlayer ? "your" : "their") + " deck";
         }
         return str;
     }

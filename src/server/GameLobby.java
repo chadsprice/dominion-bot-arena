@@ -36,7 +36,7 @@ class GameLobby implements Comparable<GameLobby> {
 	 */
 	static GameLobby automatchLobby(int numOpenings) {
 		// use all of the known card sets
-		Set<Set<Card>> cardSets = new HashSet<>(Card.setsByName.values());
+		Set<Set<Card>> cardSets = new HashSet<>(Cards.setsByName.values());
 		return new GameLobby("Automatch", numOpenings, cardSets, Collections.emptySet(), Collections.emptySet(), Collections.emptyList());
 	}
 

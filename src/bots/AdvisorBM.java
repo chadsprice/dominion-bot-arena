@@ -2,6 +2,7 @@ package bots;
 
 import server.Bot;
 import server.Card;
+import server.Cards;
 
 import java.util.*;
 
@@ -15,25 +16,25 @@ public class AdvisorBM extends Bot {
     @Override
     public List<Card> gainPriority() {
         List<Card> priority = new ArrayList<>();
-        priority.add(Card.PROVINCE);
+        priority.add(Cards.PROVINCE);
         if (gainsToEndGame() <= 5) {
-            priority.add(Card.DUCHY);
+            priority.add(Cards.DUCHY);
         }
         if (gainsToEndGame() <= 2) {
-            priority.add(Card.ESTATE);
+            priority.add(Cards.ESTATE);
         }
-        priority.add(Card.GOLD);
-        priority.add(Card.ADVISOR);
-        priority.add(Card.SILVER);
+        priority.add(Cards.GOLD);
+        priority.add(Cards.ADVISOR);
+        priority.add(Cards.SILVER);
         if (gainsToEndGame() <= 3) {
-            priority.add(Card.COPPER);
+            priority.add(Cards.COPPER);
         }
         return priority;
     }
 
     @Override
     public Set<Card> required() {
-        return Collections.singleton(Card.ADVISOR);
+        return Collections.singleton(Cards.ADVISOR);
     }
 
 }

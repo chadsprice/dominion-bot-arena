@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -18,11 +19,11 @@ public class MoneylenderFirstEdition extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         // if you have a Copper in hand
-        if (player.getHand().contains(Card.COPPER)) {
-            game.messageAll("trashing " + Card.COPPER.htmlName() + " for +$3");
+        if (player.getHand().contains(Cards.COPPER)) {
+            game.messageAll("trashing " + Cards.COPPER.htmlName() + " for +$3");
             // trash it
-            player.removeFromHand(Card.COPPER);
-            game.trash(player, Card.COPPER);
+            player.removeFromHand(Cards.COPPER);
+            game.trash(player, Cards.COPPER);
             // +$3
             player.addCoins(3);
         } else {

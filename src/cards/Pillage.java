@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.*;
 
@@ -27,6 +24,7 @@ public class Pillage extends Card {
             game.messageAll("trashing the " + this.htmlNameRaw());
             player.removeFromPlay(this);
             game.trash(player, this);
+            movedToTrash = true;
         }
         // each other player with 5 or more cards in hand
         targets.forEach(target -> {
@@ -43,10 +41,10 @@ public class Pillage extends Card {
             }
         });
         // gain 2 Spoils
-        int numSpoils = Math.min(2, game.nonSupply.get(Card.SPOILS));
-        game.messageAll("gaining " + Card.SPOILS.htmlName(numSpoils));
-        for (int i = 0; i < 2 && game.nonSupply.get(Card.SPOILS) != 0; i++) {
-            game.gain(player, Card.SPOILS);
+        int numSpoils = Math.min(2, game.nonSupply.get(Cards.SPOILS));
+        game.messageAll("gaining " + Cards.SPOILS.htmlName(numSpoils));
+        for (int i = 0; i < 2 && game.nonSupply.get(Cards.SPOILS) != 0; i++) {
+            game.gain(player, Cards.SPOILS);
         }
         return movedToTrash;
     }

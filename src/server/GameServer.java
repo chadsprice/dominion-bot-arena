@@ -346,7 +346,7 @@ public class GameServer {
 		Bot bot = Bot.newBotFromName((String) request.get("bot"));
 		// create new game
 		// use all of the known card sets
-		Set<Set<Card>> cardSets = new HashSet<>(Card.setsByName.values());
+		Set<Set<Card>> cardSets = new HashSet<>(Cards.setsByName.values());
 		Set<Player> players = new HashSet<>(Arrays.asList(player, bot));
 		startGame(players, cardSets, Collections.emptySet(), Collections.emptySet());
 	}
@@ -387,7 +387,7 @@ public class GameServer {
 		Set<Set<Card>> cardSets = new HashSet<>();
 		for (Object setNameObject : setArray) {
 			String setName = (String) setNameObject;
-			Set<Card> cardSet = Card.setsByName.get(setName);
+			Set<Card> cardSet = Cards.setsByName.get(setName);
 			if (cardSet != null) {
 				cardSets.add(cardSet);
 			}
@@ -406,9 +406,9 @@ public class GameServer {
 					cardName = cardName.substring(1).trim();
 				}
 				// simplify name to ignore capitalization and punctuation
-				Card card = Card.fromName(Card.simplifiedName(cardName));
+				Card card = Cards.fromName(Cards.simplifiedName(cardName));
 				// if the card exists in a kingdom card set
-				if (card != null && Card.setsByName.values().stream().anyMatch(set -> set.contains(card))) {
+				if (card != null && Cards.setsByName.values().stream().anyMatch(set -> set.contains(card))) {
 					if (isForbidden) {
 						forbiddenCards.add(card);
 					} else {
@@ -599,9 +599,9 @@ public class GameServer {
 	private String setsToString(Set<Set<Card>> sets) {
 		// make a list of the sets' names, ordered by release date (i.e. Card.setOrder)
 		List<String> setNames = new ArrayList<>();
-		for (int i = 0; i < Card.setOrder.size(); i++) {
-			if (sets.contains(Card.setOrder.get(i))) {
-				setNames.add(Card.setNames.get(i));
+		for (int i = 0; i < Cards.setOrder.size(); i++) {
+			if (sets.contains(Cards.setOrder.get(i))) {
+				setNames.add(Cards.setNames.get(i));
 			}
 		}
 		// concatenate them in a comma separated list
@@ -855,7 +855,7 @@ public class GameServer {
 	}
 
 	public static void main(String[] args) {
-		Card.initializeCardSets();
+		Cards.initializeCardSets();
 		Bot.initializeBots();
 
 		INSTANCE = new GameServer();

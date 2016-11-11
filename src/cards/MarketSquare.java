@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 public class MarketSquare extends Card {
 
@@ -26,14 +23,14 @@ public class MarketSquare extends Card {
     public boolean onCardTrashed(Player player, Game game) {
         boolean discarding = chooseDiscard(player, game);
         if (discarding) {
-            boolean gainingAGold = (game.supply.get(Card.GOLD) != 0);
+            boolean gainingAGold = (game.supply.get(Cards.GOLD) != 0);
             String str = "discarding " + this.htmlName();
             if (gainingAGold) {
-                str += " and gaining " + Card.GOLD.htmlName();
+                str += " and gaining " + Cards.GOLD.htmlName();
             }
             game.messageAll(str);
             player.putFromHandIntoDiscard(this);
-            game.gain(player, Card.GOLD);
+            game.gain(player, Cards.GOLD);
         }
         return discarding;
     }
@@ -42,7 +39,7 @@ public class MarketSquare extends Card {
         if (player instanceof Bot) {
             return ((Bot) player).marketSquareDiscard();
         }
-        int choice = game.promptMultipleChoice(player, "Market Square: Discard " + this.htmlNameRaw() + " and gain " + Card.GOLD.htmlName() + "?", "reactionPrompt", new String[] {"Discard", "Don't"});
+        int choice = game.promptMultipleChoice(player, "Market Square: Discard " + this.htmlNameRaw() + " and gain " + Cards.GOLD.htmlName() + "?", "reactionPrompt", new String[] {"Discard", "Don't"});
         return (choice == 0);
     }
 

@@ -157,16 +157,16 @@ public class Player {
 		turns = 0;
 		cardsGainedDuringTurn.clear();
 		if (usingShelters) {
-			draw.add(Card.HOVEL);
-			draw.add(Card.NECROPOLIS);
-			draw.add(Card.OVERGROWN_ESTATE);
+			draw.add(Cards.HOVEL);
+			draw.add(Cards.NECROPOLIS);
+			draw.add(Cards.OVERGROWN_ESTATE);
 		} else {
 			for (int i = 0; i < 3; i++) {
-				draw.add(Card.ESTATE);
+				draw.add(Cards.ESTATE);
 			}
 		}
 		for (int i = 0; i < 7; i++) {
-			draw.add(Card.COPPER);
+			draw.add(Cards.COPPER);
 		}
 		Collections.shuffle(draw);
 		newTurn();
@@ -188,11 +188,11 @@ public class Player {
 	}
 
 	public boolean hasExtraTurn() {
-		return durationEffects.stream().anyMatch(effect -> effect.card == Card.OUTPOST);
+		return durationEffects.stream().anyMatch(effect -> effect.card == Cards.OUTPOST);
 	}
 
 	public boolean isTakingExtraTurn() {
-		return resolvedDurationCards.contains(Card.OUTPOST);
+		return resolvedDurationCards.contains(Cards.OUTPOST);
 	}
 
 	void startNewTurn() {
@@ -205,11 +205,11 @@ public class Player {
 	}
 
 	void cleanupPlay() {
-        play = play.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
+        play = play.stream().map(c -> c.isBandOfMisfits ? Cards.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		discard.addAll(play);
 		play.clear();
 		sendPlay();
-        resolvedDurationCards = resolvedDurationCards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
+        resolvedDurationCards = resolvedDurationCards.stream().map(c -> c.isBandOfMisfits ? Cards.BAND_OF_MISFITS : c).collect(Collectors.toList());
 		discard.addAll(resolvedDurationCards);
 		resolvedDurationCards.clear();
 		sendDiscardSize();
@@ -291,10 +291,10 @@ public class Player {
 			int numFoolsGolds = 0;
 			// add the value of all unplayed non-bank, non-fools-gold treasures
 			for (Card card : hand) {
-				if (card == Card.BANK) {
+				if (card == Cards.BANK) {
 					numBanks++;
 				} else if (card.isTreasure) {
-					if (card == Card.FOOLS_GOLD) {
+					if (card == Cards.FOOLS_GOLD) {
 						numFoolsGolds++;
 					} else {
 						usableCoins += card.treasureValue(game);
@@ -315,11 +315,11 @@ public class Player {
 				numTreasuresInPlay++;
 			}
 			// handle Merchant +$1 on first Silver
-			if (play.contains(Card.MERCHANT) && !game.playedSilverThisTurn && hand.contains(Card.SILVER)) {
-				usableCoins += numberInPlay(Card.MERCHANT);
+			if (play.contains(Cards.MERCHANT) && !game.playedSilverThisTurn && hand.contains(Cards.SILVER)) {
+				usableCoins += numberInPlay(Cards.MERCHANT);
 			}
 			// handle Diadem +$1 per unused action
-			if (hand.contains(Card.DIADEM)) {
+			if (hand.contains(Cards.DIADEM)) {
 				usableCoins += actions;
 			}
 			// handle Fool's Gold
@@ -337,13 +337,13 @@ public class Player {
 	}
 
 	public boolean isAutoplayingTreasures() {
-		return !hand.contains(Card.QUARRY) &&
-				!hand.contains(Card.CONTRABAND) &&
-				!hand.contains(Card.VENTURE) &&
-				!(game.supply.containsKey(Card.GRAND_MARKET) && hand.contains(Card.COPPER)) &&
-				!hand.contains(Card.HORN_OF_PLENTY) &&
-				!hand.contains(Card.ILL_GOTTEN_GAINS) &&
-				!hand.contains(Card.SPOILS) && !hand.contains(Card.COUNTERFEIT);
+		return !hand.contains(Cards.QUARRY) &&
+				!hand.contains(Cards.CONTRABAND) &&
+				!hand.contains(Cards.VENTURE) &&
+				!(game.supply.containsKey(Cards.GRAND_MARKET) && hand.contains(Cards.COPPER)) &&
+				!hand.contains(Cards.HORN_OF_PLENTY) &&
+				!hand.contains(Cards.ILL_GOTTEN_GAINS) &&
+				!hand.contains(Cards.SPOILS) && !hand.contains(Cards.COUNTERFEIT);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -506,8 +506,8 @@ public class Player {
 	}
 
 	public void addToDiscard(Card card, boolean triggersTunnelReaction) {
-		card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
-		if (triggersTunnelReaction && card == Card.TUNNEL) {
+		card = card.isBandOfMisfits ? Cards.BAND_OF_MISFITS : card;
+		if (triggersTunnelReaction && card == Cards.TUNNEL) {
 			handleDiscardedTunnels(1);
 		}
 		discard.add(card);
@@ -519,9 +519,9 @@ public class Player {
 	}
 
 	public void addToDiscard(List<Card> cards, boolean triggersTunnelReaction) {
-		cards = cards.stream().map(c -> c.isBandOfMisfits ? Card.BAND_OF_MISFITS : c).collect(Collectors.toList());
-		if (triggersTunnelReaction && cards.contains(Card.TUNNEL)) {
-			int numTunnels = (int) cards.stream().filter(c -> c == Card.TUNNEL).count();
+		cards = cards.stream().map(c -> c.isBandOfMisfits ? Cards.BAND_OF_MISFITS : c).collect(Collectors.toList());
+		if (triggersTunnelReaction && cards.contains(Cards.TUNNEL)) {
+			int numTunnels = (int) cards.stream().filter(c -> c == Cards.TUNNEL).count();
 			handleDiscardedTunnels(numTunnels);
 		}
 		discard.addAll(cards);
@@ -530,10 +530,10 @@ public class Player {
 
 	private void handleDiscardedTunnels(int numTunnels) {
 		game.messageIndent++;
-		for (int i = 0; i < numTunnels && game.supply.get(Card.GOLD) != 0; i++) {
+		for (int i = 0; i < numTunnels && game.supply.get(Cards.GOLD) != 0; i++) {
 			if (chooseRevealTunnel()) {
-				game.messageAll("revealing the " + Card.TUNNEL.htmlNameRaw() + " and gaining " + Card.GOLD.htmlName());
-				game.gain(this, Card.GOLD);
+				game.messageAll("revealing the " + Cards.TUNNEL.htmlNameRaw() + " and gaining " + Cards.GOLD.htmlName());
+				game.gain(this, Cards.GOLD);
 			} else {
 				break;
 			}
@@ -542,7 +542,7 @@ public class Player {
 	}
 
 	protected boolean chooseRevealTunnel() {
-		int choice = game.promptMultipleChoice(this, "Tunnel: Reveal the " + Card.TUNNEL.htmlNameRaw() + " and gain " + Card.GOLD.htmlName() + "?", "reactionPrompt", new String[] {"Yes", "No"});
+		int choice = game.promptMultipleChoice(this, "Tunnel: Reveal the " + Cards.TUNNEL.htmlNameRaw() + " and gain " + Cards.GOLD.htmlName() + "?", "reactionPrompt", new String[] {"Yes", "No"});
 		return (choice == 0);
 	}
 
@@ -759,7 +759,7 @@ public class Player {
 	}
 
 	public void putOnIslandMat(Card card) {
-        card = card.isBandOfMisfits ? Card.BAND_OF_MISFITS : card;
+        card = card.isBandOfMisfits ? Cards.BAND_OF_MISFITS : card;
 		islandMat.add(card);
 		sendIslandMat();
 	}

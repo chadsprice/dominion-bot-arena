@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -26,7 +27,7 @@ public class FortuneTeller extends Card {
             // reveal cards from the top of your deck until revealing victory or curse
             // put it top
             revealUntil(target, game,
-                    c -> c.isVictory || c == Card.CURSE,
+                    c -> c.isVictory || c == Cards.CURSE,
                     c -> putRevealedOnDeck(target, game, c),
                     true);
         }

@@ -3,6 +3,7 @@ package cards;
 import java.util.List;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -23,10 +24,10 @@ public class TradingPost extends Card {
 			List<Card> toTrash = game.promptTrashNumber(player, 2, "Trading Post");
 			player.removeFromHand(toTrash);
 			game.trash(player, toTrash);
-			if (toTrash.size() == 2 && game.supply.get(Card.SILVER) > 0) {
-				game.message(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + " to your hand");
-				game.messageOpponents(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Card.SILVER.htmlName() + " to their hand");
-				game.gainToHand(player, Card.SILVER);
+			if (toTrash.size() == 2 && game.supply.get(Cards.SILVER) > 0) {
+				game.message(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Cards.SILVER.htmlName() + " to your hand");
+				game.messageOpponents(player, "trashing " + Card.htmlList(toTrash) + " and gaining " + Cards.SILVER.htmlName() + " to their hand");
+				game.gainToHand(player, Cards.SILVER);
 			} else {
 				game.message(player, "trashing " + Card.htmlList(toTrash) + " and gain nothing");
 				game.messageOpponents(player, "trashing " + Card.htmlList(toTrash) + " and gaining nothing");

@@ -3,6 +3,7 @@ package cards;
 import java.util.List;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -22,7 +23,7 @@ public class Witch extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		plusCards(player, game, 2);
 		// each other player gains a Curse
-		junkingAttack(targets, game, Card.CURSE);
+		junkingAttack(targets, game, Cards.CURSE);
 	}
 
 	@Override

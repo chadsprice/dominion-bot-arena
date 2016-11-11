@@ -1,9 +1,6 @@
 package cards;
 
-import server.Bot;
-import server.Card;
-import server.Game;
-import server.Player;
+import server.*;
 
 import java.util.List;
 import java.util.Set;
@@ -23,10 +20,7 @@ public class JackOfAllTrades extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         // gain a Silver
-        if (game.supply.get(Card.SILVER) != 0) {
-            game.messageAll("gaining " + Card.SILVER.htmlName());
-            game.gain(player, Card.SILVER);
-        }
+        gain(player, game, Cards.SILVER);
         // look at the top card of your deck and discard it or put it back
         List<Card> drawn = player.takeFromDraw(1);
         if (!drawn.isEmpty()) {

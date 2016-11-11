@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -19,17 +20,17 @@ public class Feodum extends Card {
 
     @Override
     public int victoryValue(List<Card> deck) {
-        return (int) deck.stream().filter(c -> c == Card.SILVER).count() / 3;
+        return (int) deck.stream().filter(c -> c == Cards.SILVER).count() / 3;
     }
 
     @Override
     public void onTrash(Player player, Game game) {
         // gain 3 Silvers
-        int numSilvers = Math.min(3, game.supply.get(Card.SILVER));
+        int numSilvers = Math.min(3, game.supply.get(Cards.SILVER));
         if (numSilvers != 0) {
-            game.messageAll("gaining " + Card.SILVER.htmlName(numSilvers) + " because of " + this.htmlNameRaw());
+            game.messageAll("gaining " + Cards.SILVER.htmlName(numSilvers) + " because of " + this.htmlNameRaw());
             for (int i = 0; i < numSilvers; i++) {
-                game.gain(player, Card.SILVER);
+                game.gain(player, Cards.SILVER);
             }
         }
     }

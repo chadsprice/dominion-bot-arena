@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -14,9 +15,9 @@ public class SirVander extends Knight {
 
     @Override
     public void onTrash(Player player, Game game) {
-        if (game.supply.get(Card.GOLD) != 0) {
-            game.messageAll("gaining " + Card.GOLD.htmlName() + " because of " + this.htmlNameRaw());
-            game.gain(player, Card.GOLD);
+        if (game.supply.get(Cards.GOLD) != 0) {
+            game.messageAll("gaining " + Cards.GOLD.htmlName() + " because of " + this.htmlNameRaw());
+            game.gain(player, Cards.GOLD);
         }
     }
 

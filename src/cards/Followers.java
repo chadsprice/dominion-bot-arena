@@ -1,6 +1,7 @@
 package cards;
 
 import server.Card;
+import server.Cards;
 import server.Game;
 import server.Player;
 
@@ -22,9 +23,9 @@ public class Followers extends Card {
     public void onAttack(Player player, Game game, List<Player> targets) {
         plusCards(player, game, 2);
         // gain an Estate
-        gain(player, game, Card.ESTATE);
+        gain(player, game, Cards.ESTATE);
         // each other player gains a curse and discards down to 3 in hand
-        junkingAttack(targets, game, Card.CURSE);
+        junkingAttack(targets, game, Cards.CURSE);
         handSizeAttack(targets, game, 3);
     }
 
