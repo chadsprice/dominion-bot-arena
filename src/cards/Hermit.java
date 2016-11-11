@@ -81,7 +81,7 @@ public class Hermit extends Card {
             choices[i] = trashableFromDiscardSorted.get(i).toString();
         }
         choices[choices.length - 1] = "Trash nothing";
-        Object choice = game.sendPromptChooseFromHandOrMultipleChoice(player, trashableFromHand, "Hermit: You may trash a card from your discard pile or hand that is not a treasure. Choose one from your hand to trash that one from your hand, choose one below to trash it from your discard, or choose to trash nothing.", "actionPrompt", choices);
+        Object choice = game.sendPromptChooseFromHandOrMultipleChoice(player, trashableFromHand, this.toString() + ": You may trash a card from your discard pile or hand that is not a treasure. Choose one from your hand to trash that one from your hand, choose one below to trash it from your discard, or choose to trash nothing.", "attackPrompt", choices);
         if (choice instanceof Integer) {
             int choiceIndex = (Integer) choice;
             if (choiceIndex == choices.length - 1) {

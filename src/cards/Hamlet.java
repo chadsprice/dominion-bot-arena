@@ -51,7 +51,7 @@ public class Hamlet extends Card {
             }
         } else {
             String benefitStr = benefitIsAction ? "+1 action" : "+1 buy";
-            return game.sendPromptChooseFromHand(player, new HashSet<Card>(player.getHand()), "Hamlet: You may discard a card for " + benefitStr + ".", "actionPrompt", false, "Discard nothing");
+            return game.sendPromptChooseFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": You may discard a card for " + benefitStr + ".", "attackPrompt", false, "Discard nothing");
         }
     }
 

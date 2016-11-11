@@ -871,17 +871,17 @@ public class Game implements Runnable {
 		}
 		// handle Hermit
 		if (!boughtCardThisTurn) {
-			int numHermits = (int) player.getPlay().stream().filter(c -> c == Cards.HERMIT).count();
-			if (numHermits != 0) {
-				int numMadmen = Math.min(numHermits, nonSupply.get(Cards.MADMAN));
-				message(player, "You trash " + Cards.HERMIT.htmlName(numHermits) + " and gain " + Cards.MADMAN.htmlName(numMadmen));
-				messageOpponents(player, player.username + " trashes " + Cards.HERMIT.htmlName(numHermits) + " and gains " + Cards.MADMAN.htmlName(numMadmen));
-				for (int i = 0; i < numHermits; i++) {
-					player.removeFromPlay(Cards.HERMIT);
-					trash(player, Cards.HERMIT);
-					if (nonSupply.get(Cards.MADMAN) != 0) {
-						gain(player, Cards.MADMAN);
-					}
+			List<Card> hermitsInPlay = player.getPlay().stream()
+					.filter(c -> c instanceof Hermit)
+					.collect(Collectors.toList());
+			if (!hermitsInPlay.isEmpty()) {
+				int numMadmen = Math.min(hermitsInPlay.size(), nonSupply.get(Cards.MADMAN));
+				message(player, "You trash " + Card.htmlList(hermitsInPlay) + " and gain " + Cards.MADMAN.htmlName(numMadmen));
+				messageOpponents(player, player.username + " trashes " + Card.htmlList(hermitsInPlay) + " and gains " + Cards.MADMAN.htmlName(numMadmen));
+				player.removeFromPlay(hermitsInPlay);
+				trash(player, hermitsInPlay);
+				for (int i = 0; i < numMadmen; i++) {
+					gain(player, Cards.MADMAN);
 				}
 			}
 		}
