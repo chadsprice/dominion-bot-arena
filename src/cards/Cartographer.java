@@ -33,9 +33,7 @@ public class Cartographer extends Card {
             List<Card> toDiscard = chooseDiscardAnyNumber(player, game, new ArrayList<>(top));
             if (!toDiscard.isEmpty()) {
                 game.messageAll("discarding " + Card.htmlList(toDiscard));
-                for (Card card : toDiscard) {
-                    top.remove(card);
-                }
+                toDiscard.forEach(top::remove);
                 player.addToDiscard(toDiscard);
             }
             if (!top.isEmpty()) {

@@ -22,7 +22,7 @@ public class GhostShip extends Card {
 	public void onAttack(Player player, Game game, List<Player> targets) {
 		plusCards(player, game, 2);
 		// targets discard down to 3, putting the discarded cards on top of their decks
-		for (Player target : targets) {
+		targets.forEach(target -> {
 			if (target.getHand().size() > 3) {
 				int count = target.getHand().size() - 3;
 				List<Card> toPutOnDeck = game.promptPutNumberOnDeck(target, count, "Ghost Ship", "attackPrompt");
@@ -31,7 +31,7 @@ public class GhostShip extends Card {
 				game.message(target, "You put " + Card.numCards(toPutOnDeck.size()) + " on top of your deck");
 				game.messageOpponents(target, target.username + " puts " + Card.numCards(toPutOnDeck.size()) + " on top of their deck");
 			}
-		}
+		});
 	}
 
 	@Override

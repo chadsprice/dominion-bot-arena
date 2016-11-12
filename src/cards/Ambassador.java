@@ -27,7 +27,6 @@ public class Ambassador extends Card {
 			Card revealed = game.promptChoosePassToOpponent(player, new HashSet<>(player.getHand()), "Ambassador: Choose a card to reveal from your hand.", "actionPrompt");
 			if (game.canReturnToSupply(revealed)) {
 				// return up to 2 of it to the supply
-				int numInHand = player.numberInHand(revealed);
 				int numToReturn = chooseNumToReturn(player, game, revealed);
 				game.messageAll("returning " + revealed.htmlName(numToReturn) + " to the supply");
 				for (int i = 0; i < numToReturn; i++) {

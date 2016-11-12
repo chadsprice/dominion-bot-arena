@@ -18,54 +18,46 @@ import org.json.simple.JSONObject;
 
 public class Player {
 
-	public static final Comparator<Card> HAND_ORDER_COMPARATOR = new Comparator<Card>() {
-		@Override
-		public int compare(Card c1, Card c2) {
-			int c1_type, c2_type;
-			if (c1.isAction) {
-				c1_type = 1;
-			} else if (c1.isTreasure) {
-				c1_type = 2;
-			} else if (c1.isVictory) {
-				c1_type = 3;
-			} else {
-				c1_type = 4;
-			}
-			if (c2.isAction) {
-				c2_type = 1;
-			} else if (c2.isTreasure) {
-				c2_type = 2;
-			} else if (c2.isVictory) {
-				c2_type = 3;
-			} else {
-				c2_type = 4;
-			}
-			if (c1_type != c2_type) {
-				// actions < coins < victories < curses 
-				return c1_type - c2_type;
-			} else {
-				// coins and victories
-				if (c1_type == 2 || c1_type == 3) {
-					// order by cost, which is useful for upgrading
-					return c2.cost() - c1.cost();
+	public static final Comparator<Card> HAND_ORDER_COMPARATOR =
+			(a, b) -> {
+				int a_type = HAND_ORDER_TYPE(a);
+				int b_type = HAND_ORDER_TYPE(b);
+				if (a_type != b_type) {
+					return a_type - b_type;
+				} else {
+					// coins and victories
+					if (a_type == 2 || b_type == 3) {
+						// order by cost, which is useful for upgrading
+						return a.cost() - b.cost();
+					}
+					// order alphabetically
+					return a.toString().compareTo(b.toString());
 				}
-				// order alphabetically
-				return c1.toString().compareTo(c2.toString());
-			}
+			};
+	private static int HAND_ORDER_TYPE(Card card) {
+		// action < treasure < victory < curse
+		if (card.isAction) {
+			return 0;
+		} else if (card.isTreasure) {
+			return 1;
+		} else if (card.isVictory) {
+			return 2;
+		} else {
+			return 3;
 		}
-	};
+	}
 
-	public PlayerWebSocketHandler conn;
-	public List<JSONObject> commands = new ArrayList<>();
+	PlayerWebSocketHandler conn;
+	private List<JSONObject> commands = new ArrayList<>();
 
-	public BlockingQueue<Object> responses = new LinkedBlockingQueue<>();
-	public boolean forfeit;
+	BlockingQueue<Object> responses = new LinkedBlockingQueue<>();
+	boolean forfeit;
 
-	public void sendCommand(JSONObject command){
+	void sendCommand(JSONObject command){
 		sendCommand(command, false);
 	}
 
-	public void issueCommand(JSONObject command) {
+	void issueCommand(JSONObject command) {
 		sendCommand(command, true);
 	}
 
@@ -141,7 +133,7 @@ public class Player {
 		this.conn = conn;
 	}
 
-	public void startGame(boolean usingShelters) {
+	void startGame(boolean usingShelters) {
 		draw.clear();
 		hand.clear();
 		play.clear();
@@ -172,7 +164,7 @@ public class Player {
 		newTurn();
 	}
 
-	public void newTurn() {
+	private void newTurn() {
 		actions = 1;
 		buys = 1;
 		coins = 0;
@@ -239,18 +231,18 @@ public class Player {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendActions() {
+	void sendActions() {
 		JSONObject setActions = new JSONObject();
 		setActions.put("command", "setActions");
 		setActions.put("actions", Integer.toString(actions));
 		sendCommand(setActions);
 	}
 
-	public int getBuys() {
+	int getBuys() {
 		return buys;
 	}
 
-	public void setBuys(int buys) {
+	private void setBuys(int buys) {
 		this.buys = buys;
 		sendBuys();
 	}
@@ -260,7 +252,7 @@ public class Player {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendBuys() {
+	void sendBuys() {
 		JSONObject setBuys = new JSONObject();
 		setBuys.put("command", "setBuys");
 		setBuys.put("buys", Integer.toString(buys));
@@ -280,7 +272,7 @@ public class Player {
 		setCoins(coins + toAdd);
 	}
 
-	public int getUsableCoins() {
+	int getUsableCoins() {
 		if (!isAutoplayingTreasures()) {
 			return getCoins();
 		} else {
@@ -336,7 +328,7 @@ public class Player {
 		}
 	}
 
-	public boolean isAutoplayingTreasures() {
+	private boolean isAutoplayingTreasures() {
 		return !hand.contains(Cards.QUARRY) &&
 				!hand.contains(Cards.CONTRABAND) &&
 				!hand.contains(Cards.VENTURE) &&
@@ -358,7 +350,7 @@ public class Player {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendDrawSize() {
+	private void sendDrawSize() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setDrawSize");
 		command.put("size", draw.size());
@@ -366,7 +358,7 @@ public class Player {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendDiscardSize() {
+	private void sendDiscardSize() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setDiscardSize");
 		command.put("size", discard.size());
@@ -387,7 +379,7 @@ public class Player {
 		return num;
 	}
 
-	public boolean handContains(List<Card> cards) {
+	boolean handContains(List<Card> cards) {
 		List<Card> handCopy = new ArrayList<>(hand);
 		for (Card card : cards) {
 			if (!handCopy.remove(card)) {
@@ -428,9 +420,7 @@ public class Player {
 		}
 		// add new cards to the end of the hand order
 		Set<Card> newCards = new HashSet<>(counts.keySet());
-		for (Card oldCard : handOrder) {
-			newCards.remove(oldCard);
-		}
+		handOrder.forEach(newCards::remove);
 		List<Card> newCardList = new ArrayList<>(newCards);
 		Collections.sort(newCardList, HAND_ORDER_COMPARATOR);
 		handOrder.addAll(newCardList);
@@ -659,7 +649,7 @@ public class Player {
 		sendPlay();
 	}
 
-	public List<Card> removeAllTreasuresFromPlay() {
+	List<Card> removeAllTreasuresFromPlay() {
 		List<Card> treasures = new ArrayList<>();
 		for (Iterator<Card> iter = play.iterator(); iter.hasNext(); ) {
 			Card card = iter.next();
@@ -704,7 +694,7 @@ public class Player {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendPlay() {
+	private void sendPlay() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setInPlay");
 		if (!play.isEmpty()) {
@@ -717,7 +707,7 @@ public class Player {
 		return coinTokens;
 	}
 
-	public void setCoinTokens(int coinTokens) {
+	private void setCoinTokens(int coinTokens) {
 		this.coinTokens = coinTokens;
 		sendCoinTokens();
 	}
@@ -798,7 +788,7 @@ public class Player {
 		sendVictoryTokenMat();
 	}
 
-	public int getVictoryTokens() {
+	int getVictoryTokens() {
 		return victoryTokens;
 	}
 
@@ -812,7 +802,7 @@ public class Player {
 		sendCommand(command);
 	}
 
-	public List<DurationEffect> getDurationEffects() {
+	List<DurationEffect> getDurationEffects() {
 		return durationEffects;
 	}
 
@@ -820,7 +810,7 @@ public class Player {
 		addDurationEffect(card, null);
 	}
 
-	public void addDurationEffect(Card card, List<Card> havenedCards) {
+	void addDurationEffect(Card card, List<Card> havenedCards) {
 		DurationEffect effect = new DurationEffect();
 		effect.card = card;
 		effect.havenedCards = havenedCards;
@@ -831,11 +821,11 @@ public class Player {
 		sendDurations();
 	}
 
-	public List<Card> getDurationSetAsideCards() {
+	List<Card> getDurationSetAsideCards() {
 		return durationSetAsideCards;
 	}
 
-	public void addDurationSetAside(Card card) {
+	void addDurationSetAside(Card card) {
 		durationSetAsideCards.add(card);
 		sendDurations();
 	}
@@ -845,7 +835,7 @@ public class Player {
 		sendDurations();
 	}
 
-	public void cleanupDurations() {
+	void cleanupDurations() {
 		durationEffects.clear();
 		resolvedDurationCards.addAll(durationSetAsideCards);
 		durationSetAsideCards.clear();
@@ -853,7 +843,7 @@ public class Player {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void sendDurations() {
+	private void sendDurations() {
 		JSONObject command = new JSONObject();
 		command.put("command", "setDurations");
 		command.put("contents", durationSetAsideCards.isEmpty() ? "" : Card.htmlList(durationSetAsideCards));

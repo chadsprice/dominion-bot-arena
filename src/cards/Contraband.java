@@ -22,11 +22,11 @@ public class Contraband extends Card {
 		Card toProhibit = game.promptNameACard(playerOnLeft, "Contraband", "Name a card. " + player.username + " will not be able to buy it this turn.");
 		game.message(player, playerOnLeft.username + " names " + toProhibit.htmlNameRaw() + ", you cannot buy it this turn");
 		game.message(playerOnLeft, "you name " + toProhibit.htmlNameRaw() + ", " + player.username + " cannot buy it this turn");
-		for (Player other : game.players) {
+		game.players.forEach(other -> {
 			if (other != player && other != playerOnLeft) {
 				game.message(playerOnLeft, playerOnLeft.username + " names " + toProhibit.htmlNameRaw() + ", " + player.username + " cannot buy it this turn");
 			}
-		}
+		});
 		game.contrabandProhibited.add(toProhibit);
 	}
 

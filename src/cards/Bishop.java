@@ -33,7 +33,7 @@ public class Bishop extends Card {
 			game.messageAll("having no card to trash");
 		}
 		// each other player may trash a card
-		for (Player opponent : game.getOpponents(player)) {
+		game.getOpponents(player).forEach(opponent -> {
 			if (!opponent.getHand().isEmpty()) {
 				int choice = game.promptMultipleChoice(opponent, "Bishop: Trash a card from your hand?", new String[] {"Yes", "No"});
 				if (choice == 0) {
@@ -44,7 +44,7 @@ public class Bishop extends Card {
 					game.messageOpponents(opponent, opponent.username + " trashes " + toTrash.htmlName());
 				}
 			}
-		}
+		});
 	}
 
 	@Override
