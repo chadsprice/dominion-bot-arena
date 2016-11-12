@@ -22,7 +22,7 @@ public class Expand extends Card {
 	public void onPlay(Player player, Game game) {
 		// trash a card from hand
 		if (!player.getHand().isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Expand: Choose a card to trash");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Expand: Choose a card to trash");
 			// trash card
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);

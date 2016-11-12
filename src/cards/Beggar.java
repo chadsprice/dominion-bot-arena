@@ -29,9 +29,8 @@ public class Beggar extends Card {
 
     @Override
     public boolean onAttackReaction(Player player, Game game) {
-        int numSilvers = game.supply.get(Cards.SILVER);
-        game.message(player, reactionStr(numSilvers, true));
-        game.messageOpponents(player, reactionStr(numSilvers, false));
+        game.message(player, reactionStr(game, true));
+        game.messageOpponents(player, reactionStr(game, false));
         // discard this Beggar
         player.putFromHandIntoDiscard(this);
         if (game.supply.get(Cards.SILVER) != 0) {
@@ -45,10 +44,12 @@ public class Beggar extends Card {
         return false;
     }
 
-    private String reactionStr(int numSilvers, boolean isPlayer) {
+    private String reactionStr(Game game, boolean isPlayer) {
         String str = "discarding it";
-        if (numSilvers > 0) {
-            str += " and gaining " + Cards.SILVER.htmlName(numSilvers) + ", putting " + ((numSilvers == 1) ? "it" : "one") + " on top of " + (isPlayer ? "your" : "their") + " deck";
+        if (game.supply.get(Cards.SILVER) == 1) {
+            str += " and gaining " + Cards.SILVER.htmlName() + ", putting it on top of " + (isPlayer ? "your" : "their") + " deck";
+        } else if (game.supply.get(Cards.SILVER) >= 2) {
+            str += " and gaining " + Cards.SILVER.htmlName(2) + ", putting one on top of " + (isPlayer ? "your" : "their") + " deck";
         }
         return str;
     }

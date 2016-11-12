@@ -23,7 +23,7 @@ public class Bishop extends Card {
 		plusVictoryTokens(player, game, 1);
 		// trash a card for +VP equal to half its cost in coins rounded down
 		if (!player.getHand().isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Bishop: Choose a card to trash for +VP equal to half its cost rounded down.");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Bishop: Choose a card to trash for +VP equal to half its cost rounded down.");
 			player.removeFromHand(toTrash);
 			game.trash(player, toTrash);
 			int victoryTokensToGain = toTrash.cost(game) / 2;
@@ -37,7 +37,7 @@ public class Bishop extends Card {
 			if (!opponent.getHand().isEmpty()) {
 				int choice = game.promptMultipleChoice(opponent, "Bishop: Trash a card from your hand?", new String[] {"Yes", "No"});
 				if (choice == 0) {
-					Card toTrash = game.promptChooseTrashFromHand(opponent, new HashSet<Card>(player.getHand()), "Bishop: Choose a card to trash.");
+					Card toTrash = game.promptChooseTrashFromHand(opponent, new HashSet<>(player.getHand()), "Bishop: Choose a card to trash.");
 					opponent.removeFromHand(toTrash);
 					game.trash(opponent, toTrash);
 					game.message(opponent, "you trash " + toTrash.htmlName());

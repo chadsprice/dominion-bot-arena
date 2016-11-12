@@ -25,7 +25,7 @@ public class HornOfPlenty extends Card {
 
     @Override
     public void onPlay(Player player, Game game) {
-        int maxCost = new HashSet<Card>(player.allCardsInPlay()).size();
+        int maxCost = new HashSet<>(player.allCardsInPlay()).size();
         Set<Card> gainable = game.cardsCostingAtMost(maxCost);
         if (!gainable.isEmpty()) {
             Card toGain = game.promptChooseGainFromSupply(player, gainable, "Horn of Plenty: Choose a card to gain (if it's a Victory card, you will trash the " + this.htmlNameRaw() + ")");

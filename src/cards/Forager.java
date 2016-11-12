@@ -23,7 +23,7 @@ public class Forager extends Card {
         plusActions(player, game, 1);
         plusBuys(player, game, 1);
         if (!player.getHand().isEmpty()) {
-            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Forager: Choose a card to trash.");
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Forager: Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
             game.trash(player, toTrash);

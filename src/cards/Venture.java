@@ -1,8 +1,5 @@
 package cards;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import server.Card;
 import server.Game;
 import server.Player;
@@ -18,40 +15,23 @@ public class Venture extends Card {
 		return 5;
 	}
 
+	// Java lambdas can't set local variables, so use this object to hold a Card variable that can be set
+	private static class CardHolder {
+		Card held;
+	}
+
 	@Override
 	public void onPlay(Player player, Game game) {
+		CardHolder holder = new CardHolder();
 		// reveal cards from the top of the deck until a treasure is revealed
-		List<Card> revealed = new ArrayList<Card>();
-		Card treasure = null;
-		for (;;) {
-			List<Card> drawn = player.takeFromDraw(1);
-			if (drawn.isEmpty()) {
-				// revealed entire deck with no treasures
-				break;
-			}
-			Card card = drawn.get(0);
-			revealed.add(card);
-			if (card.isTreasure) {
-				// revealed a treasure
-				treasure = card;
-				break;
-			}
-		}
-		if (revealed.isEmpty()) {
-			game.message(player, "your deck is empty");
-			game.messageOpponents(player, "their deck is empty");
-			return;
-		}
-		game.messageAll("revealing " + Card.htmlList(revealed));
-		if (treasure != null) {
-			revealed.remove(treasure);
-		}
-		// discard the rest
-		player.addToDiscard(revealed);
-		if (treasure != null) {
+		// discard the other cards before playing the treasure
+		revealUntil(player, game,
+				c -> c.isTreasure,
+				c -> holder.held = c);
+		if (holder.held != null) {
 			// play the revealed treasure
-			game.messageAll("playing the " + treasure.htmlNameRaw());
-			game.playTreasure(player, treasure);
+			game.messageAll("playing the " + holder.held.htmlNameRaw());
+			game.playTreasure(player, holder.held);
 		}
 	}
 

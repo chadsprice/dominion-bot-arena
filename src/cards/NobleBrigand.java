@@ -69,7 +69,7 @@ public class NobleBrigand extends Card {
         if (player instanceof Bot) {
             return ((Bot) player).nobleBrigandTrashGoldOverSilver();
         }
-        int choice = game.promptMultipleChoice(player, "Noble Brigand: " + target.username + " reveals " + Cards.GOLD.htmlName() + " and " + Cards.SILVER + ". Trash and gain which one?", new String[] {"Gold", "Silver"});
+        int choice = game.promptMultipleChoice(player, this.toString() + ": " + target.username + " reveals " + Cards.GOLD.htmlName() + " and " + Cards.SILVER + ". Trash and gain which one?", new String[] {"Gold", "Silver"});
         return (choice == 0);
     }
 

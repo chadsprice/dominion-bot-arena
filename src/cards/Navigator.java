@@ -35,7 +35,7 @@ public class Navigator extends Card {
 			} else {
 				// put them back on top of the deck in any order
 				Collections.sort(drawn, Player.HAND_ORDER_COMPARATOR);
-				List<Card> toPutOnDeck = new ArrayList<Card>();
+				List<Card> toPutOnDeck = new ArrayList<>();
 				while (!drawn.isEmpty()) {
 					String[] choices = new String[drawn.size()];
 					for (int i = 0; i < drawn.size(); i++) {

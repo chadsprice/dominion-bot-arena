@@ -4,9 +4,6 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.List;
-import java.util.Map;
-
 public class Poacher extends Card {
 
     public Poacher() {

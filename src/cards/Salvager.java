@@ -22,7 +22,7 @@ public class Salvager extends Card {
 		plusBuys(player, game, 1);
 		// trash a card from the hand, +$ equal to its cost
 		if (!player.getHand().isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Salvager: Choose a card to trash for +$ equal to its cost");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": Choose a card to trash for +$ equal to its cost");
 			player.removeFromHand(toTrash);
 			game.trash(player, toTrash);
 			int cost = toTrash.cost(game);

@@ -22,7 +22,7 @@ public class Tactician extends Card {
 	@Override
 	public boolean onDurationPlay(Player player, Game game, List<Card> havenedCards) {
 		if (!player.getHand().isEmpty()) {
-			List<Card> allCardsInHand = new ArrayList<Card>(player.getHand());
+			List<Card> allCardsInHand = new ArrayList<>(player.getHand());
 			player.putFromHandIntoDiscard(allCardsInHand);
 			game.messageAll("discarding " + Card.htmlList(allCardsInHand));
 			return true;

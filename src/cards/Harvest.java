@@ -24,7 +24,7 @@ public class Harvest extends Card {
         if (!revealed.isEmpty()) {
             game.messageAll("revealing and discarding " + Card.htmlList(revealed));
             player.addToDiscard(revealed);
-            int numDifferentlyNamed = new HashSet<Card>(revealed).size();
+            int numDifferentlyNamed = new HashSet<>(revealed).size();
             plusCoins(player, game, numDifferentlyNamed);
         } else {
             game.message(player, "your deck is empty");

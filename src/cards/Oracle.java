@@ -4,9 +4,6 @@ import server.Bot;
 import server.Card;
 import server.Game;
 import server.Player;
-
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Oracle extends Card {

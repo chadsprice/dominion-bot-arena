@@ -40,7 +40,7 @@ public class Menagerie extends Card {
 
     private boolean containsDuplicates(Collection<Card> cards) {
         // if there are duplicates, the Collection will be larger than the Set
-        return cards.size() > new HashSet<Card>(cards).size();
+        return cards.size() > new HashSet<>(cards).size();
     }
 
     @Override

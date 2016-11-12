@@ -35,7 +35,7 @@ public class Island extends Card {
 			movedToIsland = true;
 		}
 		if (!player.getHand().isEmpty()) {
-			Card card = game.promptChooseIslandFromHand(player, new HashSet<Card>(player.getHand()), "Island: Choose a card to set aside on your island mat.");
+			Card card = game.promptChooseIslandFromHand(player, new HashSet<>(player.getHand()), "Island: Choose a card to set aside on your island mat.");
 			player.removeFromHand(card);
 			player.putOnIslandMat(card);
 			game.message(player, "putting " + card.htmlName() + " on your island mat");

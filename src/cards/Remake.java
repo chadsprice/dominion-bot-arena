@@ -4,9 +4,6 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public class Remake extends Card {
 
     public Remake() {
@@ -21,25 +18,7 @@ public class Remake extends Card {
     @Override
     public void onPlay(Player player, Game game) {
         for (int i = 0; i < 2; i++) {
-            if (player.getHand().isEmpty()) {
-                game.message(player, "your hand is empty");
-                game.messageOpponents(player, "their hand is empty");
-                break;
-            }
-            // trash a card from your hand
-            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Remake: Choose a card to trash.");
-            game.messageAll("trashing " + toTrash.htmlName());
-            player.removeFromHand(toTrash);
-            game.trash(player, toTrash);
-            // gain a card costing exactly $1 more
-            Set<Card> gainable = game.cardsCostingExactly(toTrash.cost(game) + 1);
-            if (!gainable.isEmpty()) {
-                Card toGain = game.promptChooseGainFromSupply(player, gainable, "Remake: Choose a card to gain.");
-                game.messageAll("gaining " + toGain.htmlName());
-                game.gain(player, toGain);
-            } else {
-                game.messageAll("gaining nothing");
-            }
+            onRemodelVariant(player, game, 1, true);
         }
     }
 

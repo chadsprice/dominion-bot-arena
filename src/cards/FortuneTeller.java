@@ -5,7 +5,6 @@ import server.Cards;
 import server.Game;
 import server.Player;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class FortuneTeller extends Card {

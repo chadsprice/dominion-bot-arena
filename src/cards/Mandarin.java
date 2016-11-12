@@ -23,7 +23,7 @@ public class Mandarin extends Card {
     public void onPlay(Player player, Game game) {
         plusCoins(player, game, 3);
         if (!player.getHand().isEmpty()) {
-            Card toPutOnDeck = game.promptChoosePutOnDeck(player, new HashSet<Card>(player.getHand()), "Mandarin: Put a card from your hand on top of your deck.");
+            Card toPutOnDeck = game.promptChoosePutOnDeck(player, new HashSet<>(player.getHand()), "Mandarin: Put a card from your hand on top of your deck.");
             game.message(player, "putting " + toPutOnDeck.htmlName() + " on top of your deck");
             game.messageOpponents(player, "putting a card on top of their deck");
             player.putFromHandOntoDraw(toPutOnDeck);

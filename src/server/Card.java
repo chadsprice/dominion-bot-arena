@@ -13,12 +13,12 @@ public class Card {
 	public boolean isTreasure;
 	public boolean isVictory;
 	public boolean isAttack;
-	public boolean isAttackReaction;
+    public boolean isAttackReaction;
 	public boolean isDuration;
-	public boolean isRuins;
-	public boolean isShelter;
-	public boolean isLooter;
-	public boolean isOverpayable;
+    public boolean isRuins;
+    public boolean isShelter;
+    public boolean isLooter;
+    public boolean isOverpayable;
 
     public boolean isBandOfMisfits;
 
@@ -471,22 +471,25 @@ public class Card {
         }
     }
 
-	protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt) {
+    protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt) {
+        putOnDeckInAnyOrder(player, game, cards, prompt, "actionPrompt");
+    }
+	protected void putOnDeckInAnyOrder(Player player, Game game, List<Card> cards, String prompt, String promptType) {
 		List<Card> toPutOnDeck;
 		// if there is no order to decide
-		if (new HashSet<Card>(cards).size() < 2) {
+		if (new HashSet<>(cards).size() < 2) {
 			// put them on the deck as-is
 			toPutOnDeck = cards;
 		} else {
 			// otherwise, prompt the user for the order
-			toPutOnDeck = new ArrayList<Card>();
+			toPutOnDeck = new ArrayList<>();
 			Collections.sort(cards, Player.HAND_ORDER_COMPARATOR);
 			while (!cards.isEmpty()) {
 				String[] choices = new String[cards.size()];
 				for (int i = 0; i < cards.size(); i++) {
 					choices[i] = cards.get(i).toString();
 				}
-				int choice = game.promptMultipleChoice(player, prompt + " (the first card you choose will be on top of your deck)", choices);
+				int choice = game.promptMultipleChoice(player, prompt + " (the first card you choose will be on top of your deck)", promptType, choices);
 				toPutOnDeck.add(cards.remove(choice));
 			}
 		}
@@ -673,14 +676,9 @@ public class Card {
 		char firstLetter = this.toString().toLowerCase().charAt(0);
 		return isVowel(firstLetter) ? "an" : "a";
 	}
-	private static char[] vowels = new char[] {'a', 'e', 'i', 'o', 'u'};
 	private static boolean isVowel(char letter) {
-		for (int i = 0; i < vowels.length; i++) {
-			if (letter == vowels[i]) {
-				return true;
-			}
-		}
-		return false;
+        return Arrays.stream(new Character[] {'a', 'e', 'i', 'o', 'u'})
+                .anyMatch(v -> v == letter);
 	}
 	public String plural() {
 		return this.toString() + "s";
@@ -698,7 +696,7 @@ public class Card {
 		if (cards.size() == 0) {
 			return "0 cards";
 		}
-		Map<Card, Integer> counts = new HashMap<Card, Integer>();
+		Map<Card, Integer> counts = new HashMap<>();
 		for (Card card : cards) {
 			if (!counts.containsKey(card)) {
 				counts.put(card, 1);
@@ -706,7 +704,7 @@ public class Card {
 				counts.put(card, counts.get(card) + 1);
 			}
 		}
-		List<Card> order = new ArrayList<Card>(counts.keySet());
+		List<Card> order = new ArrayList<>(counts.keySet());
 		Collections.sort(order, Player.HAND_ORDER_COMPARATOR);
 		// construct comma separated list
 		StringBuilder builder = new StringBuilder();
@@ -720,7 +718,7 @@ public class Card {
 		}
 		return builder.toString();
 	}
-	public static String htmlSet(Set<Card> cards) {
+	static String htmlSet(Set<Card> cards) {
 		if (cards.size() == 0) {
 			return "";
 		}
@@ -801,7 +799,7 @@ public class Card {
 		}
 	}
 
-	public boolean inMixedPile() {
+	boolean inMixedPile() {
 		return mixedPileId() != null;
 	}
 

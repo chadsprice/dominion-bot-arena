@@ -24,7 +24,7 @@ public class TradeRoute extends Card {
 			plusCoins(player, game, game.tradeRouteMat);
 		}
 		if (!player.getHand().isEmpty()) {
-			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Trade Route: Choose a card to trash from your hand.");
+			Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), this.toString() + ": Choose a card to trash from your hand.");
 			game.messageAll("trashing " + toTrash.htmlName());
 			player.removeFromHand(toTrash);
 			game.trash(player, toTrash);

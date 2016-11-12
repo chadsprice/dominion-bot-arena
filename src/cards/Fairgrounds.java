@@ -18,7 +18,7 @@ public class Fairgrounds extends Card {
 
     @Override
     public int victoryValue(List<Card> deck) {
-        return 2 * (new HashSet<Card>(deck).size() / 5);
+        return 2 * (new HashSet<>(deck).size() / 5);
     }
 
     @Override

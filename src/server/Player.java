@@ -56,9 +56,9 @@ public class Player {
 	};
 
 	public PlayerWebSocketHandler conn;
-	public List<JSONObject> commands = new ArrayList<JSONObject>();
+	public List<JSONObject> commands = new ArrayList<>();
 
-	public BlockingQueue<Object> responses = new LinkedBlockingQueue<Object>();
+	public BlockingQueue<Object> responses = new LinkedBlockingQueue<>();
 	public boolean forfeit;
 
 	public void sendCommand(JSONObject command){
@@ -400,7 +400,7 @@ public class Player {
 	// the order of stacks displayed in the player's hand.
 	// newly drawn cards that do not already have a stack are always placed at the end.
 	// this prevents the hand from being drastically rearranged in the middle of the player's turn
-	private List<Card> handOrder = new ArrayList<Card>();
+	private List<Card> handOrder = new ArrayList<>();
 	private void resetHandOrder() {
 		handOrder.clear();
 	}
@@ -410,7 +410,7 @@ public class Player {
 		JSONObject command = new JSONObject();
 		command.put("command", "setHand");
 		// count cards of each type in hand
-		Map<Card, Integer> counts = new HashMap<Card, Integer>();
+		Map<Card, Integer> counts = new HashMap<>();
 		for (Card card : hand) {
 			if (!counts.containsKey(card)) {
 				counts.put(card, 1);
@@ -427,11 +427,11 @@ public class Player {
 			}
 		}
 		// add new cards to the end of the hand order
-		Set<Card> newCards = new HashSet<Card>(counts.keySet());
+		Set<Card> newCards = new HashSet<>(counts.keySet());
 		for (Card oldCard : handOrder) {
 			newCards.remove(oldCard);
 		}
-		List<Card> newCardList = new ArrayList<Card>(newCards); 
+		List<Card> newCardList = new ArrayList<>(newCards);
 		Collections.sort(newCardList, HAND_ORDER_COMPARATOR);
 		handOrder.addAll(newCardList);
 		// send card counts in order of handOrder
@@ -571,7 +571,7 @@ public class Player {
 	}
 
 	public List<Card> takeFromDraw(int n) {
-		List<Card> drawn = new ArrayList<Card>();
+		List<Card> drawn = new ArrayList<>();
 		// if draw pile is too small, take all of it and replace it with shuffled discard pile
 		if (draw.size() < n) {
 			drawn.addAll(draw);
@@ -660,7 +660,7 @@ public class Player {
 	}
 
 	public List<Card> removeAllTreasuresFromPlay() {
-		List<Card> treasures = new ArrayList<Card>();
+		List<Card> treasures = new ArrayList<>();
 		for (Iterator<Card> iter = play.iterator(); iter.hasNext(); ) {
 			Card card = iter.next();
 			if (card.isTreasure) {
@@ -861,7 +861,7 @@ public class Player {
 	}
 
 	public List<Card> getDeck() {
-		List<Card> deck = new ArrayList<Card>();
+		List<Card> deck = new ArrayList<>();
 		deck.addAll(draw);
 		deck.addAll(hand);
 		deck.addAll(play);
@@ -870,6 +870,10 @@ public class Player {
 		deck.addAll(islandMat);
 		deck.addAll(durationSetAsideCards);
 		deck.addAll(resolvedDurationCards);
+		// count any Band of Misfits still in play as just a Band of Misfits, not as the card it is emulating
+		deck = deck.stream()
+				.map(c -> c.isBandOfMisfits ? Cards.BAND_OF_MISFITS : c)
+				.collect(Collectors.toList());
 		return deck;
 	}
 

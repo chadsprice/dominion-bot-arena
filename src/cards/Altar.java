@@ -5,7 +5,6 @@ import server.Game;
 import server.Player;
 
 import java.util.HashSet;
-import java.util.Set;
 
 public class Altar extends Card {
 

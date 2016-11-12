@@ -4,9 +4,6 @@ import server.Card;
 import server.Game;
 import server.Player;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 public class ThroneRoomFirstEdition extends Card {
 
     public ThroneRoomFirstEdition() {

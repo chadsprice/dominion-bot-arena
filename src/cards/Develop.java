@@ -24,15 +24,15 @@ public class Develop extends Card {
     public void onPlay(Player player, Game game) {
         if (!player.getHand().isEmpty()) {
             // trash a card from your hand
-            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<Card>(player.getHand()), "Develop: Choose a card to trash.");
+            Card toTrash = game.promptChooseTrashFromHand(player, new HashSet<>(player.getHand()), "Develop: Choose a card to trash.");
             game.messageAll("trashing " + toTrash.htmlName());
             player.removeFromHand(toTrash);
             game.trash(player, toTrash);
             // gain a card costing $1 more and a card costing $1 less, in either order
             int cost = toTrash.cost(game);
-            List<Card> gained = new ArrayList<Card>();
+            List<Card> gained = new ArrayList<>();
             for (int i = 0; i < 2; i++) {
-                Set<Card> gainable = new HashSet<Card>();
+                Set<Card> gainable = new HashSet<>();
                 // cards costing $1 more
                 if (gained.isEmpty() || gained.get(0).cost(game) != cost + 1) {
                     gainable.addAll(game.cardsCostingExactly(cost + 1));

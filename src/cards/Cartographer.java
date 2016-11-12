@@ -30,7 +30,7 @@ public class Cartographer extends Card {
             game.message(player, "drawing " + Card.htmlList(top));
             game.messageOpponents(player, "drawing " + Card.numCards(top.size()));
             // discard any number of them
-            List<Card> toDiscard = chooseDiscardAnyNumber(player, game, new ArrayList<Card>(top));
+            List<Card> toDiscard = chooseDiscardAnyNumber(player, game, new ArrayList<>(top));
             if (!toDiscard.isEmpty()) {
                 game.messageAll("discarding " + Card.htmlList(toDiscard));
                 for (Card card : toDiscard) {
@@ -50,7 +50,7 @@ public class Cartographer extends Card {
 
     private List<Card> chooseDiscardAnyNumber(Player player, Game game, List<Card> cards) {
         if (player instanceof Bot) {
-            List<Card> toDiscard = ((Bot) player).cartographerDiscardAnyNumber(new ArrayList<Card>(cards));
+            List<Card> toDiscard = ((Bot) player).cartographerDiscardAnyNumber(new ArrayList<>(cards));
             // verify that the bot can discard all of those cards
             for (Card eachToDiscard : toDiscard) {
                 if (cards.remove(eachToDiscard)) {
@@ -59,7 +59,7 @@ public class Cartographer extends Card {
             }
             return toDiscard;
         }
-        List<Card> toDiscard = new ArrayList<Card>();
+        List<Card> toDiscard = new ArrayList<>();
         Collections.sort(cards, Player.HAND_ORDER_COMPARATOR);
         while (!cards.isEmpty()) {
             Card card = sendPromptPlayerDiscardOne(player, game, cards);

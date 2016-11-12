@@ -1,8 +1,8 @@
 package cards;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import server.Card;
 import server.Game;
@@ -24,12 +24,13 @@ public class Smugglers extends Card {
 		Set<Card> choosable = choosable(player, game);
 		if (!choosable.isEmpty()) {
 			Set<Card> smuggleable = smuggleable(player, game);
-			boolean canGainNothing = canGainNothing(player, game);
+			boolean canGainNothing = choosable(player, game).stream()
+					.anyMatch(c -> !game.isAvailableInSupply(c));
 			Card toGain;
 			if (canGainNothing) {
-				toGain = game.promptChooseGainFromSupply(player, smuggleable, "Smuggler: Choose a card to gain (or gain nothing because one of the cards you may choose is not in the supply)", false, "Gain nothing");
+				toGain = game.promptChooseGainFromSupply(player, smuggleable, this.toString() + ": Choose a card to gain (or gain nothing because one of the cards you may choose is not in the supply)", false, "Gain nothing");
 			} else {
-				toGain = game.promptChooseGainFromSupply(player, smuggleable, "Smuggler: Choose a card to gain");
+				toGain = game.promptChooseGainFromSupply(player, smuggleable, this.toString() + ": Choose a card to gain");
 			}
 			if (toGain!= null) {
 				game.messageAll("gaining " + toGain.htmlName());
@@ -45,22 +46,9 @@ public class Smugglers extends Card {
 	}
 
 	public Set<Card> smuggleable(Player player, Game game) {
-		Set<Card> smuggleable = new HashSet<Card>();
-		for (Card card : choosable(player, game)) {
-			if (isInSupply(card, game)) {
-				smuggleable.add(card);
-			}
-		}
-		return smuggleable;
-	}
-
-	public boolean canGainNothing(Player player, Game game) {
-		for (Card card : choosable(player, game)) {
-			if (!isInSupply(card, game)) {
-				return true;
-			}
-		}
-		return false;
+		return choosable(player, game).stream()
+				.filter(game::isAvailableInSupply)
+				.collect(Collectors.toSet());
 	}
 
 	private Set<Card> choosable(Player player, Game game) {
@@ -69,18 +57,9 @@ public class Smugglers extends Card {
 		Player playerOnRight = opponents.get(opponents.size() - 1);
 		Set<Card> gained = playerOnRight.cardsGainedDuringTurn;
 		// get those costing $6 or less
-		Set<Card> choosable = new HashSet<Card>();
-		for (Card card : gained) {
-			if (card.cost(game) <= 6) {
-				choosable.add(card);
-			}
-		}
-		return choosable;
-	}
-
-	private boolean isInSupply(Card card, Game game) {
-		Integer numInSupply = game.supply.get(card);
-		return numInSupply != null && numInSupply != 0;
+		return gained.stream()
+				.filter(c -> c.cost(game) <= 6)
+				.collect(Collectors.toSet());
 	}
 
 	@Override

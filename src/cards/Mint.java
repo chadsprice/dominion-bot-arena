@@ -2,6 +2,7 @@ package cards;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import server.Card;
 import server.Game;
@@ -20,7 +21,9 @@ public class Mint extends Card {
 
 	@Override
 	public void onPlay(Player player, Game game) {
-		Set<Card> treasures = treasuresInHand(player);
+		Set<Card> treasures = player.getHand().stream()
+				.filter(c -> c.isTreasure)
+				.collect(Collectors.toSet());
 		if (!treasures.isEmpty()) {
 			Card card = game.promptChooseGainCopyOfCardInHand(player, treasures, "Mint: Choose a card to reveal from your hand and gain a copy of.");
 			if (card != null) {
@@ -37,16 +40,6 @@ public class Mint extends Card {
 			game.message(player, "having no treasure in your hand");
 			game.messageOpponents(player, "having no treasure in their hand");
 		}
-	}
-
-	private Set<Card> treasuresInHand(Player player) {
-		Set<Card> treasures = new HashSet<Card>();
-		for (Card card : player.getHand()) {
-			if (card.isTreasure) {
-				treasures.add(card);
-			}
-		}
-		return treasures;
 	}
 
 	@Override

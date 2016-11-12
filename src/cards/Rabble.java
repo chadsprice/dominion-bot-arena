@@ -1,9 +1,7 @@
 package cards;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import server.Card;
 import server.Game;
@@ -32,14 +30,10 @@ public class Rabble extends Card {
 				game.messageOpponents(target, target.username + " reveals " + Card.htmlList(revealed));
 			}
 			// take the actions and treasures
-			List<Card> actionsAndTreasures = new ArrayList<Card>();
-			for (Iterator<Card> iter = revealed.iterator(); iter.hasNext(); ) {
-				Card card  = iter.next();
-				if (card.isAction || card.isTreasure) {
-					iter.remove();
-					actionsAndTreasures.add(card);
-				}
-			}
+			List<Card> actionsAndTreasures = revealed.stream()
+					.filter(c -> c.isAction || c.isTreasure)
+					.collect(Collectors.toList());
+			actionsAndTreasures.forEach(revealed::remove);
 			game.messageIndent++;
 			// discard the actions and treasures
 			if (!actionsAndTreasures.isEmpty()) {
@@ -48,20 +42,10 @@ public class Rabble extends Card {
 			}
 			// put the rest back on top in any order
 			if (!revealed.isEmpty()) {
-				Collections.sort(revealed, Player.HAND_ORDER_COMPARATOR);
-				List<Card> toPutOnDeck = new ArrayList<Card>();
-				while (revealed.size() > 0) {
-					String[] choices = new String[revealed.size()];
-					for (int i = 0; i < revealed.size(); i++) {
-						choices[i] = revealed.get(i).toString();
-					}
-					int choice = game.promptMultipleChoice(target, "Rabble: Put the remaining cards on top of your deck (the first card you choose will be on top of your deck)", "attackPrompt", choices);
-					toPutOnDeck.add(revealed.remove(choice));
-				}
-				if (toPutOnDeck.size() > 0) {
-					game.messageAll("putting " + Card.htmlList(toPutOnDeck) + " back on top");
-					target.putOnDraw(toPutOnDeck);
-				}
+				game.messageAll("putting the rest back on top");
+				putOnDeckInAnyOrder(player, game, revealed,
+						this.toString() + "Put the rest back on top of your deck in any order",
+						"attackPrompt");
 			}
 			game.messageIndent--;
 		}

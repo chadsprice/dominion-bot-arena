@@ -1,6 +1,5 @@
 package cards;
 
-import server.Card;
 import server.Game;
 import server.Player;
 
