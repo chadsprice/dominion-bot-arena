@@ -130,6 +130,7 @@ body {
 .kingdomPile > .cardArt > img {
   width: 100%;
   vertical-align: bottom;
+  border-radius: 0.2em;
 }
 
 .kingdomPile > .status {
@@ -159,6 +160,7 @@ body {
   z-index: 1;
   width: 100%;
   vertical-align: bottom;
+  border-radius: 0.2em;
 }
 
 .cardArt > .cross {
@@ -188,6 +190,7 @@ body {
 
 .cardArt > .plus > img {
   width: 100%;
+  border-bottom-right-radius: 0.2em;
 }
 
 .pileTokens {
@@ -439,6 +442,7 @@ body {
   position: absolute;
   width: 10em;
   box-shadow: -0.4em -0.4em 0.4em #fff;
+  border-radius: 0.4em;
 }
 
 .handCardName {
@@ -478,7 +482,7 @@ body {
 }
 
 .action-victory {
-  background: linear-gradient(#cecece 50%, #66bb6a 50%);
+  background: linear-gradient(#d0d0d0 50%, #66bb6a 50%);
 }
 
 .treasure-victory {
@@ -502,7 +506,7 @@ body {
 }
 
 .action-shelter {
-  background: linear-gradient(#cecece 50%, #ef5350 50%);
+  background: linear-gradient(#d0d0d0 50%, #ef5350 50%);
 }
 
 .victory-shelter {
@@ -518,7 +522,7 @@ body {
 }
 
 .action {
-  background-color: #cecece;
+  background-color: #d0d0d0;
 }
 
 .treasure {

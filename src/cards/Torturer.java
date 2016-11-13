@@ -37,7 +37,7 @@ public class Torturer extends Card {
 				if (game.supply.get(Cards.CURSE) != 0) {
 					game.message(target, "You gain " + Cards.CURSE.htmlName() + " to your hand");
 					game.messageOpponents(target, target.username + " gains " + Cards.CURSE.htmlName() + " to their hand");
-					game.gainToHand(player, Cards.CURSE);
+					game.gainToHand(target, Cards.CURSE);
 				} else {
 					game.message(target, "You gain nothing");
 					game.messageOpponents(target, target.username + " gains nothing");
