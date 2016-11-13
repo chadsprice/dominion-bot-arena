@@ -9,7 +9,7 @@ body, html {
 }
 
 body {
-  background-color: #fff;
+  background-color: #eee;
   font-family: sans-serif;
 }
 
@@ -318,11 +318,11 @@ body {
 
 .buyPrompt {
   background-color: #fffde7;
-  border-color: #f9a825 #fbc02d #fbc02d #fbc02d;
+  border-color: #f9a825 #fdd835 #fdd835 #fdd835;
 }
 
 .buyPrompt .title {
-  color: #ff6f00;
+  color: #f57f17;
 }
 
 .reactionPrompt {
@@ -441,7 +441,7 @@ body {
 .handCardStack > img {
   position: absolute;
   width: 10em;
-  box-shadow: -3px -3px 3px #fff;
+  box-shadow: -3px -3px 3px #eee;
   border-radius: 0.4em;
 }
 
@@ -482,7 +482,7 @@ body {
 }
 
 .action-victory {
-  background: linear-gradient(#d0d0d0 50%, #66bb6a 50%);
+  background: linear-gradient(#cecece 50%, #66bb6a 50%);
 }
 
 .treasure-victory {
@@ -506,7 +506,7 @@ body {
 }
 
 .action-shelter {
-  background: linear-gradient(#d0d0d0 50%, #ef5350 50%);
+  background: linear-gradient(#cecece 50%, #ef5350 50%);
 }
 
 .victory-shelter {
@@ -522,7 +522,7 @@ body {
 }
 
 .action {
-  background-color: #d0d0d0;
+  background-color: #cecece;
 }
 
 .treasure {
