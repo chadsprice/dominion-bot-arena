@@ -709,11 +709,19 @@ function hurryUp() {
 
 function setPromptMessage(message, promptType) {
   var prompt = document.getElementById('prompt');
-  prompt.className = promptType;
+  prompt.className = 'prompt ' + promptType;
   removeAllChildNodes(prompt);
-  var p = document.createElement('p');
-  p.innerHTML = message;
-  prompt.appendChild(p);
+  if (message.split(':').length == 2) {
+    var titleParagraph = document.createElement('p');
+    titleParagraph.className = 'title';
+    titleParagraph.innerHTML = message.split(':')[0];
+    prompt.appendChild(titleParagraph);
+    message = message.split(':')[1];
+  }
+  var messageParagraph = document.createElement('p');
+  messageParagraph.className = 'message';
+  messageParagraph.innerHTML = message;
+  prompt.appendChild(messageParagraph);
 }
 
 function addPromptButton(buttonText) {
@@ -951,8 +959,8 @@ function promptDiscardNumberClicked(discardedName, isMandatory, cause, destinati
     }
   }
   // update prompt text to reflect new number
-  var promptText = document.getElementById('prompt').getElementsByTagName('p')[0];
-  promptText.innerHTML = promptDiscardNumberText(isMandatory, cause, destination);
+  var promptMessage = document.getElementById('prompt').getElementsByClassName('message')[0];
+  promptMessage.innerHTML = promptDiscardNumberText(isMandatory, cause, destination).split(':')[1];
   // update ui to show new hand
   setHand(handCounts);
   // if discard number met

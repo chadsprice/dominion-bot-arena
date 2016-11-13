@@ -55,7 +55,7 @@ public class MineFirstEdition extends Card {
             }
             return toTrash;
         }
-        return game.promptChooseTrashFromHand(player, trashable, this.toString() + ": You may trash a treasure from your hand.");
+        return game.promptChooseTrashFromHand(player, trashable, this.toString() + ": Trash a treasure from your hand.");
     }
 
     @Override
