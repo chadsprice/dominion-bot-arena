@@ -441,7 +441,7 @@ body {
 .handCardStack > img {
   position: absolute;
   width: 10em;
-  box-shadow: -0.4em -0.4em 0.4em #fff;
+  box-shadow: -3px -3px 3px #fff;
   border-radius: 0.4em;
 }
 
@@ -631,7 +631,7 @@ body {
 }
 
 .lobbySection {
-  padding: 1em;
+  padding: 0.6em;
   margin-bottom: 1em;
 
   background-color: #ffffff;
@@ -647,7 +647,7 @@ h1 {
 }
 
 .lobbyContent {
-  padding-top: 1em;
+  padding-top: 0.4em;
 }
 
 .lobbyControl {
