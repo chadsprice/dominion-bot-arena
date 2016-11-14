@@ -27,8 +27,8 @@ public class Player {
 				} else {
 					// coins and victories
 					if (a_type == 2 || b_type == 3) {
-						// order by cost, which is useful for upgrading
-						return a.cost() - b.cost();
+						// order by highest cost, which is useful for upgrading
+						return b.cost() - a.cost();
 					}
 					// order alphabetically
 					return a.toString().compareTo(b.toString());
