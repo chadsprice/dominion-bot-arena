@@ -125,13 +125,15 @@ body {
 .kingdomPile > .cardArt {
   width: 4em;
   position: relative;
+  border-radius: 3px;
+  border: 1px solid #9e9e9e;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
 }
 
 .kingdomPile > .cardArt > img {
   width: 100%;
   vertical-align: bottom;
-  border-radius: 3px;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
 }
 
 .kingdomPile > .status {
@@ -159,14 +161,16 @@ body {
 .basicPile > .cardArt {
   width: 4em;
   position: relative;
+  border-radius: 3px;
+  border: 1px solid #9e9e9e;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
 }
 
 .basicPile > .cardArt > img {
   z-index: 1;
   width: 100%;
   vertical-align: bottom;
-  border-radius: 0.15em;
-  box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.5);
+  border-radius: 2px;
 }
 
 .cardArt > .cross {
@@ -196,7 +200,7 @@ body {
 
 .cardArt > .plus > img {
   width: 100%;
-  border-bottom-right-radius: 0.2em;
+  border-bottom-right-radius: 2px;
 }
 
 .pileTokens {
@@ -323,11 +327,11 @@ body {
 
 .buyPrompt {
   background-color: #FFF4D9;
-  border-color: #DB9A00 #CC8F00 #CC8F00 #CC8F00;
+  border-color: #EBA500 #DB9A00 #DB9A00 #DB9A00;
 }
 
 .buyPrompt .title {
-  color: #AD7900;
+  color: #BA8300;
 }
 
 .reactionPrompt {
@@ -446,8 +450,10 @@ body {
 .handCardStack > img {
   position: absolute;
   width: 10em;
-  box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.3);
-  border-radius: 0.2em;
+  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+  /*box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.3);*/
+  border-radius: 5px;
+  border: 1px solid #9e9e9e;
 }
 
 .handCardName {
