@@ -19,13 +19,6 @@ body {
   padding: 0.5em;
   margin: 1em;
   text-align: center;
-
-  background-color: #ffffff;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #9e9e9e;
-
-  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
 }
 
 #popupName {
@@ -284,6 +277,15 @@ body {
 
 .dropShadow {
   box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+.window {
+  border-radius: 0.3em;
+  border-style: solid;
+  border-width: 0.3em 1px 1px 1px;
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
+  background-color: #ffffff;
+  border-color: #757575 #9e9e9e #9e9e9e #9e9e9e;
 }
 
 #prompt {
@@ -644,12 +646,12 @@ body {
 .lobbySection {
   padding: 0.6em;
   margin-bottom: 1em;
+}
 
-  background-color: #ffffff;
-  border-style: solid;
-  border-width: 1px;
-  border-color: #9e9e9e;
-  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
+.lobbySectionTitle {
+  margin: 0;
+  font-weight: bold;
+  font-size: 120%;
 }
 
 h1 {
