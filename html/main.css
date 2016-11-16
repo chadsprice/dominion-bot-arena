@@ -1,5 +1,5 @@
 body, html {
-  background-color: #eee;
+  background-color: #e0e0e0;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -119,8 +119,8 @@ body {
   width: 4em;
   position: relative;
   border-radius: 3px;
-  border: 1px solid #9e9e9e;
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid #757575;
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
 }
 
 .kingdomPile > .cardArt > img {
@@ -131,7 +131,7 @@ body {
 
 .kingdomPile > .status {
   text-align: center;
-  min-width: 3em;
+  min-width: 2.6em;
 }
 
 .pileSize {
@@ -155,8 +155,8 @@ body {
   width: 4em;
   position: relative;
   border-radius: 3px;
-  border: 1px solid #9e9e9e;
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
+  border: 1px solid #757575;
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
 }
 
 .basicPile > .cardArt > img {
@@ -275,17 +275,13 @@ body {
   margin-left: 2em;
 }
 
-.dropShadow {
-  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
-}
-
 .window {
   border-radius: 0.3em;
   border-style: solid;
-  border-width: 0.3em 1px 1px 1px;
+  border-width: 4px 1px 1px 1px;
   box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
   background-color: #ffffff;
-  border-color: #757575 #9e9e9e #9e9e9e #9e9e9e;
+  border-color: #424242 #616161 #616161 #616161;
 }
 
 #prompt {
@@ -293,7 +289,7 @@ body {
   padding: 0.4em 0.6em 0.6em 0.6em;
   border-radius: 0.3em;
   border-style: solid;
-  border-width: 0.3em 1px 1px 1px;
+  border-width: 4px 1px 1px 1px;
   box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
 }
 
@@ -311,7 +307,7 @@ body {
 
 .actionPrompt {
   background-color: #ffffff;
-  border-color: #757575 #9e9e9e #9e9e9e #9e9e9e;
+  border-color: #424242 #616161 #616161 #616161;
 }
 
 .actionPrompt .title {
@@ -452,10 +448,9 @@ body {
 .handCardStack > img {
   position: absolute;
   width: 10em;
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.2);
-  /*box-shadow: -2px -2px 4px rgba(0, 0, 0, 0.3);*/
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
-  border: 1px solid #9e9e9e;
+  border: 1px solid #757575;
 }
 
 .handCardName {
@@ -719,6 +714,7 @@ h1 {
   flex-direction: row;
   flex-wrap: nowrap;
   min-height: 1em;
+  padding: 0.1em;
 }
 
 .rowDivJoinable:hover {
@@ -729,16 +725,16 @@ h1 {
 }
 
 .rowDiv > div {
-  margin-right: 2em;
+  margin-right: 1em;
 }
 
 .nameDiv {
-  min-width: 10em;
+  width: 10em;
   word-wrap: break-word;
 }
 
 .playersDiv {
-  min-width: 5em;
+  width: 5em;
 }
 
 .gameListingOpen {
@@ -750,16 +746,29 @@ h1 {
 }
 
 .setsDiv {
-  min-width: 8em;
+  width: 12em;
 }
 
 .cardsDiv {
-  min-width: 10em;
+  width: 12em;
 }
 
 /* Game Lobby */
 #gameLobbyName {
   text-align: center;
+}
+
+#gameLobby button {
+  margin-left: 0.6em;
+}
+
+#gameLobby p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+#gameLobbySets, #gameLobbyCards {
+  margin-left: 1em;
 }
 
 .ready, .notReady {
