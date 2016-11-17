@@ -200,18 +200,22 @@ public class Bot extends Player {
 
 	Card choosePlay(Set<Card> choiceSet, boolean isMandatory) {
 		// play "free" cantrips first (cards that always give at least +1 card, +1 action)
-		Card freeCantrip = firstFreeCantrip(choiceSet);
-		if (freeCantrip != null) {
-			return freeCantrip;
+		Optional<Card> freeCantrip = choiceSet.stream()
+				.filter(this::isFreeCantrip)
+				.findFirst();
+		if (freeCantrip.isPresent()) {
+			return freeCantrip.get();
 		}
-		// play any card that might have some benefit
-		for (Card card : choiceSet) {
-			if (!hasNoBenefit(card)) {
-				return card;
-			}
+		// play the most expensive that that isn't useless
+		Set<Card> notUseless = choiceSet.stream()
+				.filter(c -> !this.hasNoBenefit(c))
+				.collect(Collectors.toSet());
+		if (!notUseless.isEmpty()) {
+			return mostExpensive(notUseless);
 		}
-		// if mandatory, return something
+		// if there is nothing you want to play, but you still have to choose something
 		if (isMandatory) {
+			// return something random
 			return choiceSet.iterator().next();
 		} else {
 			// otherwise, do nothing
@@ -219,29 +223,36 @@ public class Bot extends Player {
 		}
 	}
 
-	private Card firstFreeCantrip(Set<Card> choiceSet) {
-		for (Card card : choiceSet) {
-			if (isFreeCantrip(card)) {
-				return card;
-			}
-		}
-		return null;
-	}
-
+	/**
+	 * Returns true if the given card is always good for the current turn. These cards are guaranteed to give at least
+	 * +1 card, +1 action with no potential downside. Being a cantrip alone does not make a card a "free" cantrip.
+	 * Upgrade, for example, is NOT a free cantrip because while it does have +1 card, +1 action, it might force you
+	 * to trash something you don't want to (even though it's upgrade ability is usually good).
+	 * This also doesn't consider later turns, which may cause the bot to over-draw more coins and actions than it can
+	 * use effectively.
+	 */
 	private boolean isFreeCantrip(Card card) {
-		Card[] freeCantrips = new Card[] {Cards.VILLAGE, Cards.SPY, Cards.FESTIVAL, Cards.LABORATORY, Cards.MARKET,
+		Card[] freeCantrips = new Card[] {
+				Cards.VILLAGE, Cards.SPY, Cards.FESTIVAL, Cards.LABORATORY, Cards.MARKET,
 				Cards.GREAT_HALL, Cards.WISHING_WELL, Cards.MINING_VILLAGE,
 				Cards.PEARL_DIVER, Cards.CARAVAN, Cards.BAZAAR, Cards.TREASURY,
-				Cards.WORKERS_VILLAGE, Cards.CITY, Cards.GRAND_MARKET, Cards.PEDDLER};
-		for (Card freeCantrip : freeCantrips) {
-			if (card == freeCantrip) {
-				return true;
-			}
+				Cards.WORKERS_VILLAGE, Cards.CITY, Cards.GRAND_MARKET, Cards.PEDDLER,
+				Cards.HAMLET, Cards.MENAGERIE, Cards.FARMING_VILLAGE, Cards.HUNTING_PARTY,
+				Cards.SCHEME, Cards.CARTOGRAPHER, Cards.HIGHWAY, Cards.BORDER_VILLAGE,
+				Cards.VAGRANT, Cards.MARKET_SQUARE, Cards.SAGE, Cards.URCHIN, Cards.FORTRESS, Cards.IRONMONGER, Cards.WANDERING_MINSTREL, Cards.BANDIT_CAMP, Cards.SIR_BAILEY,
+				Cards.PLAZA, Cards.HERALD, Cards.BAKER};
+		if (new HashSet<>(Arrays.asList(freeCantrips)).contains(card)) {
+			return true;
 		}
 		// conspirator is a free cantrip if it will be the third action played (or more)
 		return card == Cards.CONSPIRATOR && this.game.actionsPlayedThisTurn >= 2;
 	}
 
+	/**
+	 * Returns true if playing the given card will have absolutely no benefit right now. This is very strict and mostly
+	 * concerns cards that require some condition to be met before they have any effect at all (like Moneylender which
+	 * requires that you have a Copper in hand to trash).
+	 */
 	private boolean hasNoBenefit(Card card) {
 		// if playing this card will get conspirator to become a cantrip, then that is a benefit
 		if (getActions() - this.game.actionsPlayedThisTurn >= 3 && getHand().contains(Cards.CONSPIRATOR)) {
@@ -257,25 +268,17 @@ public class Bot extends Player {
 			// Moneylender has no benefit if you have no copper
 			return !getHand().contains(Cards.COPPER);
 		} else if (card == Cards.THRONE_ROOM) {
-			// Throne Room has no benefit if you have no other actions
-			int numActions = 0;
-			for (Card cardInHand : getHand()) {
-				if (cardInHand.isAction) {
-					numActions++;
-				}
-			}
+			// Throne Room has no benefit if you have no other actions (besides it)
+			long numActions = getHand().stream()
+					.filter(c -> c.isAction)
+					.count();
 			return numActions >= 2;
 		} else if (card == Cards.LIBRARY) {
 			// Library has no benefit if you already have more than 7 cards in hand
 			return getHand().size() > 7;
 		} else if (card == Cards.MINE) {
 			// Mine has no benefit if you have no treasure cards in hand
-			for (Card cardInHand : getHand()) {
-				if (cardInHand.isTreasure) {
-					return false;
-				}
-			}
-			return true;
+			return !getHand().stream().anyMatch(c -> c.isTreasure);
 		} else if (card == Cards.COPPERSMITH) {
 			// Coppersmith has no benefit if you have no Copper in hand
 			return !getHand().contains(Cards.COPPER);
@@ -316,6 +319,12 @@ public class Bot extends Player {
 		} else if (card == Cards.KINGS_COURT) {
 			// King's Court has no benefit if you have no other actions (exactly like Throne Room)
 			return hasNoBenefit(Cards.THRONE_ROOM);
+		} else if (card == Cards.SPICE_MERCHANT) {
+			// Spice Merchant has no benefit if you have no treasure in hand
+			return !getHand().stream().anyMatch(c -> c.isTreasure);
+		} else if (card == Cards.STABLES) {
+			// Stables has no benefit if you have no treasure in hand (exactly like Spice Merchant)
+			return hasNoBenefit(Cards.SPICE_MERCHANT);
 		}
 		return false;
 	}
@@ -667,7 +676,7 @@ public class Bot extends Player {
 		}
 	}
 
-	public int treasuryNumToPutOnDeck(int max) {
+	int treasuryNumToPutOnDeck(int max) {
 		// always put your Treasuries on top of your deck when you can
 		return max;
 	}
