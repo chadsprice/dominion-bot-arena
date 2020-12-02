@@ -1,0 +1,52 @@
+#gameList {
+  display: flex;
+  flex-direction: column;
+}
+
+.rowDiv:nth-child(even) {
+  background-color: #e0e0e0;
+}
+
+.rowDiv {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  min-height: 1em;
+  padding: 0.1em;
+}
+
+.rowDivJoinable:hover {
+  cursor: pointer;
+}
+.rowDivJoinable:hover .nameDiv {
+  color: #3366BB;
+}
+
+.rowDiv > div {
+  margin-right: 1em;
+}
+
+.nameDiv {
+  width: 10em;
+  word-wrap: break-word;
+}
+
+.playersDiv {
+  width: 5em;
+}
+
+.gameListingOpen {
+  color: #009900;
+}
+
+.gameListingClosed {
+  color: #cc0000;
+}
+
+.setsDiv {
+  width: 12em;
+}
+
+.cardsDiv {
+  width: 12em;
+}

@@ -1,0 +1,143 @@
+.box {
+  border-radius: 3px;
+  border-style: solid;
+  border-width: 3px 1px 1px 1px;
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+.boxBorder-gray {
+  border-color: #757575;
+}
+
+.boxBorder-action-victory {
+  border-color: #757575;
+}
+
+.boxBorder-treasure-victory {
+  border-color: #D98800;
+}
+
+.boxBorder-treasure-reaction {
+  border-color: #D98800;
+}
+
+.boxBorder-victory-reaction {
+  border-color: #2e7d32;
+}
+
+.boxBorder-reaction {
+  border-color: #1976d2;
+}
+
+.boxBorder-reaction-shelter {
+  border-color: #1976d2;
+}
+
+.boxBorder-action-shelter {
+  border-color: #555555;
+}
+
+.boxBorder-victory-shelter {
+  border-color: #2e7d32;
+}
+
+.boxBorder-duration {
+  border-color: #f57c00;
+}
+
+.boxBorder-ruins {
+  border-color: #5d4037;
+}
+
+.boxBorder-action {
+  border-color: #555555;
+}
+
+.boxBorder-treasure {
+  border-color: #D98800;
+}
+
+.boxBorder-victory {
+  border-color: #2e7d32;
+}
+
+.boxBorder-curse {
+  border-color: #7b1fa2;
+}
+
+/*.clickable .boxBorder-gray,
+.clickable .boxBorder-action-victory,
+.clickable .boxBorder-treasure-victory,
+.clickable .boxBorder-treasure-reaction,
+.clickable .boxBorder-victory-reaction,
+.clickable .boxBorder-reaction,
+.clickable .boxBorder-action-shelter,
+.clickable .boxBorder-victory-shelter,
+.clickable .boxBorder-duration,
+.clickable .boxBorder-ruins,
+.clickable .boxBorder-action,
+.clickable .boxBorder-treasure,
+.clickable .boxBorder-victory,
+.clickable .boxBorder-curse {
+  border-color: #3BA7FF;
+}*/
+
+.boxBackground-gray {
+  background-color: #ffffff;
+}
+
+.boxBackground-action-victory {
+  background: linear-gradient(#ffffff 25%, #c8e6c9 75%);
+}
+
+.boxBackground-treasure-victory {
+  background: linear-gradient(#ffffff 25%, #c8e6c9 75%);
+}
+
+.boxBackground-treasure-reaction {
+  background: linear-gradient(#fff9c4 25%, #bbdefb 75%);
+}
+
+.boxBackground-victory-reaction {
+  background: linear-gradient(#c8e6c9 25%, #bbdefb 75%);
+}
+
+.boxBackground-reaction {
+  background-color: #bbdefb;
+}
+
+.boxBackground-reaction-shelter {
+  background: linear-gradient(#ffcdd2 25%, #bbdefb 75%);
+}
+
+.boxBackground-action-shelter {
+  background: linear-gradient(#ffffff 25%, #ffcdd2 75%);
+}
+
+.boxBackground-victory-shelter {
+  background: linear-gradient(#ffcdd2 25%, #c8e6c9 75%);
+}
+
+.boxBackground-duration {
+  background-color: #ffe0b2;
+}
+
+.boxBackground-ruins {
+  background-color: #d7ccc8;
+}
+
+.boxBackground-action {
+  background-color: #ffffff;
+}
+
+.boxBackground-treasure {
+  background-color: #fff9c4;
+}
+
+.boxBackground-victory {
+  background-color: #c8e6c9;
+}
+
+.boxBackground-curse {
+  background-color: #e1bee7;
+}

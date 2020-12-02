@@ -1,0 +1,78 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.4'
+    id 'java'
+}
+
+version '0.1'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    implementation group: 'org.apache.commons', name: 'commons-text', version: '1.4'
+    implementation group: 'org.eclipse.jetty', name: 'jetty-server', version: '9.4.10.RC1'
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-api', version: '9.4.10.RC1'
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-server', version: '9.4.10.RC1'
+    implementation group: 'org.eclipse.jetty.websocket', name: 'websocket-servlet', version: '9.4.10.RC1'
+    implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
+    implementation group: 'org.mindrot', name: 'jbcrypt', version: '0.4'
+}
+
+def resourcesDir = 'resources'
+def webDir = "${resourcesDir}/web"
+def runDir = 'run'
+
+def babel = 'node_modules/.bin/babel'
+def sass = 'sass'
+
+def isWindows = System.properties['os.name'].toLowerCase().contains('windows')
+
+shadowJar {
+    manifest {
+        attributes 'Main-Class': 'server.GameServer'
+    }
+    archiveName = 'dba.jar'
+}
+
+task copyJarToRunDir(type: Copy, dependsOn: shadowJar) {
+    from shadowJar.outputs
+    into runDir
+}
+
+task copyDefaultConfigFileToRunDir(type: Copy) {
+    from "${resourcesDir}/config"
+    into runDir
+}
+
+task copyStaticWebResourcesToRunDir(type: Copy) {
+    from "${webDir}/static"
+    into "${runDir}/web"
+}
+
+task preprocessBabelToRunDir(type: Exec, dependsOn: copyStaticWebResourcesToRunDir) {
+    if (isWindows) {
+        commandLine 'cmd', '/c', "${babel} ${webDir}/js --out-file ${runDir}/web/all.js".replaceAll("/", "\\\\")
+    } else {
+        commandLine babel, "${webDir}/js", '--out-file', "${runDir}/web/all.js"
+    }
+}
+
+task preprocessSassToRunDir(type: Exec, dependsOn: copyStaticWebResourcesToRunDir) {
+    if (isWindows) {
+        commandLine 'cmd', '/c', "${sass} --no-source-map ${webDir}/css/main.scss ${runDir}/web/all.css".replaceAll("/", "\\\\")
+    } else {
+        commandLine sass, '--sourcemap=none', "${webDir}/css/main.scss", "${runDir}/web/all.css"
+    }
+}
+
+task runGameServer(/*type: JavaExec, */dependsOn: [shadowJar, copyJarToRunDir, copyDefaultConfigFileToRunDir, copyStaticWebResourcesToRunDir, preprocessBabelToRunDir, preprocessSassToRunDir]) {
+    /*classpath = files("${runDir}/dba.jar")
+    main = 'server.GameServer'
+    workingDir = runDir*/
+    // TODO: better run process
+}

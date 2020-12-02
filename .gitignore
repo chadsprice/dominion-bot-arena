@@ -1,0 +1,21 @@
+# local gradle files
+.gradle
+gradle
+gradlew
+gradlew.bat
+
+build
+
+run
+
+# local IDE files
+.idea
+
+out
+
+# local babel files
+node_modules
+package-lock.json
+
+# local sass files
+.sass-cache

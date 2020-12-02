@@ -1,0 +1,22 @@
+#chat {
+  width: 20em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+#chatDisplay {
+  word-wrap: break-word;
+}
+
+.chatUsername {
+  font-weight: bold;
+}
+
+#chatControl {
+  margin-bottom: 1em;
+}
+
+#chatSendButton {
+  margin-left: 1em;
+}

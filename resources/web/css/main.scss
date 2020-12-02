@@ -1,0 +1,91 @@
+$background-base: #eeeeee;
+
+$text-darkest: #000000;
+$text-base: #222222;
+$text-lightest: #ffffff;
+$text-bot-name: #555555;
+
+$card-highlight-gray-light: #8A8A8A;
+$card-highlight-gray-dark: #757575;
+$card-highlight-gray-border: #616161;
+
+$card-highlight-red-light: #e53935;
+$card-highlight-red-dark: #c62828;
+
+$card-highlight-orange-light: #F4511E;
+$card-highlight-orange-dark: #D84315;
+$card-highlight-orange-border: #BF360C;
+
+$card-highlight-yellow-light: #EBB32A;
+$card-highlight-yellow-dark: #EB9E23;
+$card-highlight-yellow-border: #DE8A15;
+
+$card-highlight-green-light: #43A047;
+$card-highlight-green-dark: #388E3C;
+$card-highlight-green-border: #1B5E20;
+
+$card-highlight-blue-light: #1E88E5;
+$card-highlight-blue-dark: #1976D2;
+$card-highlight-blue-border: #0D47A1;
+
+$card-highlight-purple-light: #9C27B0;
+$card-highlight-purple-dark: #8E24AA;
+$card-highlight-purple-border: #4A148C;
+
+$card-highlight-brown-light: #795548;
+$card-highlight-brown-dark: #6D4C41;
+$card-highlight-brown-border: #4E342E;
+
+$card-border-gray: #757575;
+$card-border-orange: #f57c00;
+$card-border-yellow: #ffa000;
+$card-border-green: #2e7d32;
+$card-border-blue: #1976d2;
+$card-border-purple: #7b1fa2;
+$card-border-brown: #5d4037;
+
+$glow-blur-radius: 0.08em;
+$glow-spread-radius: 0.18em;
+$glow-color: rgb(117, 193, 255);
+
+body, html {
+  background-color: $background-base;
+  color: $text-base;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+}
+
+.clickable:hover {
+  cursor: pointer;
+}
+
+.botName {
+  color: $text-bot-name;
+}
+
+@import 'card-highlight';
+
+@import 'game/card';
+@import 'game/card-count-display';
+@import 'game/card-zone-display';
+@import 'game/chat';
+@import 'game/game';
+@import 'game/log';
+@import 'game/pile';
+@import 'game/popup';
+@import 'game/prompt';
+
+@import 'lobby/game-list';
+@import 'lobby/game-lobby';
+@import 'lobby/lobby';
+@import 'lobby/login';
+@import 'lobby/lost-connection';

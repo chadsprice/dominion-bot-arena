@@ -1,0 +1,28 @@
+#gameLobbyName {
+  text-align: center;
+}
+
+#gameLobby button {
+  margin-left: 0.6em;
+}
+
+#gameLobby p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+#gameLobbySets, #gameLobbyCards {
+  margin-left: 1em;
+}
+
+.ready, .notReady {
+  margin-left: 0.5em;
+}
+
+.ready {
+  color: #009900;
+}
+
+.notReady {
+  color: #cc0000;
+}

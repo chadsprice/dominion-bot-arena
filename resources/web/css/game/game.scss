@@ -1,0 +1,147 @@
+#game {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-height: 100%;
+}
+
+#gameColumns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  width: 100%;
+}
+
+#table {
+  display: flex;
+  flex-direction: column;
+}
+
+#nonSupply {
+  margin-bottom: 1em;
+}
+
+#prizes, #nonSupply, #kingdom, #basic {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+#prizes p, #nonSupply p {
+  text-align: center;
+  margin: 0;
+}
+
+#prizes .name {
+  margin-right: 0.5em;
+}
+
+#supply {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+#supply p {
+  margin: 0;
+}
+
+#kingdom {
+  margin: 0 1em 0 1em;
+}
+
+#play {
+  margin-left: 1.5em;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  /* hack to let play take up the remaining horizontal space */
+  flex-grow: 10;
+}
+
+#play p {
+  margin: 0;
+}
+
+#playerStatus {
+  margin-left: 1em;
+  margin-bottom: 1em;
+}
+
+.forfeit, .hurryUp {
+  color: #CC0000;
+}
+
+#waitingOn {
+  margin-left: 3em;
+  margin-bottom: 2em;
+  color: #0000ee;
+  font-style: italic;
+}
+
+#waitingOnText {
+  display: inline;
+}
+
+#hurryUpButton {
+  margin-left: 2em;
+}
+
+#gameStatus {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+#playerStatusRow {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
+
+#turnStatus {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+
+  margin-right: 2em;
+}
+
+#turnStatusTags {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  text-align: right;
+}
+
+#turnStatusValues {
+  margin-left: 0.2em;
+  display: flex;
+  flex-direction: column;
+  font-size: 130%;
+  text-align: center;
+}
+
+.notAutoplayingTreasures {
+  color: #cc0000;
+}
+
+#optionsButton {
+  margin-left: 1em;
+}
+
+.deckStack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.deckStack + .deckStack {
+  margin-left: 1em;
+}
+
+.bold {
+  font-weight: bold;
+}

@@ -1,0 +1,45 @@
+#loginContainer {
+  display: flex;
+  justify-content: center;
+}
+
+#login {
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  margin-top: 3em;
+}
+
+#login input {
+  margin-bottom: 1em;
+}
+
+.optional {
+  font-size: 85%;
+  color: #444444;
+}
+
+#loginButtons {
+  display: flex;
+  justify-content: center;
+}
+
+#newLogin {
+  text-align: right;
+  font-size: 70%;
+  color: #0645AD;
+}
+
+#newLogin:hover {
+  cursor: pointer;
+}
+
+#login p {
+  margin: 0;
+}
+
+.loginError, .customGameError {
+  padding-top: 1em;
+  font-size: 85%;
+  color: red;
+}

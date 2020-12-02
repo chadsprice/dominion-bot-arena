@@ -1,0 +1,36 @@
+.popupContainer {
+  position: absolute;
+  z-index: 100;
+  width: 20em;
+}
+
+.popup {
+  display: flex;
+  flex-direction: column;
+  padding: 0.5em;
+  text-align: center;
+  color: #000000;
+}
+
+.popup .name {
+  margin-bottom: 1em;
+}
+
+.popup .type {
+  margin-top: 1.5em;
+  position: relative;
+}
+
+.popup .cost {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.popup p {
+  margin: 0;
+}
+
+.popup ul {
+  text-align: left;
+}

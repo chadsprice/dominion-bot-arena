@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="all.css">
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <title>Dominion Bot Arena</title>
+    <script type="text/javascript" src="lib/jquery.js"></script>
+    <script type="text/javascript" src="lib/underscore.js"></script>
+    <script type="text/javascript" src="lib/bcrypt.js"></script>
+    <script type="text/javascript" src="all.js"></script>
+  </head>
+  <body>
+    <div id="loginContainer">
+      <div id="login" class="box boxBorder-gray boxBackground-gray">
+        <p id="newLogin">New user</p>
+        <label>Username</label>
+        <input id="username" type="username" name="username" />
+        <label>Password <span class="optional">(Optional)</span></label>
+        <input id="password" type="password" name="password" />
+        <div id="loginButtons">
+          <button id="loginButton">Log In</button>
+        </div>
+      </div>
+    </div>
+    <div id="lobby">
+      <div id="lobbyHeader">
+        <img src="logo.png" alt="Dominion Bot Arena">
+        <div>
+          <label id="lobbyUsernameText"></label>
+          <button id="changeLoginButton">Log In</button>
+        </div>
+      </div>
+      <p id="legal">The original Dominion card game is created by Donald X. Vaccarino and published by Rio Grande Games. This fan project is in no way affiliated with either.</p>
+      <div id="lobbyBody">
+        <div>
+          <div class="lobbySection box boxBorder-gray boxBackground-gray">
+            <p class="lobbySectionTitle">Quick Game</p>
+            <div class="lobbyContent">
+              <select id="quickGameBotSelect">
+              </select>
+              <button id="quickGameButton">Play</button>
+            </div>
+          </div>
+          <div class="lobbySection box boxBorder-gray boxBackground-gray">
+            <p class="lobbySectionTitle">Automatch</p>
+            <div class="lobbyContent">
+              <p>Automatically create games with other human players who have also turned on automatch.</p>
+              <div class="lobbyControl">
+                <input type="checkbox" id="automatchCheckbox"><label>Automatch On</label>
+              </div>
+              <label># Players</label>
+              <div class="lobbyControl">
+                <input type="checkbox" id="automatch2Checkbox"><label>2</label>
+                <input type="checkbox" id="automatch3Checkbox"><label>3</label>
+                <input type="checkbox" id="automatch4Checkbox"><label>4</label>
+              </div>
+            </div>
+          </div>
+          <div class="lobbySection box boxBorder-gray boxBackground-gray" id="customGameSection">
+            <p class="lobbySectionTitle">Custom Game</p>
+            <div class="lobbyContent">
+              <label>Lobby Name <span class="optional">(Optional)</span></label>
+              <div class="lobbyControl">
+                <input id="customGameName" type="text">
+              </div>
+              <label># Players</label>
+              <div class="lobbyControl">
+                <select id="numPlayersSelect">
+                  <option value="2" selected>2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                </select>
+              </div>
+              <label>Sets</label>
+              <div class="lobbyControl">
+                <input type="checkbox" id="baseCheckbox"><label>Base</label><br>
+                <input type="checkbox" id="baseFirstEditionCheckbox"><label>Base (1st ed.)</label><br>
+                <input type="checkbox" id="intrigueCheckbox"><label>Intrigue</label><br>
+                <input type="checkbox" id="intrigueFirstEditionCheckbox"><label>Intrigue (1st ed.)</label><br>
+                <input type="checkbox" id="seasideCheckbox"><label>Seaside</label><br>
+                <input type="checkbox" id="prosperityCheckbox"><label>Prosperity</label><br>
+                <input type="checkbox" id="cornucopiaCheckbox"><label>Cornucopia</label><br>
+                <input type="checkbox" id="hinterlandsCheckbox"><label>Hinterlands</label><br>
+                <input type="checkbox" id="darkAgesCheckbox"><label>Dark Ages</label><br>
+                <input type="checkbox" id="guildsCheckbox"><label>Guilds</label>
+              </div>
+              <label>Cards <span class="optional">(Optional)</span></label>
+              <div class="lobbyControl">
+                <p>e.g. "village, witch, !smithy"</p>
+                <input id="customGameCards" type="text">
+              </div>
+              <label>Bots</label>
+              <div class="lobbyControl">
+                <div id="botList">
+                </div>
+                <button id="addBotButton">Add Bot</button>
+              </div>
+              <div class="lobbyControl">
+                <button id="createCustomGameButton">Create</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="lobbySection box boxBorder-gray boxBackground-gray" id="gamesSection">
+          <p class="lobbySectionTitle">Open Lobbies</p>
+          <div class="lobbyContent">
+            <button id="removeClosedButton">Remove Closed</button>
+            <div id="gameList">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="gameLobby">
+      <h1 id="gameLobbyName"></h1>
+      <div id="gameLobbySets"></div>
+      <div id="gameLobbyCards"></div>
+      <div class="lobbySection box boxBorder-gray boxBackground-gray">
+        <button id="gameLobbyReadyButton"></button>
+        <button id="gameLobbyLeaveButton">Leave</button><br>
+        <div id="gameLobbyPlayerList">
+        </div>
+      </div>
+    </div>
+    <div id="game">
+      <div id="gameColumns">
+        <div id="table">
+          <div id="prizes">
+          </div>
+          <div id="nonSupply">
+          </div>
+          <div id="supply">
+            <div id="kingdom">
+            </div>
+            <div id="basic">
+            </div>
+          </div>
+        </div>
+        <div id="play">
+          <div id="log">
+          </div>
+          <div id="waitingOn">
+            <p id="waitingOnText"></p><button id="hurryUpButton">Hurry up!</button>
+          </div>
+          <div id="gameStatus">
+            <button id="forfeitButton">Forfeit</button>
+            <p id="trash"></p>
+            <div id="coinTokens">
+            </div>
+            <div id="victoryTokenMat">
+            </div>
+            <div id="tradeRouteMat">
+            </div>
+            <div id="nativeVillageMat">
+            </div>
+            <div id="islandMat">
+            </div>
+            <div id="pirateShipMat">
+            </div>
+            <div id="durations">
+            </div>
+            <div id="inPlay">
+            </div>
+          </div>
+          <div id="playerStatus">
+            <div id="playerStatusRow">
+              <div id="turnStatus">
+                <div id="turnStatusTags">
+                  <p>Actions:</p>
+                  <p>Buys:</p>
+                  <p>Coins:</p>
+                </div>
+                <div id="turnStatusValues">
+                  <p id="numActions"></p>
+                  <p id="numBuys"></p>
+                  <p id="numCoins"></p>
+                </div>
+              </div>
+              <div class="deckStack">
+                <label>Deck</label>
+                <div id="draw"></div>
+              </div>
+              <div class="deckStack">
+                <label>Discard</label>
+                <div id="discard"></div>
+              </div>
+            </div>
+          </div>
+          <div id="prompt" class="prompt">
+          </div>
+          <div id="hand">
+          </div>
+        </div>
+        <div id="chat">
+          <div id="chatDisplay">
+          </div>
+          <div id="chatControl">
+            <input type="text" id="chatInput"><button id="chatSendButton">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="lostConnection">
+      <div id="lostConnectionBox" class="box boxBorder-gray boxBackground-gray">
+        <p id="lostConnectionText">You have been disconnected from the server.</p>
+        <p>Note: Players are automatically disconnected after 1 hour of inactivity.</p>
+      </div>
+    </div>
+  </body>
+</html>

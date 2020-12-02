@@ -1,0 +1,86 @@
+#prompt {
+  margin: 0 2em 1em 0;
+  padding: 0.4em 0.6em 0.6em 0.6em;
+  border-radius: 0.2em;
+  border-style: solid;
+  border-width: 3px 1px 1px 1px;
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+#prompt .title {
+  font-weight: bold;
+}
+
+#prompt .message {
+  margin-top: 0.2em;
+}
+
+#prompt button {
+  margin: 0.6em 0 0 1.2em;
+}
+
+.normalPrompt {
+  background-color: #ffffff;
+  border-color: #757575;
+}
+
+.normalPrompt .title {
+  color: #424242;
+}
+
+.dangerPrompt {
+  background-color: #ffebee;
+  border-color: #f44336;
+}
+
+.dangerPrompt .title {
+  color: #f44336;
+}
+
+.buyPrompt {
+  background-color: #fff9c4;
+  border-color: #ffa000;
+}
+
+.buyPrompt .title {
+  color: #f57f17;
+}
+
+.playPrompt {
+  background-color: #ffffff;
+  border-color: #757575;
+}
+
+.playPrompt .title {
+  color: #424242;
+}
+
+.reactionPrompt {
+  background-color: #e3f2fd;
+  border-color: #1e88e5;
+}
+
+.reactionPrompt .title {
+  color: #1e88e5;
+}
+
+// deprecated
+// TODO: remove with the rest of the old prompts
+
+.actionPrompt {
+  background-color: #ffffff;
+  border-color: #757575;
+}
+
+.actionPrompt .title {
+  color: #424242;
+}
+
+.attackPrompt {
+  background-color: #ffebee;
+  border-color: #f44336;
+}
+
+.attackPrompt .title {
+  color: #f44336;
+}

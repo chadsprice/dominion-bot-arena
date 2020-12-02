@@ -1,0 +1,142 @@
+/*.action-victory, .treasure-victory, .treasure-reaction, .victory-reaction, .reaction, .reaction-shelter, .action-shelter, .victory-shelter, .duration, .ruins, .action, .treasure, .victory, .curse {
+  color: #000000;
+  border-radius: 0.2em;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+.action-victory {
+  background: linear-gradient(#bdbdbd 50%, #66bb6a 50%);
+}
+
+.treasure-victory {
+  background: linear-gradient(#ffd54f 50%, #66bb6a 50%);
+}
+
+.treasure-reaction {
+  background: linear-gradient(#ffd54f 50%, #64b5f6 50%);
+}
+
+.victory-reaction {
+  background: linear-gradient(#66bb6a 50%, #64b5f6 50%);
+}
+
+.reaction {
+  background-color: #64b5f6;
+}
+
+.reaction-shelter {
+  background: linear-gradient(#ef5350 50%, #64b5f6 50%);
+}
+
+.action-shelter {
+  background: linear-gradient(#bdbdbd 50%, #ef5350 50%);
+}
+
+.victory-shelter {
+  background: linear-gradient(#ef5350 50%, #66bb6a 50%);
+}
+
+.duration {
+  background-color: #ff9100;
+}
+
+.ruins {
+  background-color: #8d6e63;
+}
+
+.action {
+  background-color: #bdbdbd;
+}
+
+.treasure {
+  background-color: #ffd54f;
+}
+
+.victory {
+  background-color: #66bb6a;
+}
+
+.curse {
+  background-color: #ce93d8;
+}*/
+
+.action, .duration, .treasure, .victory, .reaction, .curse, .ruins, .action-victory, .treasure-victory, .treasure-reaction, .victory-reaction, .reaction-shelter, .action-shelter, .victory-shelter {
+  border-radius: 0.25em;
+  padding: 0.1em 0.25em 0.1em 0.25em;
+
+  color: #ffffff;
+  text-shadow: 1px 1px 1px #000000;
+
+  border: 1px solid;
+}
+
+.action {
+  background: linear-gradient($card-highlight-gray-light, $card-highlight-gray-dark);
+  border-color: $card-highlight-gray-border;
+}
+
+.duration {
+  background: linear-gradient($card-highlight-orange-light, $card-highlight-orange-dark);
+  border-color: $card-highlight-orange-border;
+}
+
+.treasure {
+  background: linear-gradient($card-highlight-yellow-light, $card-highlight-yellow-dark);
+  border-color: $card-highlight-yellow-border;
+}
+
+.victory {
+  background: linear-gradient($card-highlight-green-light, $card-highlight-green-dark);
+  border-color: $card-highlight-green-border;
+}
+
+.reaction {
+  background: linear-gradient($card-highlight-blue-light, $card-highlight-blue-dark);
+  border-color: $card-highlight-blue-border;
+}
+
+.curse {
+  background: linear-gradient($card-highlight-purple-light, $card-highlight-purple-dark);
+  border-color: $card-highlight-purple-border;
+}
+
+.ruins {
+  background: linear-gradient($card-highlight-brown-light, $card-highlight-brown-dark);
+  border-color: $card-highlight-brown-border;
+}
+
+.action-victory {
+  background: linear-gradient($card-highlight-gray-light, $card-highlight-gray-dark 50%, $card-highlight-green-light 50%, $card-highlight-green-dark);
+  border-color: $card-highlight-gray-border;
+}
+
+.treasure-victory {
+  background: linear-gradient($card-highlight-yellow-light, $card-highlight-yellow-dark 50%, $card-highlight-green-light 50%, $card-highlight-green-dark);
+  border-color: $card-highlight-yellow-border;
+}
+
+.treasure-reaction {
+  background: linear-gradient($card-highlight-yellow-light, $card-highlight-yellow-dark 50%, $card-highlight-blue-light 50%, $card-highlight-blue-dark);
+  border-color: $card-highlight-yellow-border;
+}
+
+.victory-reaction {
+  background: linear-gradient($card-highlight-green-light, $card-highlight-green-dark 50%, $card-highlight-blue-light 50%, $card-highlight-blue-dark);
+  border-color: $card-highlight-green-border;
+}
+
+.action-shelter {
+  background: linear-gradient($card-highlight-gray-light, $card-highlight-gray-dark 50%, $card-highlight-red-light 50%, $card-highlight-red-dark);
+  border-color: $card-highlight-gray-border;
+}
+
+.reaction-shelter {
+  background: linear-gradient($card-highlight-blue-light, $card-highlight-blue-dark 50%, $card-highlight-red-light 50%, $card-highlight-red-dark);
+  border-color: $card-highlight-blue-border;
+}
+
+.victory-shelter {
+  background: linear-gradient($card-highlight-green-light, $card-highlight-green-dark 50%, $card-highlight-red-light 50%, $card-highlight-red-dark);
+  border-color: $card-highlight-green-border;
+}

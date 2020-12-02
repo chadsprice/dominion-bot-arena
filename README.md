@@ -14,16 +14,33 @@ Implemented Sets:
 * Guilds
 
 ## Running
-You can run the server yourself by downloading [dominion-bot-arena.zip](https://github.com/chadsprice/dominion-bot-arena/raw/master/dominion-bot-arena.zip). Extract the contents and execute `java -jar dominion-bot-arena.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.
+You can run the server yourself by downloading the latest release zip, extracting the contents and executing `java -jar dba.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.
+
+## Building
+
+### Install Babel
+
+The build process expects Babel to be installed in the project folder. You can install Babel from NPM by running the following command in the project root folder:
+
+`npm install --save-dev babel-cli babel-preset-env`
+
+Check that `node_modules/.bin/babel` was created.
+
+If you want to run Babel from somewhere else, change `def babel = 'node_modules/.bin/babel'` in `build.gradle`.
+
+### Install Sass
+
+The build process expects the `sass` command to be available.
+
+On Linux with the APT package manager, you can install Sass by running:
+
+`sudo apt-get install ruby-sass`
+
+On Windows, you can download the binaries from [https://sass-lang.com/](https://sass-lang.com/), then add them to your `PATH`.
+
+If you want to run Sass from somewhere else, change `def sass = 'sass'` in `build.gradle`.
 
 ## Legal
 The original Dominion card game is created by Donald X. Vaccarino and published by Rio Grande Games. This fan project is in no way affiliated with either.
 
 This code is released by Chad Price under an MIT license.
-
-Included Libraries:
-* [Jetty](http://www.eclipse.org/jetty/)
-* [Apache Commons Lang](https://commons.apache.org/proper/commons-lang/)
-* [json-simple](https://github.com/fangyidong/json-simple)
-* [jBCrypt](https://github.com/jeremyh/jBCrypt)
-* [bcrypt.js](https://github.com/dcodeIO/bcrypt.js)

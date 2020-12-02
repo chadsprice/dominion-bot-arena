@@ -1,0 +1,87 @@
+.kingdomPile {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  margin-bottom: 0.6em;
+}
+
+.kingdomPile > .name > p {
+  white-space: nowrap;
+}
+
+.kingdomPile > .name > .subtitle {
+  font-size: 80%;
+  text-align: center;
+}
+
+.kingdomPile > .status {
+  text-align: center;
+  min-width: 2.4em;
+}
+
+.kingdomPile > .status .size {
+  color: #777777;
+  font-size: 85%;
+}
+
+.cardArt {
+  width: 4em;
+  position: relative;
+}
+
+.cardArt > img {
+  z-index: 1;
+  width: 100%;
+  vertical-align: bottom;
+  border-radius: 3px;
+  border-width: 1px;
+  border-style: solid;
+  box-shadow: 0px 2px 2px -1px rgba(0, 0, 0, 0.2);
+}
+
+.clickable .cardArt > img {
+  box-shadow: 0 0 0.08em 0.18em #59B5FF;
+}
+
+.cardArt > .cross {
+  z-index: 3;
+  width: 2em;
+  height: 2em;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+}
+
+.cardArt > .cross > img {
+  width: 100%;
+}
+
+.pileTokens {
+  z-index: 4;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pileTokens > .embargoTokens {
+  color: #ffffff;
+  background-color: #ab47bc;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}
+
+.pileTokens > .tradeRouteToken {
+  color: #000000;
+  background-color: #ffd54f;
+  padding-left: 0.25em;
+  padding-right: 0.25em;
+}

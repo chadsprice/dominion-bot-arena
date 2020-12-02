@@ -1,0 +1,97 @@
+#lobby, #gameLobby {
+  padding: 1em;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#lobbyHeader {
+  margin-right: 1em;
+  margin-left: 1em;
+  margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+#lobbyUsernameText {
+  font-weight: bold;
+  font-size: 120%;
+}
+
+#legal {
+  text-align: center;
+  font-size: 75%;
+  padding-bottom: 0.5em;
+}
+
+#lobbyBody {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+}
+
+.lobbySection {
+  padding: 0.6em;
+  margin-bottom: 1em;
+}
+
+.lobbySectionTitle {
+  margin: 0;
+  font-weight: bold;
+  font-size: 120%;
+}
+
+h1 {
+  margin: 0;
+  font-size: 120%;
+}
+
+.lobbyContent {
+  padding-top: 0.4em;
+}
+
+.lobbyControl {
+  margin-left: 1em;
+  margin-right: 1em;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+#lobby p {
+  margin: 0;
+}
+
+#quickGameButton {
+  margin-left: 0.5em;
+}
+
+#automatch3Checkbox, #automatch4Checkbox {
+  margin-left: 1em;
+}
+
+#botList > div {
+  margin-bottom: 0.5em;
+}
+
+#botList > div button {
+  margin-left: 0.5em;
+}
+
+#createCustomGameButton {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#gamesSection {
+  flex-grow: 10;
+  margin-left: 1em;
+}
+
+#removeClosedButton {
+  margin-bottom: 0.5em;
+}
