@@ -281,7 +281,16 @@ class GameView {
             updates.put("prizeCards", prizeCardUpdates);
         }
 
-        differ.diff(v -> v.trash, "trash", GameView::toJson);
+        Function<List<Count>, Object> countsToHtmlList = counts -> {
+            if (counts.isEmpty()) {
+                return "(empty)";
+            }
+            Map<Card, Integer> map = new HashMap<>();
+            counts.forEach(c -> map.put(Cards.fromName(c.card), c.count));
+            return Card.htmlList(map);
+        };
+
+        differ.diff(v -> v.trash, "trash", countsToHtmlList);
         differ.diff(v -> v.tradeRoute, "tradeRoute");
 
         JSONObject opponentUpdates = new JSONObject();

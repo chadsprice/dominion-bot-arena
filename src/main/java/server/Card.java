@@ -803,20 +803,23 @@ public abstract class Card {
 				counts.put(card, counts.get(card) + 1);
 			}
 		}
-		List<Card> order = new ArrayList<>(counts.keySet());
-		Collections.sort(order, Player.HAND_ORDER_COMPARATOR);
-		// construct comma separated list
-		StringBuilder builder = new StringBuilder();
-		Iterator<Card> iter = order.iterator();
-		while (iter.hasNext()) {
-			Card card = iter.next();
-			builder.append(card.htmlName(counts.get(card)));
-			if (iter.hasNext()) {
-				builder.append(", ");
-			}
-		}
-		return builder.toString();
+		return htmlList(counts);
 	}
+	public static String htmlList(Map<Card, Integer> counts) {
+        List<Card> order = new ArrayList<>(counts.keySet());
+        Collections.sort(order, Player.HAND_ORDER_COMPARATOR);
+        // construct comma separated list
+        StringBuilder builder = new StringBuilder();
+        Iterator<Card> iter = order.iterator();
+        while (iter.hasNext()) {
+            Card card = iter.next();
+            builder.append(card.htmlName(counts.get(card)));
+            if (iter.hasNext()) {
+                builder.append(", ");
+            }
+        }
+        return builder.toString();
+    }
 	static String htmlSet(Set<Card> cards) {
 		if (cards.size() == 0) {
 			return "";

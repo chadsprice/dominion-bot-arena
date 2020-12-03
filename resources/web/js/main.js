@@ -751,15 +751,16 @@ function updateTrash(trashUpdate) {
   // TODO: card zone display
   //trash.set(trashUpdate);
   const trash = $('#trash');
-  if (_.isEmpty(trashUpdate)) {
+  trash.html('Trash: ' + trashUpdate);
+  /*if (_.isEmpty(trashUpdate)) {
     trash.html('Trash: (empty)');
   } else {
     trash.html('Trash: ' + JSON.stringify(trashUpdate));
-  }
+  }*/
 }
 
 function updateTradeRoute(tradeRouteUpdate) {
-  setArea('tradeRouteMat', 'Trade Route', '$'+tradeRouteUpdate);
+  setArea('tradeRouteMat', 'Trade Route', tradeRouteUpdate === 0 ? undefined : '$'+tradeRouteUpdate);
 }
 
 function updateOpponents(opponentUpdates) {
@@ -987,9 +988,9 @@ function receiveServerCommands(text) {
     executeCommand(commands[i]);
   }
   // if the user was scrolled to the bottom of the game screen, scroll there again
-  if (lockToBottomOfGame) {
+  //if (lockToBottomOfGame) { // TODO: this is a quick fix, for some reason the user isn't staying locked to the bottom during the opponent's turn
     scrollToBottomOfGame();
-  }
+  //}
 }
 
 function isOnBottomOfGame() {
