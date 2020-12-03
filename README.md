@@ -1,4 +1,4 @@
-![Screenshot of a game against a BigMoney bot.](/screenshot.png?raw=true)
+![Screenshot of a game against a BigMoney bot.](/screenshot.jpg?raw=true)
 
 # Dominion Bot Arena
 Dominion Bot Arena is a server for playing the card game Dominion against bots, and a framework for developing new AI. You can see a live demo at [dominionbotarena.com](http://dominionbotarena.com).
@@ -14,7 +14,7 @@ Implemented Sets:
 * Guilds
 
 ## Running
-You can run the server yourself by downloading the latest release zip, extracting the contents and executing `java -jar dba.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.
+You can run the server yourself by downloading [the latest release zip](https://github.com/chadsprice/dominion-bot-arena/releases), extracting the contents and executing `java -jar dba.jar` in the main directory. The default port is 8080, so navigate to `localhost:8080`. You can configure server settings via the `config` file in the main directory.
 
 ## Building
 
