@@ -70,9 +70,11 @@ task preprocessSassToRunDir(type: Exec, dependsOn: copyStaticWebResourcesToRunDi
     }
 }
 
-task runGameServer(/*type: JavaExec, */dependsOn: [shadowJar, copyJarToRunDir, copyDefaultConfigFileToRunDir, copyStaticWebResourcesToRunDir, preprocessBabelToRunDir, preprocessSassToRunDir]) {
-    /*classpath = files("${runDir}/dba.jar")
+task buildGameServer(dependsOn: [shadowJar, copyJarToRunDir, copyDefaultConfigFileToRunDir, copyStaticWebResourcesToRunDir, preprocessBabelToRunDir, preprocessSassToRunDir]) {}
+
+task runGameServer(type: JavaExec, dependsOn: buildGameServer) {
+    classpath = files("${runDir}/dba.jar")
     main = 'server.GameServer'
-    workingDir = runDir*/
+    workingDir = runDir
     // TODO: better run process
 }
